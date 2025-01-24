@@ -1,0 +1,38 @@
+body{
+        height: 697px;
+        background-color: rgb(222 177 194 / 18%) !important;
+}
+#danhmuc {
+        .nav{
+                justify-content: space-between;
+                width: 89%;
+                margin-left: 75px;
+                margin-top: 10px;
+        }
+        .list-products {
+                border: 1px solid #dee2e6;
+                box-shadow: 0px 4px 14px;
+                background-color: #eeeded;
+                width: 90%;
+                margin-left: 5%;
+                tr {
+                        th {
+                                border-right: 1px solid #979fa8;
+                                border-bottom: 1px solid #979fa8;
+                                color: $new-brown;
+                                font-size: 1rem;
+                                width: auto;     
+                                text-align: center;            
+                         }
+                        td {
+                                border-right: 1px solid #979fa8;
+                                border-bottom: 1px solid #979fa8;
+                                text-align: center;
+
+                        }
+                }
+        }
+
+
+
+}
