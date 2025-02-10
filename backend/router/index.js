@@ -1,7 +1,7 @@
+const UserRouter = require('./UserRouter')
+
 const routers = (app) => {
-    app.get('/user', (req, res) => {
-        res.send('User page')
-    })
+    app.use('/api/user', UserRouter)
 }
 
 module.exports = routers;
