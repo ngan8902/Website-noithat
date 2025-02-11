@@ -91,11 +91,11 @@ const updateUser = (id, data) => {
                 })
             }
 
-            const updateUser = await User.findByIdAndUpdate(id, data, {new: true})           
+            const updatedUser = await User.findByIdAndUpdate(id, data, {new: true})           
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
-                data: updateUser
+                data: updatedUser
             }) 
 
         }catch(e){
@@ -168,6 +168,7 @@ const getDetailsUser = (id) => {
         }
     })
 }
+
 
 module.exports = {
     createUser,
