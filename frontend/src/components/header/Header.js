@@ -1,0 +1,51 @@
+import React, { useState } from "react";
+import LoginModal from "./LoginModal";
+import RegisterModal from "./RegisterModal";
+
+const Header = () => {
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+
+  return (
+    <header className="bg-dark text-white">
+      <div className="container d-flex justify-content-between align-items-center">
+        <div className="d-flex align-items-center">
+          <img src="/images/logo.png" alt="Logo Nội Thất" height="80" width="80" />
+        </div>
+
+        <nav className="d-flex align-items-center">
+          <ul className="nav">
+            <li className="nav-item"><a href="/home" className="nav-link text-white">Trang Chủ</a></li>
+            <li className="nav-item dropdown">
+              <button className="nav-link text-white dropdown-toggle" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Sản Phẩm</button>
+              <ul className="dropdown-menu">
+                <li><a href="/sofa" className="dropdown-item">Sofa</a></li>
+                <li><a href="/ban-an" className="dropdown-item">Bàn Ăn</a></li>
+                <li><a href="/ghe-thu-gian" className="dropdown-item">Ghế Thư Giãn</a></li>
+              </ul>
+            </li>
+            <li className="nav-item"><a href="/about" className="nav-link text-white">Giới Thiệu</a></li>
+            <li className="nav-item"><a href="/contact" className="nav-link text-white">Liên Hệ</a></li>
+          </ul>
+        </nav>
+
+        <div className="d-flex align-items-center">
+          <div className="input-group me-3">
+            <input type="text" className="form-control text-black border-0" placeholder="Tìm kiếm..." />
+            <span className="input-group-text bg-secondary border-0">
+              <button className="btn text-white"><i className="bi bi-search"></i></button>
+            </span>
+          </div>
+          <a href="/cart" className="nav-link text-white me-3"><i className="bi bi-cart-fill"></i></a>
+          <button className="btn btn-link text-white" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
+          <button className="btn btn-link text-white" onClick={() => setShowRegister(true)}>Đăng Ký</button>
+        </div>
+      </div>
+
+      <LoginModal show={showLogin} setShow={setShowLogin} setShowRegister={setShowRegister} />
+      <RegisterModal show={showRegister} setShow={setShowRegister} setShowLogin={setShowLogin} />
+    </header>
+  );
+};
+
+export default Header;

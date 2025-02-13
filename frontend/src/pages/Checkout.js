@@ -1,0 +1,107 @@
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import CustomerInfo from "../components/checkout/CustomerInfo";
+import ProductInfo from "../components/checkout/ProductInfo";
+import PaymentMethod from "../components/checkout/PaymentMethod";
+
+const Checkout = () => {
+    const location = useLocation();
+    const { product, quantity, cart } = location.state || {};
+
+    const savedAddresses = [{ id: 1, address: "" }];
+    const hasAddress = savedAddresses.length > 0;
+
+    const [selectedAddress, setSelectedAddress] = useState(hasAddress ? savedAddresses[0].address : "");
+    const [newAddress, setNewAddress] = useState("");
+    const [shippingFee, setShippingFee] = useState(0);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const [paymentMethod, setPaymentMethod] = useState("");
+
+    useEffect(() => {
+        if (selectedAddress === "" && newAddress) {
+            setShippingFee(calculateShippingFee(newAddress));
+        } else {
+            setShippingFee(calculateShippingFee(selectedAddress));
+        }
+    }, [selectedAddress, newAddress]);
+
+    const calculateShippingFee = (address) => {
+        if (!address) return 0;
+        const lowerAddress = address.toLowerCase();
+        if (lowerAddress.includes("hồ chí minh")) return 50000;
+        if (lowerAddress.includes("long an")) return 80000;
+        if (lowerAddress.includes("hà nội")) return 200000;
+        return 100000;
+    };
+
+    if (!product && (!cart || cart.length === 0)) {
+        return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
+    }
+
+    const getTotalPrice = () => {
+        if (product) {
+            return product.price * quantity;
+        } else {
+            return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        }
+    };
+
+    const handleCheckout = () => {
+        if (!selectedAddress && !newAddress) {
+            setErrorMessage("Vui lòng chọn hoặc nhập địa chỉ trước khi thanh toán!");
+            return;
+        }
+        if (!paymentMethod) {
+            setErrorMessage("Vui lòng chọn phương thức thanh toán!");
+            return;
+        }
+        setErrorMessage("");
+        alert(`Thanh toán thành công bằng phương thức: ${paymentMethod}`);
+    };
+
+    const totalPrice = getTotalPrice();
+    const finalPrice = totalPrice + shippingFee;
+
+    return (
+        <div className="container py-5">
+            <h2 className="text-center fw-bold mb-5">Thông Tin Đơn Hàng</h2>
+            <div className="row">
+                <CustomerInfo
+                    hasAddress={hasAddress}
+                    savedAddresses={savedAddresses}
+                    selectedAddress={selectedAddress}
+                    setSelectedAddress={setSelectedAddress}
+                    newAddress={newAddress}
+                    setNewAddress={setNewAddress}
+                />
+                <div className="col-md-6">
+                    <ProductInfo
+                        product={product}
+                        quantity={quantity}
+                        cart={cart}
+                        totalPrice={totalPrice}
+                        shippingFee={shippingFee}
+                        finalPrice={finalPrice}
+                    />
+                    <PaymentMethod 
+                        paymentMethod={paymentMethod} 
+                        setPaymentMethod={setPaymentMethod} 
+                    />
+                    
+                    {errorMessage && <p className="text-danger text-center mt-3">{errorMessage}</p>}
+
+                    <button 
+                        className="btn btn-dark w-100 mt-4" 
+                        onClick={handleCheckout}
+                        disabled={!selectedAddress && !newAddress}
+                    >
+                        Xác Nhận Mua Hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Checkout;
