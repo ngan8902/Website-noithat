@@ -8,19 +8,19 @@ const FeaturedProducts = () => {
     {
       title: "Sofa Sang Trọng",
       description: "Một chiếc sofa đẳng cấp cho phòng khách của bạn.",
-      image: "https://storage.googleapis.com/a1aa/image/xpHNeE9xk8U_hSqIz3R0HwKal3ungEr23ArhC_fVPNg.jpg",
+      image: "/assets/sofa/sofa-1.jpg",
       route: "/sofa"
     },
     {
       title: "Bàn Ăn Hiện Đại",
       description: "Thiết kế hiện đại và tinh tế cho không gian bếp.",
-      image: "",
+      image: "/assets/ban-an/ban-an-1.jpg",
       route: "/ban-an"
     },
     {
       title: "Ghế Thư Giãn",
       description: "Thư giãn sau một ngày dài với chiếc ghế êm ái.",
-      image: "",
+      image: "/assets/ghe-thu-gian/ghe-thu-gian-1.jpg",
       route: "/ghe-thu-gian"
     }
   ];

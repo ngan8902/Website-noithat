@@ -7,7 +7,7 @@ const About = () => {
         <div className="row align-items-center">
           <div className="col-md-6 mb-4 mb-md-0">
             <img
-              src=""
+              src="/images/logo.png"
               className="img-fluid rounded shadow"
               alt="Giới thiệu về chúng tôi"
             />
