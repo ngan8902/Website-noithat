@@ -11,7 +11,7 @@ export const allProducts = [
         price: 10000000, 
         discount: 20, 
         isBestSeller: true, 
-        image: "https://storage.googleapis.com/a1aa/image/xpHNeE9xk8U_hSqIz3R0HwKal3ungEr23ArhC_fVPNg.jpg" 
+        image: "/assets/sofa/sofa-1.jpg" 
     },
     { 
         id: 2, 
@@ -20,7 +20,7 @@ export const allProducts = [
         price: 8500000, 
         discount: 15, 
         isBestSeller: true, 
-        image: "" 
+        image: "/assets/sofa/sofa-1.jpg" 
     },
     { 
         id: 3, 
@@ -29,7 +29,7 @@ export const allProducts = [
         price: 7200000, 
         discount: 10, 
         isBestSeller: false, 
-        image: "" 
+        image: "/assets/sofa/sofa-1.jpg" 
     },
     { 
         id: 4, 
@@ -38,7 +38,7 @@ export const allProducts = [
         price: 12000000, 
         discount: 30, 
         isBestSeller: true, 
-        image: "https://example.com/sofa-hoang-gia.jpg" 
+        image: "/assets/sofa/sofa-1.jpg" 
     },
     { 
         id: 5, 
@@ -46,7 +46,7 @@ export const allProducts = [
         description: "Da thật 100%, bền bỉ.", 
         price: 15000000, 
         isBestSeller: true, 
-        image: "" 
+        image: "/assets/sofa/sofa-1.jpg" 
     },
 ];
 

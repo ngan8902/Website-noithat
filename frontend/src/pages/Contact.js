@@ -13,7 +13,7 @@ const Contact = () => {
           <div className="row">
             <div className="col-md-6 mb-4">
               <img
-                src=""
+                src="/images/logo.png"
                 alt="Thông tin liên hệ"
                 className="img-fluid rounded shadow mb-4"
               />
