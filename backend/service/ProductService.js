@@ -90,7 +90,6 @@ const getAllProduct = (limit, page, sort, filter) => {
     return new Promise(async (resolve, reject) => {
         try{
             const totalProduct = await Product.countDocuments() //tổng số sản phẩm
-            console.log('filter', filter)
             if (filter){
                 const label = filter[0];
                 const allProductFilter = await Product.find({[label]: {'$regex': filter[1] }}).limit(limit).skip(page * limit)

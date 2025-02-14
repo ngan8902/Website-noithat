@@ -1,9 +1,14 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
+// import {useMutation} from "@tanstack/react-query";
+// import * as UserService from "../../service/UserService"
 
 const LoginModal = ({ show, setShow, setShowRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  
+
 
   if (!show) return null;
 
@@ -19,7 +24,12 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
             <form>
               <div className="mb-3">
                 <label htmlFor="loginEmail" className="form-label text-dark">Email</label>
-                <input type="email" className="form-control" id="loginEmail" required />
+                <input 
+                  type="email" 
+                  className="form-control" 
+                  id="loginEmail" 
+                  required 
+                  />
               </div>
               <div className="mb-3">
                 <label htmlFor="loginPassword" className="form-label text-dark">Mật Khẩu</label>
@@ -40,7 +50,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-dark w-100">Đăng Nhập</button>
+              <button type="submit" className="btn btn-dark w-100" >Đăng Nhập</button>
 
               <div className="text-center mt-2">
                 <button 

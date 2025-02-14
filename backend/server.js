@@ -2,6 +2,7 @@ const express = require("express");
 const { createServer } = require('http');
 const app = express();
 const dotenv = require('dotenv')
+const cors = require('cors')
 const server = createServer(app);
 app.set('port', process.argv[2] || 8000);
 const port = process.env.PORT || app.get('port');
@@ -14,6 +15,7 @@ dotenv.config();
 app.use(express.static(__dirname + '/public/build'));
 console.log(__dirname + '/public/build')
 
+app.use(cors())
 app.use(bodyParser.json())
 
 routers(app);

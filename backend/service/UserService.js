@@ -15,7 +15,7 @@ const createUser = (newUser) => {
                     message: 'The email is already'
                 })
             }
-            const hash = bcrypt.hashSync(password, 10)
+            const hash = bcrypt.hashSync(utf8Password, 10)
             const createdUser = await User.create({
                 name, 
                 email, 
@@ -37,7 +37,7 @@ const createUser = (newUser) => {
 
 const loginUser = (userLogin) => {
     return new Promise(async (resolve, reject) => {
-        const { name, email, password, confirmPassword, phone } = userLogin
+        const { email, password} = userLogin
         try{
             const checkUser = await User.findOne({
                 email: email

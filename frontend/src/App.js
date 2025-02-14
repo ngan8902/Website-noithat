@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { allProducts } from "./pages/Sofa";
 import { route } from "./routes/route";
 import Default from "./components/Default";
+// import {useQuery} from "@tanstack/react-query";
 
 function App() {
+
+
+  // useEffect(() => {
+  //   fetchApi()
+  // },[])
+
+  // const fetchApi = async () => {
+  //   const res = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/all-product`)
+  //   return res.data
+  // }
+  
+  // const query = useQuery({ queryKey: ['products'], queryFn: fetchApi })
+
+  // console.log(query)
+
   const [products] = useState(allProducts);
 
   return (
