@@ -11,11 +11,11 @@ const createUser = (newUser) => {
             })
             if (checkUser !== null) {
                 resolve({
-                    status: 'OK',
-                    message: 'The email is already'
+                    status: 'ERROR',
+                    message: 'Email đã tồn tại!'
                 })
             }
-            const hash = bcrypt.hashSync(utf8Password, 10)
+            const hash = bcrypt.hashSync(password, 10)
             const createdUser = await User.create({
                 name, 
                 email, 
@@ -24,8 +24,8 @@ const createUser = (newUser) => {
             })
             if(createdUser) {
                 resolve({
-                    status: 'OK',
-                    message: 'SUCCESS',
+                    status: 'SUCCESS',
+                    message: 'Sign up success',
                     data: createdUser
                 }) 
             }

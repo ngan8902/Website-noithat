@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 const RegisterModal = ({ show, setShow, setShowLogin }) => {
@@ -57,11 +57,11 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
         console.log("Phản hồi từ server:", response);
         const { data } = response;
 
-        if (data.code === 200) {
+        if (data.status === 'SUCCESS') {
           setShow(false);
           setShowLogin(true);
         } else {
-          setPasswordError("Có lỗi xảy ra, vui lòng thử lại!");
+          setPasswordError(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
           console.error('lỗi:',setPasswordError)
         }
       })

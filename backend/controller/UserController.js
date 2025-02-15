@@ -1,6 +1,7 @@
 const UserService = require('../service/UserService') 
 const JwtService = require('../service/JwtService') 
-
+const { SIGN_UP } = require('../common/messages/user.message')
+const { SIGN_UP_STATUS } = require('../common/constant/status.constant')
 
 const createUser = async (req, res) => {
     try{
@@ -9,18 +10,18 @@ const createUser = async (req, res) => {
         const isCheckEmail = reg.test(email)
         if (!name || !email || !password || !confirmPassword || !phone) {
             return res.status(200).json({
-                status: 'ERR',
-                message: 'The input is required'
+                status: SIGN_UP_STATUS.ERROR,
+                message: SIGN_UP.VALID_FIELDS_ERR
             })
         }else if (!isCheckEmail){
             return res.status(200).json({
                 status: 'ERR',
-                message: 'The input is email'
+                message: 'Vui lòng nhập email'
             })
         }else if (password !== confirmPassword){
             return res.status(200).json({
                 status: 'ERR',
-                message: 'The password is equal confirmPassword'
+                message: 'Mật khẩu và mật khẩu xác nhận không trùng khớp!'
             })
         }
         const response = await UserService.createUser(req.body)
@@ -40,12 +41,12 @@ const loginUser = async (req, res) => {
         if ( !email || !password) {
             return res.status(200).json({
                 status: 'ERR',
-                message: 'The input is required'
+                message: 'Nhập các trường bắt buộc!'
             })
         }else if (!isCheckEmail){
             return res.status(200).json({
                 status: 'ERR',
-                message: 'The input is email'
+                message: 'Vui lòng nhập email!'
             })
         }
        
