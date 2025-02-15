@@ -1,6 +1,7 @@
 //Phân quyền Admin
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
+const { TOKEN_KEY } = require('../common/constant/authen.constan')
 
 dotenv.config()
 
@@ -52,8 +53,32 @@ const authUserMiddleware = (req, res, next) => {
     });
 }
 
+const authenticateUser = (req, res, next) => {
+    const token = req.headers[TOKEN_KEY]
+    jwt.verify(token, process.env.ACCESS_TOKEN, function(err, jwtObj) {
+        if(err) {
+            console.error('JWT Verify Error:', err);
+            return res.json({
+                message: 'The authentication',
+                status: 'ERR'
+            })   
+        }
+        const { payload } = jwtObj
+        if (payload) {
+            req['payload'] = payload;
+            next()
+        } else {
+            return res.json({
+                message: 'The authentication',
+                status: 'ERR'
+            })  
+        }
+    });
+}
+
 
 module.exports = {
     authMiddleware,
-    authUserMiddleware
+    authUserMiddleware,
+    authenticateUser
 } 

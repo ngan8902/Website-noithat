@@ -1,10 +1,19 @@
 import React, { useState } from "react";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
+import useAuthStore from '../../store/authStore';
+import { setCookie } from '../../utils/cookie.util';
+import { TOKEN_KEY } from '../../constants/authen.constant';
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
+  const { user } = useAuthStore((state) => state);
+
+  const logout = () => {
+    setCookie(TOKEN_KEY, '');
+    document.location.reload();
+  }
 
   return (
     <header className="bg-dark text-white">
@@ -37,8 +46,12 @@ const Header = () => {
             </span>
           </div>
           <a href="/cart" className="nav-link text-white me-3"><i className="bi bi-cart-fill"></i></a>
-          <button className="btn btn-link text-white" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
-          <button className="btn btn-link text-white" onClick={() => setShowRegister(true)}>Đăng Ký</button>
+          {
+            !!user ? <span onClick={() => logout()} style={{ cursor: 'pointer' }}>{user.name}</span> : <>
+              <button className="btn btn-link text-white" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
+              <button className="btn btn-link text-white" onClick={() => setShowRegister(true)}>Đăng Ký</button>
+              </>
+          }
         </div>
       </div>
 

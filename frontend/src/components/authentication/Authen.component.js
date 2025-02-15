@@ -1,7 +1,9 @@
 import React from 'react';
+import useAuthStore from '../../store/authStore';
 
-const Authen = ({ children }) => {
-  console.log('is authen');
+const Authen = () => {
+  const authenticate = useAuthStore((state) => state.auth);
+  authenticate();
   return (<></>);
 };
 

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { setCookie } from "../../utils/cookie.util";
+import { TOKEN_KEY } from '../../constants/authen.constant';
 
 const LoginModal = ({ show, setShow, setShowRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +24,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
       if (data && !data.error) {
         if (data && data.access_token) {
           const token = data.access_token
-          setCookie('token', token, 2)
+          setCookie(TOKEN_KEY, token, 2)
           window.location.replace("/about");
         } else {
 
@@ -33,14 +34,6 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
       }
     });
   }
-
-  const setCookie = (cname, cvalue, exdays) => {
-    const d = new Date();
-    d.setTime(d.getTime() + (exdays*24*60*60*1000));
-    let expires = "expires="+ d.toUTCString();
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-  }
-
 
   if (!show) return null;
 
