@@ -4,14 +4,17 @@ import RegisterModal from "./RegisterModal";
 import useAuthStore from '../../store/authStore';
 import { setCookie } from '../../utils/cookie.util';
 import { TOKEN_KEY } from '../../constants/authen.constant';
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const { user } = useAuthStore((state) => state);
+  const navigate = useNavigate();
 
   const logout = () => {
     setCookie(TOKEN_KEY, '');
+    navigate('/home');
     document.location.reload();
   }
 
@@ -26,7 +29,9 @@ const Header = () => {
           <ul className="nav">
             <li className="nav-item"><a href="/home" className="nav-link text-white">Trang Chủ</a></li>
             <li className="nav-item dropdown">
-              <button className="nav-link text-white dropdown-toggle" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">Sản Phẩm</button>
+              <button className="nav-link text-white dropdown-toggle" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Sản Phẩm
+              </button>
               <ul className="dropdown-menu">
                 <li><a href="/sofa" className="dropdown-item">Sofa</a></li>
                 <li><a href="/ban-an" className="dropdown-item">Bàn Ăn</a></li>
@@ -46,12 +51,22 @@ const Header = () => {
             </span>
           </div>
           <a href="/cart" className="nav-link text-white me-3"><i className="bi bi-cart-fill"></i></a>
-          {
-            !!user ? <span onClick={() => logout()} style={{ cursor: 'pointer' }}>{user.name}</span> : <>
+          {!!user ? (
+            <div className="dropdown">
+              <button className="btn btn-link text-white dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Chào, {user.name}
+              </button>
+              <ul className="dropdown-menu dropdown-menu-end">
+                <li><a href="/account" className="dropdown-item">Thông tin tài khoản</a></li>
+                <li><button className="dropdown-item text-danger" onClick={logout}>Đăng xuất</button></li>
+              </ul>
+            </div>
+          ) : (
+            <>
               <button className="btn btn-link text-white" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
               <button className="btn btn-link text-white" onClick={() => setShowRegister(true)}>Đăng Ký</button>
-              </>
-          }
+            </>
+          )}
         </div>
       </div>
 

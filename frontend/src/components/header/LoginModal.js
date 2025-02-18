@@ -6,9 +6,10 @@ import { TOKEN_KEY } from '../../constants/authen.constant';
 
 const LoginModal = ({ show, setShow, setShowRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState({});
-  const [pass, setPass] = useState({});
+  const [email, setEmail] = useState("");
+  const [pass, setPass] = useState("");
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
   
 
   const getLogin = (email, password) => {
@@ -19,20 +20,32 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
   }
 
   const handelLogin = () => {
-    getLogin(email, pass).then(function (response) {
+    if (!email.trim() || !pass.trim()) {
+      setErrorMessage("Vui lòng nhập đầy đủ thông tin");
+      return;
+    }
+
+    setErrorMessage("");
+
+    getLogin(email, pass)
+    .then((response) => {
       let data = response.data;
       if (data && !data.error) {
-        if (data && data.access_token) {
-          const token = data.access_token
-          setCookie(TOKEN_KEY, token, 2)
-          window.location.replace("/about");
-        } else {
-
-        }
-      } else {
-
+        if (data.access_token) {
+          setCookie(TOKEN_KEY, data.access_token, 2)
+          localStorage.setItem("user", JSON.stringify(data.user));
+          window.location.replace("/account");
+        } 
       }
-    });
+    })
+    .catch((error) => {
+      console.error("Lỗi đăng nhập: ", error);
+      if (error.response && error.response.data === 401) {
+        setErrorMessage("Email hoặc mật khẩu không chính xác");
+      } else {
+        setErrorMessage(`Lỗi: ${error.response.data.message}`);
+      }
+    })
   }
 
   if (!show) return null;
@@ -47,6 +60,8 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
           </div>
           <div className="modal-body">
             <div>
+              {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
+
               <div className="mb-3">
                 <label htmlFor="loginEmail" className="form-label text-dark">Email</label>
                 <input 

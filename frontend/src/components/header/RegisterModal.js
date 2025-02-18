@@ -30,7 +30,6 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
     }
   };
 
-
   const handleSignup = (e) => {
     e.preventDefault(); // Ngăn trang tải lại
 
