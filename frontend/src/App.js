@@ -1,28 +1,16 @@
-import React, { /*useEffect,*/ useState } from "react";
-//import axios from 'axios';
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { allProducts } from "./pages/Sofa";
 import { route } from "./routes/route";
 import Default from "./components/Default";
-// import {useQuery} from "@tanstack/react-query";
+import useProductStore from "./store/productStore";
 
 function App() {
 
+  const { products, getProducts } = useProductStore(); // Lấy dữ liệu từ Zustand
 
-  // useEffect(() => {
-  //   fetchApi()
-  // },[])
-
-  // const fetchApi = async () => {
-  //   const res = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/all-product`)
-  //   return res.data
-  // }
-  
-  // const query = useQuery({ queryKey: ['products'], queryFn: fetchApi })
-
-  // console.log(query)
-
-  const [products] = useState(allProducts);
+  useEffect(() => {
+    getProducts(); // Gọi API khi App mount
+  }, [getProducts]);
 
   return (
     <Router>

@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import useProductStore from "../../store/productStore";
 
-const ProductList = ({ products, title }) => {
+const ProductList = ({  title }) => {
     const [startIndex, setStartIndex] = useState(0); // Vị trí bắt đầu hiển thị
+    const { products, getProducts } = useProductStore(); // Lấy dữ liệu từ Zustand
+
+    useEffect(() => {
+        getProducts(); // Gọi API khi component mount
+    }, [getProducts]);
 
     const visibleProducts = products.slice(startIndex, startIndex + 3); // Hiển thị 3 sản phẩm
 
@@ -67,7 +73,7 @@ const ProductList = ({ products, title }) => {
                                         )}
 
                                         {/* Điều hướng đến trang chi tiết sản phẩm */}
-                                        <Link to={`/${product.name}/${product.id}`} className="btn btn-dark w-100">
+                                        <Link to={`/${product.name}/${product._id}`} className="btn btn-dark w-100">
                                             Xem Chi Tiết
                                         </Link>
                                     </div>

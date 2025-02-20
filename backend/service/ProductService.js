@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt")
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
-        const { name, image, type, price, countInStock, rating, description  } = newProduct
+        const { name, image, type, price, countInStock, rating, description,isBestSeller,discount  } = newProduct
         try{
             const checkProduct = await Product.findOne({
                 name: name
@@ -20,7 +20,10 @@ const createProduct = (newProduct) => {
                 type, 
                 price, 
                 countInStock, 
-                rating
+                rating,
+                description,
+                isBestSeller,
+                discount
             })
             if(createdProduct) {
                 resolve({
@@ -155,11 +158,27 @@ const getDetailsProduct = (id) => {
     })
 }
 
+const getAllType = () => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            const allType = await Product.distinct('type')
+            resolve({
+                status: 'OK',
+                message: 'success',
+                data: allType,
+            }) 
+        }catch(e){
+            reject(e)
+        }
+    })
+}
+
 
 module.exports = {
     createProduct,
     updateProduct,
     getDetailsProduct,
     deleteProduct,
-    getAllProduct
+    getAllProduct,
+    getAllType
 }

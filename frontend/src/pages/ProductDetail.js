@@ -6,7 +6,7 @@ import CustomerReviews from "../components/productdetail/CustomerReviews";
 
 const ProductDetail = ({ products }) => {
     const { id } = useParams();
-    const product = products.find(p => p.id.toString() === id);
+    const product = products.find(p => p._id === id);
     const navigate = useNavigate();
     const [quantity, setQuantity] = useState(1);
 
