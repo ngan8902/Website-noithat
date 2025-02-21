@@ -16,7 +16,7 @@ const createRole = async (req, res, next) => {
         const response = await RoleService.createRole(req.body)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -35,7 +35,7 @@ const editRole = async (req, res, next) => {
     //     const response = await RoleService.editRole(role_id, data)
     //     return res.status(200).json(response) 
     // }catch(e){
-    //     return res.status(404).json({
+    //     return res.status(500).json({
     //         message: e
     //     })
     // }

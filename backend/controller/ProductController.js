@@ -15,7 +15,7 @@ const createProduct = async (req, res) => {
         const response = await ProductService.createProduct(req.body)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -35,7 +35,7 @@ const updateProduct = async (req, res) => {
         const response = await ProductService.updateProduct(productId, data)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -53,7 +53,7 @@ const getDetailsProduct = async (req, res) => {
         const response = await ProductService.getDetailsProduct(productId)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -71,7 +71,7 @@ const deleteProduct = async (req, res) => {
         const response = await ProductService.deleteProduct(productId)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -83,7 +83,7 @@ const getAllProduct = async (req, res) => {
         const response = await ProductService.getAllProduct(Number(limit) || 8, Number(page) || 0, sort, filter)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -94,7 +94,7 @@ const getAllType = async (req, res) => {
         const response = await ProductService.getAllType()
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
