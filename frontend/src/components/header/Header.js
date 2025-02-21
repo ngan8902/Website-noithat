@@ -53,7 +53,7 @@ const Header = () => {
           <a href="/cart" className="nav-link text-white me-3"><i className="bi bi-cart-fill"></i></a>
           {!!user ? (
             <div className="dropdown">
-              <button className="btn btn-link text-white dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <button className="nav-link text-white dropdown-toggle fw-bold transition-hover" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Chào, {user.name}
               </button>
               <ul className="dropdown-menu dropdown-menu-end">
@@ -63,8 +63,8 @@ const Header = () => {
             </div>
           ) : (
             <>
-              <button className="btn btn-link text-white" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
-              <button className="btn btn-link text-white" onClick={() => setShowRegister(true)}>Đăng Ký</button>
+              <button className="btn text-white text-decoration-none fw-bold transition-hover" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
+              <button className="btn text-white text-decoration-none fw-bold transition-hover" onClick={() => setShowRegister(true)}>Đăng Ký</button>
             </>
           )}
         </div>

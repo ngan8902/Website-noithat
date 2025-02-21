@@ -1,34 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import useAuthStore from "../store/authStore";
 import AccountInfo from "../components/account/AccountInfo";
 import OrderHistory from "../components/account/OrderHistory";
 import OrderStatus from "../components/account/OrderStatus";
-import { getCookie } from "../utils/cookie.util";
-import { TOKEN_KEY } from '../constants/authen.constant';
 
 const Account = () => {
-  const [user, setUser] = useState(null);
+  const { user, auth } = useAuthStore();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = getCookie(TOKEN_KEY);
-
-    axios
-      .get(`${process.env.REACT_APP_URL_BACKEND}/user/getme`, {
-        headers: { token: `Bearer ${token}` },
-      })
-      .then((response) => {
-        console.log("Lấy thông tin người dùng thành công:", response.data);
-        setUser(response.data);
-      })
-      .catch((error) => {
+    const fetchUser = async () => {
+      try {
+        await auth(); // Gọi hàm lấy thông tin người dùng từ store
+      } catch (error) {
         console.error("Lỗi khi lấy thông tin người dùng:", error);
         alert("Không thể lấy thông tin người dùng. Vui lòng đăng nhập lại.");
         localStorage.removeItem("user");
         navigate("/home");
-      });
-  }, [navigate]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, [auth, navigate]);
 
   const [orders, setOrders] = useState([
     { id: "12345", productName: "Sofa Sang Trọng", orderDate: "01/01/2025", deliveryDate: "05/01/2025", totalPrice: "10,500,000", paymentMethod: "Thanh toán khi nhận hàng", status: "Đang Xác Nhận", quantity: 1 },
@@ -42,13 +38,17 @@ const Account = () => {
     <section className="py-5">
       <div className="container">
         <div className="row">
-          {user ? (
-            <AccountInfo user={user} setUser={setUser} />
-          ) : (
+          {loading ? (
             <div className="text-center">
               <div className="spinner-border text-primary" role="status">
                 <span className="visually-hidden">Đang tải...</span>
               </div>
+            </div>
+          ) : user ? (
+            <AccountInfo />
+          ) : (
+            <div className="text-center">
+              <p className="text-danger">Không tìm thấy thông tin người dùng.</p>
             </div>
           )}
           <div className="col-md-8">

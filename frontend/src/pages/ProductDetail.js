@@ -1,14 +1,18 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ProductImage from "../components/productdetail/ProductImage";
 import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
+import useAuthStore from "../store/authStore";
 
 const ProductDetail = ({ products }) => {
     const { id } = useParams();
     const product = products.find(p => p.id.toString() === id);
-    const navigate = useNavigate();
+    const { user } = useAuthStore(); // Kiểm tra người dùng đăng nhập chưa
     const [quantity, setQuantity] = useState(1);
+    const [showLoginAlert, setShowLoginAlert] = useState(false);
+    const navigate = useNavigate();
 
     if (!product) {
         return <h2 className="text-center text-danger mt-5">Sản phẩm không tồn tại!</h2>;
@@ -22,10 +26,19 @@ const ProductDetail = ({ products }) => {
     const decreaseQuantity = () => quantity > 1 && setQuantity(quantity - 1);
 
     const handleBuyNow = () => {
+        if (!user) {
+            setShowLoginAlert(true);
+            return;
+        }
         navigate("/checkout", { state: { product, quantity } });
     };
 
     const addToCart = () => {
+        if (!user) {
+            setShowLoginAlert(true);
+            return;
+        }
+
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
         const existingProduct = cart.find(item => item.id === product.id);
 
@@ -76,6 +89,12 @@ const ProductDetail = ({ products }) => {
                             increaseQuantity={increaseQuantity} 
                             decreaseQuantity={decreaseQuantity} 
                         />
+
+                        {showLoginAlert && (
+                            <div className="alert alert-warning mt-3" role="alert">
+                                Bạn cần <strong>đăng nhập</strong> hoặc <strong>đăng ký</strong> để thực hiện thao tác này!
+                            </div>
+                        )}
 
                         <div className="d-flex mb-4">
                             <button className="btn btn-dark me-3" onClick={addToCart}>🛒 Thêm Vào Giỏ Hàng</button>

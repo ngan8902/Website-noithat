@@ -22,5 +22,5 @@ export const route = [
   { path: "/cart", element: <Cart />, isShow: true },
   { path: "*", element: <NotFound /> },
   { path: "/account", element: <Account />, isShow: true },
-  { path: "/salesmanagement", element: <SalesManagement />, isShow: true },
+  { path: "/dashboard", element: <SalesManagement />, isShow: true },
 ];

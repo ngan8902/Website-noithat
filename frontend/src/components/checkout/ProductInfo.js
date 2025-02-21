@@ -7,6 +7,7 @@ const ProductInfo = ({ product, quantity, cart, totalPrice, shippingFee, finalPr
 
             {product ? (
                 <>
+                    <img src={product.image} alt={product.name} className="img-fluid rounded mb-3" style={{ width: "200px" }}/>
                     <p><strong>Sản Phẩm:</strong> {product.name}</p>
                     <p><strong>Số Lượng:</strong> {quantity}</p>
                     <p><strong>Giá:</strong> {totalPrice.toLocaleString()} VND</p>
@@ -15,6 +16,7 @@ const ProductInfo = ({ product, quantity, cart, totalPrice, shippingFee, finalPr
                 cart.map((item, index) => (
                     <div key={index} className="border p-2 mb-2">
                         <p><strong>{item.name}</strong></p>
+                        <img src={item.image} alt={item.name} className="img-fluid rounded mb-2" style={{ width: "100px" }}/>
                         <p>Số lượng: {item.quantity}</p>
                         <p>Giá: {(item.price * item.quantity).toLocaleString()} VND</p>
                     </div>

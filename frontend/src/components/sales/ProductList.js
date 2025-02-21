@@ -54,6 +54,7 @@ const ProductList = ({ products, setProducts }) => {
         <thead className="table-dark">
           <tr>
             <th>ID</th>
+            <th>Hình Ảnh</th>
             <th>Tên Sản Phẩm</th>
             <th>Giá</th>
             <th>Số Lượng</th>
@@ -65,6 +66,11 @@ const ProductList = ({ products, setProducts }) => {
             filteredProducts.map((product) => (
               <tr key={product.id}>
                 <td>{product.id}</td>
+                <td>
+                  <img src={product.image || "https://via.placeholder.com/100"} 
+                  alt={product.name} 
+                  style={{ width: "100px", height: "100px", objectFit: "cover" }}/>
+                </td>
                 <td>{product.name}</td>
                 <td>{product.price} VND</td>
                 <td>{product.quantity}</td>
