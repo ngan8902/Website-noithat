@@ -2,13 +2,12 @@ const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema(
     {
-        name: { type: String, required: true},
-        email: { type: String, required: true},
+        username: { type: String, required: true},
         password: { type: String, required: true},
-        isAdmin: { type: Boolean, default: false, required: true},
         phone: { type: Number, required:true},
+        role_id: {type: Number, require: true},
         avatar: {type: String},
-        address:{type: String},
+        address:{type: String, require: true},
         access_token: { type: String},
         refresh_token: { type: String}
     },
@@ -16,5 +15,5 @@ const userSchema = new mongoose.Schema(
         timestamps: true, //Thời gian tạo và update
     }
 );
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const Staff = mongoose.model("Staff", userSchema);
+module.exports = Staff;

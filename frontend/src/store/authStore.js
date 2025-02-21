@@ -12,7 +12,6 @@ const useAuthStore = create((set) => ({
                 'token': getCookie(TOKEN_KEY)
             }
         }).then(response => {
-            console.log(response);
             const { data } = response;
             if (data && data.data) {
                 const user = data.data;

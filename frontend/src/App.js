@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { route } from "./routes/route";
 import Default from "./components/Default";
+import AdminLayout from "./components/layout/AdminLayout";
 import useProductStore from "./store/productStore";
 
 function App() {
@@ -17,8 +18,8 @@ function App() {
       <div className="bg-gray-100 text-gray-900">
         <main>
           <Routes>
-            {route.map(({ path, element, isShow }) => {
-              const Layout = isShow ? Default : React.Fragment;
+            {route.map(({ path, element, isShow, layout }) => {
+              const Layout = layout ?? (isShow ? Default : AdminLayout);
               return (
                 <Route
                   key={path}

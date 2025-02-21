@@ -1,3 +1,4 @@
+import React from "react";
 import Home from "../pages/Home";
 import AboutDetail from "../pages/AboutDetail";
 import Contact from "../pages/Contact";
@@ -9,8 +10,9 @@ import Cart from "../pages/Cart";
 import NotFound from "../pages/NotFound";
 import Account from "../pages/Account";
 import SalesManagement from "../pages/SalesManagement";
+import LoginAdmin from "../pages/LoginAdmin";
 
-export const route = [
+const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
   { path: "/home", element: <Home />, isShow: true },
   { path: "/about", element: <AboutDetail />, isShow: true },
@@ -22,5 +24,15 @@ export const route = [
   { path: "/cart", element: <Cart />, isShow: true },
   { path: "*", element: <NotFound /> },
   { path: "/account", element: <Account />, isShow: true },
-  { path: "/dashboard", element: <SalesManagement />, isShow: true },
+]
+
+const privateRoute = [
+  { path: "/admin/login", element: <LoginAdmin />, isShow: false, layout: React.Fragment },
+  { path: "/dashboard", element: <SalesManagement />, isShow: false },
+  // { path: "/admin/dashboard", element: <></>, isShow: false },
+]
+
+export const route = [
+  ...publicRoute,
+  ...privateRoute
 ];
