@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import useProductStore from "../../store/productStore";
 
-const ProductList = ({ products, title }) => {
-    const [startIndex, setStartIndex] = useState(0); // Vị trí bắt đầu hiển thị
+const ProductList = ({  title }) => {
+    const [startIndex, setStartIndex] = useState(0);
+    const { products, getProducts } = useProductStore();
 
-    const visibleProducts = products.slice(startIndex, startIndex + 3); // Hiển thị 3 sản phẩm
+    useEffect(() => {
+        getProducts(); // Gọi API khi component mount
+    }, [getProducts]);
+
+    const visibleProducts = products.slice(startIndex, startIndex + 3);
 
     const nextProduct = () => {
         setStartIndex((prevIndex) => 
@@ -22,7 +28,6 @@ const ProductList = ({ products, title }) => {
         <div>
             <h3 className="fw-bold mb-4 text-center">{title}</h3>
             <div className="position-relative">
-                {/* Mũi tên trái */}
                 {products.length > 3 && (
                     <button 
                         className="btn btn-outline-dark bg-dark-subtle position-absolute start-0 top-50 translate-middle-y" 
@@ -33,7 +38,6 @@ const ProductList = ({ products, title }) => {
                     </button>
                 )}
 
-                {/* Danh sách sản phẩm */}
                 <div className="row g-4 justify-content-center">
                     {visibleProducts.map((product) => {
                         const finalPrice = product.discount
@@ -52,7 +56,6 @@ const ProductList = ({ products, title }) => {
                                         <h5 className="card-title">{product.name}</h5>
                                         <p className="card-text">{product.description}</p>
 
-                                        {/* Hiển thị giá trước và sau khi giảm */}
                                         {product.discount > 0 ? (
                                             <div>
                                                 <p className="text-decoration-line-through text-muted">
@@ -66,10 +69,10 @@ const ProductList = ({ products, title }) => {
                                             <p className="fw-bold">Giá: {product.price.toLocaleString()} VND</p>
                                         )}
 
-                                        {/* Điều hướng đến trang chi tiết sản phẩm */}
-                                        <Link to={`/${product.name}/${product.id}`} className="btn btn-dark w-100">
+                                        <Link to={`/${encodeURIComponent(product.name)}/${product._id}`} className="btn btn-dark w-100">
                                             Xem Chi Tiết
                                         </Link>
+
                                     </div>
                                 </div>
                             </div>
@@ -77,7 +80,6 @@ const ProductList = ({ products, title }) => {
                     })}
                 </div>
 
-                {/* Mũi tên phải */}
                 {products.length > 3 && (
                     <button 
                         className="btn btn-outline-dark bg-dark-subtle position-absolute end-0 top-50 translate-middle-y" 

@@ -5,12 +5,14 @@ import ProductImage from "../components/productdetail/ProductImage";
 import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
 import useAuthStore from "../store/authStore";
+import useProductStore from "../store/productStore";
 
-const ProductDetail = ({ products }) => {
+const ProductDetail = () => {
     const { id } = useParams();
-    const product = products.find(p => p.id.toString() === id);
-    const { user } = useAuthStore(); // Kiểm tra người dùng đăng nhập chưa
+    const { products } = useProductStore();
+    const product = products.find(p => p._id.toString() === id);
     const [quantity, setQuantity] = useState(1);
+    const { user } = useAuthStore();
     const [showLoginAlert, setShowLoginAlert] = useState(false);
     const navigate = useNavigate();
 

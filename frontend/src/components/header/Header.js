@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import useAuthStore from '../../store/authStore';
 import { setCookie } from '../../utils/cookie.util';
 import { TOKEN_KEY } from '../../constants/authen.constant';
-import { useNavigate } from "react-router-dom";
+import useProductStore from '../../store/productStore';
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const { user } = useAuthStore((state) => state);
-  const navigate = useNavigate();
+  const { type, getType} = useProductStore((state) => state);
 
   const logout = () => {
     setCookie(TOKEN_KEY, '');
-    navigate('/home');
-    document.location.reload();
+    window.location.replace("/home");
   }
+
+  useEffect(() => {
+    getType()
+  }, [getType])
 
   return (
     <header className="bg-dark text-white">
@@ -33,9 +36,13 @@ const Header = () => {
                 Sản Phẩm
               </button>
               <ul className="dropdown-menu">
-                <li><a href="/sofa" className="dropdown-item">Sofa</a></li>
-                <li><a href="/ban-an" className="dropdown-item">Bàn Ăn</a></li>
-                <li><a href="/ghe-thu-gian" className="dropdown-item">Ghế Thư Giãn</a></li>
+                {
+                  type.map((i) => {
+                    return (
+                      <li><a href="/sofa" className="dropdown-item">{ i }</a></li>
+                    )
+                  })
+                }
               </ul>
             </li>
             <li className="nav-item"><a href="/about" className="nav-link text-white">Giới Thiệu</a></li>
