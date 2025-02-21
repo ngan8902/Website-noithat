@@ -85,6 +85,10 @@ section {
   color: lightgray !important;
 }
 
+.dropdown-item:hover {
+  background-color: grey !important;
+}
+
 .feedback-btn {
   position: absolute;
   top: 10px;
@@ -100,4 +104,11 @@ section {
   width: 500px;
   z-index: 10;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    width: 100%; 
+    height: auto; 
+    max-height: 500px;
+    object-fit: contain;
 }

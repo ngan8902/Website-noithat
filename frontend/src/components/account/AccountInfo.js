@@ -5,62 +5,135 @@ import { getCookie } from "../../utils/cookie.util";
 import { TOKEN_KEY } from "../../constants/authen.constant";
 
 const AccountInfo = () => {
-  const { user, auth } = useAuthStore();
-  const [editUser, setEditUser] = useState({});
+  const { user, auth, setUser } = useAuthStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState(""); 
-  const [newPassword, setNewPassword] = useState("");
+  const [avatar, setAvatar] = useState("");
 
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+  });
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [error, setError] = useState('');
+
+  // Lấy thông tin user khi component render lần đầu
   useEffect(() => {
     auth();
   }, [auth]);
 
   useEffect(() => {
-    setEditUser(user || {});
+    if (user && user._id) {
+      setFormData({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+      });
+      setAvatar(user.avatar || '');
+    } 
   }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditUser({ ...editUser, [name]: value });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
+  // Xử lý đổi avatar
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setEditUser((prev) => ({ ...prev, avatar: reader.result }));
+        const newAvatar = reader.result;
+        setAvatar(newAvatar);
+        updateAvatar(newAvatar);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSave = async () => {
+  // Gửi request cập nhật avatar
+  const updateAvatar = async (newAvatar) => {
+    if (!user?._id) return console.error("Không tìm thấy user");
+
     try {
-      const token = getCookie(TOKEN_KEY);
-
-      const updatedUser = { ...editUser };
-      if (isChangingPassword) {
-        if (!currentPassword || !newPassword) {
-          alert("Vui lòng nhập đầy đủ mật khẩu cũ và mật khẩu mới!");
-          return;
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_URL_BACKEND}/user/update-user/${user._id}`,
+        { avatar: newAvatar },
+        {
+          headers: { token: getCookie(TOKEN_KEY) },
         }
-        updatedUser.currentPassword = currentPassword;
-        updatedUser.newPassword = newPassword;
-      }
-
-      await axios.put(`${process.env.REACT_APP_URL_BACKEND}/user/update-user/${editUser.id}`, updatedUser, {
-        headers: { token: `Bearer ${token}` },
-      });
-
-      auth(); // Cập nhật lại dữ liệu user sau khi update
-      setIsEditing(false);
-      setIsChangingPassword(false);
-      alert("Cập nhật thành công!");
+      );
+      setUser(data.data);
     } catch (error) {
-      console.error("Lỗi khi cập nhật:", error);
-      alert("Cập nhật thất bại!");
+      console.error("Lỗi cập nhật avatar:", error);
+    }
+  };
+
+  // Xử lý lưu thông tin user
+  const handleSave = async () => {
+    if (!user || !user._id) {
+      console.log("Không tìm thấy thông tin người dùng");
+      return;
+    }
+
+    try {
+      const updatedData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+      };
+
+      const response = await axios.put(
+        `${process.env.REACT_APP_URL_BACKEND}/user/update-user/${user._id}`,
+        updatedData,
+        {
+          headers: {
+            'token': getCookie(TOKEN_KEY)
+          }
+        }
+      );
+
+      console.log("Cập nhật thành công:", response.data);
+      setUser(response.data.data);
+      setIsEditing(false);
+      alert("Cập nhật thông tin thành công!");
+    } catch (error) {
+      console.error("Lỗi cập nhật thông tin:", error);
+      alert("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại!");
+    }
+  };
+
+  // Cập nhật mật khẩu
+  const handleUpdatePassword = async () => {
+    if (!currentPassword || !newPassword) {
+      setError("Vui lòng nhập đầy đủ mật khẩu cũ và mật khẩu mới.");
+      return;
+    }
+
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_URL_BACKEND}/user/update-user/${user._id}`,
+        { currentPassword, newPassword },
+        {
+          headers: { token: getCookie(TOKEN_KEY) },
+        }
+      );
+
+      alert("Cập nhật mật khẩu thành công!");
+      setIsChangingPassword(false);
+      setCurrentPassword("");
+      setNewPassword("");
+    } catch (error) {
+      console.error("Lỗi cập nhật mật khẩu:", error);
+      const message = error?.response?.data?.message || "Có lỗi xảy ra!";
+      alert(message);
     }
   };
 
@@ -73,7 +146,7 @@ const AccountInfo = () => {
           alt="Avatar"
           className="avatar mb-3 rounded-circle border"
           height="150"
-          src={editUser.avatar || "/images/logo.png"}
+          src={avatar}
           width="150"
         />
         <div>
@@ -97,18 +170,18 @@ const AccountInfo = () => {
         <form>
           <div className="mb-3">
             <label className="form-label">Họ và Tên</label>
-            <input className="form-control" name="name" type="text" value={editUser.name || ""} onChange={handleChange} />
+            <input className="form-control" name="name" type="text" value={formData.name} onChange={handleChange} />
           </div>
           <div className="mb-3">
             <label className="form-label">Email</label>
-            <input className="form-control" name="email" type="email" value={editUser.email || ""} onChange={handleChange} />
+            <input className="form-control" name="email" type="email" value={formData.email} onChange={handleChange} />
           </div>
           <div className="mb-3">
             <label className="form-label">Số Điện Thoại</label>
-            <input className="form-control" name="phone" type="tel" value={editUser.phone || ""} onChange={handleChange} />
+            <input className="form-control" name="phone" type="tel" value={formData.phone} onChange={handleChange} />
           </div>
 
-          {/* Nút đổi mật khẩu */}
+          {/* Đổi mật khẩu */}
           {!isChangingPassword ? (
             <button
               type="button"
@@ -139,6 +212,7 @@ const AccountInfo = () => {
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
               </div>
+              {error && <div className="text-danger">{error}</div>}
               <button
                 type="button"
                 className="btn btn-outline-secondary w-100 mb-3"
@@ -146,10 +220,13 @@ const AccountInfo = () => {
               >
                 Hủy đổi mật khẩu
               </button>
+              <button className="btn btn-success w-100 m-1" type="button" onClick={handleUpdatePassword}>
+                Cập Nhật Mật Khẩu
+              </button>
             </>
           )}
 
-          <button className="btn btn-success w-100" type="button" onClick={handleSave}>
+          <button className="btn btn-success w-100 m-1" type="button" onClick={handleSave}>
             Lưu Thay Đổi
           </button>
         </form>

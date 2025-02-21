@@ -45,7 +45,7 @@ const ProductList = ({  title }) => {
                             : product.price;
                         
                         return (
-                            <div className="col-md-4" key={product.id}>
+                            <div className="col-md-4" key={product._id || product.id}>
                                 <div className="card h-100 text-center">
                                     <img 
                                         src={product.image || "https://via.placeholder.com/300"} 

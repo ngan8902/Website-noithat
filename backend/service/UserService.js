@@ -90,6 +90,22 @@ const updateUser = (id, data) => {
                     message: 'The user is not defined'
                 })
             }
+            
+            if (data.currentPassword && data.newPassword) {
+                const isMatch = await bcrypt.compare(data.currentPassword, checkUser.password);
+                if (!isMatch) {
+                    return resolve({
+                        status: 'ERR',
+                        message: 'Mật khẩu cũ không đúng'
+                    });
+                }
+
+                const salt = await bcrypt.genSalt(10);
+                data.password = await bcrypt.hash(data.newPassword, salt);
+
+                delete data.currentPassword;
+                delete data.newPassword;
+            }
 
             const updatedUser = await User.findByIdAndUpdate(id, data, {new: true})           
             resolve({

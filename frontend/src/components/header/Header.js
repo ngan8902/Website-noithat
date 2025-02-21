@@ -11,6 +11,7 @@ const Header = () => {
   const [showRegister, setShowRegister] = useState(false);
   const { user } = useAuthStore((state) => state);
   const { type, getType} = useProductStore((state) => state);
+  const [cartCount, setCartCount] = useState(0);
 
   const logout = () => {
     setCookie(TOKEN_KEY, '');
@@ -20,6 +21,24 @@ const Header = () => {
   useEffect(() => {
     getType()
   }, [getType])
+
+  useEffect(() => {
+    getType();
+
+    const updateCartCount = () => {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      setCartCount(totalItems);
+    }; 
+
+    updateCartCount();
+
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+    };
+  },[getType]);
 
   return (
     <header className="bg-dark text-white">
@@ -39,7 +58,9 @@ const Header = () => {
                 {
                   type.map((i) => {
                     return (
-                      <li><a href="/sofa" className="dropdown-item">{ i }</a></li>
+                      <li key={i.id || i.slug || i}>
+                        <a href={`/products/${i.slug || i}`} className="dropdown-item fw-normal">{ i.name || i }</a>
+                      </li>
                     )
                   })
                 }
@@ -57,15 +78,23 @@ const Header = () => {
               <button className="btn text-white"><i className="bi bi-search"></i></button>
             </span>
           </div>
-          <a href="/cart" className="nav-link text-white me-3"><i className="bi bi-cart-fill"></i></a>
+          <a href="/cart" className="nav-link text-white me-3 position-relative">
+            <i className="bi bi-cart-fill"></i>
+            {cartCount > 0 && (
+              <span className="position-absolute top-0 start-100 translate-middle badge bg-danger rounded-pill">
+                {cartCount}
+              </span>
+            )}
+          </a>
+
           {!!user ? (
             <div className="dropdown">
-              <button className="nav-link text-white dropdown-toggle fw-bold transition-hover" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <button className="nav-link text-white dropdown-toggle fw-bold" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Chào, {user.name}
               </button>
-              <ul className="dropdown-menu dropdown-menu-end">
-                <li><a href="/account" className="dropdown-item">Thông tin tài khoản</a></li>
-                <li><button className="dropdown-item text-danger" onClick={logout}>Đăng xuất</button></li>
+              <ul className="dropdown-menu">
+                <li><a href="/account" className="dropdown-item fw-medium">Thông tin tài khoản</a></li>
+                <li><button className="dropdown-item text-danger fw-bolder" onClick={logout}>Đăng xuất</button></li>
               </ul>
             </div>
           ) : (

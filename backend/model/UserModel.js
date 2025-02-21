@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema(
         isAdmin: { type: Boolean, default: false, required: true},
         phone: { type: Number, required:true},
         role_id: {type: Number},
+        avatar: {type: String},
+        address:{type: String},
         access_token: { type: String},
         refresh_token: { type: String}
     },
