@@ -10,7 +10,11 @@ const productSchema = new mongoose.Schema(
         rating: {type: Number, required: true},
         description: {type: String},
         isBestSeller:{ type: Boolean, default: false, required: true},
-        discount:{type: Number, default: 0, required: true}
+        discount:{type: Number, default: 0, required: true},
+        origin: {type: String},
+        material: {type: String},
+        size: {type: String},
+        warranty: {type: String}
     },
     {
         timestamps: true

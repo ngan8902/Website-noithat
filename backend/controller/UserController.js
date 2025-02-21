@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
         const response = await UserService.createUser(req.body)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -53,7 +53,7 @@ const loginUser = async (req, res) => {
         const response = await UserService.loginUser(req.body)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -73,7 +73,7 @@ const updateUser = async (req, res) => {
         const response = await UserService.updateUser(userId, data)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -91,7 +91,7 @@ const deleteUser = async (req, res) => {
         const response = await UserService.deleteUser(userId)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -102,7 +102,7 @@ const getAllUser = async (req, res) => {
         const response = await UserService.getAllUser()
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -120,7 +120,7 @@ const getDetailsUser = async (req, res) => {
         const response = await UserService.getDetailsUser(userId)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -138,7 +138,7 @@ const refreshToken = async (req, res) => {
         const response = await JwtService.refreshTokenJwtService(token)
         return res.status(200).json(response) 
     }catch(e){
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -154,7 +154,7 @@ const getMe = async (req, res) => {
             data: user.data
         })
     } catch(e) {
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
