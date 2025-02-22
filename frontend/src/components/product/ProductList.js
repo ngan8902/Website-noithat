@@ -7,7 +7,7 @@ const ProductList = ({  title }) => {
     const { products, getProducts } = useProductStore();
 
     useEffect(() => {
-        getProducts(); // Gọi API khi component mount
+        getProducts(); 
     }, [getProducts]);
 
     const visibleProducts = products.slice(startIndex, startIndex + 3);

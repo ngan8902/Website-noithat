@@ -10,10 +10,10 @@ const Sidebar = () => {
       </button>
       {!collapsed && (
         <div className="text-white p-3" >
-          <a href="#info" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Thông Tin Nhân Viên</a>
-          <a href="#products" className="d-block  text-white py-2 text-decoration-none fw-bold transition-hover">Danh Sách Sản Phẩm</a>
-          <a href="#orders" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Danh Sách Đơn Hàng</a>
-          <a href="#users" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Lịch Sử Chấm Công</a>
+          <a href="/staff-info" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Thông Tin Nhân Viên</a>
+          <a href="/dashboard#products" className="d-block  text-white py-2 text-decoration-none fw-bold transition-hover">Danh Sách Sản Phẩm</a>
+          <a href="/dashboard#orders" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Danh Sách Đơn Hàng</a>
+          <a href="/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Lịch Sử Chấm Công</a>
         </div>
       )}
     </div>

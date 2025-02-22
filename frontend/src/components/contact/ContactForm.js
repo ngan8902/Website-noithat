@@ -1,11 +1,15 @@
 import React, { useState } from "react";
+import useMailStore from "../../store/emailStore"
 
 const ContactForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+  const {
+    formData,
+    isLoading,
+    successMessage,
+    errorMessage,
+    setFormData,
+    sendMail
+  } = useMailStore();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -13,8 +17,7 @@ const ContactForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Tin nhắn của bạn đã được gửi!");
-    setFormData({ name: "", email: "", message: "" }); // Reset form
+    sendMail();
   };
 
   return (
@@ -57,7 +60,11 @@ const ContactForm = () => {
             required
           ></textarea>
         </div>
-        <button type="submit" className="btn btn-dark w-100">Gửi Tin Nhắn</button>
+        <button type="submit" className="btn btn-dark w-100" disabled={isLoading}>
+          {isLoading ? "Đang gửi..." : "Gửi Tin Nhắn"}
+        </button>
+        {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}
+        {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
       </form>
     </div>
   );

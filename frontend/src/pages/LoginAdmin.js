@@ -6,7 +6,7 @@ import { STAFF_TOKEN_KEY } from '../constants/authen.constant';
 function LoginAdmin() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [ setErrorMessage] = useState("");
+    const [errorMessage,setErrorMessage] = useState("");
 
     const getLogin = (email, password) => {
         return axios.post(`${process.env.REACT_APP_URL_BACKEND}/staff/sign-in`, {

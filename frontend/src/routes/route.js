@@ -11,6 +11,8 @@ import NotFound from "../pages/NotFound";
 import Account from "../pages/Account";
 import SalesManagement from "../pages/SalesManagement";
 import LoginAdmin from "../pages/LoginAdmin";
+import StaffInfo from "../pages/StaffInfo";
+import StaffAttendanceHistory from "../pages/StaffAttendanceHistory";
 
 const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
@@ -29,7 +31,8 @@ const publicRoute = [
 const privateRoute = [
   { path: "/admin/login", element: <LoginAdmin />, isShow: false, layout: React.Fragment },
   { path: "/dashboard", element: <SalesManagement />, isShow: false },
-  // { path: "/admin/dashboard", element: <></>, isShow: false },
+  { path: "/staff-info", element: <StaffInfo />, isShow: false },
+  { path: "/staff-attendance-history", element: <StaffAttendanceHistory />, isShow: false },
 ]
 
 export const route = [
