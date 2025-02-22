@@ -76,23 +76,18 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
               </div>
               <div className="mb-3">
                 <label htmlFor="loginPassword" className="form-label text-dark">Mật Khẩu</label>
-                <div className="input-group">
+                <div className="password-container">
                   <input
                     type={showPassword ? "text" : "password"}
-                    className="form-control"
-                    id="loginPassword"
-                    required
-                    onChange={(e) => {
-                      setPass(e.target.value);
-                    }}
+                    value={pass}
+                    onChange={(e) => setPass(e.target.value)}
                   />
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
+                  <span
+                    className="toggle-password"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
-                  </button>
+                  </span>
                 </div>
               </div>
 

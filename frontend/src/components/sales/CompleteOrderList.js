@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const OrderList = ({ orders, onConfirm, onCancel }) => {
+const CompleteOrderList = ({ orders, onComplete }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Hàm lọc đơn hàng theo từ khóa
@@ -11,8 +11,8 @@ const OrderList = ({ orders, onConfirm, onCancel }) => {
   );
 
   return (
-    <div id="pending-orders" className="mt-4">
-      <h5 className="fw-bold">Danh Sách Đơn Hàng</h5>
+    <div id="completed-orders" className="mt-4">
+      <h5 className="fw-bold">Danh Sách Đơn Hàng Chờ Hoàn Thành</h5>
 
       <div className="input-group mt-2">
         <span className="input-group-text">
@@ -51,18 +51,18 @@ const OrderList = ({ orders, onConfirm, onCancel }) => {
                 <td>{order.total} VND</td>
                 <td>{order.payment}</td>
                 <td>
-                  <span className={"badge bg-warning"}>
+                  <span className={`badge ${order.status === "Đã hoàn thành" ? "bg-success" : order.status === "Đã trả hàng" ? "bg-danger" : "bg-warning"}`}>
                     {order.status}
                   </span>
                 </td>
                 <td>
-                  {order.status === "Đang xử lý" && (
+                  {order.status === "Đã giao hàng" && (
                     <>
-                      <button className="btn btn-success btn-sm me-2" onClick={() => onConfirm(order.id)}>
-                        Xác nhận
+                      <button className="btn btn-success btn-sm me-2" onClick={() => onComplete(order.id, false)}>
+                        Hoàn thành
                       </button>
-                      <button className="btn btn-danger btn-sm" onClick={() => onCancel(order.id)}>
-                        Hủy
+                      <button className="btn btn-danger btn-sm" onClick={() => onComplete(order.id, true)}>
+                        Trả hàng
                       </button>
                     </>
                   )}
@@ -80,4 +80,4 @@ const OrderList = ({ orders, onConfirm, onCancel }) => {
   );
 };
 
-export default OrderList;
+export default CompleteOrderList;

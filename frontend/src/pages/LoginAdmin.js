@@ -6,14 +6,15 @@ import { STAFF_TOKEN_KEY } from '../constants/authen.constant';
 function LoginAdmin() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [ setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const getLogin = (email, password) => {
         return axios.post(`${process.env.REACT_APP_URL_BACKEND}/staff/sign-in`, {
             username: username,
             password: password
-        })
-    }
+        });
+    };
 
     const handelLogin = () => {
         if (!username.trim() || !password.trim()) {
@@ -28,68 +29,55 @@ function LoginAdmin() {
                 let data = response.data;
                 if (data && !data.error) {
                     if (data.access_token) {
-                        setCookie(STAFF_TOKEN_KEY, data.access_token, 2)
+                        setCookie(STAFF_TOKEN_KEY, data.access_token, 2);
                         window.location.replace("/dashboard");
                     }
                 }
             })
             .catch((error) => {
                 console.error("Lỗi đăng nhập: ", error);
-                if (error.response && error.response.data === 401) {
-                    setErrorMessage("Email hoặc mật khẩu không chính xác");
+                if (error.response && error.response.status === 401) {
+                    setErrorMessage("Tên đăng nhập hoặc mật khẩu không chính xác");
                 } else {
-                    setErrorMessage(`Lỗi: ${error.response.data.message}`);
+                    setErrorMessage("Lỗi hệ thống, vui lòng thử lại!");
                 }
-            })
-    }
-
+            });
+    };
 
     return (
-        <div className="App" id="loginpage">
-            <header style={{ backgroundColor: "white" }}>
-                <h1 className="text-login">Đăng Nhập</h1>
-                <form>
-                    <div>
-                        <input
-                            type="text"
-                            id="staffusername"
-                            value={username}
-                            onChange={(e) => {
-                                setUsername(e.target.value);
-                            }}
-                            placeholder={"Tên đăng nhập"}
-                        />
-                        <label htmlFor="staffusername">
-                            *
-                        </label>
-                    </div>
+        <div className="login-container">
+            <div className="login-card">
+                <h1>Trang Đăng Nhập Cho Nhân Viên</h1>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="Tên đăng nhập"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </div>
 
-                    <div className="form-outline mb-4">
-                        <input
-                            type="password"
-                            id="staffpassword"
-                            value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                            }}
-                            placeholder={"Mật khẩu"}
-                        />
-                        <label className="form-label" htmlFor="staffpassword">
-                            *
-                        </label>
-                    </div>
-
-                    <button
-                        onClick={() => handelLogin()}
-                        type="button"
+                <div className="password-container">
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Mật khẩu"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <span
+                        className="toggle-password"
+                        onClick={() => setShowPassword(!showPassword)}
                     >
-                        Đăng nhập
-                    </button>
-                </form>
-            </header>
+                        {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                    </span>
+                </div>
+
+                {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+                <button onClick={handelLogin}>Đăng nhập</button>
+            </div>
         </div>
     );
 }
-
 
 export default LoginAdmin;

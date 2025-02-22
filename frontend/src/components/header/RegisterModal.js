@@ -119,8 +119,7 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
               <div className="mb-3">
                 <label htmlFor="registerEmail" className="form-label text-dark">Email</label>
                 <input 
-                  type="email" 
-                  placeholder="abc@gmail.com" 
+                  type="email"  
                   className="form-control" 
                   id="registerEmail" 
                   value={user.email} 
@@ -134,7 +133,7 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
               </div>
               <div className="mb-3">
                 <label htmlFor="registerPassword" className="form-label text-dark">Mật Khẩu</label>
-                <div className="input-group">
+                <div className="password-container">
                   <input
                     type={showPassword ? "text" : "password"}
                     className="form-control"
@@ -149,18 +148,17 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                       }
                     )}
                     required/>
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
+                  <span
+                    className="toggle-password"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
-                  </button>
+                  </span>
                 </div>
               </div>
               <div className="mb-3">
                 <label htmlFor="registerPassword" className="form-label text-dark">Xác Nhận Mật Khẩu</label>
-                <div className="input-group">
+                <div className="password-container">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     className="form-control"
@@ -177,13 +175,12 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                       }
                     )}
                     />
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
+                  <span
+                    className="toggle-password"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
-                  </button>
+                  </span>
                 </div>
                 {passwordError && <p className="text-danger mt-1">{passwordError}</p>}
               </div>

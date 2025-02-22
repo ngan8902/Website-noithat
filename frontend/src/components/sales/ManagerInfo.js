@@ -1,14 +1,21 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ManagerInfo = ({ manager }) => {
   const [showForm, setShowForm] = useState(false);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     alert("Phản hồi đã được gửi!");
     setShowForm(false);
     setMessage("");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("");
+    navigate("/admin/login");
   };
 
   return (
@@ -61,6 +68,13 @@ const ManagerInfo = ({ manager }) => {
           </form>
         </div>
       )}
+
+      <button 
+        className="btn btn-danger mt-3 logout-btn"
+        onClick={handleLogout}
+      >
+       Đăng Xuất
+      </button>
     </div>
   );
 };

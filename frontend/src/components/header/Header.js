@@ -40,6 +40,19 @@ const Header = () => {
     };
   },[getType]);
 
+  const toSlug = (str) => {
+    return str
+      .toLowerCase()
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .normalize("NFD") // Tách dấu khỏi ký tự
+      .replace(/[\u0300-\u036f]/g, "") // Xóa dấu tiếng Việt
+      .replace(/\s+/g, "-") // Thay khoảng trắng bằng dấu '-'
+      .replace(/[^a-z0-9-]/g, "") // Xóa ký tự đặc biệt (nếu có)
+      .replace(/-+/g, "-") // Xóa dấu '-' thừa
+      .trim();
+  };
+
   return (
     <header className="bg-dark text-white">
       <div className="container d-flex justify-content-between align-items-center">
@@ -57,9 +70,13 @@ const Header = () => {
               <ul className="dropdown-menu">
                 {
                   type.map((i) => {
+                    const slug = toSlug(i.name || i);
+
                     return (
-                      <li key={i.id || i.slug || i}>
-                        <a href={`/products/${i.slug || i}`} className="dropdown-item fw-normal">{ i.name || i }</a>
+                      <li key={i.id || slug}>
+                        <a href={`/${slug}`} className="dropdown-item fw-normal">
+                          {i.name || i}
+                        </a>
                       </li>
                     )
                   })

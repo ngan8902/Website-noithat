@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const OrderList = ({ orders, onConfirm, onCancel }) => {
+const ConfirmOrderList = ({ orders, onShip, onCancel }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Hàm lọc đơn hàng theo từ khóa
@@ -11,8 +11,8 @@ const OrderList = ({ orders, onConfirm, onCancel }) => {
   );
 
   return (
-    <div id="pending-orders" className="mt-4">
-      <h5 className="fw-bold">Danh Sách Đơn Hàng</h5>
+    <div id="confirmed-orders" className="mt-4">
+      <h5 className="fw-bold">Danh Sách Đơn Hàng Đã Xác Nhận</h5>
 
       <div className="input-group mt-2">
         <span className="input-group-text">
@@ -51,15 +51,13 @@ const OrderList = ({ orders, onConfirm, onCancel }) => {
                 <td>{order.total} VND</td>
                 <td>{order.payment}</td>
                 <td>
-                  <span className={"badge bg-warning"}>
-                    {order.status}
-                  </span>
+                  <span className="badge bg-warning">{order.status}</span>
                 </td>
                 <td>
-                  {order.status === "Đang xử lý" && (
+                    {order.status === "Đã xác nhận" && (
                     <>
-                      <button className="btn btn-success btn-sm me-2" onClick={() => onConfirm(order.id)}>
-                        Xác nhận
+                      <button className="btn btn-success btn-sm me-2" onClick={() => onShip(order.id)}>
+                        Giao hàng
                       </button>
                       <button className="btn btn-danger btn-sm" onClick={() => onCancel(order.id)}>
                         Hủy
@@ -80,4 +78,4 @@ const OrderList = ({ orders, onConfirm, onCancel }) => {
   );
 };
 
-export default OrderList;
+export default ConfirmOrderList;
