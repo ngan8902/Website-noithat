@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "../components/sales/Sidebar";
-import ManagerInfo from "../components/sales/ManagerInfo";
 import ProductList from "../components/sales/ProductList";
 import OrderList from "../components/sales/OrderList";
-import AttendanceHistory from "../components/sales/AttendanceHistory";
 
 const SalesManagement = () => {
   const [products, setProducts] = useState([

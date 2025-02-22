@@ -8,6 +8,7 @@ const AccountInfo = () => {
   const { user, auth, setUser } = useAuthStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [, setErrorMessage] = useState("");
   const [avatar, setAvatar] = useState("");
 
   const [formData, setFormData] = useState({
@@ -20,7 +21,6 @@ const AccountInfo = () => {
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Lấy thông tin user khi component render lần đầu
   useEffect(() => {
     auth();
   }, [auth]);
@@ -33,7 +33,7 @@ const AccountInfo = () => {
         phone: user.phone || '',
       });
       setAvatar(user.avatar || '');
-    } 
+    }
   }, [user]);
 
   const handleChange = (e) => {
@@ -103,10 +103,10 @@ const AccountInfo = () => {
       console.log("Cập nhật thành công:", response.data);
       setUser(response.data.data);
       setIsEditing(false);
-      alert("Cập nhật thông tin thành công!");
+      setErrorMessage("Cập nhật thông tin thành công!");
     } catch (error) {
       console.error("Lỗi cập nhật thông tin:", error);
-      alert("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại!");
+      setErrorMessage("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại!");
     }
   };
 
@@ -126,14 +126,13 @@ const AccountInfo = () => {
         }
       );
 
-      alert("Cập nhật mật khẩu thành công!");
       setIsChangingPassword(false);
       setCurrentPassword("");
       setNewPassword("");
     } catch (error) {
       console.error("Lỗi cập nhật mật khẩu:", error);
       const message = error?.response?.data?.message || "Có lỗi xảy ra!";
-      alert(message);
+      setErrorMessage(message);
     }
   };
 
@@ -146,7 +145,7 @@ const AccountInfo = () => {
           alt="Avatar"
           className="avatar mb-3 rounded-circle border"
           height="150"
-          src={avatar}
+          src={avatar || "/images/logo.png"}
           width="150"
         />
         <div>

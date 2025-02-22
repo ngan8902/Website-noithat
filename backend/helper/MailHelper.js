@@ -34,7 +34,7 @@ const sendMail = async (req, res) => {
 
         //Gửi email
         const info = await transporter.sendMail(mailOptions);
-        console.log("Email đã gửi:", info.response);
+        // console.log("Email đã gửi:", info.response);
         return res.status(200).json(info.response)
 
     } catch (error) {
