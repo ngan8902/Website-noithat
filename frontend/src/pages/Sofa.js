@@ -2,15 +2,15 @@ import React, { useEffect } from "react";
 import HeroSection from "../components/HeroSection";
 import SidebarFilter from "../components/product/SidebarFilter";
 import ProductList from "../components/product/ProductList";
-import useProductStore from "../store/productStore"; // Import Zustand Store
+import useProductStore from "../store/productStore";
 
 const defaultImage = "https://via.placeholder.com/300";
 
 const SofaPage = () => {
-    const { products, getProducts } = useProductStore(); // Lấy dữ liệu từ Zustand
+    const { products, getProducts } = useProductStore();
 
     useEffect(() => {
-        getProducts(); // Gọi API khi component mount
+        getProducts(); 
     }, [getProducts]);
 
     const discountedProducts = products.filter(product => product.discount > 0);

@@ -4,6 +4,11 @@ const AddProductModal = ({ setProducts, closeModal }) => {
   const [form, setForm] = useState({ name: "", price: "", quantity: "" });
 
   const handleAdd = () => {
+    if (!form.name || !form.price || !form.quantity) {
+      alert("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
+
     setProducts((prev) => [
       ...prev,
       { ...form, id: prev.length ? Math.max(...prev.map(p => p.id)) + 1 : 1 },

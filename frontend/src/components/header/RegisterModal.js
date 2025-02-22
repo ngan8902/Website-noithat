@@ -4,7 +4,7 @@ import axios from "axios";
 const RegisterModal = ({ show, setShow, setShowLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState(""); // Thêm state lỗi
+  const [passwordError, setPasswordError] = useState(""); 
   const [user, setUser] = useState({
     password: "",
     confirmPassword: "",
