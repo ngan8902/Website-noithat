@@ -5,9 +5,9 @@ const { SIGN_UP_STATUS } = require('../common/constant/status.constant')
 
 const createStaff = async (req, res) => {
     try{
-        const { username, password, phone,  address } = req.body
+        const { username, password, phone,  address, name, dob, avatar, email } = req.body
         const isCheckUsername = username
-        if (!username || !password || !phone || !address){
+        if (!username || !password || !phone || !address || !name || !dob || !avatar || !email){
             return res.status(200).json({
                 status: SIGN_UP_STATUS.ERROR,
                 message: SIGN_UP.VALID_FIELDS_ERR

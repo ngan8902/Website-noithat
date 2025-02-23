@@ -31,10 +31,10 @@ const publicRoute = [
 
 const privateRoute = [
   { path: "/admin/login", element: <LoginAdmin />, isShow: false, layout: React.Fragment },
-  { path: "/dashboard", element: <SalesManagement />, isShow: false },
-  { path: "/staff-info", element: <StaffInfo />, isShow: false },
-  { path: "/staff-attendance-history", element: <StaffAttendanceHistory />, isShow: false },
-  { path: "/employee", element: <Employee />, isShow: false },
+  { path: "/admin/dashboard", element: <SalesManagement />, isShow: false },
+  { path: "/admin/staff-info", element: <StaffInfo />, isShow: false },
+  { path: "/admin/staff-attendance-history", element: <StaffAttendanceHistory />, isShow: false },
+  { path: "/admin/employee", element: <Employee />, isShow: false },
 ]
 
 export const route = [

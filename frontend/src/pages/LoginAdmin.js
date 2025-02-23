@@ -30,7 +30,7 @@ function LoginAdmin() {
                 if (data && !data.error) {
                     if (data.access_token) {
                         setCookie(STAFF_TOKEN_KEY, data.access_token, 2);
-                        window.location.replace("/dashboard");
+                        window.location.replace("/admin/dashboard");
                     }
                 }
             })

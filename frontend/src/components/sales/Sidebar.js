@@ -1,8 +1,15 @@
 import React, { useState } from "react";
+import { TOKEN_KEY } from "../../constants/authen.constant";
+import { setCookie } from "../../utils/cookie.util";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isOrderDropdownOpen, setIsOrderDropdownOpen] = useState(false);
+
+  const handleLogout = () => {
+    setCookie(TOKEN_KEY, '');
+    window.location.replace("/admin/login");
+  };
 
   return (
     <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
@@ -11,8 +18,8 @@ const Sidebar = () => {
       </button>
       {!collapsed && (
         <div className="text-white p-3" >
-          <a href="/staff-info" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Thông Tin Nhân Viên</a>
-          <a href="/dashboard#products" className="d-block  text-white py-2 text-decoration-none fw-bold transition-hover">Danh Sách Sản Phẩm</a>
+          <a href="/admin/staff-info" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Thông Tin Nhân Viên</a>
+          <a href="/admin/dashboard#products" className="d-block  text-white py-2 text-decoration-none fw-bold transition-hover">Danh Sách Sản Phẩm</a>
           <div className="dropdown">
             <a
               href="#null"
@@ -26,16 +33,23 @@ const Sidebar = () => {
             </a>
             {isOrderDropdownOpen && (
               <div className="dropdown-menu show bg-dark text-white border-0">
-                <a href="/dashboard#pending-orders" className="d-block text-white py-2 ps-4 text-decoration-none me-2"> Đơn hàng chờ xác nhận</a>
-                <a href="/dashboard#confirmed-orders" className="d-block text-white py-2 ps-4 text-decoration-none me-2"> Đơn hàng đã xác nhận</a>
-                <a href="/dashboard#completed-orders" className="d-block text-white p-2 ps-4 text-decoration-none me-2"> Đơn hàng đã giao</a>
+                <a href="/admin/dashboard#pending-orders" className="d-block text-white py-2 ps-4 text-decoration-none me-2"> Đơn hàng chờ xác nhận</a>
+                <a href="/admin/dashboard#confirmed-orders" className="d-block text-white py-2 ps-4 text-decoration-none me-2"> Đơn hàng đã xác nhận</a>
+                <a href="/admin/dashboard#completed-orders" className="d-block text-white p-2 ps-4 text-decoration-none me-2"> Đơn hàng đã giao</a>
               </div>
             )}
           </div>
-          <a href="/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Lịch Sử Chấm Công</a>
-          <a href="/employee" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Nhân Sự</a>
+          <a href="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Lịch Sử Chấm Công</a>
+          <a href="/admin/employee" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Nhân Sự</a>
         </div>
       )}
+       <button
+        className="btn btn-danger mt-3 logout-btn"
+        style={{ bottom: "50px", top: "auto", right: "90px"}}
+        onClick={handleLogout}
+      >
+        Đăng Xuất
+      </button>
     </div>
   );
 };
