@@ -14,8 +14,9 @@ import LoginAdmin from "../pages/LoginAdmin";
 import StaffInfo from "../pages/StaffInfo";
 import StaffAttendanceHistory from "../pages/StaffAttendanceHistory";
 import Employee from "../pages/Employee";
+import Resource from "../pages/Resource";
 
-const publicRoute = [
+export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
   { path: "/home", element: <Home />, isShow: true },
   { path: "/about", element: <AboutDetail />, isShow: true },
@@ -29,12 +30,13 @@ const publicRoute = [
   { path: "/account", element: <Account />, isShow: true },
 ]
 
-const privateRoute = [
+export const privateRoute = [
   { path: "/admin/login", element: <LoginAdmin />, isShow: false, layout: React.Fragment },
   { path: "/admin/dashboard", element: <SalesManagement />, isShow: false },
   { path: "/admin/staff-info", element: <StaffInfo />, isShow: false },
   { path: "/admin/staff-attendance-history", element: <StaffAttendanceHistory />, isShow: false },
   { path: "/admin/employee", element: <Employee />, isShow: false },
+  { path: "/admin/resource", element: <Resource />, isShow: false },
 ]
 
 export const route = [

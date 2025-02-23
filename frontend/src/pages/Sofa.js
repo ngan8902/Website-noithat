@@ -13,8 +13,9 @@ const SofaPage = () => {
         getProducts(); 
     }, [getProducts]);
 
-    const discountedProducts = products.filter(product => product.discount > 0);
-    const bestSellerProducts = products.filter(product => product.isBestSeller);
+    const sofaProducts = products.filter(product => product.type.toLowerCase() === "sofa");
+
+    const discountedSofaProducts = sofaProducts.filter(product => product.discount > 0);
 
     return (
         <div>
@@ -22,24 +23,27 @@ const SofaPage = () => {
 
             <section className="py-5">
                 <div className="container">
-                    <h2 className="text-center fw-bold mb-5">{products.name}</h2>
+                    <h2 className="text-center fw-bold mb-5">Danh Mục Sofa</h2>
                     <div className="row">
                         <SidebarFilter />
 
                         <div className="col-md-9">
                             <ProductList 
-                                products={discountedProducts.map(product => ({
+                                products={discountedSofaProducts.map(product => ({
                                     ...product, 
                                     image: product.image || defaultImage
                                 }))} 
                                 title="Sản Phẩm Giảm Giá" 
                             />
+
                             <ProductList 
-                                products={bestSellerProducts.map(product => ({
-                                    ...product, 
-                                    image: product.image || defaultImage
-                                }))} 
-                                title="Các Sản Phẩm Khác" 
+                                products={sofaProducts
+                                    .filter(product => product.discount === 0)
+                                    .map(product => ({
+                                        ...product, 
+                                        image: product.image || defaultImage
+                                    }))} 
+                                title="Các Sản Phẩm Sofa Khác" 
                             />
                         </div>
                     </div>

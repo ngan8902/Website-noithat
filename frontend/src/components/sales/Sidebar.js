@@ -41,6 +41,7 @@ const Sidebar = () => {
           </div>
           <a href="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Lịch Sử Chấm Công</a>
           <a href="/admin/employee" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Nhân Sự</a>
+          <a href="/admin/resource" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Chấm Công</a>
         </div>
       )}
        <button

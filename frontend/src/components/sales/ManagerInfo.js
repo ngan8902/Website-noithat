@@ -17,7 +17,6 @@ const ManagerInfo = ({user}) => {
 
   return (
     <div id="info" className="manager-info mt-4 p-3 border rounded bg-light position-relative">
-      <h5 className="fw-bold text-center">Thông Tin Nhân Viên</h5>
       <div className="d-flex flex-column align-items-center mt-3">
         <img
           src={user?.avatar || " "}

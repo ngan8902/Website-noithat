@@ -6,6 +6,8 @@ import { TOKEN_KEY } from '../constants/authen.constant';
 const useAuthStore = create((set) => ({
     user: null,
 
+    isAuthenticated: false,
+
     auth: () => {
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/user/getme`, {
             headers: {
@@ -16,7 +18,8 @@ const useAuthStore = create((set) => ({
             if (data && data.data) {
                 const user = data.data;
                 set({
-                    user: user
+                    user: user,
+                    isAuthenticated: true
                 })
             }
         }
@@ -24,7 +27,7 @@ const useAuthStore = create((set) => ({
     },
 
     // Cập nhật lại user sau khi update thành công
-    setUser: (userData) => set({ user: userData })
+    setUser: (userData) => set({ user: userData, isAuthenticated: !!userData })
 
     // setUpdateUser: (id, userData) => {
     //     if (!id || !userData) {

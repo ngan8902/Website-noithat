@@ -3,7 +3,6 @@ import React from "react";
 const AttendanceHistory = ({ records }) => {
   return (
     <div id="users" className="mt-4">
-      <h5 className="fw-bold">Lịch sử chấm công</h5>
 
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
