@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import useProductStore from "../../store/productStore";
 
 const AddProductModal = ({ setProducts, closeModal }) => {
   const [form, setForm] = useState({ name: "", price: "", quantity: "" });
+  const { addProducts } = useProductStore();
 
   const handleAdd = () => {
     if (!form.name || !form.price || !form.quantity) {
@@ -9,10 +11,13 @@ const AddProductModal = ({ setProducts, closeModal }) => {
       return;
     }
 
-    setProducts((prev) => [
-      ...prev,
-      { ...form, id: prev.length ? Math.max(...prev.map(p => p.id)) + 1 : 1 },
-    ]);
+    const newProduct = {
+      name: form.name,
+      price: parseFloat(form.price),
+      quantity: parseInt(form.quantity, 10),
+    };
+
+    addProducts(newProduct);
     closeModal();
   };
 
@@ -44,6 +49,7 @@ const AddProductModal = ({ setProducts, closeModal }) => {
               src={form.image} 
               alt="Product" 
               style={{ width: "100px", height: "100px", objectFit: "cover", marginBottom: "10px" }} 
+              className="m-3"
             />}
             <input type="text" className="form-control mb-3" placeholder="Tên sản phẩm" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <input type="number" className="form-control mb-3" placeholder="Giá" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />

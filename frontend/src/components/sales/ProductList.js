@@ -11,7 +11,7 @@ const ProductList = () => {
   
   useEffect(() => {
     getProducts();
-  }, []);
+  }, [getProducts]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -19,7 +19,7 @@ const ProductList = () => {
     }, 500); 
 
     return () => clearTimeout(delayDebounce);
-}, [search]); 
+}, [search, getProducts]); 
 
 
   const handleDelete = (_id) => {

@@ -3,8 +3,30 @@ import React, { useState } from "react";
 const EditResourceModal = ({ record, setAttendanceRecords, closeModal }) => {
   const [updatedRecord, setUpdatedRecord] = useState({ ...record });
 
+  const calculateTotalHours = (checkIn, checkOut) => {
+    if (!checkIn || !checkOut) return "0h";
+
+    const [inHours, inMinutes] = checkIn.split(":").map(Number);
+    const [outHours, outMinutes] = checkOut.split(":").map(Number);
+
+    let totalMinutes = (outHours * 60 + outMinutes) - (inHours * 60 + inMinutes);
+    if (totalMinutes < 0) totalMinutes = 0; // Tránh trường hợp giờ ra < giờ vào
+
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    return `${hours}h ${minutes > 0 ? `${minutes}m` : ""}`.trim();
+  };
+
   const handleChange = (e) => {
-    setUpdatedRecord({ ...updatedRecord, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const updatedData = { ...updatedRecord, [name]: value };
+
+    if (name === "checkIn" || name === "checkOut") {
+      updatedData.totalHours = calculateTotalHours(updatedData.checkIn, updatedData.checkOut);
+    }
+
+    setUpdatedRecord(updatedData);
   };
 
   const handleSave = () => {
@@ -42,6 +64,16 @@ const EditResourceModal = ({ record, setAttendanceRecords, closeModal }) => {
                 name="checkOut"
                 value={updatedRecord.checkOut}
                 onChange={handleChange}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Tổng giờ làm</label>
+              <input
+                type="text"
+                className="form-control"
+                value={updatedRecord.totalHours}
+                disabled
               />
             </div>
           </div>

@@ -81,6 +81,13 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
               value={form.dob}
               onChange={(e) => setForm({ ...form, dob: e.target.value })}
             />
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Địa chỉ"
+              value={form.address}
+              onChange={(e) => setForm({ ...form, address: e.target.value })}
+            />
             <button className="btn btn-primary w-100" onClick={handleSave}>
               Lưu
             </button>

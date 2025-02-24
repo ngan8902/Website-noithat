@@ -26,8 +26,7 @@ const EmployeeList = ({ employees, setEmployees }) => {
   };
 
   const filteredEmployees = employees.filter((e) =>
-    e.id.toString().includes(search) ||
-    e.name.toLowerCase().includes(search.toLowerCase())
+    e.id.toString().includes(search) || e.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -60,38 +59,40 @@ const EmployeeList = ({ employees, setEmployees }) => {
             <th>Email</th>
             <th>Số Điện Thoại</th>
             <th>Ngày Sinh</th>
+            <th style={{ maxWidth: "200px" }}>Địa Chỉ</th>
             <th>Hành Động</th>
           </tr>
         </thead>
         <tbody>
-            {filteredEmployees.length > 0 ? (
-                filteredEmployees.map((employee) => (
-                <tr key={employee.id}>
-                    <td>{employee.id}</td>
-                    <td>
-                    <img 
-                        src={employee.avatar || "https://via.placeholder.com/100"} 
-                        alt={employee.name} 
-                        style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }}
-                    />
-                    </td>
-                    <td>{employee.name}</td>
-                    <td>{employee.position}</td>
-                    <td>{employee.email}</td>
-                    <td>{employee.phone}</td>
-                    <td>{employee.dob}</td>
-                    <td>
-                    <button className="btn btn-warning btn-sm" onClick={() => openEditModal(employee)}>Sửa</button>
-                    <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(employee.id)}>Xóa</button>
-                    </td>
-                </tr>
-                ))
-            ) : (
-                <tr>
-                <td colSpan="8" className="text-center text-muted">Không tìm thấy nhân viên nào!</td>
-                </tr>
-            )}
-            </tbody>
+          {filteredEmployees.length > 0 ? (
+            filteredEmployees.map((employee) => (
+              <tr key={employee.id}>
+                <td>{employee.id}</td>
+                <td>
+                  <img 
+                    src={employee.avatar || "https://via.placeholder.com/100"} 
+                    alt={employee.name} 
+                    style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }}
+                  />
+                </td>
+                <td>{employee.name}</td>
+                <td>{employee.position}</td>
+                <td>{employee.email}</td>
+                <td>{employee.phone}</td>
+                <td>{employee.dob}</td>
+                <td style={{ maxWidth: "200px" }} className="text-truncate">{employee.address}</td>
+                <td>
+                  <button className="btn btn-warning btn-sm" onClick={() => openEditModal(employee)}>Sửa</button>
+                  <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(employee.id)}>Xóa</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="9" className="text-center text-muted">Không tìm thấy nhân viên nào!</td>
+            </tr>
+          )}
+        </tbody>
       </table>
 
       {modalType === "add" && <AddEmployeeModal setEmployees={setEmployees} closeModal={closeModal} />}

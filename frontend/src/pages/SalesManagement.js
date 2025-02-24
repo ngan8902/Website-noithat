@@ -13,7 +13,7 @@ const SalesManagement = () => {
   ]);
 
   const [orders, setOrders] = useState([
-    { id: 1, customer: "A B C", phone: "0123456789", address: "Long An", product: "Sofa Sang Trọng", total: 10500000, payment: "Thanh toán khi nhận hàng", status: "Đang xử lý" },
+    { id: 1, customer: "A B C", phone: "0123456789", address: "289 Tan Tru, Long An", product: "Sofa Sang Trọng", total: 10500000, payment: "Thanh toán khi nhận hàng", status: "Đang xử lý" },
   ]);
 
   const [confirmOrders, setConfirmOrders] = useState([]);
