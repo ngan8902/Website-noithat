@@ -4,9 +4,9 @@ const JwtService = require('../service/JwtService')
 
 const createProduct = async (req, res) => {
     try{
-        const { name, image, type, price, countInStock, rating, description  } = req.body
+        const { name, image, type, price, countInStock, rating, description, productCode  } = req.body
         
-        if (!name || !image || !type || !price || !countInStock || !rating) {
+        if (!name || !image || !type || !price || !countInStock || !rating ) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The input is required'
@@ -15,6 +15,7 @@ const createProduct = async (req, res) => {
         const response = await ProductService.createProduct(req.body)
         return res.status(200).json(response) 
     }catch(e){
+        console.log(e)
         return res.status(500).json({
             message: e
         })
@@ -31,10 +32,10 @@ const updateProduct = async (req, res) => {
                 message: 'The productId is required'
             })
         }
-        console.log('productId', productId)
         const response = await ProductService.updateProduct(productId, data)
         return res.status(200).json(response) 
     }catch(e){
+        console.log(e)
         return res.status(500).json({
             message: e
         })
@@ -79,8 +80,8 @@ const deleteProduct = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
     try{
-        const {limit, page, sort, filter} = req.query 
-        const response = await ProductService.getAllProduct(Number(limit) || 8, Number(page) || 0, sort, filter)
+        const {limit, page, filter} = req.query 
+        const response = await ProductService.getAllProduct(Number(limit) || 8, Number(page) || 0, filter)
         return res.status(200).json(response) 
     }catch(e){
         return res.status(500).json({

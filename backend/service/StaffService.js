@@ -4,7 +4,7 @@ const { genneralAccessToken, genneralRefreshToken } = require("./JwtService")
 
 const createStaff = (newStaff) => {
     return new Promise(async (resolve, reject) => {
-        const { username, password, phone,  address, name, dob, avatar, email } = newStaff
+        const { username, password, phone,  address, name, dob, avatar, email, role_id } = newStaff
         try{
             const checkStaff = await Staff.findOne({
                 username: username
@@ -24,7 +24,8 @@ const createStaff = (newStaff) => {
                 name,
                 dob,
                 avatar,
-                email
+                email,
+                role_id
             })
             if(createdStaff) {
                 resolve({

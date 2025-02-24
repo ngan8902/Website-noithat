@@ -14,7 +14,8 @@ const productSchema = new mongoose.Schema(
         origin: {type: String},
         material: {type: String},
         size: {type: String},
-        warranty: {type: String}
+        warranty: {type: String},
+        productCode: { type: String, unique: true }
     },
     {
         timestamps: true

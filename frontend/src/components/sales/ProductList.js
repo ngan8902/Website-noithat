@@ -1,14 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddProductModal from "./AddProductModal";
 import EditProductModal from "./EditProductModal";
+import useProductStore from "../../store/productStore";
 
-const ProductList = ({ products, setProducts }) => {
+const ProductList = () => {
+  const {getProducts, products, removeProduct } = useProductStore((state) => state);
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalType, setModalType] = useState(null);
+  
+  useEffect(() => {
+    getProducts();
+  }, []);
 
-  const handleDelete = (id) => {
-    setProducts(products.filter((product) => product.id !== id));
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+        getProducts(8, 0, search);
+    }, 500); 
+
+    return () => clearTimeout(delayDebounce);
+}, [search]); 
+
+
+  const handleDelete = (_id) => {
+    removeProduct(_id);
+    window.location.reload()  
   };
 
   const openAddModal = () => {
@@ -20,15 +36,12 @@ const ProductList = ({ products, setProducts }) => {
     setModalType("edit");
   };
 
+
   const closeModal = () => {
     setModalType(null);
     setSelectedProduct(null);
   };
 
-  const filteredProducts = products.filter((p) =>
-    p.id.toString().includes(search) ||
-    p.name.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div id="products" className="mt-4">
@@ -62,10 +75,10 @@ const ProductList = ({ products, setProducts }) => {
           </tr>
         </thead>
         <tbody>
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <tr key={product.id}>
-                <td>{product.id}</td>
+          {products.length > 0 ? (
+            products.map((product) => (
+              <tr key={product._id} >
+                <td>{product.productCode || ""}</td>
                 <td>
                   <img src={product.image || "https://via.placeholder.com/100"} 
                   alt={product.name} 
@@ -73,10 +86,10 @@ const ProductList = ({ products, setProducts }) => {
                 </td>
                 <td>{product.name}</td>
                 <td>{product.price} VND</td>
-                <td>{product.quantity}</td>
+                <td>{product.countInStock}</td>
                 <td>
                   <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
-                  <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product.id)}>Xóa</button>
+                  <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
                 </td>
               </tr>
             ))
@@ -88,8 +101,9 @@ const ProductList = ({ products, setProducts }) => {
         </tbody>
       </table>
 
-      {modalType === "add" && <AddProductModal setProducts={setProducts} closeModal={closeModal} />}
-      {modalType === "edit" && selectedProduct && <EditProductModal product={selectedProduct} setProducts={setProducts} closeModal={closeModal} />}
+      {modalType === "add" && <AddProductModal closeModal={closeModal} refreshProducts={getProducts} />}
+      {modalType === "edit" && selectedProduct && <EditProductModal product={selectedProduct}  closeModal={closeModal} />}
+
     </div>
   );
 };

@@ -3,8 +3,8 @@ const bcrypt = require("bcrypt")
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
-        const { name, image, type, price, countInStock, rating, description,isBestSeller,discount  } = newProduct
-        try{
+        const { name, image, type, price, countInStock, rating, description, isBestSeller, discount, productCode } = newProduct
+        try {
             const checkProduct = await Product.findOne({
                 name: name
             })
@@ -14,25 +14,39 @@ const createProduct = (newProduct) => {
                     message: 'The name of product is already'
                 })
             }
+
+            const lastProduct = await Product.findOne().sort({ createdAt: -1 });
+
+            // Tạo productCode tự động
+            let newCode = 'SP1000';
+            if (lastProduct && lastProduct.productCode) {
+                // Tách phần số khỏi productCode bằng RegEx
+                const lastCodeNumber = parseInt(lastProduct.productCode.match(/\d+/)) || 1000;
+                newCode = `SP${lastCodeNumber + 1}`;
+            }
+
+
             const createdProduct = await Product.create({
-                name, 
-                image, 
-                type, 
-                price, 
-                countInStock, 
+                name,
+                image,
+                type,
+                price,
+                countInStock,
                 rating,
                 description,
                 isBestSeller,
-                discount
+                discount,
+                ...newProduct,
+                productCode: newCode
             })
-            if(createdProduct) {
+            if (createdProduct) {
                 resolve({
                     status: 'OK',
                     message: 'SUCCESS',
                     data: createdProduct
-                }) 
+                })
             }
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -40,7 +54,7 @@ const createProduct = (newProduct) => {
 
 const updateProduct = (id, data) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const checkProduct = await Product.findOne({
                 _id: id
             })
@@ -51,14 +65,14 @@ const updateProduct = (id, data) => {
                 })
             }
 
-            const updatedProduct = await Product.findByIdAndUpdate(id, data, {new: true})           
+            const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true })
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
                 data: updatedProduct
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -66,7 +80,7 @@ const updateProduct = (id, data) => {
 
 const deleteProduct = (id) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const checkProduct = await Product.findOne({
                 _id: id
             })
@@ -77,13 +91,13 @@ const deleteProduct = (id) => {
                 })
             }
 
-            await Product.findByIdAndDelete(id)           
+            await Product.findByIdAndDelete(id)
             resolve({
                 status: 'OK',
                 message: 'Delete product success',
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -91,43 +105,46 @@ const deleteProduct = (id) => {
 
 const getAllProduct = (limit, page, sort, filter) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const totalProduct = await Product.countDocuments() //tổng số sản phẩm
-            if (filter){
-                const label = filter[0];
-                const allProductFilter = await Product.find({[label]: {'$regex': filter[1] }}).limit(limit).skip(page * limit)
+            const whereCondition = filter
+            if (filter) {
+                whereCondition = {
+                    name: { $regex: filter, $options: 'i' } // Tìm kiếm không phân biệt hoa thường
+                };
                 resolve({
                     status: 'OK',
                     message: 'success',
                     data: allProductFilter,
                     total: totalProduct,
-                    pageCurrent: Number(page +1),
-                    totalPage: Math.ceil(totalProduct / limit)
-                }) 
+                    pageCurrent: Number(page + 1),
+                    totalPage: Math.ceil(totalProduct / limit),
+                    whereCondition: whereCondition
+                })
             }
-            if (sort){
-                const objectSort = {}
-                objectSort[sort[1]] = sort[0]
-                const allProductSort = await Product.find().limit(limit).skip(page * limit).sort(objectSort)
-                resolve({
-                    status: 'OK',
-                    message: 'success',
-                    data: allProductSort,
-                    total: totalProduct,
-                    pageCurrent: Number(page +1),
-                    totalPage: Math.ceil(totalProduct / limit)
-                }) 
-            }
+            // if (sort) {
+            //     const objectSort = {}
+            //     objectSort[sort[1]] = sort[0]
+            //     const allProductSort = await Product.find().limit(limit).skip(page * limit).sort(objectSort)
+            //     resolve({
+            //         status: 'OK',
+            //         message: 'success',
+            //         data: allProductSort,
+            //         total: totalProduct,
+            //         pageCurrent: Number(page + 1),
+            //         totalPage: Math.ceil(totalProduct / limit)
+            //     })
+            // }
             const allProduct = await Product.find().limit(limit).skip(page * limit) // Phân sản phẩm theo trang (8 sp 1 trang)
             resolve({
                 status: 'OK',
                 message: 'success',
                 data: allProduct,
                 total: totalProduct,
-                pageCurrent: Number(page +1),
+                pageCurrent: Number(page + 1),
                 totalPage: Math.ceil(totalProduct / limit)
-            }) 
-        }catch(e){
+            })
+        } catch (e) {
             reject(e)
         }
     })
@@ -135,7 +152,7 @@ const getAllProduct = (limit, page, sort, filter) => {
 
 const getDetailsProduct = (id) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const product = await Product.findOne({
                 _id: id
             })
@@ -150,9 +167,9 @@ const getDetailsProduct = (id) => {
                 status: 'OK',
                 message: 'success',
                 data: product
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -160,14 +177,14 @@ const getDetailsProduct = (id) => {
 
 const getAllType = () => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const allType = await Product.distinct('type')
             resolve({
                 status: 'OK',
                 message: 'success',
                 data: allType,
-            }) 
-        }catch(e){
+            })
+        } catch (e) {
             reject(e)
         }
     })

@@ -29,29 +29,6 @@ const useAuthStore = create((set) => ({
     // Cập nhật lại user sau khi update thành công
     setUser: (userData) => set({ user: userData, isAuthenticated: !!userData })
 
-    // setUpdateUser: (id, userData) => {
-    //     if (!id || !userData) {
-    //         console.log("id:", id);
-    //         return;
-    //     }
-    //     axios.put(`${process.env.REACT_APP_URL_BACKEND}/user/update-user/${id}`, userData ,{
-    //             headers: {
-    //                 'token': getCookie(TOKEN_KEY)
-    //             }
-    //         }).then(response => {
-    //         console.log("Kết quả cập nhật:", response.data);
-    //         const { data } = response;
-    //         if (data && data.data) {
-    //             const updateUser = data.data;
-    //             set({
-    //                 updateUser: updateUser,
-    //                 user: data.data,
-    //             })
-    //         }
-    //     }).catch(error => {
-    //         console.error("Lỗi cập nhật thông tin người dùng:", error);
-    //     });
-    // },
 
 }));
 

@@ -1,10 +1,21 @@
-import { create } from "zustand"; 
+import { create } from "zustand";
 import axios from 'axios';
+import { getCookie } from "../utils/cookie.util";
+import { STAFF_TOKEN_KEY } from "../constants/authen.constant";
 
 const useProductStore = create((set) => ({
     products: [],
-    getProducts: () => {
-        axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/all-product`).then(response => {
+    totalProducts: 0,
+    currentPage: 0,
+
+    getProducts: (limit = 8, page = 0, filter = "") => {
+        axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/all-product`, {
+            params: {
+                limit,
+                page,
+                filter
+            }
+        }).then(response => {
             console.log(response);
             const { data } = response;
             if (data && data.data) {
@@ -16,11 +27,11 @@ const useProductStore = create((set) => ({
         }
         );
     },
-    
+
     type: [],
     getType: () => {
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/get-all-type`).then(response => {
-            console.log('type:',response);
+            console.log('type:', response);
             const { data } = response;
             if (data && data.data) {
                 const type = data.data;
@@ -30,6 +41,51 @@ const useProductStore = create((set) => ({
             }
         }
         );
+    },
+
+    addProducts: (newProduct) => {
+        axios.post(`${process.env.REACT_APP_URL_BACKEND}/product/create-product`, 
+            newProduct
+        ).then(response => {
+            console.log(response);
+            set((state) => ({
+                products: [...state.products, response.data.data]
+            }));
+        }).catch(error => {
+            console.error('Add Product Error:', error);
+        })
+    },
+
+    removeProduct: (id) => {
+        axios.delete(`${process.env.REACT_APP_URL_BACKEND}/product/delete-product/${id}`).then(response => {
+            console.log(response);
+            set((state) => ({
+                products: state.products.filter((product) => product.id !== id)
+            }));
+
+        }
+        );
+    },
+
+    updateProduct: async (id, updatedData) => {
+        try {
+            const response = await axios.put(
+                `${process.env.REACT_APP_URL_BACKEND}/product/update-product/${id}`,
+                updatedData,{
+                    headers: {
+                        'staff-token':  getCookie(STAFF_TOKEN_KEY)
+                    }
+                }
+            );
+            console.log("Cập nhật thành công:", response.data);
+            set((state) => ({
+                products: state.products.map((product) =>
+                    product._id === id ? response.data.data : product
+                )
+            }));
+        } catch (error) {
+            console.error("Lỗi cập nhật sản phẩm:", error);
+        }
     },
 }));
 

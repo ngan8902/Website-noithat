@@ -16,7 +16,10 @@ app.use(express.static(__dirname + '/public/build'));
 console.log(__dirname + '/public/build')
 
 app.use(cors())
-app.use(bodyParser.json())
+
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+app.use(bodyParser.json({ limit: '50mb' }));
+
 
 routers(app);
 
