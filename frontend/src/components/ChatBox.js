@@ -2,18 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import useAuthStore from "../store/authStore";
 
 const Chatbox = () => {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      setMessages([{ text: "Xin chào! Tôi có thể giúp gì cho bạn?", sender: "bot" }]);
-    } else {
-      setMessages([{ text: "Bạn cần đăng nhập để gửi tin nhắn!", sender: "bot" }]);
-    }
-  }, [isAuthenticated]);
-
+  const [messages, setMessages] = useState([{ text: "Tôi có thể giúp gì cho bạn?", sender: "bot" }]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
@@ -27,11 +18,6 @@ const Chatbox = () => {
   };
 
   const sendMessage = () => {
-    if (!isAuthenticated) {
-      setMessages([...messages, { text: "Bạn cần đăng nhập để gửi tin nhắn!", sender: "bot" }]);
-      return;
-    }
-
     if (!input.trim()) return;
 
     setMessages([...messages, { sender: "user", text: input }]);
@@ -55,7 +41,9 @@ const Chatbox = () => {
       {isOpen && (
         <div className="chatbox-container">
           <div className="chatbox-header">
-            <h4>Hỗ trợ khách hàng</h4>
+            <h4>
+              {isAuthenticated ? `Chào ${user?.name}` : "Hỗ trợ khách hàng"}
+            </h4>
             <button onClick={toggleChatbox}><i className="bi bi-x-octagon-fill"></i></button>
           </div>
 
@@ -75,9 +63,8 @@ const Chatbox = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              disabled={!isAuthenticated}
             />
-            <button onClick={sendMessage} disabled={!isAuthenticated}>Gửi</button>
+            <button onClick={sendMessage}>Gửi</button>
           </div>
         </div>
       )}

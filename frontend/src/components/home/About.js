@@ -7,7 +7,7 @@ const About = () => {
         <div className="row align-items-center">
           <div className="col-md-6 mb-4 mb-md-0">
             <img
-              src="/images/logo.png"
+              src="/images/introduce.png"
               className="img-fluid rounded shadow"
               alt="Giới thiệu về chúng tôi"
             />
@@ -17,6 +17,7 @@ const About = () => {
             <p className="text-muted mb-4">
               Chúng tôi chuyên cung cấp các sản phẩm nội thất cao cấp, mang đến sự sang trọng và đẳng cấp cho không gian sống của bạn.
             </p>
+            <button className="btn btn-border btn-dark" onClick={() => window.location.href='/about'}>Tiềm Hiểu Thêm</button>
           </div>
         </div>
       </div>

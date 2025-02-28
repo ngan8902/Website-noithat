@@ -1,13 +1,13 @@
-const StaffService = require('../service/StaffService') 
+const StaffService = require('../service/StaffService')
 const JwtService = require('../service/JwtService') 
 const { SIGN_UP } = require('../common/messages/user.message')
 const { SIGN_UP_STATUS } = require('../common/constant/status.constant')
 
 const createStaff = async (req, res) => {
     try{
-        const { username, password, phone,  address, name, dob, avatar, email, role_id } = req.body
+        const { username, password, phone, address, name, dob, gender, avatar, position, email, role_id } = req.body
         const isCheckUsername = username
-        if (!username || !password || !phone || !address || !name || !dob || !avatar || !email){
+        if (!username || !password || !phone || !address || !name || !dob || !gender || !avatar || !position || !email){
             return res.status(200).json({
                 status: SIGN_UP_STATUS.ERROR,
                 message: SIGN_UP.VALID_FIELDS_ERR

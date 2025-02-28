@@ -71,6 +71,7 @@ const ProductList = () => {
             <th>Tên Sản Phẩm</th>
             <th>Giá</th>
             <th>Số Lượng</th>
+            <th>Mức Giảm Giá</th>
             <th>Hành Động</th>
           </tr>
         </thead>
@@ -87,6 +88,7 @@ const ProductList = () => {
                 <td>{product.name}</td>
                 <td>{product.price} VND</td>
                 <td>{product.countInStock}</td>
+                <td>{product.discount} %</td>
                 <td>
                   <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
                   <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>

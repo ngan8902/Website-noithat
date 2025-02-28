@@ -5,7 +5,7 @@ import ContactForm from "../components/contact/ContactForm";
 const Contact = () => {
   return (
     <div>
-      <HeroSection title="Liên Hệ" background="/images/banner.png" />
+      <HeroSection title="Liên Hệ" background="/images/banner3.png" />
 
       <section className="py-5">
         <div className="container">
@@ -13,7 +13,7 @@ const Contact = () => {
           <div className="row">
             <div className="col-md-6 mb-4">
               <img
-                src="/images/logo.png"
+                src="/images/contact.png"
                 alt="Thông tin liên hệ"
                 className="img-fluid rounded shadow mb-4"
               />

@@ -28,8 +28,6 @@ const useAuthStore = create((set) => ({
 
     // Cập nhật lại user sau khi update thành công
     setUser: (userData) => set({ user: userData, isAuthenticated: !!userData })
-
-
 }));
 
 export default useAuthStore;

@@ -9,8 +9,10 @@ const userSchema = new mongoose.Schema(
         phone: { type: Number, required:true},
         role_id: {type: Number, require: true},
         avatar: {type: String},
+        position: {type: String, require: true},
         address:{type: String, require: true},
         dob: {type: String, require: true},
+        gender: {type: String, require: true},
         access_token: { type: String},
         refresh_token: { type: String}
     },

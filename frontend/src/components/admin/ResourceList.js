@@ -43,7 +43,7 @@ const ResourceList = ({ attendanceRecords, setAttendanceRecords }) => {
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
           <tr>
-            <th>Mã Nhân Viên</th>
+            <th>ID</th>
             <th>Tên Nhân Viên</th>
             <th>Ngày Chấm Công</th>
             <th>Giờ Vào</th>

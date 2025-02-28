@@ -19,7 +19,7 @@ const SofaPage = () => {
 
     return (
         <div>
-            <HeroSection title="Sofa" background="/images/banner.png" />
+            <HeroSection title="Sofa" background="/assets/sofa/sofa.jpg" />
 
             <section className="py-5">
                 <div className="container">

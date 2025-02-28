@@ -6,7 +6,7 @@ import TeamMember from "../components/about/MemberSection";
 const AboutPage = () => {
   return (
     <div>
-      <HeroSection title="Giới Thiệu" background="/images/banner.png" />
+      <HeroSection title="Giới Thiệu" background="/images/banner3.png" />
 
       <AboutSection />
 

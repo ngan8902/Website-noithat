@@ -10,7 +10,7 @@ const AboutSection = () => {
             <img
               alt="Giới thiệu về chúng tôi"
               className="img-fluid rounded shadow"
-              src="/images/logo.png"
+              src="/images/introduce.png"
             />
           </div>
           <div className="col-md-6">

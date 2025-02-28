@@ -59,7 +59,8 @@ const EmployeeList = ({ employees, setEmployees }) => {
             <th>Email</th>
             <th>Số Điện Thoại</th>
             <th>Ngày Sinh</th>
-            <th style={{ maxWidth: "200px" }}>Địa Chỉ</th>
+            <th>Giới Tính</th>
+            <th>Địa Chỉ</th>
             <th>Hành Động</th>
           </tr>
         </thead>
@@ -80,6 +81,7 @@ const EmployeeList = ({ employees, setEmployees }) => {
                 <td>{employee.email}</td>
                 <td>{employee.phone}</td>
                 <td>{employee.dob}</td>
+                <td>{employee.gender}</td>
                 <td style={{ maxWidth: "200px" }} className="text-truncate">{employee.address}</td>
                 <td>
                   <button className="btn btn-warning btn-sm" onClick={() => openEditModal(employee)}>Sửa</button>

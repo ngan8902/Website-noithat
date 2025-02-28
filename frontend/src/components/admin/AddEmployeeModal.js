@@ -10,6 +10,7 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
     email: "",
     phone: "",
     dob: "",
+    gender: "",
     address: "",
     avatar: "",
   });
@@ -17,7 +18,7 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSave = () => {
-    if (!form.name || !form.username || !form.password || !form.position || !form.email || !form.phone || !form.dob || !form.address) {
+    if (!form.name || !form.username || !form.password || !form.position || !form.email || !form.phone || !form.dob || !form.gender || !form.address) {
       alert("Vui lòng điền đầy đủ thông tin!");
       return;
     }
@@ -75,6 +76,7 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
             <input type="email" className="form-control mb-3" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <input type="tel" className="form-control mb-3" placeholder="Số điện thoại" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
             <input type="date" className="form-control mb-3" placeholder="Ngày sinh" value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} />
+            <input type="text" className="form-control mb-3" placeholder="Giới tính" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })} />
             <input type="text" className="form-control mb-3" placeholder="Địa chỉ" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
 
             <button className="btn btn-primary w-100" onClick={handleSave}>Thêm Nhân Viên</button>
