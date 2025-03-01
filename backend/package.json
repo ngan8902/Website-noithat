@@ -10,7 +10,8 @@
   "type": "commonjs",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "migrate": "node migrations/index.js",
+    "start": "node migrations/index.js & nodemon server.js",
     "build": "nodemon build",
     "test": "nodemon test",
     "eject": "nodemon eject"
