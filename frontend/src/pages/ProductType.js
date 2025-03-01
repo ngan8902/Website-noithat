@@ -18,11 +18,11 @@ const ProductType = () => {
 
     return (
         <div>
-            <HeroSection title="Sofa" background="/assets/sofa/sofa.jpg" />
+            <HeroSection title={products.length > 0 ? products[0].type : "Sản phẩm"} background="/assets/background-sanpham/860.jpg" />
 
             <section className="py-5">
                 <div className="container">
-                    <h2 className="text-center fw-bold mb-5">Danh Mục Sofa</h2>
+                    <h2 className="text-center fw-bold mb-5">Danh Mục {products.length > 0 ? products[0].type : "Sản phẩm"}</h2>
                     <div className="row">
                         <SidebarFilter />
 

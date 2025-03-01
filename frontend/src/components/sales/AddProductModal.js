@@ -119,9 +119,9 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
                 onChange={handleCategoryChange}
                 required
               >
-                <option value="">-- Chọn loại sản phẩm --</option>
-                {products.map((productItem, index) => (
-                  <option key={index} value={productItem.type} >{productItem.type}</option>
+               <option value="">-- Chọn loại sản phẩm --</option>
+                {[...new Set(products.map((productItem) => productItem.type))].map((type, index) => (
+                  <option key={index} value={type}>{type}</option>
                 ))}
                 <option value="new">+ Thêm loại mới</option>
               </select>
