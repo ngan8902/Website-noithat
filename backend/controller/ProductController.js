@@ -1,20 +1,20 @@
-const ProductService = require('../service/ProductService') 
-const JwtService = require('../service/JwtService') 
-
+const ProductService = require('../service/ProductService')
+const { toSlug } = require('../common/utils/slug')
+const { paginateArray } = require('../common/utils/pagination')
 
 const createProduct = async (req, res) => {
-    try{
-        const { name, image, type, price, countInStock, rating, description, productCode  } = req.body
-        
-        if (!name || !image || !type || !price || !countInStock  ) {
+    try {
+        const { name, image, type, price, countInStock, rating, description, productCode } = req.body
+
+        if (!name || !image || !type || !price || !countInStock) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The input is required'
             })
         }
         const response = await ProductService.createProduct(req.body)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         console.log(e)
         return res.status(500).json({
             message: e
@@ -23,18 +23,18 @@ const createProduct = async (req, res) => {
 }
 
 const updateProduct = async (req, res) => {
-    try{
+    try {
         const productId = req.params.id
         const data = req.body
-        if(!productId) {
+        if (!productId) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The productId is required'
             })
         }
         const response = await ProductService.updateProduct(productId, data)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         console.log(e)
         return res.status(500).json({
             message: e
@@ -43,17 +43,17 @@ const updateProduct = async (req, res) => {
 }
 
 const getDetailsProduct = async (req, res) => {
-    try{
+    try {
         const productId = req.params.id
-        if(!productId) {
+        if (!productId) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The productId is required'
             })
         }
         const response = await ProductService.getDetailsProduct(productId)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -61,17 +61,17 @@ const getDetailsProduct = async (req, res) => {
 }
 
 const deleteProduct = async (req, res) => {
-    try{
+    try {
         const productId = req.params.id
-        if(!productId) {
+        if (!productId) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The productId is required'
             })
         }
         const response = await ProductService.deleteProduct(productId)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -79,11 +79,11 @@ const deleteProduct = async (req, res) => {
 }
 
 const getAllProduct = async (req, res) => {
-    try{
-        const {limit, page, filter} = req.query 
+    try {
+        const { limit, page, filter } = req.query
         const response = await ProductService.getAllProduct(Number(limit) || 8, Number(page) || 0, filter)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -91,10 +91,36 @@ const getAllProduct = async (req, res) => {
 }
 
 const getAllType = async (req, res) => {
-    try{
+    try {
         const response = await ProductService.getAllType()
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const getProductByType = async (req, res) => {
+    try {
+        const { slug, limit, page } = req.query;
+        if (!slug || !limit) throw Error("Missing params");
+        const products = await ProductService.getAllProductWithoutFilter();
+        if (!products || !Array.isArray(products)) throw Error("No data");
+
+        const productFilter = products.filter(p => toSlug(p.type) === slug);
+        const paging = paginateArray(productFilter, page + 1, limit);
+
+        return res.status(200).json({
+            status: 'OK',
+            message: 'success',
+            data: paging.data,
+            total: paging.total,
+            pageCurrent: paging.page,
+            totalPage: paging.totalPages,
+        })
+
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -107,5 +133,6 @@ module.exports = {
     getDetailsProduct,
     deleteProduct,
     getAllProduct,
-    getAllType
+    getAllType,
+    getProductByType
 }

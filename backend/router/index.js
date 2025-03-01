@@ -11,8 +11,6 @@ const routers = (app) => {
     app.use('/api/product', ProductRouter)
     app.use('/api/role', RoleRouter)
     app.use('/api/email', MailRouter)
-
-
 }
 
 module.exports = routers;

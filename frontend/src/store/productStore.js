@@ -8,6 +8,8 @@ const useProductStore = create((set) => ({
     totalProducts: 0,
     currentPage: 0,
 
+    productByType: [],
+
     getProducts: (limit = 8, page = 0, filter = "") => {
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/all-product`, {
             params: {
@@ -22,6 +24,25 @@ const useProductStore = create((set) => ({
                 const products = data.data;
                 set({
                     products: products
+                })
+            }
+        }
+        );
+    },
+
+    getProductByType: (slug = "", limit = 8, page = 0) => {
+        axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/get-product-by-type`, {
+            params: {
+                limit,
+                page,
+                slug
+            }
+        }).then(response => {
+            const { data } = response;
+            if (data && data.data) {
+                const products = data.data;
+                set({
+                    productByType: products
                 })
             }
         }

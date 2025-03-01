@@ -5,10 +5,11 @@ const {authenticateStaff, authenticateUser} = require('../middleware/authMiddlew
 
 
 router.post('/create-product' , productController.createProduct)
-router.put('/update-product/:id' , authenticateStaff,productController.updateProduct)
+router.put('/update-product/:id' , authenticateStaff, productController.updateProduct)
 router.get('/details-product/:id' , productController.getDetailsProduct)
 router.delete('/delete-product/:id' , productController.deleteProduct)
 router.get('/all-product' , productController.getAllProduct)
+router.get('/get-product-by-type' , productController.getProductByType)
 router.get('/get-all-type' , productController.getAllType)
 
 

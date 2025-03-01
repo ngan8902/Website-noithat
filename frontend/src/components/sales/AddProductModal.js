@@ -120,8 +120,8 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
                 required
               >
                 <option value="">-- Chọn loại sản phẩm --</option>
-                {products.map((index) => (
-                  <option key={index}>{index.type}</option>
+                {products.map((productItem, index) => (
+                  <option key={index} value={productItem.type} >{productItem.type}</option>
                 ))}
                 <option value="new">+ Thêm loại mới</option>
               </select>

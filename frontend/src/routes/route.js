@@ -15,6 +15,7 @@ import StaffInfo from "../pages/StaffInfo";
 import StaffAttendanceHistory from "../pages/StaffAttendanceHistory";
 import Employee from "../pages/Employee";
 import Resource from "../pages/Resource";
+import ProductType from "../pages/ProductType";
 
 export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
@@ -28,6 +29,7 @@ export const publicRoute = [
   { path: "/cart", element: <Cart />, isShow: true },
   { path: "*", element: <NotFound /> },
   { path: "/account", element: <Account />, isShow: true },
+  { path: "/product-type/:id", element: <ProductType />, isShow: true },
 ]
 
 export const privateRoute = [

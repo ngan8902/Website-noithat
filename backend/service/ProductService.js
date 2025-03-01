@@ -190,6 +190,16 @@ const getAllType = () => {
     })
 }
 
+const getAllProductWithoutFilter = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allProduct = await Product.find();
+            resolve(allProduct);
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
 module.exports = {
     createProduct,
@@ -197,5 +207,6 @@ module.exports = {
     getDetailsProduct,
     deleteProduct,
     getAllProduct,
-    getAllType
+    getAllType,
+    getAllProductWithoutFilter
 }

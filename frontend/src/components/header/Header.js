@@ -74,7 +74,7 @@ const Header = () => {
 
                     return (
                       <li key={i.id || slug}>
-                        <a href={`/${slug}`} className="dropdown-item fw-normal">
+                        <a href={`/product-type/${slug}`} className="dropdown-item fw-normal">
                           {i.name || i}
                         </a>
                       </li>
