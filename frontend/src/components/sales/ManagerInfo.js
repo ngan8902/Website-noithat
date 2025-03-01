@@ -46,7 +46,7 @@ const ManagerInfo = ({ user }) => {
                     <strong>Họ và Tên:</strong> {user?.name}
                   </li>
                   <li className="mb-2">
-                    <strong>Mã nhân viên:</strong> {user?._id || "Chưa cập nhật"}
+                    <strong>Mã nhân viên:</strong> {user?.staffcode || "Chưa cập nhật"}
                   </li>
                   <li className="mb-2">
                     <strong>Chức Vụ:</strong> {user?.position || "Chưa cập nhật"}

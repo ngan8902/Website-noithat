@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import AddEmployeeModal from "./AddEmployeeModal";
 import EditEmployeeModal from "./EditEmployeeModal";
-import useAuthAdminStore from "../../store/authAdminStore"
+import useStaffStore from "../../store/staffStore"
 
 const EmployeeList = () => {
   const [search, setSearch] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [modalType, setModalType] = useState(null);
-  const {user, getAllStaff, removeStaff} = useAuthAdminStore((state) => state);
+  const {staffList, getAllStaff, removeStaff} = useStaffStore((state) => state);
   const [,setEmployees] = useState(null)
 
  
@@ -15,10 +15,10 @@ const EmployeeList = () => {
     getAllStaff()
   },[getAllStaff]) 
   
-  
-
   const handleDelete = (_id) => {
-    removeStaff(_id)
+    removeStaff(_id).then(() => {
+      getAllStaff();
+    })
   };
 
   const openAddModal = () => {
@@ -54,7 +54,7 @@ const EmployeeList = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-      </div> 
+      </div>  
 
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
@@ -72,8 +72,8 @@ const EmployeeList = () => {
           </tr>
         </thead>
         <tbody>
-          {user && user.length > 0 ? (
-            user.map((staff) => (
+          {staffList && staffList.length > 0 ? (
+            staffList.map((staff) => (
               <tr key={staff._id}>
                 <td>{staff.staffcode}</td>
                 <td>
