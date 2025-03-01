@@ -2,32 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import useProductStore from "../../store/productStore";
 
-// const AddProductModal = ({ setProducts, closeModal }) => {
-//   const [form, setForm] = useState({
-//     image: "",
-//     name: "",
-//     type: "",
-//     price: "",
-//     quantity: "",
-//     discount: "",
-//   });
-
-//   const { addProducts } = useProductStore();
-
-//   const categories = ["Sofa", "Bàn ăn", "Ghế"];
-//   const [selectedCategory, setSelectedCategory] = useState("");
-//   const [newCategory, setNewCategory] = useState("");
-
-//   const handleCategoryChange = (e) => {
-//     setSelectedCategory(e.target.value);
-//     setForm({ ...form, type: e.target.value });
-//     if (e.target.value !== "new") {
-//       setNewCategory("");
-//     }
 
 const AddProductModal = ({ closeModal, refreshProducts }) => {
   const [, setError] = useState('');
-  const { addProducts } = useProductStore((state) => state);
+  const { addProducts, products } = useProductStore((state) => state);
 
 
   const [product, setProduct] = useState({
@@ -35,20 +13,23 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
     price: "",
     image: "",
     countInStock: "",
-    discount: ""
+    discount: "",
+    type:""
   });
 
-  const categories = ["Sofa", "Bàn ăn", "Ghế"];
   const [selectedCategory, setSelectedCategory] = useState("");
   const [newCategory, setNewCategory] = useState("");
 
   const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-    setProduct({ ...product, type: e.target.value });
-    if (e.target.value !== "new") {
+    const value = e.target.value;
+    setSelectedCategory(value);
+    if (value === "new") {
+      setProduct({ ...product, type: newCategory });
+    } else {
+      setProduct({ ...product, type: value });
       setNewCategory("");
     }
-  }
+  };
 
   const handleAdd = (e) => {
     e.preventDefault();
@@ -69,7 +50,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
     };
 
     axios
-      .post(`${process.env.REACT_APP_URL_BACKEND}/product/create-product`, product).then((response) => {
+      .post(`${process.env.REACT_APP_URL_BACKEND}/product/create-product`, newProduct).then((response) => {
         console.log("Phản hồi từ server:", response);
         const { data } = response;
 
@@ -99,26 +80,6 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
       reader.readAsDataURL(file);
     }
   };
-
-  // const handleAdd = () => {
-  //   if (!form.name || !form.price || !form.quantity || (!selectedCategory && !newCategory)) {
-  //     alert("Vui lòng điền đầy đủ thông tin!");
-  //     return;
-  //   }
-
-  //   const finalCategory = selectedCategory === "new" ? newCategory : selectedCategory;
-
-  //   const newProduct = {
-  //     ...form,
-  //     price: parseFloat(form.price),
-  //     quantity: parseInt(form.quantity, 10),
-  //     discount: parseFloat(form.discount) || 0,
-  //     type: finalCategory,
-  //   };
-
-  //   addProducts(newProduct);
-  //   closeModal();
-  // };
 
   return (
     <div className="modal fade show d-block" id="addProductModal">
@@ -159,8 +120,8 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
                 required
               >
                 <option value="">-- Chọn loại sản phẩm --</option>
-                {categories.map((category, index) => (
-                  <option key={index} value={category}>{category}</option>
+                {products.map((index) => (
+                  <option key={index}>{index.type}</option>
                 ))}
                 <option value="new">+ Thêm loại mới</option>
               </select>
