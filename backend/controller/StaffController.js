@@ -5,7 +5,7 @@ const { SIGN_UP_STATUS } = require('../common/constant/status.constant')
 
 const createStaff = async (req, res) => {
     try{
-        const { username, password, phone, address, name, dob, gender, avatar, position, email, role_id } = req.body
+        const { username, password, phone,  address, name, dob, gender, avatar, position, email, role_id, staffcode } = req.body
         const isCheckUsername = username
         if (!username || !password || !phone || !address || !name || !dob || !gender || !avatar || !position || !email){
             return res.status(200).json({
@@ -54,6 +54,55 @@ const loginStaff = async (req, res) => {
     }
 }
 
+const updateStaff = async (req, res) => {
+    try{
+        const staffId = req.params.id
+        const data = req.body
+        if(!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is required'
+            })
+        }
+        console.log('userId', staffId)
+        const response = await StaffService.updateStaff(staffId, data)
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const deleteStaff = async (req, res) => {
+    try{
+        const staffId = req.params.id
+        if(!staffId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The staffId is required'
+            })
+        }
+        const response = await StaffService.deleteStaff(staffId)
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const getAllStaff = async (req, res) => {
+    try{
+        const response = await StaffService.getAllStaff()
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
 const getMe = async (req, res) => {
     try {
         const { id } = req['payload'];
@@ -70,8 +119,13 @@ const getMe = async (req, res) => {
     }
 }
 
+
+
 module.exports = {
     createStaff,
     loginStaff,
+    updateStaff,
+    deleteStaff,
+    getAllStaff,
     getMe
 }

@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddEmployeeModal from "./AddEmployeeModal";
 import EditEmployeeModal from "./EditEmployeeModal";
+import useAuthAdminStore from "../../store/authAdminStore"
 
-const EmployeeList = ({ employees, setEmployees }) => {
+const EmployeeList = () => {
   const [search, setSearch] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [modalType, setModalType] = useState(null);
+  const {user, getAllStaff, removeStaff} = useAuthAdminStore((state) => state);
+  const [,setEmployees] = useState(null)
 
-  const handleDelete = (id) => {
-    setEmployees(employees.filter((employee) => employee.id !== id));
+ 
+  useEffect (() => {
+    getAllStaff()
+  },[getAllStaff]) 
+  
+  
+
+  const handleDelete = (_id) => {
+    removeStaff(_id)
   };
 
   const openAddModal = () => {
@@ -25,9 +35,6 @@ const EmployeeList = ({ employees, setEmployees }) => {
     setSelectedEmployee(null);
   };
 
-  const filteredEmployees = employees.filter((e) =>
-    e.id.toString().includes(search) || e.name.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <div id="employees" className="mt-4">
@@ -47,7 +54,7 @@ const EmployeeList = ({ employees, setEmployees }) => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-      </div>
+      </div> 
 
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
@@ -65,27 +72,27 @@ const EmployeeList = ({ employees, setEmployees }) => {
           </tr>
         </thead>
         <tbody>
-          {filteredEmployees.length > 0 ? (
-            filteredEmployees.map((employee) => (
-              <tr key={employee.id}>
-                <td>{employee.id}</td>
+          {user && user.length > 0 ? (
+            user.map((staff) => (
+              <tr key={staff._id}>
+                <td>{staff.staffcode}</td>
                 <td>
-                  <img 
-                    src={employee.avatar || "https://via.placeholder.com/100"} 
-                    alt={employee.name} 
+                  <img
+                    src={staff.avatar || "https://via.placeholder.com/100"}
+                    alt={staff.name}
                     style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }}
                   />
                 </td>
-                <td>{employee.name}</td>
-                <td>{employee.position}</td>
-                <td>{employee.email}</td>
-                <td>{employee.phone}</td>
-                <td>{employee.dob}</td>
-                <td>{employee.gender}</td>
-                <td style={{ maxWidth: "200px" }} className="text-truncate">{employee.address}</td>
+                <td>{staff.name}</td>
+                <td>{staff.position}</td>
+                <td>{staff.email}</td>
+                <td>{staff.phone}</td>
+                <td>{staff.dob}</td>
+                <td>{staff.gender}</td>
+                <td style={{ maxWidth: "200px" }} className="text-truncate">{staff.address}</td>
                 <td>
-                  <button className="btn btn-warning btn-sm" onClick={() => openEditModal(employee)}>Sửa</button>
-                  <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(employee.id)}>Xóa</button>
+                  <button className="btn btn-warning btn-sm" onClick={() => openEditModal(staff)}>Sửa</button>
+                  <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(staff._id)}>Xóa</button>
                 </td>
               </tr>
             ))

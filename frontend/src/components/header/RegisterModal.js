@@ -31,7 +31,7 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
   };
 
   const handleSignup = (e) => {
-    e.preventDefault(); // Ngăn trang tải lại
+    e.preventDefault(); 
 
     if(!user.name || !user.phone || !user.email || !user.password ||!user.confirmPassword) {
       setPasswordError("Vui lòng nhập đầy đủ thông tin!");

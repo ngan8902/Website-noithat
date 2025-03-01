@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
         address:{type: String, require: true},
         dob: {type: String, require: true},
         gender: {type: String, require: true},
+        staffcode: {type: String, unique: true},
         access_token: { type: String},
         refresh_token: { type: String}
     },

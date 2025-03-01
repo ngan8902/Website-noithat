@@ -1,17 +1,42 @@
 import React, { useState } from "react";
+import axios from "axios";
 import useProductStore from "../../store/productStore";
 
-const AddProductModal = ({ setProducts, closeModal }) => {
-  const [form, setForm] = useState({
-    image: "",
-    name: "",
-    type: "",
-    price: "",
-    quantity: "",
-    discount: "",
-  });
+// const AddProductModal = ({ setProducts, closeModal }) => {
+//   const [form, setForm] = useState({
+//     image: "",
+//     name: "",
+//     type: "",
+//     price: "",
+//     quantity: "",
+//     discount: "",
+//   });
 
-  const { addProducts } = useProductStore();
+//   const { addProducts } = useProductStore();
+
+//   const categories = ["Sofa", "Bàn ăn", "Ghế"];
+//   const [selectedCategory, setSelectedCategory] = useState("");
+//   const [newCategory, setNewCategory] = useState("");
+
+//   const handleCategoryChange = (e) => {
+//     setSelectedCategory(e.target.value);
+//     setForm({ ...form, type: e.target.value });
+//     if (e.target.value !== "new") {
+//       setNewCategory("");
+//     }
+
+const AddProductModal = ({ closeModal, refreshProducts }) => {
+  const [, setError] = useState('');
+  const { addProducts } = useProductStore((state) => state);
+
+
+  const [product, setProduct] = useState({
+    name: "",
+    price: "",
+    image: "",
+    countInStock: "",
+    discount: ""
+  });
 
   const categories = ["Sofa", "Bàn ăn", "Ghế"];
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -19,42 +44,81 @@ const AddProductModal = ({ setProducts, closeModal }) => {
 
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
-    setForm({ ...form, type: e.target.value });
+    setProduct({ ...product, type: e.target.value });
     if (e.target.value !== "new") {
       setNewCategory("");
     }
+  }
+
+  const handleAdd = (e) => {
+    e.preventDefault();
+    if (!product.name || !product.price || !product.image || !product.countInStock || (!selectedCategory && !newCategory)) {
+      setError("Vui lòng điền đầy đủ thông tin!");
+      return;
+    }
+    console.log("Dữ liệu gửi lên API:", product);
+
+    const finalCategory = selectedCategory === "new" ? newCategory : selectedCategory;
+
+    const newProduct = {
+      ...product,
+      price: parseFloat(product.price),
+      countInStock: parseInt(product.countInStock, 10),
+      discount: parseFloat(product.discount) || 0,
+      type: finalCategory,
+    };
+
+    axios
+      .post(`${process.env.REACT_APP_URL_BACKEND}/product/create-product`, product).then((response) => {
+        console.log("Phản hồi từ server:", response);
+        const { data } = response;
+
+        if (data.status === 'OK') {
+          addProducts(newProduct)
+          window.location.reload()
+        } else {
+          setError(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
+          console.error('lỗi:', setError)
+        }
+      })
+      .catch((err) => {
+        console.error("Lỗi đăng ký:", err);
+        setError("Không thể kết nối với server. Vui lòng thử lại!");
+      });
   };
+
+
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setForm({ ...form, image: reader.result });
+        setProduct({ ...product, image: reader.result });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleAdd = () => {
-    if (!form.name || !form.price || !form.quantity || (!selectedCategory && !newCategory)) {
-      alert("Vui lòng điền đầy đủ thông tin!");
-      return;
-    }
+  // const handleAdd = () => {
+  //   if (!form.name || !form.price || !form.quantity || (!selectedCategory && !newCategory)) {
+  //     alert("Vui lòng điền đầy đủ thông tin!");
+  //     return;
+  //   }
 
-    const finalCategory = selectedCategory === "new" ? newCategory : selectedCategory;
+  //   const finalCategory = selectedCategory === "new" ? newCategory : selectedCategory;
 
-    const newProduct = {
-      ...form,
-      price: parseFloat(form.price),
-      quantity: parseInt(form.quantity, 10),
-      discount: parseFloat(form.discount) || 0,
-      type: finalCategory,
-    };
+  //   const newProduct = {
+  //     ...form,
+  //     price: parseFloat(form.price),
+  //     quantity: parseInt(form.quantity, 10),
+  //     discount: parseFloat(form.discount) || 0,
+  //     type: finalCategory,
+  //   };
 
-    addProducts(newProduct);
-    closeModal();
-  };
+  //   addProducts(newProduct);
+  //   closeModal();
+  // };
 
   return (
     <div className="modal fade show d-block" id="addProductModal">
@@ -69,9 +133,9 @@ const AddProductModal = ({ setProducts, closeModal }) => {
               Ảnh sản phẩm
               <input type="file" className="form-control mb-3" accept="image/*" onChange={handleFileChange} />
             </label>
-            {form.image && (
+            {product.image && (
               <img
-                src={form.image}
+                src={product.image}
                 alt="Product"
                 style={{ width: "100px", height: "100px", objectFit: "cover", marginBottom: "10px" }}
                 className="m-3"
@@ -82,8 +146,8 @@ const AddProductModal = ({ setProducts, closeModal }) => {
               type="text"
               className="form-control mb-3"
               placeholder="Tên sản phẩm"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              value={product.name}
+              onChange={(e) => setProduct({ ...product, name: e.target.value })}
             />
 
             <div className="mb-3">
@@ -120,24 +184,24 @@ const AddProductModal = ({ setProducts, closeModal }) => {
               type="number"
               className="form-control mb-3"
               placeholder="Giá"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              value={product.price}
+              onChange={(e) => setProduct({ ...product, price: e.target.value })}
             />
 
             <input
               type="number"
               className="form-control mb-3"
               placeholder="Số lượng"
-              value={form.quantity}
-              onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+              value={product.countInStock}
+              onChange={(e) => setProduct({ ...product, countInStock: e.target.value })}
             />
 
             <input
               type="number"
               className="form-control mb-3"
               placeholder="Giảm giá (%)"
-              value={form.discount}
-              onChange={(e) => setForm({ ...form, discount: e.target.value })}
+              value={product.discount}
+              onChange={(e) => setProduct({ ...product, discount: e.target.value })}
             />
 
             <button className="btn btn-primary w-100" onClick={handleAdd}>

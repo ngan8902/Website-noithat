@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AddProductModal from "./AddProductModal";
 import EditProductModal from "./EditProductModal";
 import useProductStore from "../../store/productStore";
@@ -9,17 +9,14 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalType, setModalType] = useState(null);
   
-  useEffect(() => {
-    getProducts();
-  }, [getProducts]);
 
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-        getProducts(8, 0, search);
-    }, 500); 
+//   useEffect(() => {
+//     const delayDebounce = setTimeout(() => {
+//         getProducts(8, 0, search);
+//     }, 500); 
 
-    return () => clearTimeout(delayDebounce);
-}, [search, getProducts]); 
+//     return () => clearTimeout(delayDebounce);
+// }, [search]); 
 
 
   const handleDelete = (_id) => {
@@ -76,7 +73,7 @@ const ProductList = () => {
           </tr>
         </thead>
         <tbody>
-          {products.length > 0 ? (
+          {products && products.length > 0 ? (
             products.map((product) => (
               <tr key={product._id} >
                 <td>{product.productCode || ""}</td>
