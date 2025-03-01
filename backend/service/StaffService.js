@@ -1,6 +1,7 @@
 const Staff = require("../model/StaffModel")
 const bcrypt = require("bcrypt")
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService")
+const { ADMIN_ROLE_ID } = require('../common/constant/staff.constant')
 
 const createStaff = (newStaff) => {
     return new Promise(async (resolve, reject) => {
@@ -15,6 +16,9 @@ const createStaff = (newStaff) => {
                     message: 'username đã tồn tại!'
                 })
             }
+
+            const newRoleId = resolve.user && resolve.user.role_id === 1 ? role_id || 2 : 2;
+
             const hash = bcrypt.hashSync(password, 10)
 
             const lastStaff = await Staff.findOne().sort({ createdAt: -1 });
@@ -39,7 +43,7 @@ const createStaff = (newStaff) => {
                 avatar,
                 position,
                 email,
-                role_id,
+                role_id: newRoleId,
                 staffcode: newCode
             })
             if(createdStaff) {
@@ -163,7 +167,11 @@ const deleteStaff = (id) => {
 const getAllStaff = () => {
     return new Promise(async (resolve, reject) => {
         try{
-            const allStaff = await Staff.find()           
+            const allStaff = await Staff.find({
+                role_id: {
+                    $ne: ADMIN_ROLE_ID
+                }
+            })           
             resolve({
                 status: 'OK',
                 message: 'success',

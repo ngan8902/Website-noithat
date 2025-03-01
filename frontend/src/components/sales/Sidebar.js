@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { TOKEN_KEY } from "../../constants/authen.constant";
 import { setCookie } from "../../utils/cookie.util";
+import useAuthAdminStore from "../../store/authAdminStore";
+import { ROLE } from "../../constants/staff.constant";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isOrderDropdownOpen, setIsOrderDropdownOpen] = useState(false);
+
+  const { permissions } = useAuthAdminStore((state) => state);
 
   const handleLogout = () => {
     setCookie(TOKEN_KEY, '');
@@ -40,8 +44,8 @@ const Sidebar = () => {
             )}
           </div>
           <a href="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Lịch Sử Chấm Công</a>
-          <a href="/admin/employee" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Nhân Sự</a>
-          <a href="/admin/resource" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Chấm Công</a>
+          { permissions([ROLE.ADMIN]) && <a href="/admin/employee" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Nhân Sự</a> }
+          { permissions([ROLE.ADMIN]) && <a href="/admin/resource" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Chấm Công</a> }
         </div>
       )}
        <button

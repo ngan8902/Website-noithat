@@ -3,7 +3,7 @@ import axios from 'axios';
 import { getCookie } from "../utils/cookie.util";
 import { STAFF_TOKEN_KEY } from '../constants/authen.constant';
 
-const useAuthAdminStore = create((set) => ({
+const useAuthAdminStore = create((set, get) => ({
     user: null,
     staffList: [],
     auth: () => {
@@ -26,6 +26,14 @@ const useAuthAdminStore = create((set) => ({
         );
     },
     setUser: (userData) => set({ user: userData }),
+    permissions: (roles) => {
+        const staff = get().user;
+        if(!staff || !staff.role_id) return false;
+        if(!roles || !Array.isArray(roles)) return false;
+
+        const isAllowAccess = roles.includes(staff.role_id);
+        return isAllowAccess;
+    }
 }));
 
 export default useAuthAdminStore;

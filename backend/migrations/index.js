@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
 const { insertRoleData } = require('./insertDefaultRoleData');
+const { insertAdminData } = require("./insertDefaultAdminData");
 
 const MONGO_URI = process.env.MONGO_DB || "mongodb://localhost:27017/your_database";
 
@@ -11,6 +12,7 @@ async function executeCommonData() {
 
         // Insert Default Data Functions
         await insertRoleData(mongoose);
+        await insertAdminData(mongoose)
 
         await mongoose.disconnect();
         console.log(":::[Migration] Close Connected to MongoDB:::");

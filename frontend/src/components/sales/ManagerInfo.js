@@ -19,7 +19,7 @@ const ManagerInfo = ({ user }) => {
             <div className="card text-center shadow-sm">
               <div className="card-body">
                 <img
-                  src={user?.avatar || "https://via.placeholder.com/150"}
+                  src={user?.avatar || "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"}
                   alt={user?.name || "Employee"}
                   className="rounded-circle mb-3 border border-3 border-primary"
                   width="150"
