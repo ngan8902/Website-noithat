@@ -106,7 +106,7 @@ const updateStaff = (id, data) => {
             if (checkStaff === null) {
                 resolve({
                     status: 'OK',
-                    message: 'The user is not defined'
+                    message: 'The staff is not defined'
                 })
             }
             

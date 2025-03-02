@@ -58,16 +58,16 @@ const updateStaff = async (req, res) => {
     try{
         const staffId = req.params.id
         const data = req.body
-        if(!userId) {
+        if(!staffId) {
             return res.status(200).json({
                 status: 'ERR',
-                message: 'The userId is required'
+                message: 'The staffId is required'
             })
         }
-        console.log('userId', staffId)
         const response = await StaffService.updateStaff(staffId, data)
         return res.status(200).json(response) 
     }catch(e){
+        console.log(e)
         return res.status(500).json({
             message: e
         })
