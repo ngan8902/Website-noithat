@@ -1,17 +1,73 @@
 import React, { useState, useEffect } from "react";
+import useStaffStore from "../../store/staffStore";
+import { getCookie } from "../../utils/cookie.util";
+import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
+import axios from "axios";
 
 const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
-  const [form, setForm] = useState(employee);
+  const [form, setForm] = useState({
+    name: '',
+    avatar: '',
+    phone: '',
+    position: '',
+    email: '',
+    dob: '',
+    address: ''
+  });
+  const { setStaff } = useStaffStore((state) => state)
+  const [, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setForm(employee);
+    if (employee) {
+      setForm({
+        name: employee.name || '',
+        avatar: employee.avatar || '',
+        phone: employee.phone || '',
+        position: employee.position || '',
+        dob: employee.dob || '',
+        email: employee.email || '',
+        address: employee.address || ''
+      });
+    }
   }, [employee]);
 
-  const handleSave = () => {
-    setEmployees((prev) =>
-      prev.map((e) => (e.id === employee.id ? form : e))
-    );
-    closeModal();
+  const handleSave = async () => {
+    if (!employee || !employee._id) {
+      console.log("Không tìm thấy người dùng");
+      return;
+    }
+
+    try {
+      const updatedData = {
+        name: form.name,
+        avatar: form.avatar,
+        phone: form.phone,
+        position: form.position,
+        email: form.email,
+        dob: form.dob,
+        address: form.address
+      };
+
+      const response = await axios.put(
+        `${process.env.REACT_APP_URL_BACKEND}/staff/update-staff/${employee._id}`,
+        updatedData, {
+        headers: {
+          'staff-token': getCookie(STAFF_TOKEN_KEY)
+        }
+      }
+      );
+      window.location.reload()
+      console.log("Cập nhật thành công:", response.data);
+      setStaff((prevStaff) =>
+        prevStaff.map((p) =>
+          p._id === employee._id ? response.data.data : p
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi cập nhật thông tin:", error);
+      setErrorMessage("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại!");
+    }
+
   };
 
   const handleFileChange = (e) => {

@@ -3,6 +3,7 @@ const ProductRouter = require('./ProductRouter')
 const RoleRouter = require('./RoleRouter')
 const StaffRouter = require('./StaffRouter')
 const MailRouter = require('./MailRouter')
+const OrderRouter = require('./OrderRouter')
 
 
 const routers = (app) => {
@@ -11,6 +12,7 @@ const routers = (app) => {
     app.use('/api/product', ProductRouter)
     app.use('/api/role', RoleRouter)
     app.use('/api/email', MailRouter)
+    app.use('/api/order', OrderRouter)
 }
 
 module.exports = routers;

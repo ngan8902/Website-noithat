@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import useProductStore from "../../store/productStore";
-import axios from "axios"
+import axios from "axios";
 import { getCookie } from "../../utils/cookie.util";
 import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
 
@@ -45,32 +45,6 @@ const EditProductModal = ({ product, closeModal }) => {
     }
   }, [product]);
 
-
-  // const handleSave = async () => {
-  //   if (!products || !products._id) {
-  //     console.log("Không tìm thấy sản phẩm");
-  //     return;
-  //   }
-
-  //   try {
-  //     const updatedData = {
-  //       name: form.name,
-  //       email: form.email,
-  //       phone: form.phone,
-  //     };
-
-  //     const response = await axios.put(
-  //       `${process.env.REACT_APP_URL_BACKEND}/product/update-product/${products._id}`);
-
-  //     console.log("Cập nhật thành công:", response.data);
-  //     setProducts(response.data.data);
-  //     closeModal();
-  //     setErrorMessage("Cập nhật sản phẩm thành công!");
-  //   } catch (error) {
-  //     console.error("Lỗi cập nhật thông tin:", error);
-  //     setErrorMessage("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại!");
-  //   }
-  // };
 
   const handleSave = async () => {
     if (!product || !product._id) {
