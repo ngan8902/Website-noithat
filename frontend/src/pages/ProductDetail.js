@@ -24,8 +24,17 @@ const ProductDetail = () => {
         ? product.price - (product.price * product.discount / 100)
         : product.price;
 
-    const increaseQuantity = () => setQuantity(quantity + 1);
-    const decreaseQuantity = () => quantity > 1 && setQuantity(quantity - 1);
+    const increaseQuantity = () => {
+        if (quantity < product.countInStock) {
+            setQuantity(quantity + 1);
+        }
+    };
+
+    const decreaseQuantity = () => {
+        if (quantity > 1) {
+            setQuantity(quantity - 1);
+        }
+    };
 
     const handleBuyNow = () => {
         if (!user) {
@@ -64,7 +73,7 @@ const ProductDetail = () => {
                     <ProductImage image={product.image} name={product.name} />
                     <div className="col-md-6">
                         <h3 className="fw-bold mb-3">{product.name}</h3>
-                        <p className="text-muted mb-4">{product.description}</p>
+                        <p className="text-muted mb-4">{product.descriptionDetail}</p>
 
                         {product.discount > 0 ? (
                             <div>
@@ -87,13 +96,17 @@ const ProductDetail = () => {
                             <li className="mb-2"><strong>Bảo hành:</strong> {product.warranty || "Không có"}</li>
                         </ul>
 
-                        <p className="me-3">Sản phẩm tồn: {product.quantity || "Không có thông tin"}</p>
+                        <p className="me-3">
+                            {product.countInStock > 0 ? `Sản phẩm tồn: ${product.countInStock}` : ""}
+                        </p>
 
-                        <QuantitySelector 
-                            quantity={quantity} 
-                            increaseQuantity={increaseQuantity} 
-                            decreaseQuantity={decreaseQuantity} 
-                        />
+                        {product.countInStock > 0 && (
+                            <QuantitySelector 
+                                quantity={quantity} 
+                                increaseQuantity={increaseQuantity} 
+                                decreaseQuantity={decreaseQuantity}
+                            />
+                        )}
 
                         {showLoginAlert && (
                             <div className="alert alert-warning mt-3" role="alert">
@@ -102,8 +115,14 @@ const ProductDetail = () => {
                         )}
 
                         <div className="d-flex mb-4">
-                            <button className="btn btn-dark me-3" onClick={addToCart}>🛒 Thêm Vào Giỏ Hàng</button>
-                            <button className="btn btn-primary" onClick={handleBuyNow}>Mua Ngay</button>
+                            {product.countInStock > 0 ? (
+                                <>
+                                    <button className="btn btn-dark me-3" onClick={addToCart}>🛒 Thêm Vào Giỏ Hàng</button>
+                                    <button className="btn btn-primary" onClick={handleBuyNow}>Mua Ngay</button>
+                                </>
+                            ) : (
+                                <p className="text-danger fw-bold">Sản phẩm đã bán hết</p>
+                            )}
                         </div>
 
                         <CustomerReviews reviews={product.reviews} />

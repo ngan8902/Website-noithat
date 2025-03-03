@@ -4,7 +4,7 @@ const { paginateArray } = require('../common/utils/pagination')
 
 const createProduct = async (req, res) => {
     try {
-        const { name, image, type, price, countInStock, rating, description, productCode } = req.body
+        const { name, image, type, price, countInStock, description, descriptionDetail, discount, productCode, isBestSeller, origin, material, size, warranty} = req.body
 
         if (!name || !image || !type || !price || !countInStock) {
             return res.status(200).json({

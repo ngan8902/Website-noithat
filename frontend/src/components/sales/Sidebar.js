@@ -18,7 +18,7 @@ const Sidebar = () => {
   return (
     <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <button className="btn btn-light btn-sm mb-3" onClick={() => setCollapsed(!collapsed)}>
-        {collapsed ? <i className="bi bi-card-list"></i> : <i className="bi bi-x-lg"></i>}
+        {collapsed ? <i className="bi bi-justify-left"></i> : <i className="bi bi-x-lg"></i>}
       </button>
       {!collapsed && (
         <div className="text-white p-3" >
@@ -44,8 +44,8 @@ const Sidebar = () => {
             )}
           </div>
           <a href="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">Lịch Sử Chấm Công</a>
-          { permissions([ROLE.ADMIN]) && <a href="/admin/employee" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Nhân Sự</a> }
-          { permissions([ROLE.ADMIN]) && <a href="/admin/resource" className="d-block text-info py-2 text-decoration-none fw-bold transition-hover">Quản Lý Chấm Công</a> }
+          { permissions([ROLE.ADMIN]) && <a href="/admin/employee" className="d-block text-primary py-2 text-decoration-none fw-bold transition-hover">Quản Lý Nhân Sự</a> }
+          { permissions([ROLE.ADMIN]) && <a href="/admin/resource" className="d-block text-primary py-2 text-decoration-none fw-bold transition-hover">Quản Lý Chấm Công</a> }
         </div>
       )}
        <button

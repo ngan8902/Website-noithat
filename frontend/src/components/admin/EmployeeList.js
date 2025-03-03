@@ -9,7 +9,6 @@ const EmployeeList = () => {
   const [modalType, setModalType] = useState(null);
   const {staffList, getAllStaff, removeStaff} = useStaffStore((state) => state);
   const [,setEmployees] = useState(null)
-
  
   useEffect (() => {
     getAllStaff()

@@ -2,19 +2,24 @@ import React, { useState } from "react";
 import axios from "axios";
 import useProductStore from "../../store/productStore";
 
-
 const AddProductModal = ({ closeModal, refreshProducts }) => {
-  const [, setError] = useState('');
+  const [ setError ] = useState('');
   const { addProducts, products } = useProductStore((state) => state);
-
 
   const [product, setProduct] = useState({
     name: "",
     price: "",
     image: "",
     countInStock: "",
+    description:"",
+    descriptionDetail: "",
     discount: "",
-    type:""
+    type: "",
+    isBestSeller: false,
+    origin: "",
+    material: "",
+    size: "",
+    warranty: ""
   });
 
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -33,7 +38,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
 
   const handleAdd = (e) => {
     e.preventDefault();
-    if (!product.name || !product.price || !product.image || !product.countInStock || (!selectedCategory && !newCategory)) {
+    if (!product.name || !product.price || !product.image || !product.countInStock || !product.type || (!selectedCategory && !newCategory) || !product.origin || !product.material || !product.size || !product.warranty) {
       setError("Vui lòng điền đầy đủ thông tin!");
       return;
     }
@@ -67,8 +72,6 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
         setError("Không thể kết nối với server. Vui lòng thử lại!");
       });
   };
-
-
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -141,6 +144,11 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
               </div>
             )}
 
+            <input type="text" className="form-control mb-3" placeholder="Xuất xứ" value={product.origin} onChange={(e) => setProduct({ ...product, origin: e.target.value })} />
+            <input type="text" className="form-control mb-3" placeholder="Chất liệu" value={product.material} onChange={(e) => setProduct({ ...product, material: e.target.value })} />
+            <input type="text" className="form-control mb-3" placeholder="Kích thước" value={product.size} onChange={(e) => setProduct({ ...product, size: e.target.value })} />
+            <input type="text" className="form-control mb-3" placeholder="Bảo hành" value={product.warranty} onChange={(e) => setProduct({ ...product, warranty: e.target.value })} />
+
             <input
               type="number"
               className="form-control mb-3"
@@ -164,6 +172,31 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
               value={product.discount}
               onChange={(e) => setProduct({ ...product, discount: e.target.value })}
             />
+
+            <textarea
+              className="form-control mb-3"
+              placeholder="Mô tả"
+              value={product.description}
+              onChange={(e) => setProduct({ ...product, description: e.target.value })}
+            />
+
+            <textarea
+              className="form-control mb-3"
+              placeholder="Mô tả chi tiết"
+              value={product.descriptionDetail}
+              onChange={(e) => setProduct({ ...product, descriptionDetail: e.target.value })}
+            />
+
+            <div className="form-check mb-3">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="bestSeller"
+                checked={product.isBestSeller}
+                onChange={(e) => setProduct({ ...product, isBestSeller: e.target.checked })}
+              />
+              <label className="form-check-label" htmlFor="bestSeller">Sản phẩm bán chạy</label>
+            </div>
 
             <button className="btn btn-primary w-100" onClick={handleAdd}>
               Thêm

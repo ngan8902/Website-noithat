@@ -18,6 +18,5 @@ root.render(
     {/* </Provider> */}
   </QueryClientProvider>
   // </React.StrictMode>
-
 );
 reportWebVitals();

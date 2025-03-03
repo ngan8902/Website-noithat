@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+//import useStaffStore from "../../store/staffStore"
 
 const AddEmployeeModal = ({ setEmployees, closeModal }) => {
-  const [staff, setStaff] = useState({  
+  const [ staff, setStaff ] = useState({  
     name: "",
     username: "",
     password: "",
     role_id: "",
+    position: "",
     email: "",
     phone: "",
     dob: "",
@@ -15,8 +17,11 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
     avatar: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [, setPasswordError] = useState(""); 
+  const [ showPassword, setShowPassword ] = useState(false);
+  const [ setPasswordError ] = useState("");
+
+  //const [ newPosition, setNewPosition ] = useState("");
+  //const staffList = [];
 
   const handleSave = (e) => {
     e.preventDefault();
@@ -90,11 +95,56 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
               </button>
             </div>
 
-            <input type="text" className="form-control mb-3" placeholder="Chức vụ" value={staff.position} onChange={(e) => setStaff({ ...staff, position: e.target.value })} />
+            {/*
+            <div className="mb-3">
+              <label className="form-label fw-bold">Chức vụ</label>
+              <select
+                className="form-select"
+                value={staff.position}
+                onChange={(e) => setStaff({ ...staff, position: e.target.value })}
+                required
+              >
+                <option value="">-- Chọn chức vụ --</option>
+                {[...new Set(staffList.map((staffItem) => staffItem.position))].map((position, index) => (
+                  <option key={index} value={position}>{position}</option>
+                ))}
+                <option value="new">+ Thêm chức vụ mới</option>
+              </select>
+            </div>
+
+            {staff.position === "new" && (
+              <div className="mb-3">
+                <label className="form-label fw-bold">Nhập chức vụ mới</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Nhập chức vụ mới..."
+                  value={newPosition}
+                  onChange={(e) => setNewPosition(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+            */}
+
             <input type="email" className="form-control mb-3" placeholder="Email" value={staff.email} onChange={(e) => setStaff({ ...staff, email: e.target.value })} />
             <input type="tel" className="form-control mb-3" placeholder="Số điện thoại" value={staff.phone} onChange={(e) => setStaff({ ...staff, phone: e.target.value })} />
             <input type="date" className="form-control mb-3" placeholder="Ngày sinh" value={staff.dob} onChange={(e) => setStaff({ ...staff, dob: e.target.value })} />
-            <input type="text" className="form-control mb-3" placeholder="Giới tính" value={staff.gender} onChange={(e) => setStaff({ ...staff, gender: e.target.value })} />
+
+            <div className="mb-3">
+              <label className="form-label fw-bold">Giới tính</label>
+              <select
+                className="form-select"
+                value={staff.gender}
+                onChange={(e) => setStaff({ ...staff, gender: e.target.value })}
+                required
+              >
+                <option value="">-- Chọn giới tính --</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
+            </div>
+
             <input type="text" className="form-control mb-3" placeholder="Địa chỉ" value={staff.address} onChange={(e) => setStaff({ ...staff, address: e.target.value })} />
             <button className="btn btn-primary w-100" onClick={handleSave}>Thêm Nhân Viên</button>
           </div>

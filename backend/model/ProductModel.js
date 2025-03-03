@@ -7,14 +7,17 @@ const productSchema = new mongoose.Schema(
         type: {type: String, required: true},
         price: {type: Number, required: true},
         countInStock: {type: Number, required: true},
-        rating: {type: Number},
         description: {type: String},
-        discount:{type: Number, default: 0, required: true},
+        descriptionDetail: {type: String},
+        discount:{type: Number, default: 0},
         origin: {type: String},
         material: {type: String},
         size: {type: String},
         warranty: {type: String},
-        productCode: { type: String, unique: true }
+        isBestSeller: { type: Boolean},
+        productCode: { type: String, unique: true },
+        rating: {type: Number},
+        feedback: { type: String}
     },
     {
         timestamps: true

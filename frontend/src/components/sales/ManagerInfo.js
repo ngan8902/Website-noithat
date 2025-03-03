@@ -1,16 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 
 const ManagerInfo = ({ user }) => {
-  const [showForm, setShowForm] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Phản hồi đã được gửi!");
-    setShowForm(false);
-    setMessage("");
-  };
-
   return (
     <section className="py-5">
       <div className="container">
@@ -67,39 +57,8 @@ const ManagerInfo = ({ user }) => {
                     <strong>Giới Tính:</strong> {user?.gender}
                   </li>
                 </ul>
-                <button
-                  className="btn btn-outline-warning mt-3 feedback-btn"
-                  onClick={() => setShowForm(!showForm)}
-                >
-                  📝 Gửi Phản Hồi
-                </button>
               </div>
             </div>
-
-            {showForm && (
-              <div className="mt-4 p-3 border rounded bg-white shadow-sm">
-                <h6 className="fw-bold text-secondary">Gửi Phản Hồi</h6>
-                <form onSubmit={handleSubmit}>
-                  <textarea
-                    className="form-control mb-2"
-                    placeholder="Nhập nội dung phản hồi..."
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    required
-                  />
-                  <div className="text-end">
-                    <button type="submit" className="btn btn-primary btn-sm">Gửi</button>
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn-sm ms-2"
-                      onClick={() => setShowForm(false)}
-                    >
-                      Hủy
-                    </button>
-                  </div>
-                </form>
-              </div>
-            )}
           </div>
         </div>
       </div>

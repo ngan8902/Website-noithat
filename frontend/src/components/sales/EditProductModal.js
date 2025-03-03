@@ -9,11 +9,20 @@ const EditProductModal = ({ product, closeModal }) => {
     name: '',
     price: '',
     countInStock: '',
-    image: ''
+    image: '',
+    description: '',
+    descriptionDetail: '',
+    discount: '',
+    type: '',
+    isBestSeller: false,
+    origin: '',
+    material: '',
+    size: '',
+    warranty: ''
   });
-  const { setProducts } = useProductStore((state) => state)
+  const { products, setProducts } = useProductStore((state) => state)
   const [, setErrorMessage] = useState("");
-
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   useEffect(() => {
     if (product) {
@@ -21,8 +30,18 @@ const EditProductModal = ({ product, closeModal }) => {
         name: product.name || '',
         price: product.price || '',
         countInStock: product.countInStock || '',
-        image: product.image || ''
+        image: product.image || '',
+        description: product.description || '',
+        descriptionDetail: product.descriptionDetail || '',
+        discount: product.discount || '',
+        type: product.type || '',
+        isBestSeller: product.isBestSeller || false,
+        origin: product.origin || '',
+        material: product.material || '',
+        size: product.size || '',
+        warranty: product.warranty || ''
       });
+      setSelectedCategory(product.type || "");
     }
   }, [product]);
 
@@ -61,10 +80,8 @@ const EditProductModal = ({ product, closeModal }) => {
 
     try {
       const updatedData = {
-        name: form.name,
-        price: form.price,
-        countInStock: form.countInStock,
-        image: form.image || ''
+        ...form,
+        type: selectedCategory
       };
 
       const response = await axios.put(
@@ -100,6 +117,16 @@ const EditProductModal = ({ product, closeModal }) => {
     }
   };
 
+  const handleCategoryChange = (e) => {
+    const value = e.target.value;
+    setSelectedCategory(value);
+    if (value !== "new") {
+      setForm({ ...form, type: value });
+    } else {
+      setForm({ ...form, type: "" });
+    }
+  };
+
   return (
     <div className="modal fade show d-block" id="editProductModal">
       <div className="modal-dialog">
@@ -117,10 +144,111 @@ const EditProductModal = ({ product, closeModal }) => {
               src={form.image}
               alt="Product"
               style={{ width: "100px", height: "100px", objectFit: "cover", marginBottom: "10px" }}
+              className="m-3"
             />}
             <input type="text" className="form-control mb-3" placeholder="Tên sản phẩm" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+
+            <div className="mb-3">
+              <label className="form-label fw-bold">Loại Sản Phẩm</label>
+              <select
+                className="form-select"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+                required
+              >
+                <option value="">-- Chọn loại sản phẩm --</option>
+                {[...new Set(products.map((productItem) => productItem.type))]
+                  .filter((type) => type) // Loại bỏ giá trị rỗng
+                  .map((type, index) => (
+                    <option key={index} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                <option value="new">+ Thêm loại mới</option>
+              </select>
+              {selectedCategory === "new" && (
+                <input
+                  type="text"
+                  className="form-control mt-2"
+                  placeholder="Nhập loại sản phẩm mới"
+                  value={form.type}
+                  onChange={(e) => setForm({ ...form, type: e.target.value })}
+                  required
+                />
+              )}
+            </div>
+
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Xuất xứ"
+              value={form.origin}
+              onChange={(e) => setForm({ ...form, origin: e.target.value })}
+            />
+
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Chất liệu"
+              value={form.material}
+              onChange={(e) => setForm({ ...form, material: e.target.value })}
+            />
+
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Kích thước"
+              value={form.size}
+              onChange={(e) => setForm({ ...form, size: e.target.value })}
+            />
+
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Bảo hành"
+              value={form.warranty}
+              onChange={(e) => setForm({ ...form, warranty: e.target.value })}
+            />
+
             <input type="number" className="form-control mb-3" placeholder="Giá" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
             <input type="number" className="form-control mb-3" placeholder="Số lượng" value={form.countInStock} onChange={(e) => setForm({ ...form, countInStock: e.target.value })} />
+
+            <input
+              type="number"
+              className="form-control mb-3"
+              placeholder="Giảm giá (%)"
+              value={form.discount}
+              onChange={(e) => setForm({ ...form, discount: e.target.value })}
+            />
+
+            <textarea
+              className="form-control mb-3"
+              placeholder="Mô tả"
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+            />
+
+            <textarea
+              className="form-control mb-3"
+              placeholder="Mô tả chi tiết"
+              value={form.descriptionDetail}
+              onChange={(e) => setForm({ ...form, descriptionDetail: e.target.value })}
+            />
+
+            <div className="form-check mb-3">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="isBestSeller"
+                checked={form.isBestSeller}
+                onChange={(e) =>
+                  setForm({ ...form, isBestSeller: e.target.checked })
+                }
+              />
+              <label className="form-check-label" htmlFor="isBestSeller">
+                Sản phẩm bán chạy
+              </label>
+            </div>
             <button className="btn btn-primary w-100" onClick={handleSave}>Lưu</button>
           </div>
         </div>

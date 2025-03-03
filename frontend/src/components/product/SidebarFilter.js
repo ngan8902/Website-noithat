@@ -14,14 +14,15 @@ const SidebarFilter = () => {
                     </select>
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="materialSelect" className="form-label">Chất Liệu</label>
-                    <select className="form-select" id="materialSelect">
-                        <option value="">Chọn chất liệu</option>
-                        <option value="leather">Da</option>
-                        <option value="fabric">Vải</option>
-                        <option value="wood">Gỗ</option>
+                    <label htmlFor="rateSelect" className="form-label">Đánh Giá</label>
+                    <select className="form-select" id="rateSelect">
+                        <option value="">Chọn đánh giá</option>
+                        <option value="5">★★★★★</option>
+                        <option value="4">★★★★☆ - trở lên</option>
+                        <option value="3">★★★☆☆ - trở lên</option>
                     </select>
                 </div>
+
                 <button type="submit" className="btn btn-dark w-100">Áp Dụng</button>
             </form>
         </div>

@@ -9,7 +9,6 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalType, setModalType] = useState(null);
   
-
 //   useEffect(() => {
 //     const delayDebounce = setTimeout(() => {
 //         getProducts(8, 0, search);
@@ -17,7 +16,6 @@ const ProductList = () => {
 
 //     return () => clearTimeout(delayDebounce);
 // }, [search]); 
-
 
   const handleDelete = (_id) => {
     removeProduct(_id);
@@ -54,51 +52,63 @@ const ProductList = () => {
         <input
           type="text"
           className="form-control"
+          id="searchProduct"
+          name="searchProduct"
           placeholder="Tìm kiếm sản phẩm theo ID hoặc tên sản phẩm..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      <table className="table table-bordered mt-3">
-        <thead className="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Hình Ảnh</th>
-            <th>Tên Sản Phẩm</th>
-            <th>Giá</th>
-            <th>Số Lượng</th>
-            <th>Mức Giảm Giá</th>
-            <th>Hành Động</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products && products.length > 0 ? (
-            products.map((product) => (
-              <tr key={product._id} >
-                <td>{product.productCode || ""}</td>
-                <td>
-                  <img src={product.image || "https://via.placeholder.com/100"} 
-                  alt={product.name} 
-                  style={{ width: "100px", height: "100px", objectFit: "cover" }}/>
-                </td>
-                <td>{product.name}</td>
-                <td>{product.price} VND</td>
-                <td>{product.countInStock}</td>
-                <td>{product.discount} %</td>
-                <td>
-                  <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
-                  <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
-                </td>
-              </tr>
-            ))
-          ) : (
+      <div
+        style={{
+          maxHeight: products.length > 4 ? "400px" : "auto",
+          overflowY: products.length > 4 ? "auto" : "visible",
+          border: "1px solid #ddd",
+          borderRadius: "5px",
+          marginTop: "10px",
+        }}
+      >
+        <table className="table table-bordered mt-3">
+          <thead className="table-dark">
             <tr>
-              <td colSpan="5" className="text-center text-muted">Không tìm thấy sản phẩm nào!</td>
+              <th>ID</th>
+              <th>Hình Ảnh</th>
+              <th>Tên Sản Phẩm</th>
+              <th>Giá</th>
+              <th>Số Lượng</th>
+              <th>Mức Giảm Giá</th>
+              <th>Hành Động</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products && products.length > 0 ? (
+              products.map((product) => (
+                <tr key={product._id} >
+                  <td>{product.productCode || ""}</td>
+                  <td>
+                    <img src={product.image || "https://via.placeholder.com/100"} 
+                    alt={product.name} 
+                    style={{ width: "100px", height: "100px", objectFit: "cover" }}/>
+                  </td>
+                  <td>{product.name}</td>
+                  <td>{product.price} VND</td>
+                  <td>{product.countInStock}</td>
+                  <td>{product.discount} %</td>
+                  <td>
+                    <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
+                    <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="text-center text-muted">Không tìm thấy sản phẩm nào!</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {modalType === "add" && <AddProductModal closeModal={closeModal} refreshProducts={getProducts} />}
       {modalType === "edit" && selectedProduct && <EditProductModal product={selectedProduct}  closeModal={closeModal} />}

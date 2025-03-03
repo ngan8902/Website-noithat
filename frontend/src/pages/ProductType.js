@@ -1,24 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import HeroSection from "../components/HeroSection";
 import SidebarFilter from "../components/product/SidebarFilter";
 import { Link } from "react-router-dom";
 import useProductStore from "../store/productStore";
 import { useParams } from "react-router-dom";
+import Pagination from "../components/product/Pagination";
 
 const defaultImage = "https://via.placeholder.com/300";
+const PAGE = 6; 
 
 const ProductType = () => {
     const { productByType: products, getProductByType } = useProductStore();
-
     const { id } = useParams();
+
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         getProductByType(id);
+        setCurrentPage(1);
     }, [getProductByType, id]);
+
+    const sortProducts = products
+        .slice()
+        .sort((a, b) => (b.discount || 0) - (a.discount || 0));
+
+    const totalPages = Math.ceil(sortProducts.length / PAGE);
+
+    const paginatProducts = sortProducts.slice(
+        (currentPage - 1) * PAGE,
+        currentPage * PAGE
+    );
 
     return (
         <div>
-            <HeroSection title={products.length > 0 ? products[0].type : "Sản phẩm"} background="/assets/background-sanpham/860.jpg" />
+            <HeroSection title={products.length > 0 ? products[0].type : "Sản phẩm"} background="/images/banner3.png" />
 
             <section className="py-5">
                 <div className="container">
@@ -29,7 +44,7 @@ const ProductType = () => {
                         <div className="col-md-9">
                             <div className="position-relative">
                                 <div className="row g-4 justify-content-left">
-                                    {products.map((product) => {
+                                    {paginatProducts.map((product) => {
                                         const finalPrice = product.discount
                                             ? product.price - (product.price * product.discount / 100)
                                             : product.price;
@@ -59,16 +74,28 @@ const ProductType = () => {
                                                             <p className="fw-bold">Giá: {product.price.toLocaleString()} VND</p>
                                                         )}
 
+                                                        <div className="rating">
+                                                            {[...Array(5)].map((_, index) => (
+                                                                <i
+                                                                    key={index}
+                                                                    className={`bi ${index < product.rating ? "bi-star-fill text-warning" : "bi-star text-secondary"}`}
+                                                                ></i>
+                                                            ))}
+                                                        </div>
+
                                                         <Link to={`/${encodeURIComponent(product.name)}/${product._id}`} className="btn btn-dark w-100">
                                                             Xem Chi Tiết
                                                         </Link>
-
                                                     </div>
                                                 </div>
                                             </div>
                                         );
                                     })}
                                 </div>
+
+                                {totalPages > 1 && (
+                                    <Pagination totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+                                )}
                             </div>
                         </div>
                     </div>

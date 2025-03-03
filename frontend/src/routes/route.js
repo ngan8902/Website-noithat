@@ -2,7 +2,6 @@ import React from "react";
 import Home from "../pages/Home";
 import AboutDetail from "../pages/AboutDetail";
 import Contact from "../pages/Contact";
-import SofaPage from "../pages/Sofa";
 import ProductDetail from "../pages/ProductDetail";
 import PolicyTerms from "../pages/PolicyTerms";
 import Checkout from "../pages/Checkout";
@@ -22,7 +21,6 @@ export const publicRoute = [
   { path: "/home", element: <Home />, isShow: true },
   { path: "/about", element: <AboutDetail />, isShow: true },
   { path: "/contact", element: <Contact />, isShow: true },
-  { path: "/sofa", element: <SofaPage />, isShow: true },
   { path: "/:name/:id", element: <ProductDetail />, isShow: true },
   { path: "/policy-terms", element: <PolicyTerms />, isShow: true },
   { path: "/checkout", element: <Checkout />, isShow: true },

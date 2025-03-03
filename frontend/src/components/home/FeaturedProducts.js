@@ -1,57 +1,125 @@
-import React from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import useProductStore from "../../store/productStore";
 
 const FeaturedProducts = () => {
-  const navigate = useNavigate();
-  
-  const products = [
-    {
-      title: "Sofa Sang Trọng",
-      description: "Một chiếc sofa đẳng cấp cho phòng khách của bạn.",
-      image: "/assets/sofa/sofa.jpg",
-      route: "/sofa"
-    },
-    {
-      title: "Bàn Ăn Hiện Đại",
-      description: "Thiết kế hiện đại và tinh tế cho không gian bếp.",
-      image: "/assets/ban-an/ban-an.jpg",
-      route: "/ban-an"
-    },
-    {
-      title: "Ghế Thư Giãn",
-      description: "Thư giãn sau một ngày dài với chiếc ghế êm ái.",
-      image: "/assets/ghe-thu-gian/ghe-thu-gian.jpg",
-      route: "/ghe-thu-gian"
-    }
-  ];
+    const navigate = useNavigate();
+    const { products, getProducts } = useProductStore();
 
-  const handleViewDetail = (route) => {
-    navigate(route);
-  };
+    useEffect(() => {
+        getProducts();
+    }, [getProducts]);
 
-  return (
-    <section className="py-5">
-      <div className="container">
-        <h2 className="text-center fw-bold mb-5">Sản Phẩm Nổi Bật</h2>
-        <div className="row g-4">
-          {products.map((product, index) => (
-            <div className="col-md-4" key={index}>
-              <div className="card h-100">
-                <img src={product.image} className="card-img-top" alt={product.title} />
-                <div className="card-body">
-                  <h5 className="card-title">{product.title}</h5>
-                  <p className="card-text">{product.description}</p>
-                  <button className="btn btn-link text-decoration-none" onClick={() => handleViewDetail(product.route)}>
-                    Xem Chi Tiết
-                  </button>
+    const bestSellerProducts = products.filter(product => product.isBestSeller);
+    
+    const itemsPerPage = 3;
+    const totalProducts = bestSellerProducts.length;
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const nextSlide = useCallback(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % totalProducts);
+    }, [totalProducts]);
+
+    const prevSlide = () => {
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + totalProducts) % totalProducts);
+    };
+
+    useEffect(() => {
+        if (bestSellerProducts.length > itemsPerPage) {
+            const interval = setInterval(nextSlide, 4000);
+            return () => clearInterval(interval);
+        }
+    }, [bestSellerProducts, nextSlide]);
+    
+    const visibleProducts = [
+        bestSellerProducts[(currentIndex) % totalProducts],
+        bestSellerProducts[(currentIndex + 1) % totalProducts],
+        bestSellerProducts[(currentIndex + 2) % totalProducts]
+    ];
+
+    return (
+        <section className="py-5">
+            <div className="container">
+                <h2 className="text-center fw-bold mb-5">Sản Phẩm Nổi Bật</h2>
+                <div className="position-relative overflow-hidden">
+                    
+                    {bestSellerProducts.length > itemsPerPage && (
+                        <button 
+                            className="btn btn-outline-dark btn-secondary"
+                            onClick={prevSlide}
+                            style={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "10px",
+                                transform: "translateY(-50%)",
+                                zIndex: 10
+                            }}
+                        >
+                            <i className="bi bi-chevron-compact-left"></i>
+                        </button>
+                    )}
+
+                    <div 
+                      className="d-flex justify-content-center"
+                      style={{
+                          transition: "transform 0.5s ease-in-out",
+                          transform: `translateX(0%)`
+                      }}
+                    >
+                      {visibleProducts.map((product) => (
+                          <div 
+                              className="col-md-4 flex-shrink-0"
+                              key={product._id} 
+                              style={{ 
+                                  minWidth: `calc(100% / ${itemsPerPage})`,
+                                  padding: "0 10px"
+                              }}
+                          >
+                              <div className="card h-100 shadow-sm">
+                                  <img 
+                                    src={product.image} 
+                                    className="card-img-top" 
+                                    alt={product.name} 
+                                    style={{ 
+                                        height: "400px",
+                                        objectFit: "cover",
+                                        width: "100%"
+                                    }}
+                                  />
+                                  <div className="card-body">
+                                      <h5 className="card-title">{product.name}</h5>
+                                      <p className="card-text">{product.description}</p>
+                                      <button 
+                                          className="btn btn-link text-decoration-none"
+                                          onClick={() => navigate(`/product/${product._id}`)}
+                                      >
+                                          Xem Chi Tiết
+                                      </button>
+                                  </div>
+                              </div>
+                          </div>
+                      ))}
+                    </div>
+
+                    {bestSellerProducts.length > itemsPerPage && (
+                        <button 
+                            className="btn btn-outline-dark btn-secondary"
+                            onClick={nextSlide}
+                            style={{
+                                position: "absolute",
+                                top: "50%",
+                                right: "10px",
+                                transform: "translateY(-50%)",
+                                zIndex: 10
+                            }}
+                        >
+                            <i className="bi bi-chevron-compact-right"></i>
+                        </button>
+                    )}
                 </div>
-              </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+        </section>
+    );
 };
 
 export default FeaturedProducts;

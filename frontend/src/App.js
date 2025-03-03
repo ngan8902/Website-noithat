@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { route, publicRoute } from "./routes/route"; 
+import { route } from "./routes/route"; 
 import Default from "./components/Default";
 import AdminLayout from "./components/layout/AdminLayout";
 import useProductStore from "./store/productStore";
@@ -23,9 +23,7 @@ function App() {
 const AppRoutes = ({ products }) => {
   const location = useLocation();
 
-  const publicPaths = publicRoute.map((r) => r.path);
-  
-  const isPublicRoute = publicPaths.includes(location.pathname);
+  const isPublicRoute = !location.pathname.startsWith("/admin");
 
   return (
     <div className="bg-gray-100 text-gray-900">
