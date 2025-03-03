@@ -10,7 +10,7 @@ const FeaturedProducts = () => {
         getProducts();
     }, [getProducts]);
 
-    const bestSellerProducts = products.filter(product => product.isBestSeller);
+    const bestSellerProducts = products.filter(product => product.isBestSeller) || [];
     
     const itemsPerPage = 3;
     const totalProducts = bestSellerProducts.length;
@@ -25,17 +25,19 @@ const FeaturedProducts = () => {
     };
 
     useEffect(() => {
-        if (bestSellerProducts.length > itemsPerPage) {
+        if (totalProducts > itemsPerPage) {
             const interval = setInterval(nextSlide, 4000);
             return () => clearInterval(interval);
         }
-    }, [bestSellerProducts, nextSlide]);
-    
-    const visibleProducts = [
-        bestSellerProducts[(currentIndex) % totalProducts],
-        bestSellerProducts[(currentIndex + 1) % totalProducts],
-        bestSellerProducts[(currentIndex + 2) % totalProducts]
-    ];
+    }, [totalProducts, nextSlide]);
+
+    const visibleProducts = totalProducts >= itemsPerPage 
+        ? [
+            bestSellerProducts[currentIndex % totalProducts] || {},
+            bestSellerProducts[(currentIndex + 1) % totalProducts] || {},
+            bestSellerProducts[(currentIndex + 2) % totalProducts] || {}
+          ]
+        : bestSellerProducts;
 
     return (
         <section className="py-5">
@@ -43,7 +45,7 @@ const FeaturedProducts = () => {
                 <h2 className="text-center fw-bold mb-5">Sản Phẩm Nổi Bật</h2>
                 <div className="position-relative overflow-hidden">
                     
-                    {bestSellerProducts.length > itemsPerPage && (
+                    {totalProducts > itemsPerPage && (
                         <button 
                             className="btn btn-outline-dark btn-secondary"
                             onClick={prevSlide}
@@ -66,10 +68,11 @@ const FeaturedProducts = () => {
                           transform: `translateX(0%)`
                       }}
                     >
-                      {visibleProducts.map((product) => (
+                      {visibleProducts.map((product, index) => 
+                        product && product.image ? (
                           <div 
                               className="col-md-4 flex-shrink-0"
-                              key={product._id} 
+                              key={index} 
                               style={{ 
                                   minWidth: `calc(100% / ${itemsPerPage})`,
                                   padding: "0 10px"
@@ -79,7 +82,7 @@ const FeaturedProducts = () => {
                                   <img 
                                     src={product.image} 
                                     className="card-img-top" 
-                                    alt={product.name} 
+                                    alt={product.name || "Sản phẩm"} 
                                     style={{ 
                                         height: "400px",
                                         objectFit: "cover",
@@ -87,8 +90,8 @@ const FeaturedProducts = () => {
                                     }}
                                   />
                                   <div className="card-body">
-                                      <h5 className="card-title">{product.name}</h5>
-                                      <p className="card-text">{product.description}</p>
+                                      <h5 className="card-title">{product.name || "Sản phẩm chưa có tên"}</h5>
+                                      <p className="card-text">{product.description || "Mô tả chưa có"}</p>
                                       <button 
                                           className="btn btn-link text-decoration-none"
                                           onClick={() => navigate(`/product/${product._id}`)}
@@ -98,10 +101,11 @@ const FeaturedProducts = () => {
                                   </div>
                               </div>
                           </div>
-                      ))}
+                        ) : null
+                      )}
                     </div>
 
-                    {bestSellerProducts.length > itemsPerPage && (
+                    {totalProducts > itemsPerPage && (
                         <button 
                             className="btn btn-outline-dark btn-secondary"
                             onClick={nextSlide}
