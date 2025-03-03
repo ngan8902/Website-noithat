@@ -1,12 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const CustomerInfo = ({ hasAddress, savedAddresses, selectedAddress, setSelectedAddress, newAddress, setNewAddress }) => {
     const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
+    const [receiver, setReceiver] = useState({
+        fullName: "",
+        phone: "",
+        address: "",
+    });
+
+    useEffect(() => {
+        console.log(receiver)
+        setReceiver(receiver);
+    }, [receiver, setReceiver]);
 
     const handleAddressChange = (e) => {
         const value = e.target.value;
         setSelectedAddress(value);
         setIsAddingNewAddress(value === "");
+        
+        if (value !== "") {
+            const selected = savedAddresses.find(addr => addr.address === value);
+            setReceiver(selected ? { ...selected } : {});
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setReceiver({ ...receiver, [name]: value });
     };
 
     return (
@@ -16,11 +36,25 @@ const CustomerInfo = ({ hasAddress, savedAddresses, selectedAddress, setSelected
             <form>
                 <div className="mb-3">
                     <label className="form-label">Họ và Tên</label>
-                    <input type="text" className="form-control" placeholder="Họ và tên người nhận" />
+                    <input type="text"
+                        className="form-control"
+                        placeholder="Họ và tên người nhận"
+                        name="fullName"
+                        value={receiver.fullName}
+                        onChange={handleInputChange}
+                        required 
+                    />
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Số Điện Thoại</label>
-                    <input type="tel" className="form-control" placeholder="Số điện thoại người nhận" />
+                    <input  type="tel"
+                        className="form-control"
+                        placeholder="Số điện thoại người nhận"
+                        name="phone"
+                        value={receiver.phone}
+                        onChange={handleInputChange}
+                        required
+                    />
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Chọn Địa Chỉ</label>
@@ -42,8 +76,10 @@ const CustomerInfo = ({ hasAddress, savedAddresses, selectedAddress, setSelected
                         <input
                             type="text"
                             className="form-control"
-                            value={newAddress}
-                            onChange={(e) => setNewAddress(e.target.value)}
+                            placeholder="Địa chỉ mới"
+                            name="address"
+                            value={receiver.address}
+                            onChange={handleInputChange}
                             required
                         />
                     </div>
