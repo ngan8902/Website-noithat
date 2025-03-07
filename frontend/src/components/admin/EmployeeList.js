@@ -72,7 +72,10 @@ const EmployeeList = () => {
         </thead>
         <tbody>
           {staffList && staffList.length > 0 ? (
-            staffList.map((staff) => (
+            staffList.filter(staff => 
+              staff.name.toLowerCase().includes(search.toLowerCase()) || 
+              staff.staffcode.toLowerCase().includes(search.toLowerCase())
+            ).map((staff) => (
               <tr key={staff._id}>
                 <td>{staff.staffcode}</td>
                 <td>
