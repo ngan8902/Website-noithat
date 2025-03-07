@@ -7,22 +7,61 @@ import { useParams } from "react-router-dom";
 import Pagination from "../components/product/Pagination";
 
 const defaultImage = "https://via.placeholder.com/300";
-const PAGE = 6; 
+const PAGE = 6;
 
 const ProductType = () => {
     const { productByType: products, getProductByType } = useProductStore();
     const { id } = useParams();
 
     const [currentPage, setCurrentPage] = useState(1);
+    const [filters, setFilters] = useState({ priceRange: "", rating: "" });
 
     useEffect(() => {
         getProductByType(id);
         setCurrentPage(1);
     }, [getProductByType, id]);
 
-    const sortProducts = products
-        .slice()
-        .sort((a, b) => (b.discount || 0) - (a.discount || 0));
+    const applyFilters = (products) => {
+        return products.filter(product => {
+            const finalPrice = product.discount
+                ? product.price - (product.price * product.discount / 100)
+                : product.price;
+
+            // Lọc theo khoảng giá
+            if (filters.priceRange) {
+                switch (filters.priceRange) {
+                    case "1":
+                        if (finalPrice >= 5000000) return false;
+                        break;
+                    case "2":
+                        if (finalPrice < 5000000 || finalPrice > 10000000) return false;
+                        break;
+                    case "3":
+                        if (finalPrice < 10000000 || finalPrice > 15000000) return false;
+                        break;
+                    case "4":
+                        if (finalPrice <= 15000000) return false;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // Lọc theo đánh giá
+            if (filters.rating && product.rating < parseInt(filters.rating)) {
+                return false;
+            }
+
+            return true;
+        });
+    };
+
+    const filteredProducts = applyFilters(products);
+    const sortProducts = filteredProducts.sort((a, b) => (b.discount || 0) - (a.discount || 0));
+
+    // const sortProducts = products
+    //     .slice()
+    //     .sort((a, b) => (b.discount || 0) - (a.discount || 0));
 
     const totalPages = Math.ceil(sortProducts.length / PAGE);
 
@@ -39,7 +78,7 @@ const ProductType = () => {
                 <div className="container">
                     <h2 className="text-center fw-bold mb-5">Danh Mục {products.length > 0 ? products[0].type : "Sản phẩm"}</h2>
                     <div className="row">
-                        <SidebarFilter />
+                        <SidebarFilter onFilterApply={setFilters} />
 
                         <div className="col-md-9">
                             <div className="position-relative">
