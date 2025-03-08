@@ -26,7 +26,7 @@ const FeaturedProducts = () => {
 
     useEffect(() => {
         if (totalProducts > itemsPerPage) {
-            const interval = setInterval(nextSlide, 4000);
+            const interval = setInterval(nextSlide, 5000);
             return () => clearInterval(interval);
         }
     }, [totalProducts, nextSlide]);
@@ -103,9 +103,8 @@ const FeaturedProducts = () => {
                           </div>
                         ) : null
                       )}
-                    </div>
 
-                    {totalProducts > itemsPerPage && (
+                      {totalProducts > itemsPerPage && (
                         <button 
                             className="btn btn-outline-dark btn-secondary"
                             onClick={nextSlide}
@@ -120,7 +119,8 @@ const FeaturedProducts = () => {
                             <i className="bi bi-chevron-compact-right"></i>
                         </button>
                     )}
-                </div>
+                    </div>
+                </div>  
             </div>
         </section>
     );

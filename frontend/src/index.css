@@ -56,7 +56,10 @@ section {
   background: #343a40;
   padding: 20px;
   overflow-y: auto;
-  width: 18%;
+  width: 20%;
+  transition: width 0.3s ease-in-out;
+  scrollbar-width: thin;
+  scrollbar-color: #6c757d #343a40;
 }
 
 .sidebar.collapsed {
@@ -71,20 +74,25 @@ section {
   overflow: auto;
 }
 
-/*Hover màu cho các phần tử*/
+/* Hover màu cho các phần tử */
 .transition-hover {
-  transition: color 0.3s ease-in-out;
+  transition: color 0.3s ease-in-out, background 0.3s ease-in-out;
 }
 
 .transition-hover:hover {
-  color: lightgray !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  padding-left: 5px;
 }
 
+/* Hover cho dropdown */
 .dropdown-item:hover {
-  background-color: grey !important;
+  background-color: #495057 !important;
+  color: white !important;
 }
 
-/*Phản hồi cho sales manager*/
+/* Phản hồi cho sales manager */
 .feedback-btn {
   position: absolute;
   top: 10px;
@@ -101,7 +109,7 @@ section {
   padding: 5px 10px;
 }
 
-/*Hình ảnh sản phẩm khi xem chi tiết*/
+/* Hình ảnh sản phẩm khi xem chi tiết */
 .product-image {
     width: 100%; 
     height: auto; 
@@ -173,7 +181,7 @@ section {
     margin-top: 10px;
 }
 
-/*Form Password*/
+/* Form Password */
 .password-container {
     position: relative;
     width: 100%;
@@ -307,4 +315,100 @@ section {
 
 .chatbox-footer button:hover {
   background: #0056b3;
+}
+
+/* Chat with Customers */
+.chat-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.chat-list {
+  width: 30%;
+  height: 100vh;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  padding: 15px;
+}
+
+.chat-item {
+  transition: background-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-radius: 10px;
+}
+
+.chat-item:hover {
+  background-color: #e9ecef !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-item img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-messages {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #ffffff;
+  padding: 15px;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message.customer {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: black;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 70%;
+  margin-bottom: 10px;
+}
+
+.message.employee {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 70%;
+  margin-bottom: 10px;
+}
+
+.message-input input {
+  border-radius: 50px;
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+.message-input button {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }

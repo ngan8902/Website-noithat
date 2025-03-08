@@ -3,7 +3,7 @@ import axios from "axios";
 import useProductStore from "../../store/productStore";
 
 const AddProductModal = ({ closeModal, refreshProducts }) => {
-  const [ setError ] = useState('');
+  const [ ,setError ] = useState('');
   const { addProducts, products } = useProductStore((state) => state);
 
   const [product, setProduct] = useState({

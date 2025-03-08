@@ -15,6 +15,7 @@ import StaffAttendanceHistory from "../pages/StaffAttendanceHistory";
 import Employee from "../pages/Employee";
 import Resource from "../pages/Resource";
 import ProductType from "../pages/ProductType";
+import Chat from "../pages/Chat";
 
 export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
@@ -37,6 +38,7 @@ export const privateRoute = [
   { path: "/admin/staff-attendance-history", element: <StaffAttendanceHistory />, isShow: false },
   { path: "/admin/employee", element: <Employee />, isShow: false },
   { path: "/admin/resource", element: <Resource />, isShow: false },
+  { path: "/admin/chat", element: <Chat />, isShow: false},
 ]
 
 export const route = [
