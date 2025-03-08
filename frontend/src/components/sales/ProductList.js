@@ -4,22 +4,16 @@ import EditProductModal from "./EditProductModal";
 import useProductStore from "../../store/productStore";
 
 const ProductList = () => {
-  const {getProducts, products, removeProduct } = useProductStore((state) => state);
+  const { getProducts, products, removeProduct } = useProductStore((state) => state);
   const [search, setSearch] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalType, setModalType] = useState(null);
-  
-//   useEffect(() => {
-//     const delayDebounce = setTimeout(() => {
-//         getProducts(8, 0, search);
-//     }, 500); 
 
-//     return () => clearTimeout(delayDebounce);
-// }, [search]); 
+
 
   const handleDelete = (_id) => {
     removeProduct(_id);
-    window.location.reload()  
+    window.location.reload()
   };
 
   const openAddModal = () => {
@@ -83,13 +77,16 @@ const ProductList = () => {
           </thead>
           <tbody>
             {products && products.length > 0 ? (
-              products.map((product) => (
+              products.filter(product => 
+                product.name.toLowerCase().includes(search.toLowerCase()) || 
+                product.productCode.toLowerCase().includes(search.toLowerCase())
+              ).map((product) => (
                 <tr key={product._id} >
                   <td>{product.productCode || ""}</td>
                   <td>
-                    <img src={product.image || "https://via.placeholder.com/100"} 
-                    alt={product.name} 
-                    style={{ width: "100px", height: "100px", objectFit: "cover" }}/>
+                    <img src={product.image || "https://via.placeholder.com/100"}
+                      alt={product.name}
+                      style={{ width: "100px", height: "100px", objectFit: "cover" }} />
                   </td>
                   <td>{product.name}</td>
                   <td>{product.price} VND</td>
@@ -111,7 +108,7 @@ const ProductList = () => {
       </div>
 
       {modalType === "add" && <AddProductModal closeModal={closeModal} refreshProducts={getProducts} />}
-      {modalType === "edit" && selectedProduct && <EditProductModal product={selectedProduct}  closeModal={closeModal} />}
+      {modalType === "edit" && selectedProduct && <EditProductModal product={selectedProduct} closeModal={closeModal} />}
 
     </div>
   );

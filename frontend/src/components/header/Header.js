@@ -89,12 +89,18 @@ const Header = () => {
         </nav>
 
         <div className="d-flex align-items-center">
-          <div className="input-group me-3">
-            <input type="text" className="form-control text-black border-0" placeholder="Tìm kiếm..." />
-            <span className="input-group-text bg-secondary border-0">
-              <button className="btn text-white"><i className="bi bi-search"></i></button>
-            </span>
+          <div className="input-group me-3" style={{ maxWidth: "300px" }}>
+            <input 
+              type="text" 
+              className="form-control text-black border-0 rounded-start" 
+              placeholder="Tìm kiếm..." 
+              style={{ boxShadow: "none" }} 
+            />
+            <button className="btn bg-primary text-white rounded-end">
+              <i className="bi bi-search"></i>
+            </button>
           </div>
+
           <a href="/cart" className="nav-link text-white me-3 position-relative">
             <i className="bi bi-cart-fill"></i>
             {cartCount > 0 && (

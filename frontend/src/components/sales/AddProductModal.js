@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import useProductStore from "../../store/productStore";
 
+const key = "BGSJ6545DHHHFGS"; // Key nay dung de tranh User nhap trung key tam
+
 const AddProductModal = ({ closeModal, refreshProducts }) => {
-  const [ ,setError ] = useState('');
+  const [error, setError] = useState('');
   const { addProducts, products } = useProductStore((state) => state);
 
   const [product, setProduct] = useState({
@@ -11,7 +13,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
     price: "",
     image: "",
     countInStock: "",
-    description:"",
+    description: "",
     descriptionDetail: "",
     discount: "",
     type: "",
@@ -37,6 +39,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
   };
 
   const handleAdd = (e) => {
+    console.log('Test');
     e.preventDefault();
     if (!product.name || !product.price || !product.image || !product.countInStock || !product.type || (!selectedCategory && !newCategory) || !product.origin || !product.material || !product.size || !product.warranty) {
       setError("Vui lòng điền đầy đủ thông tin!");
@@ -44,7 +47,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
     }
     console.log("Dữ liệu gửi lên API:", product);
 
-    const finalCategory = selectedCategory === "new" ? newCategory : selectedCategory;
+    const finalCategory = selectedCategory === key ? newCategory : selectedCategory;
 
     const newProduct = {
       ...product,
@@ -61,7 +64,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
 
         if (data.status === 'OK') {
           addProducts(newProduct)
-          window.location.reload()
+          window.location.reload({ closeModal })
         } else {
           setError(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
           console.error('lỗi:', setError)
@@ -94,7 +97,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
           </div>
           <div className="modal-body">
             <label className="form-label">
-              Ảnh sản phẩm
+              Ảnh sản phẩm (*)
               <input type="file" className="form-control mb-3" accept="image/*" onChange={handleFileChange} />
             </label>
             {product.image && (
@@ -109,7 +112,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
             <input
               type="text"
               className="form-control mb-3"
-              placeholder="Tên sản phẩm"
+              placeholder="Tên sản phẩm (*)"
               value={product.name}
               onChange={(e) => setProduct({ ...product, name: e.target.value })}
             />
@@ -122,15 +125,15 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
                 onChange={handleCategoryChange}
                 required
               >
-               <option value="">-- Chọn loại sản phẩm --</option>
+                <option value="">-- Chọn loại sản phẩm (*) --</option>
                 {[...new Set(products.map((productItem) => productItem.type))].map((type, index) => (
                   <option key={index} value={type}>{type}</option>
                 ))}
-                <option value="new">+ Thêm loại mới</option>
+                <option value={key}>+ Thêm loại mới</option>
               </select>
             </div>
-
-            {selectedCategory === "new" && (
+            
+            {selectedCategory === key && (
               <div className="mb-3">
                 <label className="form-label fw-bold">Nhập Loại Mới</label>
                 <input
@@ -144,15 +147,15 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
               </div>
             )}
 
-            <input type="text" className="form-control mb-3" placeholder="Xuất xứ" value={product.origin} onChange={(e) => setProduct({ ...product, origin: e.target.value })} />
-            <input type="text" className="form-control mb-3" placeholder="Chất liệu" value={product.material} onChange={(e) => setProduct({ ...product, material: e.target.value })} />
-            <input type="text" className="form-control mb-3" placeholder="Kích thước" value={product.size} onChange={(e) => setProduct({ ...product, size: e.target.value })} />
-            <input type="text" className="form-control mb-3" placeholder="Bảo hành" value={product.warranty} onChange={(e) => setProduct({ ...product, warranty: e.target.value })} />
+            <input type="text" className="form-control mb-3" placeholder="Xuất xứ (*)" value={product.origin} onChange={(e) => setProduct({ ...product, origin: e.target.value })} />
+            <input type="text" className="form-control mb-3" placeholder="Chất liệu (*)" value={product.material} onChange={(e) => setProduct({ ...product, material: e.target.value })} />
+            <input type="text" className="form-control mb-3" placeholder="Kích thước (*)" value={product.size} onChange={(e) => setProduct({ ...product, size: e.target.value })} />
+            <input type="text" className="form-control mb-3" placeholder="Bảo hành (*)" value={product.warranty} onChange={(e) => setProduct({ ...product, warranty: e.target.value })} />
 
             <input
               type="number"
               className="form-control mb-3"
-              placeholder="Giá"
+              placeholder="Giá (*)"
               value={product.price}
               onChange={(e) => setProduct({ ...product, price: e.target.value })}
             />
@@ -160,7 +163,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
             <input
               type="number"
               className="form-control mb-3"
-              placeholder="Số lượng"
+              placeholder="Số lượng (*)"
               value={product.countInStock}
               onChange={(e) => setProduct({ ...product, countInStock: e.target.value })}
             />
@@ -196,6 +199,10 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
                 onChange={(e) => setProduct({ ...product, isBestSeller: e.target.checked })}
               />
               <label className="form-check-label" htmlFor="bestSeller">Sản phẩm bán chạy</label>
+              <br></br>
+              {
+                error ? <code>{error}</code> : null
+              }
             </div>
 
             <button className="btn btn-primary w-100" onClick={handleAdd}>
