@@ -6,9 +6,10 @@ const cors = require('cors')
 const server = createServer(app);
 app.set('port', process.argv[2] || 8000);
 const port = process.env.PORT || app.get('port');
-const mongoose  = require("mongoose");
+const mongoose = require("mongoose");
 const routers = require("./router");
 const bodyParser = require("body-parser");
+const { initalizeChatSocket } = require('./chat/chat.socket')
 
 dotenv.config();
 
@@ -31,7 +32,8 @@ mongoose.connect(`${process.env.MONGO_DB}`)
     console.log(err)
   })
 
+initalizeChatSocket(server);
 
 server.listen(port, function () {
-    console.log(`Example app listening on port ${port}!`);
-  });
+  console.log(`Example app listening on port ${port}!`);
+});

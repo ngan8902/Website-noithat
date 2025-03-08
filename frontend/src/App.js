@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import { route } from "./routes/route"; 
+import { route } from "./routes/route";
 import Default from "./components/Default";
 import AdminLayout from "./components/layout/AdminLayout";
 import useProductStore from "./store/productStore";

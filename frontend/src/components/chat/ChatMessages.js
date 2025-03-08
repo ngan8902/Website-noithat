@@ -1,33 +1,53 @@
 import React, { useState, useEffect, useRef } from "react";
+import { SOCKET_URI, STAFF_EVENTS, USER_EVENTS } from "../../constants/chat.constant";
 
 const ChatMessages = ({ customer }) => {
   const [chatHistory, setChatHistory] = useState({});
-  const [messages, setMessages] = useState([]);
+  const [msgInComing, setMsgInComing] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
+  const messagesChat = useRef([]);
+
+  const socketIO = useRef(null);
 
   useEffect(() => {
-    if (customer) {
-      setMessages(chatHistory[customer.id] || [{ sender: "customer", text: customer.lastMessage }]);
-    }
-  }, [customer, chatHistory]);
+    setTimeout(() => {
+      socketIO.current = window?.io(SOCKET_URI);
+      socketIO.current.on(STAFF_EVENTS.recieveMsg, (messageObj) => {
+        setMsgInComing(true);
+        setTimeout(() => {
+          const { from, to, message, timestamp } = messageObj;
+          messagesChat.current = [...messagesChat.current, {
+            sender: "customer", text: message
+          }]
+          setMsgInComing(false);
+        }, 400)
+      });
+    }, 1000);
+  }, []);
+
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messagesChat.current.length > 0) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messagesChat.current]);
 
   const sendMessage = () => {
     if (newMessage.trim() === "") return;
-    
-    const updatedMessages = [...messages, { sender: "employee", text: newMessage }];
-    setMessages(updatedMessages);
-    setChatHistory((prev) => ({
-      ...prev,
-      [customer.id]: updatedMessages
-    }));
-    
+
+    messagesChat.current = [...messagesChat.current, {
+      sender: "employee", text: newMessage
+    }]
+
+    const messageObj = {
+      from: "staff id",
+      to: "user chanel id",
+      message: newMessage,
+      timestamp: new Date().getTime()
+    }
+    socketIO.current.emit(STAFF_EVENTS.sendMsg, messageObj);
+
     setNewMessage("");
   };
 
@@ -59,7 +79,7 @@ const ChatMessages = ({ customer }) => {
       </div>
 
       <div className="messages flex-grow-1 overflow-auto p-2">
-        {messages.map((msg, index) => (
+        {messagesChat.current.map((msg, index) => (
           <div key={`${customer.id}-${index}`} className={`message ${msg.sender}`}>
             <p className="mb-0">{msg.text}</p>
           </div>
@@ -74,7 +94,9 @@ const ChatMessages = ({ customer }) => {
           placeholder="Nhập tin nhắn..."
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
+        {msgInComing ? <span>Tin nhan dang den</span> : null}
         <button className="btn btn-primary rounded-circle" onClick={sendMessage}>
           <i className="bi bi-send"></i>
         </button>
