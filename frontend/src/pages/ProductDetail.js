@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import ProductImage from "../components/productdetail/ProductImage";
 import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
-import useAuthStore from "../store/authStore";
 import useProductStore from "../store/productStore";
 
 const ProductDetail = () => {
@@ -12,8 +11,6 @@ const ProductDetail = () => {
     const { products } = useProductStore();
     const product = products.find(p => p._id.toString() === id);
     const [quantity, setQuantity] = useState(1);
-    const { user } = useAuthStore();
-    const [showLoginAlert, setShowLoginAlert] = useState(false);
     const navigate = useNavigate();
 
     if (!product) {
@@ -37,19 +34,10 @@ const ProductDetail = () => {
     };
 
     const handleBuyNow = () => {
-        if (!user) {
-            setShowLoginAlert(true);
-            return;
-        }
         navigate("/checkout", { state: { product, quantity } });
     };
 
     const addToCart = () => {
-        if (!user) {
-            setShowLoginAlert(true);
-            return;
-        }
-
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
         const existingProduct = cart.find(item => item.id === product.id);
 
@@ -106,12 +94,6 @@ const ProductDetail = () => {
                                 increaseQuantity={increaseQuantity} 
                                 decreaseQuantity={decreaseQuantity}
                             />
-                        )}
-
-                        {showLoginAlert && (
-                            <div className="alert alert-warning mt-3" role="alert">
-                                Bạn cần <strong>đăng nhập</strong> hoặc <strong>đăng ký</strong> để thực hiện thao tác này!
-                            </div>
                         )}
 
                         <div className="d-flex mb-4">

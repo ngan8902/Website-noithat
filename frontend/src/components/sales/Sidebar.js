@@ -49,6 +49,19 @@ const Sidebar = () => {
               </div>
             )}
           </div>
+
+          {!collapsed && (
+            <a href="/admin/chat" className="position-relative d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+              <i className="bi bi-chat-fill me-2"></i> 
+              Tin nhắn Khách Hàng
+              {customers.length > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {customers.length}
+                </span>
+              )}
+            </a>
+          )}
+
           <a href="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-calendar-check me-2"></i>Lịch Sử Chấm Công
           </a>
@@ -59,30 +72,6 @@ const Sidebar = () => {
            <i className="bi bi-file-earmark-person me-2"></i>Quản Lý Chấm Công
           </a> }
         </div>
-      )}
-
-      {!collapsed && (
-        <button className="btn btn-primary position-absolute" style={{
-            top: "10px",
-            right: "10px",
-            backgroundColor: "#0084FF",
-            borderColor: "#0084FF",
-            borderRadius: "50%",
-            width: "50px",
-            height: "50px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-          }} onClick={() => (window.location.href = "/admin/chat")}
-        >
-          <i className="bi bi-chat-fill" style={{ fontSize: "24px", color: "#fff" }}></i>
-          {customers.length > 0 && (
-            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              {customers.length}
-            </span>
-          )}
-        </button>
       )}
 
       <button

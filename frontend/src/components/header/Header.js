@@ -89,14 +89,13 @@ const Header = () => {
         </nav>
 
         <div className="d-flex align-items-center">
-          <div className="input-group me-3" style={{ maxWidth: "300px" }}>
+          <div className="input-group me-3" >
             <input 
               type="text" 
-              className="form-control text-black border-0 rounded-start" 
-              placeholder="Tìm kiếm..." 
-              style={{ boxShadow: "none" }} 
+              className="form-control text-black border-0" 
+              placeholder="Tìm kiếm..."  
             />
-            <button className="btn bg-primary text-white rounded-end">
+            <button className="btn bg-primary text-white">
               <i className="bi bi-search"></i>
             </button>
           </div>
@@ -117,7 +116,7 @@ const Header = () => {
               </button>
               <ul className="dropdown-menu">
                 <li><a href="/account" className="dropdown-item fw-medium">Thông tin tài khoản</a></li>
-                <li><button className="dropdown-item text-danger fw-bolder" onClick={logout}>Đăng xuất</button></li>
+                <li><button className="dropdown-item text-danger" onClick={logout}>Đăng xuất</button></li>
               </ul>
             </div>
           ) : (

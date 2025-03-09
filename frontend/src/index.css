@@ -24,6 +24,16 @@ body {
   background-color: #0056b3 !important;
 }
 
+button, .nav-link {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+button:hover, .nav-link:hover {
+  border-color: transparent;
+  transform: scale(1.05);
+}
+
 /* Hình ảnh team */
 .rounded-circle {
   border-radius: 50%;

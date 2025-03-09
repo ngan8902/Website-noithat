@@ -3,6 +3,9 @@ import { useLocation } from "react-router-dom";
 import CustomerInfo from "../components/checkout/CustomerInfo";
 import ProductInfo from "../components/checkout/ProductInfo";
 import PaymentMethod from "../components/checkout/PaymentMethod";
+import LoginModal from "../components/header/LoginModal";
+import RegisterModal from "../components/header/RegisterModal";
+import useAuthStore from '../store/authStore';
 
 const Checkout = () => {
     const location = useLocation();
@@ -17,6 +20,10 @@ const Checkout = () => {
     const [errorMessage, setErrorMessage] = useState("");
 
     const [paymentMethod, setPaymentMethod] = useState("");
+
+    const [showLogin, setShowLogin] = useState(false);
+    const [showRegister, setShowRegister] = useState(false);
+    const { user } = useAuthStore((state) => state);
 
     useEffect(() => {
         if (selectedAddress === "" && newAddress) {
@@ -91,6 +98,22 @@ const Checkout = () => {
                     
                     {errorMessage && <p className="text-danger text-center mt-3">{errorMessage}</p>}
 
+                    {!!user ? (
+                        null
+                    ) : (
+                        <>
+                            <p></p>
+                            Bạn muốn nhận thông báo các ưu đãi và mã giảm giá hấp dẫn hãy 
+                            <button 
+                                className="btn text-dark text-decoration-none fw-bold" 
+                                onClick={() => setShowRegister(true)}
+                            >
+                                Đăng Ký
+                            </button>
+                            ngay!
+                        </>
+                    )}
+
                     <button 
                         className="btn btn-dark w-100 mt-4" 
                         onClick={handleCheckout}
@@ -100,6 +123,8 @@ const Checkout = () => {
                     </button>
                 </div>
             </div>
+            <LoginModal show={showLogin} setShow={setShowLogin} setShowRegister={setShowRegister} />
+            <RegisterModal show={showRegister} setShow={setShowRegister} setShowLogin={setShowLogin} />
         </div>
     );
 };

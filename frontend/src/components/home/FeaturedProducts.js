@@ -47,19 +47,29 @@ const FeaturedProducts = () => {
                     
                     {totalProducts > itemsPerPage && (
                         <button 
-                            className="btn btn-outline-dark btn-secondary"
+                            className="btn btn-dark d-flex align-items-center justify-content-center shadow"
                             onClick={prevSlide}
                             style={{
                                 position: "absolute",
                                 top: "50%",
                                 left: "10px",
                                 transform: "translateY(-50%)",
-                                zIndex: 10
+                                zIndex: 10,
+                                width: "45px",
+                                height: "45px",
+                                borderRadius: "50%",
+                                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                border: "none",
+                                color: "white",
+                                transition: "background-color 0.3s ease",
                             }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.8)"}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.6)"}
                         >
-                            <i className="bi bi-chevron-compact-left"></i>
+                            <i className="bi bi-chevron-compact-left" style={{ fontSize: "24px" }}></i>
                         </button>
                     )}
+
 
                     <div 
                       className="d-flex justify-content-center"
@@ -104,21 +114,31 @@ const FeaturedProducts = () => {
                         ) : null
                       )}
 
-                      {totalProducts > itemsPerPage && (
-                        <button 
-                            className="btn btn-outline-dark btn-secondary"
-                            onClick={nextSlide}
-                            style={{
-                                position: "absolute",
-                                top: "50%",
-                                right: "10px",
-                                transform: "translateY(-50%)",
-                                zIndex: 10
-                            }}
-                        >
-                            <i className="bi bi-chevron-compact-right"></i>
-                        </button>
-                    )}
+                        {totalProducts > itemsPerPage && (
+                            <button 
+                                className="btn btn-dark d-flex align-items-center justify-content-center shadow"
+                                onClick={nextSlide}
+                                style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    right: "10px",
+                                    transform: "translateY(-50%)",
+                                    zIndex: 10,
+                                    width: "45px",
+                                    height: "45px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "rgba(0, 0, 0, 0.6)",
+                                    border: "none",
+                                    color: "white",
+                                    transition: "background-color 0.3s ease",
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.8)"}
+                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.6)"}
+                            >
+                                <i className="bi bi-chevron-compact-right" style={{ fontSize: "24px" }}></i>
+                            </button>
+                        )}
+
                     </div>
                 </div>  
             </div>
