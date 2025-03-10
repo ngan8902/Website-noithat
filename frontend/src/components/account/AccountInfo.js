@@ -149,8 +149,8 @@ const AccountInfo = () => {
           width="150"
         />
         <div>
-          <label className="btn btn-secondary">
-            Đổi ảnh đại diện
+          <label className="btn btn-outline-primary position-relative">
+            <i className="bi bi-camera"></i> Chọn ảnh
             <input type="file" accept="image/*" hidden onChange={handleAvatarChange} />
           </label>
         </div>
@@ -158,9 +158,12 @@ const AccountInfo = () => {
 
       {!isEditing ? (
         <div>
-          <p><strong>Họ và Tên:</strong> {user?.name}</p>
-          <p><strong>Email:</strong> {user?.email}</p>
-          <p><strong>Số Điện Thoại:</strong> {user?.phone}</p>
+          <div className="text-start">
+            <p><i className="bi bi-person-circle text-dark m-2"></i> <strong>Họ và Tên:</strong> {user?.name}</p>
+            <p><i className="bi bi-envelope text-dark m-2"></i> <strong>Email:</strong> {user?.email}</p>
+            <p><i className="bi bi-telephone text-dark m-2"></i> <strong>Số Điện Thoại:</strong> {user?.phone}</p>
+          </div>
+
           <button className="btn btn-primary w-100" onClick={() => setIsEditing(true)}>
             Cập Nhật Thông Tin
           </button>
@@ -184,10 +187,10 @@ const AccountInfo = () => {
           {!isChangingPassword ? (
             <button
               type="button"
-              className="btn btn-outline-danger w-100 mb-3"
+              className="btn btn-outline-danger w-100 mb-3 d-flex align-items-center justify-content-center"
               onClick={() => setIsChangingPassword(true)}
             >
-              Bạn muốn đổi mật khẩu?
+              <i className="bi bi-lock-fill me-2"></i> Bạn muốn đổi mật khẩu?
             </button>
           ) : (
             <>

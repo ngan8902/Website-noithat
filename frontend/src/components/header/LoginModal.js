@@ -11,7 +11,6 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   
-
   const getLogin = (email, password) => {
     return axios.post(`${process.env.REACT_APP_URL_BACKEND}/user/sign-in`, {
       email: email,
@@ -39,12 +38,12 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
       }
     })
     .catch((error) => {
-      console.error("Lỗi đăng nhập: ", error);
       if (error.response && error.response.data === 401) {
         setErrorMessage("Email hoặc mật khẩu không chính xác");
       } else {
-        setErrorMessage(`Lỗi: ${error.response.data.message}`);
+        setErrorMessage("Không thể kết nối đến máy chủ, vui lòng kiểm tra lại mạng!");
       }
+      setErrorMessage("");
     })
   }
 

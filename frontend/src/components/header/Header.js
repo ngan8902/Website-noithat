@@ -121,8 +121,8 @@ const Header = () => {
             </div>
           ) : (
             <>
-              <button className="btn text-white text-decoration-none fw-bold transition-hover" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
-              <button className="btn text-white text-decoration-none fw-bold transition-hover" onClick={() => setShowRegister(true)}>Đăng Ký</button>
+              <button className="btn text-white text-decoration-none fw-bold" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
+              <button className="btn text-white text-decoration-none fw-bold" onClick={() => setShowRegister(true)}>Đăng Ký</button>
             </>
           )}
         </div>

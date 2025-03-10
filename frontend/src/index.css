@@ -6,6 +6,26 @@ body {
   background-color: #f8f9fa;
 }
 
+button, .nav-link {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+button:hover, .nav-link:hover {
+  border-color: transparent;
+  transform: scale(1.025);
+}
+
+.form-control {
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.form-control:focus {
+  box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.2);
+  border-color: #007bff;
+}
+
 /* Căn giữa nội dung theo chiều dọc */
 .hero {
   display: flex;
@@ -24,14 +44,13 @@ body {
   background-color: #0056b3 !important;
 }
 
-button, .nav-link {
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
+.avatar {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-button:hover, .nav-link:hover {
-  border-color: transparent;
+.avatar:hover {
   transform: scale(1.05);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Hình ảnh team */
