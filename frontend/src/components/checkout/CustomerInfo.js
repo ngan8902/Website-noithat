@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
+
 
 const CustomerInfo = ({ hasAddress, savedAddresses, selectedAddress, setSelectedAddress, newAddress, setNewAddress }) => {
     const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
@@ -8,26 +10,49 @@ const CustomerInfo = ({ hasAddress, savedAddresses, selectedAddress, setSelected
         address: "",
     });
 
-    useEffect(() => {
-        console.log(receiver)
-        setReceiver(receiver);
-    }, [receiver, setReceiver]);
-
+    // Xử lý khi chọn địa chỉ có sẵn hoặc nhập địa chỉ mới
     const handleAddressChange = (e) => {
         const value = e.target.value;
         setSelectedAddress(value);
         setIsAddingNewAddress(value === "");
-        
+
         if (value !== "") {
             const selected = savedAddresses.find(addr => addr.address === value);
-            setReceiver(selected ? { ...selected } : {});
+            if (selected) {
+                setReceiver(selected);
+            }
         }
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setReceiver({ ...receiver, [name]: value });
+        setReceiver(prev => ({ ...prev, [name]: value }));
     };
+
+    const saveNewAddress = async (receiver) => {
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
+                fullName: receiver.fullName || "Khách vãng lai",
+                phone: receiver.phone || "Chưa cung cấp",
+                address: receiver.address,
+                userId: receiver.userId || null
+            });
+
+            if (response.status === 201) {
+                console.log("Địa chỉ mới đã được lưu:", response.data);
+            }
+        } catch (error) {
+            console.error("Lỗi khi lưu địa chỉ mới:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (isAddingNewAddress && receiver.address.trim() !== "") {
+            console.log("Gửi API để lưu địa chỉ mới:", receiver.address);
+            saveNewAddress(receiver);
+        }
+    }, [receiver.address]);
+
 
     return (
         <div className="col-md-6">
@@ -42,12 +67,12 @@ const CustomerInfo = ({ hasAddress, savedAddresses, selectedAddress, setSelected
                         name="fullName"
                         value={receiver.fullName}
                         onChange={handleInputChange}
-                        required 
+                        required
                     />
                 </div>
                 <div className="mb-3">
                     <label className="form-label">Số Điện Thoại</label>
-                    <input  type="tel"
+                    <input type="tel"
                         className="form-control"
                         placeholder="Số điện thoại người nhận"
                         name="phone"

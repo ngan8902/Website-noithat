@@ -21,6 +21,23 @@ const saveNewAddress = async (req, res) => {
     }
 }
 
+const getAddress = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const address = await ReciverInfoService.getAddress(id);
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Get User Success!',
+            data: address.data
+        })
+    } catch (e) {
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
 module.exports = {
-    saveNewAddress
+    saveNewAddress,
+    getAddress
 }

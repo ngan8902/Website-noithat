@@ -5,7 +5,8 @@ const saveNewAddress = async (userId, fullName, phone, address) => {
         const newAddress = new ReceiverInfo({
             fullName,
             phone,
-            address
+            address,
+            userId: userId || null
         });
 
         await newAddress.save();
@@ -25,7 +26,29 @@ const saveNewAddress = async (userId, fullName, phone, address) => {
     }
 };
 
+const getAddress = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            const addresses = await ReceiverInfo.find({ user: userId });
+
+            if (!addresses.length) {
+                return { status: "ERR", message: "Không có địa chỉ nào!" };
+            }
+
+            resolve({
+                status: 'OK',
+                message: 'success',
+                data: addresses
+            }) 
+
+        }catch(e){
+            reject(e)
+        }
+    })
+};
+
 
 module.exports = {
-    saveNewAddress
+    saveNewAddress,
+    getAddress
 }
