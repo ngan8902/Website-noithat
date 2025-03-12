@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { SOCKET_URI, STAFF_EVENTS, USER_EVENTS } from "../../constants/chat.constant";
+import { SOCKET_URI, STAFF_EVENTS } from "../../constants/chat.constant";
 
 const ChatMessages = ({ customer }) => {
-  const [chatHistory, setChatHistory] = useState({});
   const [msgInComing, setMsgInComing] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
@@ -16,7 +15,7 @@ const ChatMessages = ({ customer }) => {
       socketIO.current.on(STAFF_EVENTS.recieveMsg, (messageObj) => {
         setMsgInComing(true);
         setTimeout(() => {
-          const { from, to, message, timestamp } = messageObj;
+          const { message } = messageObj;
           messagesChat.current = [...messagesChat.current, {
             sender: "customer", text: message
           }]

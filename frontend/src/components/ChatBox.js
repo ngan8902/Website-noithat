@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import useAuthStore from "../store/authStore";
-import { SOCKET_URI, USER_EVENTS, STAFF_EVENTS } from "../constants/chat.constant";
+import { SOCKET_URI, USER_EVENTS } from "../constants/chat.constant";
 
 const Chatbox = () => {
   const { isAuthenticated, user } = useAuthStore();
