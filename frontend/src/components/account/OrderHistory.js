@@ -10,12 +10,20 @@ const OrderHistory = ({ orders, setOrders }) => {
   return (
     <>
       <h5 className="fw-bold mb-3">Lịch Sử Mua Hàng</h5>
-      <div className="table-responsive">
+      <div 
+        className="table-responsive"
+        style={{
+          maxHeight: orders.length > 5 ? "400px" : "auto",
+          overflowY: orders.length > 5 ? "auto" : "visible",
+          border: orders.length > 5 ? "1px solid #ddd" : "none",
+          borderRadius: "5px",
+        }}
+      >
         {orders.length === 0 ? (
           <p className="text-center text-muted">Bạn chưa có đơn hàng nào hoàn thành.</p>
         ) : (
-          <table className="table table-striped table-hover">
-            <thead className="table-dark text-center">
+          <table className="table table-striped table-hover text-center align-middle">
+            <thead className="table-dark">
               <tr>
                 <th>Mã Đơn</th>
                 <th>Sản Phẩm</th>
@@ -26,9 +34,10 @@ const OrderHistory = ({ orders, setOrders }) => {
                 <th>Đánh Giá</th>
               </tr>
             </thead>
+
             <tbody>
               {orders.map((order) => (
-                <tr key={order.id} className="text-center align-middle">
+                <tr key={order.id}>
                   <td className="fw-bold">#{order.id}</td>
                   <td>{order.productName}</td>
                   <td>{order.quantity}</td>
