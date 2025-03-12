@@ -5,6 +5,7 @@ import useAuthAdminStore from "../../store/authAdminStore";
 import useChatStore from "../../store/chatStore";
 import { ROLE } from "../../constants/staff.constant";
 
+
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isOrderDropdownOpen, setIsOrderDropdownOpen] = useState(false);
@@ -65,6 +66,7 @@ const Sidebar = () => {
           <a href="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-calendar-check me-2"></i>Lịch Sử Chấm Công
           </a>
+          
           { permissions([ROLE.ADMIN]) && <a href="/admin/employee" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-people me-2"></i>Quản Lý Nhân Sự
           </a> }

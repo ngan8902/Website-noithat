@@ -4,6 +4,8 @@ const RoleRouter = require('./RoleRouter')
 const StaffRouter = require('./StaffRouter')
 const MailRouter = require('./MailRouter')
 const OrderRouter = require('./OrderRouter')
+const ChatRouter = require('./ChatRouter')
+const ReciverInfoRouter = require('./ReciverInfoRouter')
 
 
 const routers = (app) => {
@@ -12,7 +14,10 @@ const routers = (app) => {
     app.use('/api/product', ProductRouter)
     app.use('/api/role', RoleRouter)
     app.use('/api/email', MailRouter)
+    app.use('/api/chat', ChatRouter)
     app.use('/api/order', OrderRouter)
+    app.use('/api/address', ReciverInfoRouter)
+
 }
 
 module.exports = routers;

@@ -2,7 +2,14 @@ const Order = require("../model/OrderModel");
 const Product = require("../model/ProductModel");
 const ReceiverInfo = require("../model/ReceiverInfoModel")
 
-const createOrder = async (userId, productCode, amount, receiverInfo) => {
+const generateOrderCode = () => {
+    const prefix = "ORD"; // Tiền tố cố định
+    const timestamp = Date.now().toString().slice(-6); // 6 chữ số cuối của timestamp
+    const randomDigits = Math.floor(1000 + Math.random() * 9000); // Số ngẫu nhiên 4 chữ số
+    return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
+};
+
+const createOrder = async (userId, productCode, amount, receiver) => {
     try {
         const product = await Product.findOne({ productCode });
 
@@ -14,14 +21,24 @@ const createOrder = async (userId, productCode, amount, receiverInfo) => {
         }
 
         // Lưu thông tin người nhận hàng vào database
-        const receiver = await ReceiverInfo.create(receiverInfo);
+        const receiverInfor = await ReceiverInfo.create(receiver);
+        
+        if (!receiverInfor) {
+            return {
+                status: "ERR",
+                message: "Không thể lưu thông tin người nhận hàng"
+            };
+        }
 
         const itemsPrice = product.price * amount;
         const shippingPrice = 50000; // Phí vận chuyển cố định
         const taxPrice = itemsPrice * 0.1; // Thuế 10%
         const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
+        const orderCode = generateOrderCode();
+
         const orderData = {
+            orderCode,
             orderItems: [{
                 name: product.name,
                 amount,
@@ -29,12 +46,18 @@ const createOrder = async (userId, productCode, amount, receiverInfo) => {
                 price: product.price,
                 product: product._id,
             }],
-            shippingAddress: receiver._id,
+            shippingAddress: {
+                fullName: receiver.fullName,
+                address: receiver.address,
+                phone: receiver.phone,
+            },
+            receiver: receiverInfor._id,
             paymentMethod: "COD", 
+            itemsPrice,
             shippingPrice,
             taxPrice,
             totalPrice,
-            user: userId
+            user: userId || null
         };
 
         const createdOrder = await Order.create(orderData);
@@ -52,6 +75,25 @@ const createOrder = async (userId, productCode, amount, receiverInfo) => {
     }
 };
 
+const getOrdersByUser = async (userId) => {
+    try {
+        const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
+
+        return {
+            status: "OK",
+            message: "Lấy danh sách đơn hàng thành công",
+            data: orders
+        };
+    } catch (e) {
+        return {
+            status: "ERR",
+            message: "Lỗi khi lấy danh sách đơn hàng",
+        };
+    }
+};
+
+
 module.exports = { 
-    createOrder
+    createOrder,
+    getOrdersByUser
 };

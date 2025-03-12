@@ -4,14 +4,14 @@ import ManagerInfo from "../components/sales/ManagerInfo";
 import useAuthAdminStore from "../store/authAdminStore";
 
 const StaffInfo = () => {
-  const { user } = useAuthAdminStore((state) => state);
+  const { staff } = useAuthAdminStore((state) => state);
 
   return (
     <div className="d-flex app-container">
       <Sidebar />
       <div className="content p-4 main-content">
         <h2 className="text-center fw-bold mb-4">Thông Tin Nhân Viên</h2>
-        <ManagerInfo user={user} />
+        <ManagerInfo staff={staff} />
       </div>
     </div>
   );

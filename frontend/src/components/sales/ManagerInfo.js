@@ -1,6 +1,6 @@
 import React from "react";
 
-const ManagerInfo = ({ user }) => {
+const ManagerInfo = ({ staff }) => {
   return (
     <section className="py-5">
       <div className="container">
@@ -9,19 +9,19 @@ const ManagerInfo = ({ user }) => {
             <div className="card text-center shadow-sm">
               <div className="card-body">
                 <img
-                  src={user?.avatar || "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"}
-                  alt={user?.name || "Employee"}
+                  src={staff?.avatar || "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"}
+                  alt={staff?.name || "Employee"}
                   className="rounded-circle mb-3 border border-3 border-primary"
                   width="150"
                   height="150"
                 />
-                <h5 className="card-title">{user?.name}</h5>
-                <p className="card-text"><i className="bi bi-person-fill">  </i>{user?.position || "Chưa cập nhật"}</p>
+                <h5 className="card-title">{staff?.name}</h5>
+                <p className="card-text"><i className="bi bi-person-fill">  </i>{staff?.position || "Chưa cập nhật"}</p>
                 <p className="card-text">
-                  <i className="bi bi-envelope-fill me-2"></i> {user?.email}
+                  <i className="bi bi-envelope-fill me-2"></i> {staff?.email}
                 </p>
                 <p className="card-text">
-                  <i className="bi bi-phone-vibrate-fill me-2"></i> {user?.phone}
+                  <i className="bi bi-phone-vibrate-fill me-2"></i> {staff?.phone}
                 </p>
               </div>
             </div>
@@ -33,28 +33,28 @@ const ManagerInfo = ({ user }) => {
                 <h5 className="card-title fw-bold text-center">Thông Tin Chi Tiết</h5>
                 <ul className="list-unstyled">
                   <li className="mb-2">
-                    <strong>Họ và Tên:</strong> {user?.name}
+                    <strong>Họ và Tên:</strong> {staff?.name}
                   </li>
                   <li className="mb-2">
-                    <strong>Mã nhân viên:</strong> {user?.staffcode || "Chưa cập nhật"}
+                    <strong>Mã nhân viên:</strong> {staff?.staffcode || "Chưa cập nhật"}
                   </li>
                   <li className="mb-2">
-                    <strong>Chức Vụ:</strong> {user?.position || "Chưa cập nhật"}
+                    <strong>Chức Vụ:</strong> {staff?.position || "Chưa cập nhật"}
                   </li>
                   <li className="mb-2">
-                    <strong>Email:</strong> {user?.email}
+                    <strong>Email:</strong> {staff?.email}
                   </li>
                   <li className="mb-2">
-                    <strong>Số Điện Thoại:</strong> {user?.phone}
+                    <strong>Số Điện Thoại:</strong> {staff?.phone}
                   </li>
                   <li className="mb-2">
-                    <strong>Địa Chỉ:</strong> {user?.address || "Chưa cập nhật"}
+                    <strong>Địa Chỉ:</strong> {staff?.address || "Chưa cập nhật"}
                   </li>
                   <li className="mb-2">
-                    <strong>Ngày Sinh:</strong> {user?.dob}
+                    <strong>Ngày Sinh:</strong> {staff?.dob}
                   </li>
                   <li className="mb-2">
-                    <strong>Giới Tính:</strong> {user?.gender}
+                    <strong>Giới Tính:</strong> {staff?.gender}
                   </li>
                 </ul>
               </div>

@@ -3,6 +3,7 @@ const Product = require("./ProductModel");
 
 const orderSchema = new mongoose.Schema(
     {
+        orderCode: { type: String, unique: true },
         orderItems: [
             {
                 name: { type: String, required: true },
@@ -19,8 +20,6 @@ const orderSchema = new mongoose.Schema(
         shippingAddress: {
             fullName: { type: String, required: true },
             address: { type: String, required: true },
-            city: { type: String, required: true },
-            country: { type: String, required: true },
             phone: { type: String, required: true }, 
         },
         receiver: {
@@ -33,7 +32,7 @@ const orderSchema = new mongoose.Schema(
         shippingPrice: { type: Number, required: true },
         taxPrice: { type: Number, required: true },
         totalPrice: { type: Number, required: true },
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
         isPaid: { type: Boolean, default: false },
         paidAt: { type: Date },
         isDelivered: { type: Boolean, default: false },

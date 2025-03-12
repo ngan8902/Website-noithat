@@ -4,7 +4,7 @@ import { getCookie } from "../utils/cookie.util";
 import { STAFF_TOKEN_KEY } from '../constants/authen.constant';
 
 const useAuthAdminStore = create((set, get) => ({
-    user: null,
+    staff: null,
     staffList: [],
     auth: () => {
         return axios.get(`${process.env.REACT_APP_URL_BACKEND}/staff/getme`, {
@@ -15,9 +15,9 @@ const useAuthAdminStore = create((set, get) => ({
             console.log(response);
             const { data } = response;
             if (data && data.data) {
-                const user = data.data;
+                const staff = data.data;
                 set({
-                    user: user
+                    staff: staff
                 })
                 return true;
             }
@@ -25,13 +25,12 @@ const useAuthAdminStore = create((set, get) => ({
         }
         );
     },
-    setUser: (userData) => set({ user: userData }),
     permissions: (roles) => {
-        const staff = get().user;
-        if(!staff || !staff.role_id) return false;
+        const staffs = get().staff;
+        if(!staffs || !staffs.role_id) return false;
         if(!roles || !Array.isArray(roles)) return false;
 
-        const isAllowAccess = roles.includes(staff.role_id);
+        const isAllowAccess = roles.includes(staffs.role_id);
         return isAllowAccess;
     }
 }));

@@ -4,8 +4,6 @@ const { STAFF_EVENTS, USER_EVENTS } = require('../common/constant/chat.event.con
 function initalizeChatSocket(server) {
     const io = new Server(server, { cors: { origin: '*' } });
     io.on('connection', (socket) => {
-        console.log('a user connected');
-
         // Nghe su kien chat tu phia Client
         socket.on(USER_EVENTS.sendMsg, (messageObj) => {
             const { from, to, message, timestamp } = messageObj;
@@ -21,7 +19,6 @@ function initalizeChatSocket(server) {
         })
 
         socket.on(STAFF_EVENTS.sendMsg, (messageObj) => {
-            console.log("HHH", messageObj)
             const { from, to, message, timestamp } = messageObj;
             socket.broadcast.emit(USER_EVENTS.recieveMsg, messageObj)
         })

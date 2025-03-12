@@ -7,7 +7,6 @@ const useProductStore = create((set) => ({
     products: [],
     totalProducts: 0,
     currentPage: 0,
-
     productByType: [],
 
     getProducts: (limit = 8, page = 0, filter = "") => {
@@ -49,6 +48,19 @@ const useProductStore = create((set) => ({
         );
     },
 
+    getProductDetails: (id) => {
+        axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/details-product/${id}`)
+        .then(response => {
+            console.log("Product details:", response.data);
+            if (response.data && response.data.data) {
+                set({ products: response.data.data });
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching product details:", error);
+        });
+    },
+   
     type: [],
     getType: () => {
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/get-all-type`).then(response => {
