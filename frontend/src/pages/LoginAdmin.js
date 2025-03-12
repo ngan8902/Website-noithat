@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { setCookie } from "../utils/cookie.util";
-import { STAFF_TOKEN_KEY } from '../constants/authen.constant';
+import { STAFF_TOKEN_KEY } from "../constants/authen.constant";
 
 function LoginAdmin() {
     const [username, setUsername] = useState("");
@@ -12,7 +12,7 @@ function LoginAdmin() {
     const getLogin = (email, password) => {
         return axios.post(`${process.env.REACT_APP_URL_BACKEND}/staff/sign-in`, {
             username: username,
-            password: password
+            password: password,
         });
     };
 
@@ -33,6 +33,9 @@ function LoginAdmin() {
                         window.location.replace("/admin/dashboard");
                     }
                 }
+                else {
+                    setErrorMessage("Tên đăng nhập hoặc mật khẩu không chính xác")
+                }
             })
             .catch((error) => {
                 console.error("Lỗi đăng nhập: ", error);
@@ -42,6 +45,12 @@ function LoginAdmin() {
                     setErrorMessage("Lỗi hệ thống, vui lòng thử lại!");
                 }
             });
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            handelLogin();
+        }
     };
 
     return (
@@ -54,6 +63,7 @@ function LoginAdmin() {
                         placeholder="Tên đăng nhập"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
                 </div>
 
@@ -63,6 +73,7 @@ function LoginAdmin() {
                         placeholder="Mật khẩu"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
                     <span
                         className="toggle-password"

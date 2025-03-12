@@ -1,7 +1,6 @@
 import React from "react";
 
 const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
-  // Xử lý hủy đơn hàng
   const handleCancelOrder = (id) => {
     setOrders(
       orders.map(order =>
@@ -10,7 +9,6 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
     );
   };
 
-  // Xử lý hoàn trả đơn hàng
   const handleReturnOrder = (id) => {
     setOrders(
       orders.map(order =>
@@ -30,7 +28,14 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
   return (
     <>
       <h5 className="fw-bold mb-3 text-center">Đơn Hàng Của Bạn</h5>
-      <div className="table-responsive">
+      <div 
+        className="table-responsive"
+        style={{
+          maxHeight: orders.length > 5 ? "400px" : "auto",
+          overflowY: orders.length > 5 ? "auto" : "visible",
+          border: "1px solid #ddd"
+        }}
+      >
         <table className="table table-hover table-bordered text-center align-middle">
           <thead className="table-dark">
             <tr>
@@ -43,6 +48,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
               <th>Hành Động</th>
             </tr>
           </thead>
+
           <tbody>
             {orders.map((order) => (
               <tr key={order.id}>
@@ -58,7 +64,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
                       order.status === "Đã Xác Nhận" ? "bg-primary" :
                       order.status === "Đã Giao Cho Đơn Vị Vận Chuyển" ? "bg-warning text-dark" :
                       order.status === "Đang Giao" ? "bg-info text-dark" :
-                      order.status === "Giao hành thành công" ? "bg-success" :
+                      order.status === "Giao hàng thành công" ? "bg-success" :
                       "bg-danger"
                     }`}
                   >
@@ -89,9 +95,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
                         Hoàn Trả
                       </button>
                     </div>
-                  ) : (
-                    null
-                  )}
+                  ) : null}
                 </td>
               </tr>
             ))}

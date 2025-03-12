@@ -18,6 +18,18 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
     return regex.test(password);
   };
 
+  // Kiểm tra số điện thoại hợp lệ
+  const isValidPhone = (phone) => {
+    const regex = /^(03|05|08|09)\d{8}$/;
+    return regex.test(phone);
+  };
+
+  // Kiểm tra email hợp lệ (phải là @gmail.com)
+  const isValidEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+    return regex.test(email);
+  };
+
   // Hàm kiểm tra mật khẩu khớp nhau
   const handleConfirmPasswordChange = (e) => {
     const confirmPassword = e.target.value;
@@ -37,13 +49,22 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
       setPasswordError("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
-    // Kiểm tra mật khẩu hợp lệ
+
+    if (!isValidPhone(user.phone)) {
+      setPasswordError("Số điện thoại phải có 10 số và đúng định dạng!");
+      return;
+    }
+
+    if (!isValidEmail(user.email)) {
+      setPasswordError("Email phải có định dạng @gmail.com!");
+      return;
+    }
+
     if (!isValidPassword(user.password)) {
       setPasswordError("Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 chữ in hoa!");
       return;
     }
 
-    // Kiểm tra mật khẩu khớp nhau
     if (user.password !== user.confirmPassword) {
       setPasswordError("Mật khẩu xác nhận không khớp!");
       return;
@@ -96,8 +117,10 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                       name: e.target.value
                     }
                   )} 
-                  required/>
+                  required
+                />
               </div>
+
               <div className="mb-3">
                 <label htmlFor="registerPhone" className="form-label text-dark">Số Điện Thoại</label>
                 <input 
@@ -105,8 +128,8 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                   className="form-control" 
                   id="registerPhone" 
                   required 
-                  pattern="^\d{10}$" 
-                  title="Số điện thoại phải có 10 chữ số" 
+                  pattern="^(03|05|08|09)\d{8}$"
+                  title="Số điện thoại phải có 10 số và đúng định dạng"
                   value={user.phone} 
                   onChange={(e) => setUser(
                     {
@@ -114,14 +137,17 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                       phone: e.target.value
                     }
                   )}
-                  />
+                />
               </div>
+
               <div className="mb-3">
                 <label htmlFor="registerEmail" className="form-label text-dark">Email</label>
                 <input 
                   type="email"  
                   className="form-control" 
                   id="registerEmail" 
+                  pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+                  title="Email phải có định dạng @gmail.com"
                   value={user.email} 
                   onChange={(e) => setUser(
                     {
@@ -129,8 +155,10 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                       email: e.target.value
                     }
                   )}
-                  required/>
+                  required
+                />
               </div>
+
               <div className="mb-3">
                 <label htmlFor="registerPassword" className="form-label text-dark">Mật Khẩu</label>
                 <div className="password-container">
@@ -147,7 +175,8 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                         password: e.target.value
                       }
                     )}
-                    required/>
+                    required
+                  />
                   <span
                     className="toggle-password"
                     onClick={() => setShowPassword(!showPassword)}
@@ -184,7 +213,9 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                 </div>
                 {passwordError && <p className="text-danger mt-1">{passwordError}</p>}
               </div>
-              <button type="submit" className="btn btn-dark w-100 mb-3" onClick={handleSignup} >Đăng Ký</button>
+
+              <button type="submit" className="btn btn-dark w-100 mb-3" onClick={handleSignup}> Đăng Ký </button>
+
               <div className="text-center mt-3">
                 <p className="text-dark">
                   Đã có tài khoản?

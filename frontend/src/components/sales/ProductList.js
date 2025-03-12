@@ -9,8 +9,6 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalType, setModalType] = useState(null);
 
-
-
   const handleDelete = (_id) => {
     removeProduct(_id);
     window.location.reload()

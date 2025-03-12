@@ -18,7 +18,9 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
     })
   }
 
-  const handelLogin = () => {
+  const handelLogin = (e) => {
+    e.preventDefault();
+
     if (!email.trim() || !pass.trim()) {
       setErrorMessage("Vui lòng nhập đầy đủ thông tin");
       return;
@@ -35,10 +37,13 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
           localStorage.setItem("user", JSON.stringify(data.user));
           window.location.replace("/account");
         } 
+        else {
+          setErrorMessage("Email hoặc mật khẩu không chính xác");
+        }
       }
     })
     .catch((error) => {
-      if (error.response && error.response.data === 401) {
+      if (error.response?.status === 401) {
         setErrorMessage("Email hoặc mật khẩu không chính xác");
       } else {
         setErrorMessage("Không thể kết nối đến máy chủ, vui lòng kiểm tra lại mạng!");
@@ -58,6 +63,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
             <button type="button" className="btn-close" onClick={() => setShow(false)}></button>
           </div>
           <div className="modal-body">
+          <form>
             <div>
               {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
 
@@ -68,9 +74,9 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
                   className="form-control" 
                   id="loginEmail" 
                   required 
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   />
               </div>
               <div className="mb-3">
@@ -78,6 +84,9 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
                 <div className="password-container">
                   <input
                     type={showPassword ? "text" : "password"}
+                    className="form-control"
+                    id="loginPassword"
+                    required
                     value={pass}
                     onChange={(e) => setPass(e.target.value)}
                   />
@@ -90,7 +99,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
                 </div>
               </div>
 
-              <button className="btn btn-dark w-100" onClick={handelLogin}>Đăng Nhập</button>
+              <button className="btn btn-dark w-100" type="submit" onClick={handelLogin}>Đăng Nhập</button>
 
               <div className="text-center mt-2">
                 <button 
@@ -110,6 +119,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
                 </p>
               </div>
             </div>
+          </form>
           </div>
         </div>
       </div>
