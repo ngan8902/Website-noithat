@@ -9,7 +9,7 @@ const generateOrderCode = () => {
     return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
 };
 
-const createOrder = async (userId, productCode, amount, receiver) => {
+const createOrder = async (userId, productCode, amount, receiver, status) => {
     try {
         const product = await Product.findOne({ productCode });
 
@@ -22,7 +22,7 @@ const createOrder = async (userId, productCode, amount, receiver) => {
 
         // Lưu thông tin người nhận hàng vào database
         const receiverInfor = await ReceiverInfo.create(receiver);
-        
+
         if (!receiverInfor) {
             return {
                 status: "ERR",
@@ -52,11 +52,12 @@ const createOrder = async (userId, productCode, amount, receiver) => {
                 phone: receiver.phone,
             },
             receiver: receiverInfor._id,
-            paymentMethod: "COD", 
+            paymentMethod: "COD",
             itemsPrice,
             shippingPrice,
             taxPrice,
             totalPrice,
+            status,
             user: userId || null
         };
 
@@ -92,8 +93,65 @@ const getOrdersByUser = async (userId) => {
     }
 };
 
+const getOrderByCode = async (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const order = await Order.findOne({
+                _id: id
+            })
+            if (order === null) {
+                resolve({
+                    status: 'OK',
+                    message: 'The product is not defined'
+                })
+            }
 
-module.exports = { 
+            resolve({
+                status: 'OK',
+                message: 'success',
+                data: order
+            })
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+};
+
+const updateOrderStatus = (orderId, newStatus) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const order = await Order.findById(orderId);
+            if (!order) {
+                throw new Error("Không tìm thấy đơn hàng.");
+            }
+
+            order.orderStatus = newStatus;
+
+            if (newStatus === "delivered") {
+                order.isDelivered = true;
+                order.deliveredAt = new Date();
+            }
+
+            await order.save();
+
+            resolve({
+                status: 'OK',
+                message: 'success',
+                data: order
+            })
+
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
+
+
+module.exports = {
     createOrder,
-    getOrdersByUser
+    getOrdersByUser,
+    getOrderByCode,
+    updateOrderStatus
 };

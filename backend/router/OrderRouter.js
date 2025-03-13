@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const orderController = require('../controller/OrderController') 
-const {authenticateUser} = require('../middleware/authMiddleware')
+const {authenticateUser, authenticateStaff} = require('../middleware/authMiddleware')
 
 
 router.post('/create-order', orderController.createOrder)
 router.get('/get-order-by-user', authenticateUser, orderController.getOrdersByUser)
+router.get("/get-order/:id", orderController.getOrderByCode)
+router.put("/update-order-status/:orderId", orderController.updateOrderStatus)// Cập nhật trạng thái đơn hàng (chỉ admin hoặc nhân viên)
 
 module.exports = router;

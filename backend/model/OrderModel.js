@@ -20,7 +20,7 @@ const orderSchema = new mongoose.Schema(
         shippingAddress: {
             fullName: { type: String, required: true },
             address: { type: String, required: true },
-            phone: { type: String, required: true }, 
+            phone: { type: String, required: true },
         },
         receiver: {
             type: mongoose.Schema.Types.ObjectId,
@@ -36,15 +36,15 @@ const orderSchema = new mongoose.Schema(
         isPaid: { type: Boolean, default: false },
         paidAt: { type: Date },
         isDelivered: { type: Boolean, default: false },
-        deliveredAt: { type: Date }, 
-        orderStatus: {
+        deliveredAt: { type: Date },
+        status: {
             type: String,
             enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
             default: "pending",
         },
     },
     {
-        timestamps: true, 
+        timestamps: true,
     }
 );
 
