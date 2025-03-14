@@ -1,6 +1,22 @@
 import React from "react";
 
 const CartItem = ({ item, updateQuantity, removeFromCart }) => {
+  if (!item || !item._id) {
+    return null; // Tránh render nếu item không hợp lệ
+  }
+  const handleDecrease = () => {
+    if (item.quantity > 1) {
+      updateQuantity(item._id, item.quantity - 1);
+    }
+  }
+
+  const handleIncrease = () => {
+    if (item.quantity < item.countInStock) {
+      updateQuantity(item._id, item.quantity + 1);
+    }
+  };
+  
+
   return (
     <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
       <div className="d-flex align-items-center">
@@ -27,17 +43,17 @@ const CartItem = ({ item, updateQuantity, removeFromCart }) => {
             )}
           </p>
           <div className="d-flex align-items-center">
-            <button className="btn btn-outline-dark btn-sm" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+            <button className="btn btn-outline-dark btn-sm" onClick={handleDecrease}>
               -
             </button>
             <span className="mx-2">{item.quantity}</span>
-            <button className="btn btn-outline-dark btn-sm" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+            <button className="btn btn-outline-dark btn-sm" onClick={handleIncrease}>
               +
             </button>
           </div>
         </div>
       </div>
-      <button className="btn btn-danger btn-sm" onClick={() => removeFromCart(item.id)}>
+      <button className="btn btn-danger btn-sm" onClick={() => removeFromCart(item._id)}>
         Xóa
       </button>
     </div>
