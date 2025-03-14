@@ -62,9 +62,9 @@ const Header = () => {
 
         <nav className="d-flex align-items-center">
           <ul className="nav">
-            <li className="nav-item"><a href="/home" className="nav-link text-white">Trang Chủ</a></li>
+            <li className="nav-item"><a href="/home" className="nav-link text-white fs-6">Trang Chủ</a></li>
             <li className="nav-item dropdown">
-              <button className="nav-link text-white dropdown-toggle" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <button className="nav-link text-white dropdown-toggle fs-6" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Sản Phẩm
               </button>
               <ul className="dropdown-menu">
@@ -83,8 +83,8 @@ const Header = () => {
                 }
               </ul>
             </li>
-            <li className="nav-item"><a href="/about" className="nav-link text-white">Giới Thiệu</a></li>
-            <li className="nav-item"><a href="/contact" className="nav-link text-white">Liên Hệ</a></li>
+            <li className="nav-item"><a href="/about" className="nav-link text-white fs-6">Giới Thiệu</a></li>
+            <li className="nav-item"><a href="/contact" className="nav-link text-white fs-6">Liên Hệ</a></li>
           </ul>
         </nav>
 
@@ -111,7 +111,7 @@ const Header = () => {
 
           {!!user ? (
             <div className="dropdown">
-              <button className="nav-link text-white dropdown-toggle fw-bold" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <button className="nav-link text-white dropdown-toggle fw-bold m-3" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Chào, {user.name}
               </button>
               <ul className="dropdown-menu">
@@ -121,8 +121,8 @@ const Header = () => {
             </div>
           ) : (
             <>
-              <button className="btn text-white text-decoration-none fw-bold" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
-              <button className="btn text-white text-decoration-none fw-bold" onClick={() => setShowRegister(true)}>Đăng Ký</button>
+              <button className="nav-link text-white text-decoration-none fw-bold m-3" onClick={() => setShowLogin(true)}>Đăng Nhập</button>
+              <button className="nav-link text-white text-decoration-none fw-bold m-3" onClick={() => setShowRegister(true)}>Đăng Ký</button>
             </>
           )}
         </div>

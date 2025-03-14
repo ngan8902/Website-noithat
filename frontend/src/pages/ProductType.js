@@ -15,9 +15,16 @@ const ProductType = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, setFilters] = useState({ priceRange: "", rating: "" });
+    const [, setLoading] = useState(true);
 
     useEffect(() => {
-        getProductByType(id);
+        const fetchData = async () => {
+            setLoading(true);
+            await getProductByType(id);
+            setLoading(false);
+        };
+
+        fetchData();
         setCurrentPage(1);
     }, [getProductByType, id]);
 
@@ -72,11 +79,13 @@ const ProductType = () => {
 
     return (
         <div>
-            <HeroSection title={products.length > 0 ? products[0].type : "Sản phẩm"} background="/images/banner3.png" />
+            <HeroSection title={products.length > 0 ? products[0].type : <span className="dots"></span>} background="/images/banner3.png" />
 
             <section className="py-5">
                 <div className="container">
-                    <h2 className="text-center fw-bold mb-5">Danh Mục {products.length > 0 ? products[0].type : "Sản phẩm"}</h2>
+                    <h2 className="text-center fw-bold mb-5">
+                        {products.length > 0 ? "Các Sản Phẩm " + products[0].type : <span className="dots"></span>}
+                    </h2>
                     <div className="row">
                         <SidebarFilter onFilterApply={setFilters} />
 
@@ -96,7 +105,7 @@ const ProductType = () => {
                                                         className="card-img-top"
                                                         alt={product.name}
                                                     />
-                                                    <div className="card-body">
+                                                    <div className="card-body d-flex flex-column">
                                                         <h5 className="card-title">{product.name}</h5>
                                                         <p className="card-text">{product.description}</p>
 
@@ -122,7 +131,7 @@ const ProductType = () => {
                                                             ))}
                                                         </div>
 
-                                                        <Link to={`/${encodeURIComponent(product.name)}/${product._id}`} className="btn btn-dark w-100">
+                                                        <Link to={`/${encodeURIComponent(product.name)}/${product._id}`} className="btn btn-dark w-100 mt-auto">
                                                             Xem Chi Tiết
                                                         </Link>
                                                     </div>

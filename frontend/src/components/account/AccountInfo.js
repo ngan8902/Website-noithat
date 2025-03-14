@@ -10,6 +10,7 @@ const AccountInfo = () => {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [, setErrorMessage] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -147,6 +148,8 @@ const AccountInfo = () => {
           height="150"
           src={avatar || "/images/logo.png"}
           width="150"
+          onClick={() => setShowModal(true)}
+          style={{ cursor: "pointer" }}
         />
         <div>
           <label className="btn btn-outline-primary position-relative">
@@ -232,6 +235,21 @@ const AccountInfo = () => {
             Lưu Thay Đổi
           </button>
         </form>
+      )}
+      
+      {/* Modal Hiển Thị Ảnh */}
+      {showModal && (
+        <div className="avatar-modal">
+          <div className="avatar-modal-content">
+            <span className="close" onClick={() => setShowModal(false)}>
+              <i className="bi bi-x"></i>
+            </span>
+            <img
+              src={user.avatar || "/images/logo.png"}
+              alt="Avatar"
+            />
+          </div>
+        </div>
       )}
     </div>
   );

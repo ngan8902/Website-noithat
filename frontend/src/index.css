@@ -6,6 +6,7 @@ body {
   background-color: #f8f9fa;
 }
 
+/* Hiệu ứng nổi */
 button, .nav-link {
   transition: all 0.3s ease;
   border: 2px solid transparent;
@@ -21,9 +22,20 @@ button:hover, .nav-link:hover {
   transition: box-shadow 0.3s ease-in-out;
 }
 
-.form-control:focus {
-  box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.2);
-  border-color: #007bff;
+.dots::after {
+    content: "";
+    display: inline-block;
+    font-size: 3rem;
+    width: 1em;
+    text-align: left;
+    animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+    0% { content: ""; }
+    33% { content: "."; }
+    66% { content: ".."; }
+    100% { content: "..."; }
 }
 
 /* Căn giữa nội dung theo chiều dọc */
@@ -35,6 +47,7 @@ button:hover, .nav-link:hover {
   text-align: center;
 }
 
+/* Tiềm kiếm */
 .input-group .form-control:focus {
   border-color: #007bff;
   box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
@@ -44,13 +57,59 @@ button:hover, .nav-link:hover {
   background-color: #0056b3 !important;
 }
 
+/* Hiệu ứng khi hover avatar */
 .avatar {
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  cursor: pointer;
 }
 
 .avatar:hover {
   transform: scale(1.05);
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.avatar-modal-content {
+  position: relative;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.avatar-modal-content img {
+  width: 100%;
+  height: auto;
+  max-width: 500px;
+  border-radius: 8px;
+}
+
+.avatar-modal .close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: red;
+  cursor: pointer;
+}
+
+.avatar-modal .close:hover {
+  color: darkred;
 }
 
 /* Hình ảnh team */

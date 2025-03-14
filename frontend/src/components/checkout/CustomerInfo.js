@@ -51,7 +51,7 @@ const CustomerInfo = ({ hasAddress, savedAddresses, selectedAddress, setSelected
             console.log("Gửi API để lưu địa chỉ mới:", receiver.address);
             saveNewAddress(receiver);
         }
-    }, [receiver.address]);
+    }, [isAddingNewAddress, receiver]);// [receiver.address]);
 
 
     return (

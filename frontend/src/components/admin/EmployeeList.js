@@ -93,8 +93,8 @@ const EmployeeList = () => {
                 <td>{staff.gender}</td>
                 <td style={{ maxWidth: "200px" }} className="text-truncate">{staff.address}</td>
                 <td>
-                  <button className="btn btn-warning btn-sm" onClick={() => openEditModal(staff)}>Sửa</button>
-                  <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(staff._id)}>Xóa</button>
+                  <button className="btn btn-warning btn-sm me-1" onClick={() => openEditModal(staff)}>Sửa</button>
+                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(staff._id)}>Xóa</button>
                 </td>
               </tr>
             ))

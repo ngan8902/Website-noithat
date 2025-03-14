@@ -49,6 +49,7 @@ const ResourceList = ({ attendanceRecords, setAttendanceRecords }) => {
             <th>Giờ Vào</th>
             <th>Giờ Ra</th>
             <th>Tổng Giờ Làm</th>
+            <th>Trạng Thái</th>
             <th>Hành Động</th>
           </tr>
         </thead>
@@ -62,6 +63,11 @@ const ResourceList = ({ attendanceRecords, setAttendanceRecords }) => {
                 <td>{record.checkIn}</td>
                 <td>{record.checkOut}</td>
                 <td>{record.totalHours}</td>
+                <td className="fw-bold fs-5">
+                  <span className={`badge ${record.status === "Đúng giờ" ? "text-success" : record.status === "Muộn" ? "text-danger" : "text-warning"}`}>
+                    {record.status}
+                  </span>
+                </td>
                 <td>
                   <button className="btn btn-warning btn-sm" onClick={() => openEditModal(record)}>
                     Sửa

@@ -30,7 +30,7 @@ const ChatMessages = ({ customer }) => {
     if (messagesChat.current.length > 0) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messagesChat.current]);
+  });//, [messagesChat.current]);
 
   const sendMessage = () => {
     if (newMessage.trim() === "") return;

@@ -99,11 +99,11 @@ const FeaturedProducts = () => {
                                         width: "100%"
                                     }}
                                   />
-                                  <div className="card-body">
+                                  <div className="card-body d-flex flex-column">
                                       <h5 className="card-title">{product.name || "Sản phẩm chưa có tên"}</h5>
                                       <p className="card-text">{product.description || "Mô tả chưa có"}</p>
                                       <button 
-                                          className="btn btn-link text-decoration-none"
+                                          className="btn btn-link text-decoration-none mt-auto"
                                           onClick={() => navigate(`/product/${product._id}`)}
                                       >
                                           Xem Chi Tiết

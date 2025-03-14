@@ -18,6 +18,12 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
     return regex.test(password);
   };
 
+  // Kiểm tên
+  const isValidName = (name) => {
+    const regex = /^[A-Za-zÀ-ỹ\s]+$/;
+    return regex.test(name);
+  };
+
   // Kiểm tra số điện thoại hợp lệ
   const isValidPhone = (phone) => {
     const regex = /^(03|05|08|09)\d{8}$/;
@@ -50,6 +56,11 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
       return;
     }
 
+    if (!isValidName(user.name)) {
+        setPasswordError("Tên không được chứa số!");
+        return;
+    }
+    
     if (!isValidPhone(user.phone)) {
       setPasswordError("Số điện thoại phải có 10 số và đúng định dạng!");
       return;
