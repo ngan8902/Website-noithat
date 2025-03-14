@@ -6,6 +6,7 @@ const MailRouter = require('./MailRouter')
 const OrderRouter = require('./OrderRouter')
 const ChatRouter = require('./ChatRouter')
 const ReciverInfoRouter = require('./ReciverInfoRouter')
+const CartRoute = require('./CartRoute')
 
 
 const routers = (app) => {
@@ -17,7 +18,7 @@ const routers = (app) => {
     app.use('/api/chat', ChatRouter)
     app.use('/api/order', OrderRouter)
     app.use('/api/address', ReciverInfoRouter)
-
+    app.use('/api/cart', CartRoute)
 }
 
 module.exports = routers;

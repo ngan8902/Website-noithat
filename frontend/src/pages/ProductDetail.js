@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 import ProductImage from "../components/productdetail/ProductImage";
 import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
@@ -40,20 +41,33 @@ const ProductDetail = () => {
 
     const addToCart = () => {
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const existingProduct = cart.find(item => item.id === product.id);
-
+        const existingProduct = cart.find(item => item._id === product._id); // Sửa id thành _id
+    
         if (existingProduct) {
-            existingProduct.quantity += quantity;
+            const newQuantity = existingProduct.quantity + quantity;
+    
+            if (newQuantity > product.countInStock) {
+                toast.error(`Số lượng tồn kho chỉ còn ${product.countInStock} sản phẩm.`);
+                return;
+            }
+            existingProduct.quantity = newQuantity;
         } else {
+            if (quantity > product.countInStock) {
+                toast.error(`Số lượng tồn kho chỉ còn ${product.countInStock} sản phẩm.`);
+                return;
+            }
             cart.push({ ...product, quantity });
         }
-
+    
         localStorage.setItem("cart", JSON.stringify(cart));
-
+    
         window.dispatchEvent(new Event("cartUpdated"));
-
-        alert("Đã thêm vào giỏ hàng!");
+    
+        toast.success('Đã thêm vào giỏ hàng!', {
+            duration: 4000,
+        });
     };
+    
 
     return (
         <section className="py-5">

@@ -450,3 +450,8 @@ section {
   justify-content: center;
   padding: 0;
 }
+
+.my-toast {
+  background-color: #4caf50;
+  color: white;
+}
