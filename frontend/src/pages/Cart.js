@@ -4,15 +4,13 @@ import CartList from "../components/cart/CartList";
 import CartSummary from "../components/cart/CartSummary";
 import useCartStore from "../store/cartStore";
 
-
-
 const Cart = () => {
   const { cartItems, fetchCart, updateQuantity, removeFromCart } = useCartStore();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchCart();
-  }, []);
+  }, [fetchCart]);
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.discount ? (item.price - (item.price * item.discount) / 100) * item.quantity : item.price * item.quantity),

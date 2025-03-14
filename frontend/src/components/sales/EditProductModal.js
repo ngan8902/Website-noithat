@@ -120,109 +120,111 @@ const EditProductModal = ({ product, closeModal }) => {
               style={{ width: "100px", height: "100px", objectFit: "cover", marginBottom: "10px" }}
               className="m-3"
             />}
-            <input type="text" className="form-control mb-3" placeholder="Tên sản phẩm" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-
-            <div className="mb-3">
-              <label className="form-label fw-bold">Loại Sản Phẩm</label>
-              <select
-                className="form-select"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                required
-              >
-                <option value="">-- Chọn loại sản phẩm --</option>
-                {[...new Set(products.map((productItem) => productItem.type))]
-                  .filter((type) => type) // Loại bỏ giá trị rỗng
-                  .map((type, index) => (
-                    <option key={index} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                <option value="new">+ Thêm loại mới</option>
-              </select>
-              {selectedCategory === "new" && (
-                <input
-                  type="text"
-                  className="form-control mt-2"
-                  placeholder="Nhập loại sản phẩm mới"
-                  value={form.type}
-                  onChange={(e) => setForm({ ...form, type: e.target.value })}
-                  required
-                />
-              )}
-            </div>
-
-            <input
-              type="text"
-              className="form-control mb-3"
-              placeholder="Xuất xứ"
-              value={form.origin}
-              onChange={(e) => setForm({ ...form, origin: e.target.value })}
+            <label className="form-label fw-bold">Tên sản phẩm</label>
+            <input 
+              type="text" 
+              className="form-control mb-3" 
+              id="name" 
+              placeholder="Nhập tên sản phẩm" 
+              value={form.name} 
+              onChange={(e) => setForm({ ...form, name: e.target.value })} 
             />
 
-            <input
-              type="text"
-              className="form-control mb-3"
-              placeholder="Chất liệu"
-              value={form.material}
-              onChange={(e) => setForm({ ...form, material: e.target.value })}
+            <label className="form-label fw-bold">Loại sản phẩm</label>
+            <select className="form-select mb-3" id="type" value={selectedCategory} onChange={handleCategoryChange} required>
+              <option value="">-- Chọn loại sản phẩm --</option>
+              {[...new Set(products.map((productItem) => productItem.type))].filter((type) => type).map((type, index) => (
+                <option key={index} value={type}>{type}</option>
+              ))}
+              <option value="new">+ Thêm loại mới</option>
+            </select>
+            {selectedCategory === "new" && (
+              <>
+                <label className="form-label fw-bold">Loại sản phẩm mới</label>
+                <input type="text" className="form-control mb-3" placeholder="Nhập loại sản phẩm mới" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} required />
+              </>
+            )}
+
+            <label className="form-label fw-bold">Xuất xứ</label>
+            <input 
+              type="text" 
+              className="form-control mb-3" 
+              id="origin" 
+              placeholder="Nhập xuất xứ" 
+              value={form.origin} 
+              onChange={(e) => setForm({ ...form, origin: e.target.value })} 
             />
 
-            <input
-              type="text"
-              className="form-control mb-3"
-              placeholder="Kích thước"
-              value={form.size}
-              onChange={(e) => setForm({ ...form, size: e.target.value })}
+            <label className="form-label fw-bold">Chất liệu</label>
+            <input 
+              type="text" 
+              className="form-control mb-3" 
+              id="material" 
+              placeholder="Nhập chất liệu" 
+              value={form.material} onChange={(e) => setForm({ ...form, material: e.target.value })} 
             />
 
-            <input
-              type="text"
-              className="form-control mb-3"
-              placeholder="Bảo hành"
-              value={form.warranty}
-              onChange={(e) => setForm({ ...form, warranty: e.target.value })}
+            <label className="form-label fw-bold">Kích thước</label>
+            <input 
+              type="text" 
+              className="form-control mb-3" 
+              id="size" 
+              placeholder="Nhập kích thước" 
+              value={form.size} 
+              onChange={(e) => setForm({ ...form, size: e.target.value })} 
             />
 
-            <input type="number" className="form-control mb-3" placeholder="Giá" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-            <input type="number" className="form-control mb-3" placeholder="Số lượng" value={form.countInStock} onChange={(e) => setForm({ ...form, countInStock: e.target.value })} />
-
-            <input
-              type="number"
-              className="form-control mb-3"
-              placeholder="Giảm giá (%)"
-              value={form.discount}
-              onChange={(e) => setForm({ ...form, discount: e.target.value })}
+            <label className="form-label fw-bold">Bảo hành</label>
+            <input 
+              type="text" 
+              className="form-control mb-3" 
+              id="warranty" 
+              placeholder="Nhập thời gian bảo hành" 
+              value={form.warranty} 
+              onChange={(e) => setForm({ ...form, warranty: e.target.value })} 
             />
 
-            <textarea
-              className="form-control mb-3"
-              placeholder="Mô tả"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+            <label className="form-label fw-bold">Giá</label>
+            <input 
+              type="number" 
+              className="form-control mb-3" 
+              id="price" 
+              placeholder="Nhập giá sản phẩm" 
+              value={form.price} 
+              onChange={(e) => setForm({ ...form, price: e.target.value })} 
             />
 
-            <textarea
-              className="form-control mb-3"
-              placeholder="Mô tả chi tiết"
-              value={form.descriptionDetail}
-              onChange={(e) => setForm({ ...form, descriptionDetail: e.target.value })}
+            <label className="form-label fw-bold">Số lượng trong kho</label>
+            <input 
+              type="number" 
+              className="form-control mb-3" 
+              id="countInStock" 
+              placeholder="Nhập số lượng" 
+              value={form.countInStock} 
+              onChange={(e) => setForm({ ...form, countInStock: e.target.value })} 
             />
+
+            <label className="form-label fw-bold">Giảm giá (%)</label>
+            <input 
+              type="number" 
+              className="form-control mb-3" 
+              id="discount" 
+              placeholder="Nhập phần trăm giảm giá" 
+              value={form.discount} 
+              onChange={(e) => setForm({ ...form, discount: e.target.value })} 
+            />
+
+            <label className="form-label fw-bold">Mô tả</label>
+            <textarea className="form-control mb-3" id="description" placeholder="Nhập mô tả sản phẩm" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+
+            <label className="form-label fw-bold">Mô tả chi tiết</label>
+            <textarea className="form-control mb-3" id="descriptionDetail" placeholder="Nhập mô tả chi tiết" value={form.descriptionDetail} onChange={(e) => setForm({ ...form, descriptionDetail: e.target.value })} />
 
             <div className="form-check mb-3">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                id="isBestSeller"
-                checked={form.isBestSeller}
-                onChange={(e) =>
-                  setForm({ ...form, isBestSeller: e.target.checked })
-                }
-              />
-              <label className="form-check-label" htmlFor="isBestSeller">
-                Sản phẩm bán chạy
-              </label>
+              <input type="checkbox" className="form-check-input" id="isBestSeller" checked={form.isBestSeller} onChange={(e) => setForm({ ...form, isBestSeller: e.target.checked })} />
+              <label className="form-check-label fw-bold" htmlFor="isBestSeller">Sản phẩm bán chạy</label>
             </div>
+
             <button className="btn btn-primary w-100" onClick={handleSave}>Lưu</button>
           </div>
         </div>

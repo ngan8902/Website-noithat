@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-//import useStaffStore from "../../store/staffStore"
+import useStaffStore from "../../store/staffStore";
 
-const AddEmployeeModal = ({ setEmployees, closeModal }) => {
-  const [ staff, setStaff ] = useState({  
+const AddEmployeeModal = ({ closeModal }) => {
+  const { staffList, getAllStaff } = useStaffStore();
+  
+  const [staff, setStaff] = useState({
     name: "",
     username: "",
     password: "",
@@ -17,41 +19,40 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
     avatar: "",
   });
 
-  const [ showPassword, setShowPassword ] = useState(false);
-  const [ setPasswordError ] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [newPosition, setNewPosition] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  //const [ newPosition, setNewPosition ] = useState("");
-  //const staffList = [];
+  const positions = [...new Set(staffList.map((staffItem) => staffItem.position))];
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
     if (!staff.name || !staff.username || !staff.password || !staff.position || !staff.email || !staff.phone || !staff.dob || !staff.gender || !staff.address) {
-      alert("Vui lòng điền đầy đủ thông tin!");
+      setErrorMessage("Vui lòng điền đầy đủ thông tin!");
       return;
     }
 
-    console.log("Dữ liệu gửi lên API:", staff);
+    const finalPosition = staff.position === "new" ? newPosition : staff.position;
 
-    axios
-      .post(`${process.env.REACT_APP_URL_BACKEND}/staff/sign-up`, staff).then((response) => {
-        console.log("Phản hồi từ server:", response);
-        const { data } = response;
-
-        if (data.status === 'SUCCESS') {
-          window.location.reload()
-        } else {
-          setPasswordError(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
-          console.error('lỗi:', setPasswordError)
-        }
-      })
-      .catch((err) => {
-        console.error("Lỗi đăng ký:", err);
-        setPasswordError("Không thể kết nối với server. Vui lòng thử lại!");
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/staff/sign-up`, {
+        ...staff,
+        position: finalPosition,
       });
+
+      if (response.data.status === "SUCCESS") {
+        await getAllStaff();
+        closeModal();
+      } else {
+        setErrorMessage(response.data.message || "Có lỗi xảy ra, vui lòng thử lại!");
+      }
+    } catch (err) {
+      console.error("Lỗi đăng ký:", err);
+      setErrorMessage("Không thể kết nối với server. Vui lòng thử lại!");
+    }
   };
-
-
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -95,9 +96,8 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
               </button>
             </div>
 
-            {/*
             <div className="mb-3">
-              <label className="form-label fw-bold">Chức vụ</label>
+              <label className="form-label">Chức vụ</label>
               <select
                 className="form-select"
                 value={staff.position}
@@ -105,8 +105,10 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
                 required
               >
                 <option value="">-- Chọn chức vụ --</option>
-                {[...new Set(staffList.map((staffItem) => staffItem.position))].map((position, index) => (
-                  <option key={index} value={position}>{position}</option>
+                {positions.map((position, index) => (
+                  <option key={index} value={position}>
+                    {position}
+                  </option>
                 ))}
                 <option value="new">+ Thêm chức vụ mới</option>
               </select>
@@ -114,7 +116,7 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
 
             {staff.position === "new" && (
               <div className="mb-3">
-                <label className="form-label fw-bold">Nhập chức vụ mới</label>
+                <label className="form-label">Nhập chức vụ mới</label>
                 <input
                   type="text"
                   className="form-control"
@@ -125,14 +127,13 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
                 />
               </div>
             )}
-            */}
 
             <input type="email" className="form-control mb-3" placeholder="Email" value={staff.email} onChange={(e) => setStaff({ ...staff, email: e.target.value })} />
             <input type="tel" className="form-control mb-3" placeholder="Số điện thoại" value={staff.phone} onChange={(e) => setStaff({ ...staff, phone: e.target.value })} />
             <input type="date" className="form-control mb-3" placeholder="Ngày sinh" value={staff.dob} onChange={(e) => setStaff({ ...staff, dob: e.target.value })} />
 
             <div className="mb-3">
-              <label className="form-label fw-bold">Giới tính</label>
+              <label className="form-label">Giới tính</label>
               <select
                 className="form-select"
                 value={staff.gender}
@@ -146,6 +147,13 @@ const AddEmployeeModal = ({ setEmployees, closeModal }) => {
             </div>
 
             <input type="text" className="form-control mb-3" placeholder="Địa chỉ" value={staff.address} onChange={(e) => setStaff({ ...staff, address: e.target.value })} />
+            
+            {errorMessage && (
+              <div className="text-danger">
+                {errorMessage}
+              </div>
+            )}
+            
             <button className="btn btn-primary w-100" onClick={handleSave}>Thêm Nhân Viên</button>
           </div>
         </div>

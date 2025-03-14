@@ -102,48 +102,60 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
                 className="m-3"
               />
             )}
+
+            <label className="form-label fw-bold">Họ và tên</label>
             <input
               type="text"
               className="form-control mb-3"
-              placeholder="Họ và tên"
+              placeholder="Nhập họ và tên"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
+
+            <label className="form-label fw-bold">Chức vụ</label>
             <input
               type="text"
               className="form-control mb-3"
-              placeholder="Chức vụ"
+              placeholder="Nhập chức vụ"
               value={form.position}
               onChange={(e) => setForm({ ...form, position: e.target.value })}
             />
+
+            <label className="form-label fw-bold">Email</label>
             <input
               type="email"
               className="form-control mb-3"
-              placeholder="Email"
+              placeholder="Nhập email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
+
+            <label className="form-label fw-bold">Số điện thoại</label>
             <input
               type="tel"
               className="form-control mb-3"
-              placeholder="Số điện thoại"
+              placeholder="Nhập số điện thoại"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
+
+            <label className="form-label fw-bold">Ngày sinh</label>
             <input
               type="date"
               className="form-control mb-3"
-              placeholder="Ngày sinh"
               value={form.dob}
               onChange={(e) => setForm({ ...form, dob: e.target.value })}
             />
+
+            <label className="form-label fw-bold">Địa chỉ</label>
             <input
               type="text"
               className="form-control mb-3"
-              placeholder="Địa chỉ"
+              placeholder="Nhập địa chỉ"
               value={form.address}
               onChange={(e) => setForm({ ...form, address: e.target.value })}
             />
+
             <button className="btn btn-primary w-100" onClick={handleSave}>
               Lưu
             </button>

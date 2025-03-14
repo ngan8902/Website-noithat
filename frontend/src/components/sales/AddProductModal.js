@@ -118,7 +118,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
             />
 
             <div className="mb-3">
-              <label className="form-label fw-bold">Loại Sản Phẩm</label>
+              <label className="form-label">Loại Sản Phẩm</label>
               <select
                 className="form-select"
                 value={selectedCategory}
@@ -135,7 +135,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
             
             {selectedCategory === key && (
               <div className="mb-3">
-                <label className="form-label fw-bold">Nhập Loại Mới</label>
+                <label className="form-label">Nhập Loại Mới</label>
                 <input
                   type="text"
                   className="form-control"
@@ -190,7 +190,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
               onChange={(e) => setProduct({ ...product, descriptionDetail: e.target.value })}
             />
 
-            <div className="form-check mb-3">
+            <div className="form-check mb-3 fw-bofd">
               <input
                 type="checkbox"
                 className="form-check-input"
