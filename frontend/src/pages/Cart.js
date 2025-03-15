@@ -9,14 +9,15 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCart();
-  }, [fetchCart]);
+    fetchCart(); 
+  }, []);
+
+  console.log("Cart items:", cartItems);
 
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + (item.discount ? (item.price - (item.price * item.discount) / 100) * item.quantity : item.price * item.quantity),
     0
   );
-
 
   const handleCheckout = () => {
     if (cartItems.length > 0) {

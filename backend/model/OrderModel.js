@@ -17,11 +17,6 @@ const orderSchema = new mongoose.Schema(
                 },
             },
         ],
-        // shippingAddress: {
-        //     fullName: { type: String, required: true },
-        //     address: { type: String, required: true },
-        //     phone: { type: String, required: true },
-        // },
         receiver: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "ReceiverInfo",

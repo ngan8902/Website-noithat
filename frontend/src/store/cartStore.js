@@ -8,16 +8,19 @@ const useCartStore = create((set, get) => ({
     cartItems: [],
 
     // Lấy giỏ hàng từ server
-    fetchCart: async () => {
+    fetchCart: async (userId) => {
         try {
             const token = getCookie(TOKEN_KEY);
-    
+
             if (token) {
                 // Người dùng đã đăng nhập → Lấy giỏ hàng từ API
                 const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/cart/get-cart`, {
-                    headers: { "token": token }
+                    headers: {
+                        'token': token
+                    },
+                    params: { userId }
                 });
-    
+
                 if (response.data) {
                     set({ cartItems: response.data.items || [] });
                     console.log("Giỏ hàng từ API:", response.data);
@@ -39,35 +42,20 @@ const useCartStore = create((set, get) => ({
     },
 
     // Cập nhật giỏ hàng khi thêm sản phẩm
-    addToCart: (product) => {
+    addToCart: async (product, quantity = 1) => {
         const token = getCookie(TOKEN_KEY);
-    
         if (token) {
-            // Người dùng đăng nhập → Gửi API
-            axios.post(`${process.env.REACT_APP_URL_BACKEND}/cart/add`, { productId: product.id, quantity: 1 }, {
-                headers: { "token": token }
-            }).then(response => {
-                set({ cartItems: response.data.items || [] });
-                console.log("Thêm vào giỏ hàng API:", response.data);
-            }).catch(error => {
-                console.error("Lỗi khi thêm vào giỏ hàng:", error);
-            });
-        } else {
-            // Khách vãng lai → Lưu vào LocalStorage
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            const existingItem = cart.find(item => item.id === product.id);
-    
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ ...product, quantity: 1 });
+            try {
+                const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/cart/add-cart`, { productId: product._id, quantity },
+                    { headers: { "token": token } }
+                );
+                set({ cartItems: response.data.cart.items || [] });
+                return response;
+            } catch (error) {
+                console.error("Lỗi khi thêm vào giỏ hàng API:", error);
             }
-    
-            localStorage.setItem("cart", JSON.stringify(cart));
-            set({ cartItems: cart });
-            console.log("Thêm vào giỏ hàng (Khách vãng lai):", cart);
         }
-    },    
+    },
 
     // Xóa sản phẩm khỏi giỏ hàng
     removeFromCart: (id) => {
@@ -78,18 +66,18 @@ const useCartStore = create((set, get) => ({
     },
 
     updateQuantity: async (id, newQuantity) => {
-        if (newQuantity <= 0) return; // Ngăn số lượng âm
-    
+        if (newQuantity <= 0) return;
+
         const token = getCookie(TOKEN_KEY);
         if (token) {
             try {
                 const response = await axios.put(
-                    `${process.env.REACT_APP_URL_BACKEND}/cart/update-cart`, 
-                    { productId: id, quantity: newQuantity }, 
+                    `${process.env.REACT_APP_URL_BACKEND}/cart/update-cart`,
+                    { productId: id, quantity: newQuantity },
                     { headers: { "token": token } }
                 );
-    
-                console.log("API Response:", response.data); // Kiểm tra phản hồi từ API
+
+                console.log("API Response:", response.data);
                 set((state) => ({
                     cartItems: state.cartItems.map(item =>
                         item._id === id ? { ...item, quantity: newQuantity } : item
@@ -108,7 +96,7 @@ const useCartStore = create((set, get) => ({
                 return { cartItems: updatedCart };
             });
         }
-    },    
+    },
 
     // Xóa giỏ hàng sau khi thanh toán
     clearCart: () => {

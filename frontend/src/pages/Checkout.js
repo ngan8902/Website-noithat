@@ -10,6 +10,7 @@ import useOrderStore from "../store/orderStore";
 import { notifyOfCheckout } from "../constants/notify.constant";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import { TOKEN_KEY } from "../constants/authen.constant";
 
 const Checkout = () => {
     const location = useLocation();
@@ -30,11 +31,12 @@ const Checkout = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
-    const { user } = useAuthStore((state) => state);
+    const { user } = useAuthStore();
     const { createOrder } = useOrderStore();
 
     useEffect(() => {
         if (user) {
+            console.log(user._id)
             axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`)
                 .then(response => {
                     if (response.data.status === "SUCCESS") {
@@ -76,8 +78,8 @@ const Checkout = () => {
     };
 
     const handleCheckout = async () => {
-        const formattedPaymentMethod = paymentMethod === "Thanh Toán Khi Nhận Hàng" ? "COD" : 
-        paymentMethod === "VnPay" ? "VNPAY" : null;
+        const formattedPaymentMethod = paymentMethod === "Thanh Toán Khi Nhận Hàng" ? "COD" :
+            paymentMethod === "VnPay" ? "VNPAY" : null;
 
         if (!formattedPaymentMethod) {
             setErrorMessage("Phương thức thanh toán không hợp lệ!");
@@ -94,7 +96,8 @@ const Checkout = () => {
         setErrorMessage("");
 
         const orderData = {
-            productCode: product ? product.productCode : cart.map((item) => item.productCode),
+            userId: user ? user._id : null,
+            productCode: product ? [product.productCode] : cart.map((item) => item.productCode),
             amount: product ? quantity : cart.map((item) => item.quantity),
             receiver: {
                 fullname: receiver?.fullname,
@@ -105,17 +108,12 @@ const Checkout = () => {
             status: "pending"
         };
 
-        try {
-            if (newAddress) {
-                await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
-                    userId: user._id || null,
-                    fullname: receiver.fullname,
-                    phone: receiver.phone,
-                    address: newAddress,
-                });
-            }
+        console.log(orderData)
 
-            await createOrder(orderData);
+        try {
+            const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
+
+            await createOrder(orderData, { headers });
             notifyOfCheckout()
         } catch (error) {
             console.log(error)

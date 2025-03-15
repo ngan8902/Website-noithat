@@ -2,9 +2,7 @@ const OrderService = require('../service/OrderService')
 
 const createOrder = async (req, res) => {
     try {
-        const { productCode, amount, receiver, status, paymentMethod  } = req.body;
-        const userId = req.user ? req.user.id : null;
-
+        const { userId, productCode, amount, receiver, status, paymentMethod  } = req.body;
         if (!receiver || !receiver.fullname || !receiver.phone || !receiver.address) {
             return res.status(401).json({
                 status: "ERR",
@@ -12,7 +10,7 @@ const createOrder = async (req, res) => {
             });
         }
 
-        if (!productCode || !amount ||  amount <= 0) {
+        if (!productCode || !amount) {
             return res.status(401).json({
                 status: "ERR",
                 message: "Thiếu mã sản phẩm hoặc số lượng"

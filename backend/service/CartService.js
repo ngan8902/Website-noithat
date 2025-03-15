@@ -1,38 +1,36 @@
-const Cart = require("../model/CartModel")
+const Cart = require("../model/CartModel");
+const Product = require("../model/ProductModel");
 
-const addToCart = async (userId, productData) => {
+const addToCart = async (userId, productId, quantity) => {
     try {
+        const product = await Product.findById(productId);
+        if (!product) {
+            throw new Error("Sản phẩm không tồn tại");
+        }
+
         let cart;
+        if (!userId) throw new Error("error");
+        //Nếu khách hàng đăng nhập → tìm giỏ hàng của user
+        cart = await Cart.findOne({ user: userId });
 
-        if (userId) {
-            //Nếu khách hàng đăng nhập → tìm giỏ hàng của user
-            cart = await Cart.findOne({ user: userId });
-
-            if (!cart) {
-                cart = new Cart({ user: userId, items: [] });
-            }
-        } else {
-            //Nếu khách vãng lai → tìm giỏ hàng đầu tiên không có user
-            cart = await Cart.findOne({ user: null });
-            if (!cart) {
-                cart = new Cart({ user: null, items: [] });
-            }
-        }
-
-        const itemIndex = cart.items.findIndex(item => item.product.toString() === productData.productId);
-
-        if (itemIndex > -1) {
-            cart.items[itemIndex].quantity += productData.quantity; // Nếu đã có sản phẩm thì tăng số lượng
-        } else {
-            cart.items.push({
-                product: productData.productId,
-                name: productData.name,
-                image: productData.image,
-                price: productData.price,
-                quantity: productData.quantity
+        if (!cart) {
+            cart = new Cart({
+                user: userId, items: [{
+                    productId: product._id,
+                    quantity: quantity
+                }]
             });
+        } else {
+            const existingItem = cart.items.find(item => item?.productId.toString() === productId);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.items.push({
+                    productId: product._id,
+                    quantity: quantity
+                });
+            }
         }
-
         await cart.save();
         return cart;
     } catch (error) {
@@ -42,7 +40,7 @@ const addToCart = async (userId, productData) => {
 
 const getCart = async (userId) => {
     try {
-        const cart = await Cart.findOne({ user: userId }).populate("items.product");
+        const cart = await Cart.findOne({ user: userId });
 
         if (!cart) {
             return {
@@ -98,7 +96,7 @@ const updateCart = async (userId, productId, quantity) => {
     }
 }
 
-module.exports = { 
+module.exports = {
     addToCart,
     getCart,
     removeItem,

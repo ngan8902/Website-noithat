@@ -1,6 +1,7 @@
 const Order = require("../model/OrderModel");
 const Product = require("../model/ProductModel");
 const ReceiverInfo = require("../model/ReceiverInfoModel")
+const User = require("../model/UserModel");
 
 const generateOrderCode = () => {
     const prefix = "ORD"; // Tiền tố cố định
@@ -13,7 +14,8 @@ const generateOrderCode = () => {
 const createOrder = async (userId, productCode, amount, receiver, status, paymentMethod) => {
     try {
         const product = await Product.findOne({ productCode });
-
+        const user = userId ? await User.findById(userId) : null;        
+        console.log(userId)
         if (!product) {
             return {
                 status: "ERR",
@@ -54,11 +56,6 @@ const createOrder = async (userId, productCode, amount, receiver, status, paymen
                 price: product.price,
                 product: product._id,
             }],
-            // shippingAddress: {
-            //     fullname: receiver.fullname,
-            //     address: receiver.address,
-            //     phone: receiver.phone,
-            // },
             receiver: receiverInfor._id,
             paymentMethod,
             itemsPrice,
@@ -66,7 +63,7 @@ const createOrder = async (userId, productCode, amount, receiver, status, paymen
             taxPrice,
             totalPrice,
             status,
-            user: userId || null
+            user:  user ? user._id : null
         };
 
         const createdOrder = await Order.create(orderData);

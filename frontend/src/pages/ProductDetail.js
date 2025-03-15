@@ -7,10 +7,14 @@ import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
 import useProductStore from "../store/productStore";
 import { notifyOfCart } from "../constants/notify.constant";
+import useAuthStore from "../store/authStore";
+import useCartStore from "../store/cartStore";
 
 const ProductDetail = () => {
     const { id } = useParams();
     const { products } = useProductStore();
+    const { user } = useAuthStore();
+    const { addToCart: addToCartStore, fetchCart } = useCartStore();
     const product = products.find(p => p._id === id); 
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
@@ -41,6 +45,14 @@ const ProductDetail = () => {
     };
 
     const addToCart = () => {
+        if(user) {
+            handleAddToCartForCustomer();
+        } else {
+            handleAddToCartForGuest();
+        }
+    };
+    
+    const handleAddToCartForGuest = () => {
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
         const existingProduct = cart.find(item => item._id === product._id); // Sửa id thành _id
     
@@ -65,8 +77,17 @@ const ProductDetail = () => {
         window.dispatchEvent(new Event("cartUpdated"));
     
         notifyOfCart()
-    };
-    
+    }
+
+    const handleAddToCartForCustomer = async () => {
+        console.log(user);
+        const res = await addToCartStore(product, 1);
+        if(res && res?.data && res?.data?.cart) {
+            notifyOfCart()
+            await fetchCart();
+        }
+        console.log(res);
+    }
 
     return (
         <section className="py-5">
