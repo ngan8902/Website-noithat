@@ -30,7 +30,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
   const handleCategoryChange = (e) => {
     const value = e.target.value;
     setSelectedCategory(value);
-    if (value === "new") {
+    if (value === key) {
       setProduct({ ...product, type: newCategory });
     } else {
       setProduct({ ...product, type: value });
@@ -39,9 +39,8 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
   };
 
   const handleAdd = (e) => {
-    console.log('Test');
     e.preventDefault();
-    if (!product.name || !product.price || !product.image || !product.countInStock || !product.type || (!selectedCategory && !newCategory) || !product.origin || !product.material || !product.size || !product.warranty) {
+    if (!product.name || !product.price || !product.image || !product.countInStock || !product.type === (!selectedCategory && !newCategory) || !product.origin || !product.material || !product.size || !product.warranty) {
       setError("Vui lòng điền đầy đủ thông tin!");
       return;
     }

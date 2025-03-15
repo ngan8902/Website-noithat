@@ -4,6 +4,8 @@ import axios from "axios";
 import { getCookie } from "../../utils/cookie.util";
 import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
 
+const key = "BGSJ6545DHHHFGS";
+
 const EditProductModal = ({ product, closeModal }) => {
   const [form, setForm] = useState({
     name: '',
@@ -23,6 +25,8 @@ const EditProductModal = ({ product, closeModal }) => {
   const { products, setProducts } = useProductStore((state) => state)
   const [, setErrorMessage] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+
 
   useEffect(() => {
     if (product) {
@@ -53,9 +57,11 @@ const EditProductModal = ({ product, closeModal }) => {
     }
 
     try {
+      const finalCategory = selectedCategory === key ? newCategory : selectedCategory;
+
       const updatedData = {
         ...form,
-        type: selectedCategory
+        type: finalCategory,
       };
 
       const response = await axios.put(
@@ -94,12 +100,20 @@ const EditProductModal = ({ product, closeModal }) => {
   const handleCategoryChange = (e) => {
     const value = e.target.value;
     setSelectedCategory(value);
-    if (value !== "new") {
-      setForm({ ...form, type: value });
+
+    if (value === key) {
+      setNewCategory("");
     } else {
-      setForm({ ...form, type: "" });
+      setForm({ ...form, type: value });
     }
   };
+
+  useEffect(() => {
+    if (selectedCategory === key) {
+      setForm((prev) => ({ ...prev, type: newCategory }));
+    }
+  }, [newCategory]);
+
 
   return (
     <div className="modal fade show d-block" id="editProductModal">
@@ -121,13 +135,13 @@ const EditProductModal = ({ product, closeModal }) => {
               className="m-3"
             />}
             <label className="form-label fw-bold">Tên sản phẩm</label>
-            <input 
-              type="text" 
-              className="form-control mb-3" 
-              id="name" 
-              placeholder="Nhập tên sản phẩm" 
-              value={form.name} 
-              onChange={(e) => setForm({ ...form, name: e.target.value })} 
+            <input
+              type="text"
+              className="form-control mb-3"
+              id="name"
+              placeholder="Nhập tên sản phẩm"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
 
             <label className="form-label fw-bold">Loại sản phẩm</label>
@@ -136,82 +150,83 @@ const EditProductModal = ({ product, closeModal }) => {
               {[...new Set(products.map((productItem) => productItem.type))].filter((type) => type).map((type, index) => (
                 <option key={index} value={type}>{type}</option>
               ))}
-              <option value="new">+ Thêm loại mới</option>
+              <option value={key}>+ Thêm loại mới</option>
             </select>
-            {selectedCategory === "new" && (
+            {selectedCategory === key && (
               <>
                 <label className="form-label fw-bold">Loại sản phẩm mới</label>
-                <input type="text" className="form-control mb-3" placeholder="Nhập loại sản phẩm mới" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} required />
+                <input type="text" className="form-control mb-3" placeholder="Nhập loại sản phẩm mới" value={newCategory} onChange={(e) => setNewCategory(e.target.value)}
+                  required />
               </>
             )}
 
             <label className="form-label fw-bold">Xuất xứ</label>
-            <input 
-              type="text" 
-              className="form-control mb-3" 
-              id="origin" 
-              placeholder="Nhập xuất xứ" 
-              value={form.origin} 
-              onChange={(e) => setForm({ ...form, origin: e.target.value })} 
+            <input
+              type="text"
+              className="form-control mb-3"
+              id="origin"
+              placeholder="Nhập xuất xứ"
+              value={form.origin}
+              onChange={(e) => setForm({ ...form, origin: e.target.value })}
             />
 
             <label className="form-label fw-bold">Chất liệu</label>
-            <input 
-              type="text" 
-              className="form-control mb-3" 
-              id="material" 
-              placeholder="Nhập chất liệu" 
-              value={form.material} onChange={(e) => setForm({ ...form, material: e.target.value })} 
+            <input
+              type="text"
+              className="form-control mb-3"
+              id="material"
+              placeholder="Nhập chất liệu"
+              value={form.material} onChange={(e) => setForm({ ...form, material: e.target.value })}
             />
 
             <label className="form-label fw-bold">Kích thước</label>
-            <input 
-              type="text" 
-              className="form-control mb-3" 
-              id="size" 
-              placeholder="Nhập kích thước" 
-              value={form.size} 
-              onChange={(e) => setForm({ ...form, size: e.target.value })} 
+            <input
+              type="text"
+              className="form-control mb-3"
+              id="size"
+              placeholder="Nhập kích thước"
+              value={form.size}
+              onChange={(e) => setForm({ ...form, size: e.target.value })}
             />
 
             <label className="form-label fw-bold">Bảo hành</label>
-            <input 
-              type="text" 
-              className="form-control mb-3" 
-              id="warranty" 
-              placeholder="Nhập thời gian bảo hành" 
-              value={form.warranty} 
-              onChange={(e) => setForm({ ...form, warranty: e.target.value })} 
+            <input
+              type="text"
+              className="form-control mb-3"
+              id="warranty"
+              placeholder="Nhập thời gian bảo hành"
+              value={form.warranty}
+              onChange={(e) => setForm({ ...form, warranty: e.target.value })}
             />
 
             <label className="form-label fw-bold">Giá</label>
-            <input 
-              type="number" 
-              className="form-control mb-3" 
-              id="price" 
-              placeholder="Nhập giá sản phẩm" 
-              value={form.price} 
-              onChange={(e) => setForm({ ...form, price: e.target.value })} 
+            <input
+              type="number"
+              className="form-control mb-3"
+              id="price"
+              placeholder="Nhập giá sản phẩm"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
             />
 
             <label className="form-label fw-bold">Số lượng trong kho</label>
-            <input 
-              type="number" 
-              className="form-control mb-3" 
-              id="countInStock" 
-              placeholder="Nhập số lượng" 
-              value={form.countInStock} 
-              onChange={(e) => setForm({ ...form, countInStock: e.target.value })} 
+            <input
+              type="number"
+              className="form-control mb-3"
+              id="countInStock"
+              placeholder="Nhập số lượng"
+              value={form.countInStock}
+              onChange={(e) => setForm({ ...form, countInStock: e.target.value })}
             />
 
             <label className="form-label fw-bold">Giảm giá (%)</label>
-            <input 
-              type="number" 
-              className="form-control mb-3" 
-              id="discount" 
-              placeholder="Nhập phần trăm giảm giá" 
-              value={form.discount} 
-              onChange={(e) => setForm({ ...form, discount: e.target.value })} 
+            <input
+              type="number"
+              className="form-control mb-3"
+              id="discount"
+              placeholder="Nhập phần trăm giảm giá"
+              value={form.discount}
+              onChange={(e) => setForm({ ...form, discount: e.target.value })}
             />
 
             <label className="form-label fw-bold">Mô tả</label>
