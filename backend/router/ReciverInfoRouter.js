@@ -3,7 +3,8 @@ const router = express.Router();
 const ReciverInfoController = require('../controller/ReciverInfoController') 
 
 router.post('/save-new-address', ReciverInfoController.saveNewAddress)
-router.get('/get-address/:id', ReciverInfoController.getAddress)
+router.get('/get-address/:userId', ReciverInfoController.getAddress)
+router.put("/set-default-address", ReciverInfoController.setDefaultAddress);
 
 
 module.exports = router

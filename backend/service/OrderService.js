@@ -8,8 +8,9 @@ const generateOrderCode = () => {
     const randomDigits = Math.floor(1000 + Math.random() * 9000); // Số ngẫu nhiên 4 chữ số
     return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
 };
+// const validPaymentMethods = ["COD", "VnPay"];
 
-const createOrder = async (userId, productCode, amount, receiver, status) => {
+const createOrder = async (userId, productCode, amount, receiver, status, paymentMethod) => {
     try {
         const product = await Product.findOne({ productCode });
 
@@ -17,6 +18,13 @@ const createOrder = async (userId, productCode, amount, receiver, status) => {
             return {
                 status: "ERR",
                 message: "Không tìm thấy sản phẩm với mã này"
+            };
+        }
+
+        if (!paymentMethod) {
+            return {
+                status: "ERR",
+                message: "Phương thức thanh toán không hợp lệ"
             };
         }
 
@@ -46,13 +54,13 @@ const createOrder = async (userId, productCode, amount, receiver, status) => {
                 price: product.price,
                 product: product._id,
             }],
-            shippingAddress: {
-                fullName: receiver.fullName,
-                address: receiver.address,
-                phone: receiver.phone,
-            },
+            // shippingAddress: {
+            //     fullname: receiver.fullname,
+            //     address: receiver.address,
+            //     phone: receiver.phone,
+            // },
             receiver: receiverInfor._id,
-            paymentMethod: "COD",
+            paymentMethod,
             itemsPrice,
             shippingPrice,
             taxPrice,
@@ -68,6 +76,7 @@ const createOrder = async (userId, productCode, amount, receiver, status) => {
             data: createdOrder
         };
     } catch (e) {
+        console.log(e)
         return {
             status: "ERR",
             message: "Lỗi khi tạo đơn hàng",

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 import ProductImage from "../components/productdetail/ProductImage";
 import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
 import useProductStore from "../store/productStore";
+import { notifyOfCart } from "../constants/notify.constant";
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -63,9 +64,7 @@ const ProductDetail = () => {
     
         window.dispatchEvent(new Event("cartUpdated"));
     
-        toast.success('Đã thêm vào giỏ hàng!', {
-            duration: 4000,
-        });
+        notifyOfCart()
     };
     
 
@@ -124,6 +123,7 @@ const ProductDetail = () => {
 
                         <CustomerReviews reviews={product?.reviews} />
                     </div>
+                    <ToastContainer />
                 </div>
             </div>
         </section>

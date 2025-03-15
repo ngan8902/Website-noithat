@@ -17,17 +17,20 @@ const orderSchema = new mongoose.Schema(
                 },
             },
         ],
-        shippingAddress: {
-            fullName: { type: String, required: true },
-            address: { type: String, required: true },
-            phone: { type: String, required: true },
-        },
+        // shippingAddress: {
+        //     fullName: { type: String, required: true },
+        //     address: { type: String, required: true },
+        //     phone: { type: String, required: true },
+        // },
         receiver: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "ReceiverInfo",
             required: true,
         },
-        paymentMethod: { type: String, required: true },
+        paymentMethod: { 
+            type: String, 
+            enum: ["COD", "VnPay"],
+            required: true },
         itemsPrice: { type: Number, required: true },
         shippingPrice: { type: Number, required: true },
         taxPrice: { type: Number, required: true },

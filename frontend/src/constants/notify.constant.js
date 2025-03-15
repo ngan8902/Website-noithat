@@ -12,3 +12,16 @@ export const notifyOfCart = () => {
         theme: "dark",
       });
 }
+
+export const notifyOfCheckout = () => {
+  toast.success("🛍️ Thanh toán thành công!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+}

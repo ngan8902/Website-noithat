@@ -5,7 +5,7 @@ import { TOKEN_KEY } from '../constants/authen.constant';
 
 const useAuthStore = create((set) => ({
     user: null,
-
+    
     isAuthenticated: false,
 
     auth: () => {

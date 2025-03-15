@@ -6,32 +6,54 @@ import PaymentMethod from "../components/checkout/PaymentMethod";
 import LoginModal from "../components/header/LoginModal";
 import RegisterModal from "../components/header/RegisterModal";
 import useAuthStore from '../store/authStore';
+import useOrderStore from "../store/orderStore";
+import { notifyOfCheckout } from "../constants/notify.constant";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 const Checkout = () => {
     const location = useLocation();
     const { product, quantity, cart } = location.state || {};
 
     const savedAddresses = [{ id: 1, address: "" }];
+    const [, setSavedAddresses] = useState([]);
     const hasAddress = savedAddresses.length > 0;
 
     const [selectedAddress, setSelectedAddress] = useState(hasAddress ? savedAddresses[0].address : "");
     const [newAddress, setNewAddress] = useState("");
     const [shippingFee, setShippingFee] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
-
     const [paymentMethod, setPaymentMethod] = useState("");
+    const [receiver, setReceiver] = useState({ fullname: "", phone: "", address: "" });
+
 
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
+
     const { user } = useAuthStore((state) => state);
+    const { createOrder } = useOrderStore();
 
     useEffect(() => {
-        if (selectedAddress === "" && newAddress) {
-            setShippingFee(calculateShippingFee(newAddress));
-        } else {
-            setShippingFee(calculateShippingFee(selectedAddress));
+        if (user) {
+            axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`)
+                .then(response => {
+                    if (response.data.status === "SUCCESS") {
+                        setSavedAddresses(response.data.data);
+                        if (response.data.data.length > 0) {
+                            setSelectedAddress(response.data.data[0].address);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi khi lấy danh sách địa chỉ:", error)
+                })
         }
+    }, [user]);
+
+    useEffect(() => {
+        setShippingFee(calculateShippingFee(selectedAddress || newAddress));
     }, [selectedAddress, newAddress]);
+
 
     const calculateShippingFee = (address) => {
         if (!address) return 0;
@@ -41,7 +63,6 @@ const Checkout = () => {
         if (lowerAddress.includes("hà nội")) return 200000;
         return 100000;
     };
-
     if (!product && (!cart || cart.length === 0)) {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
     }
@@ -54,7 +75,14 @@ const Checkout = () => {
         }
     };
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
+        const formattedPaymentMethod = paymentMethod === "Thanh Toán Khi Nhận Hàng" ? "COD" : 
+        paymentMethod === "VnPay" ? "VNPAY" : null;
+
+        if (!formattedPaymentMethod) {
+            setErrorMessage("Phương thức thanh toán không hợp lệ!");
+            return;
+        }
         if (!selectedAddress && !newAddress) {
             setErrorMessage("Vui lòng chọn hoặc nhập địa chỉ trước khi thanh toán!");
             return;
@@ -64,7 +92,37 @@ const Checkout = () => {
             return;
         }
         setErrorMessage("");
-        alert(`Thanh toán thành công bằng phương thức: ${paymentMethod}`);
+
+        const orderData = {
+            productCode: product ? product.productCode : cart.map((item) => item.productCode),
+            amount: product ? quantity : cart.map((item) => item.quantity),
+            receiver: {
+                fullname: receiver?.fullname,
+                phone: receiver?.phone,
+                address: newAddress || selectedAddress
+            },
+            paymentMethod: formattedPaymentMethod,
+            status: "pending"
+        };
+
+        try {
+            if (newAddress) {
+                await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
+                    userId: user._id || null,
+                    fullname: receiver.fullname,
+                    phone: receiver.phone,
+                    address: newAddress,
+                });
+            }
+
+            await createOrder(orderData);
+            notifyOfCheckout()
+        } catch (error) {
+            console.log(error)
+            toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");
+        }
+
+
     };
 
     const totalPrice = getTotalPrice();
@@ -81,6 +139,8 @@ const Checkout = () => {
                     setSelectedAddress={setSelectedAddress}
                     newAddress={newAddress}
                     setNewAddress={setNewAddress}
+                    receiver={receiver}
+                    setReceiver={setReceiver}
                 />
                 <div className="col-md-6">
                     <ProductInfo
@@ -91,11 +151,11 @@ const Checkout = () => {
                         shippingFee={shippingFee}
                         finalPrice={finalPrice}
                     />
-                    <PaymentMethod 
-                        paymentMethod={paymentMethod} 
-                        setPaymentMethod={setPaymentMethod} 
+                    <PaymentMethod
+                        paymentMethod={paymentMethod}
+                        setPaymentMethod={setPaymentMethod}
                     />
-                    
+
                     {errorMessage && <p className="text-danger text-center mt-3">{errorMessage}</p>}
 
                     {!!user ? (
@@ -103,9 +163,9 @@ const Checkout = () => {
                     ) : (
                         <>
                             <p></p>
-                            Bạn muốn nhận thông báo các ưu đãi và mã giảm giá hấp dẫn hãy 
-                            <button 
-                                className="btn text-dark text-decoration-none fw-bold" 
+                            Bạn muốn nhận thông báo các ưu đãi và mã giảm giá hấp dẫn hãy
+                            <button
+                                className="btn text-dark text-decoration-none fw-bold"
                                 onClick={() => setShowRegister(true)}
                             >
                                 Đăng Ký
@@ -114,14 +174,15 @@ const Checkout = () => {
                         </>
                     )}
 
-                    <button 
-                        className="btn btn-dark w-100 mt-4" 
+                    <button
+                        className="btn btn-dark w-100 mt-4"
                         onClick={handleCheckout}
                         disabled={!selectedAddress && !newAddress}
                     >
                         Xác Nhận Mua Hàng
                     </button>
                 </div>
+                <ToastContainer />
             </div>
             <LoginModal show={showLogin} setShow={setShowLogin} setShowRegister={setShowRegister} />
             <RegisterModal show={showRegister} setShow={setShowRegister} setShowLogin={setShowLogin} />

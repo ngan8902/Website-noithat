@@ -2,15 +2,11 @@ const CartService = require('../service/CartService')
 
 const addToCart = async (req, res) => {
     try {
-        const userId = req.user ? req.user._id : null;
-        const { productId, name, image, price, quantity } = req.body;
-
-        const cart = await CartService.addToCart(userId, { productId, name, image, price, quantity });
-
-        return res.status(200).json({ message: "Thêm vào giỏ hàng thành công!", cart });
+        const { userId, productId, quantity } = req.body;
+        const cart = await CartService.addToCart(userId || null, productId, quantity);
+        res.status(200).json({ success: true, cart });
     } catch (error) {
-        console.log(error)
-        return res.status(500).json({ message: error.message });
+        res.status(500).json({ success: false, message: error.message });
     }
 }
 

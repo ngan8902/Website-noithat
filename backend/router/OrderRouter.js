@@ -7,6 +7,7 @@ const {authenticateUser, authenticateStaff} = require('../middleware/authMiddlew
 router.post('/create-order', orderController.createOrder)
 router.get('/get-order-by-user', authenticateUser, orderController.getOrdersByUser)
 router.get("/get-order/:id", orderController.getOrderByCode)
-router.put("/update-order-status/:orderId", orderController.updateOrderStatus)// Cập nhật trạng thái đơn hàng (chỉ admin hoặc nhân viên)
+router.put("/update-order-status/:orderId", orderController.updateOrderStatus)
+
 
 module.exports = router;
