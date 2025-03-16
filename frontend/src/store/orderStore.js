@@ -11,7 +11,6 @@ const useOrderStore = create((set) => ({
         axios.post(`${process.env.REACT_APP_URL_BACKEND}/order/create-order`,
             newOrder
         ).then(response => {
-            console.log(response);
             set((state) => ({
                 order: response.data.data,
                 orders: [...state.orders, response.data.data],

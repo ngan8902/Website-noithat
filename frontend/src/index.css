@@ -511,6 +511,5 @@ section {
 }
 
 .my-toast {
-  background-color: #4caf50;
-  color: white;
+  top: 77px;
 }

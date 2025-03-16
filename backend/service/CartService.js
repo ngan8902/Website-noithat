@@ -65,7 +65,7 @@ const removeItem = async (userId, productId) => {
         const cart = await Cart.findOne({ user: userId });
         if (!cart) throw new Error("Giỏ hàng không tồn tại");
 
-        cart.items = cart.items.filter(item => item.product.toString() !== productId);
+        cart.items = cart.items.filter(item => item.productId.toString() !== productId);
         await cart.save();
         return cart;
     } catch (error) {
@@ -81,12 +81,12 @@ const updateCart = async (userId, productId, quantity) => {
             cart = new Cart({ user: userId, items: [] });
         }
 
-        const productIndex = cart.items.findIndex(item => item.product.toString() === productId);
+        const productIndex = cart.items.findIndex(item => item.productId.toString() === productId);
 
         if (productIndex !== -1) {
             cart.items[productIndex].quantity = quantity;
         } else {
-            cart.items.push({ product: productId, quantity });
+            cart.items.push({ productId, quantity });
         }
 
         await cart.save();

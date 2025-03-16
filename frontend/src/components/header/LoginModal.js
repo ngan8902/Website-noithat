@@ -99,7 +99,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
                 </div>
               </div>
 
-              <button className="btn btn-dark w-100" type="submit" onClick={handelLogin}>Đăng Nhập</button>
+              <button className="btn btn-dark w-100" type="submit" onClick={handelLogin} onKeyDown={(e) => e.key === "Enter" && handelLogin()}>Đăng Nhập</button>
 
               <div className="text-center mt-2">
                 <button 

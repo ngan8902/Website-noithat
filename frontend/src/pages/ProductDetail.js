@@ -80,13 +80,11 @@ const ProductDetail = () => {
     }
 
     const handleAddToCartForCustomer = async () => {
-        console.log(user);
         const res = await addToCartStore(product, 1);
         if(res && res?.data && res?.data?.cart) {
             notifyOfCart()
             await fetchCart();
         }
-        console.log(res);
     }
 
     return (

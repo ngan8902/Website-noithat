@@ -12,7 +12,6 @@ const useAuthAdminStore = create((set, get) => ({
                 'staff-token': getCookie(STAFF_TOKEN_KEY)
             }
         }).then(response => {
-            console.log(response);
             const { data } = response;
             if (data && data.data) {
                 const staff = data.data;

@@ -37,7 +37,9 @@ const getCart = async (req, res) => {
 
 const removeItem = async (req, res) => {
     try {
-        const cart = await CartService.removeItem(req.user._id, req.params.productId);
+        const { productId } = req.body;
+        const userId = req.payload ? req.payload.id : null;
+        const cart = await CartService.removeItem(userId, productId);
         return res.status(200).json({ message: "Xóa sản phẩm thành công!", cart });
     } catch (error) {
         return res.status(500).json({ message: error.message });

@@ -21,9 +21,21 @@ const useCartStore = create((set, get) => ({
                     params: { userId }
                 });
 
-                if (response.data) {
-                    set({ cartItems: response.data.items || [] });
-                    console.log("Giỏ hàng từ API:", response.data);
+                if (response.data && response.data.data) {
+                    const items = response.data.data.items || [];
+
+                    const fullItems = await Promise.all(items.map(async (item) => {
+                        if (typeof item.productId === "string") {
+                            const productRes = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/details-product/${item.productId}`);
+                            return { ...item, productId: productRes.data };
+                        }
+                        return item;
+                    }));
+
+                    console.log("Dữ liệu giỏ hàng sau khi fetch:", fullItems);
+                    set({ cartItems: fullItems });
+                } else {
+                    console.warn("API không trả về dữ liệu giỏ hàng hợp lệ.");
                 }
             } else {
                 // Khách vãng lai → Lấy giỏ hàng từ localStorage
@@ -58,36 +70,41 @@ const useCartStore = create((set, get) => ({
     },
 
     // Xóa sản phẩm khỏi giỏ hàng
-    removeFromCart: (id) => {
-        const updatedCart = get().cartItems.filter((item) => item._id !== id);
-        set({ cartItems: updatedCart });
-        localStorage.setItem("cart", JSON.stringify(updatedCart));
-        window.location.reload()
+    removeFromCart: async (productId) => {
+        try {
+            const token = getCookie(TOKEN_KEY);
+            if (token) {
+                await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${productId}`, {
+                    headers: { "token": token }
+                });
+            }
+    
+            // Cập nhật lại state giỏ hàng sau khi xóa sản phẩm
+            set((state) => {
+                const updatedCart = state.cartItems.filter(item => item.productId !== productId);
+                localStorage.setItem("cart", JSON.stringify(updatedCart));
+                return { cartItems: updatedCart };
+            });
+    
+        } catch (error) {
+            console.error("Lỗi khi xóa sản phẩm:", error);
+        }
     },
+    
+    
 
     updateQuantity: async (id, newQuantity) => {
         if (newQuantity <= 0) return;
-
+    
         const token = getCookie(TOKEN_KEY);
-        if (token) {
-            try {
-                const response = await axios.put(
-                    `${process.env.REACT_APP_URL_BACKEND}/cart/update-cart`,
-                    { productId: id, quantity: newQuantity },
+        try {
+            if (token) {
+                await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart`, 
+                    { productId: id, quantity: newQuantity }, 
                     { headers: { "token": token } }
                 );
-
-                console.log("API Response:", response.data);
-                set((state) => ({
-                    cartItems: state.cartItems.map(item =>
-                        item._id === id ? { ...item, quantity: newQuantity } : item
-                    )
-                }));
-            } catch (error) {
-                console.error("Lỗi cập nhật giỏ hàng:", error);
             }
-        } else {
-            // Nếu là khách vãng lai, cập nhật localStorage
+    
             set((state) => {
                 const updatedCart = state.cartItems.map(item =>
                     item._id === id ? { ...item, quantity: newQuantity } : item
@@ -95,8 +112,12 @@ const useCartStore = create((set, get) => ({
                 localStorage.setItem("cart", JSON.stringify(updatedCart));
                 return { cartItems: updatedCart };
             });
+    
+        } catch (error) {
+            console.error("Lỗi cập nhật giỏ hàng:", error);
         }
     },
+    
 
     // Xóa giỏ hàng sau khi thanh toán
     clearCart: () => {
