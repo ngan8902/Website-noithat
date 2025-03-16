@@ -37,10 +37,13 @@ const Cart = () => {
       );
 
       setCartWithProducts(updatedCart);
+      console.log("test",updatedCart)
     };
-
+    
     fetchProductDetails();
   }, [cartItems]);
+
+  
 
   const totalPrice = cartWithProducts.reduce((sum, item) => {
     let product;
@@ -83,9 +86,9 @@ console.log(totalPrice)
         <h2 className="text-center fw-bold mb-5">Giỏ Hàng</h2>
         <div className="row">
           <div className="col-md-8 mb-4">
-            <CartList cart={cartWithProducts} />
+            <CartList cart={cartWithProducts} updateQuantity={updateQuantity} removeFromCart={removeFromCart}  />
           </div>
-
+          
           <div className="col-md-4 mb-4">
             <CartSummary cart={cartItems} totalPrice={totalPrice} handleCheckout={handleCheckout} />
           </div>

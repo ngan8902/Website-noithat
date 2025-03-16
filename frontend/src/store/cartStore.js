@@ -78,46 +78,65 @@ const useCartStore = create((set, get) => ({
                     headers: { "token": token }
                 });
             }
-    
+
             // Cập nhật lại state giỏ hàng sau khi xóa sản phẩm
             set((state) => {
                 const updatedCart = state.cartItems.filter(item => item.productId !== productId);
                 localStorage.setItem("cart", JSON.stringify(updatedCart));
                 return { cartItems: updatedCart };
             });
-    
+
         } catch (error) {
             console.error("Lỗi khi xóa sản phẩm:", error);
         }
     },
-    
-    
 
-    updateQuantity: async (id, newQuantity) => {
-        if (newQuantity <= 0) return;
-    
-        const token = getCookie(TOKEN_KEY);
+
+    updateQuantity: async (productId, quantity) => {
+        if (quantity < 1) return;
+
+        const token = getCookie("TOKEN_KEY");
         try {
             if (token) {
-                await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart`, 
-                    { productId: id, quantity: newQuantity }, 
+                await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId}`, 
+                    { quantity }, 
                     { headers: { "token": token } }
                 );
+            } else {
+                set((state) => {
+                    const updatedCart = state.cartItems.map(item =>
+                        item.productId === productId ? { ...item, quantity } : item
+                    );
+                    localStorage.setItem("cart", JSON.stringify(updatedCart));
+                    return { cartItems: updatedCart };
+                });
             }
-    
-            set((state) => {
-                const updatedCart = state.cartItems.map(item =>
-                    item._id === id ? { ...item, quantity: newQuantity } : item
-                );
-                localStorage.setItem("cart", JSON.stringify(updatedCart));
-                return { cartItems: updatedCart };
-            });
-    
         } catch (error) {
             console.error("Lỗi cập nhật giỏ hàng:", error);
         }
     },
+
+    removeFromCart: async (productId) => {
+        if (!productId) return;
     
+        try {
+          const token = getCookie("TOKEN_KEY");
+    
+          if (token) {
+            await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${productId}`, 
+              { headers: { "token": token } }
+            );
+          }
+    
+          set((state) => {
+            const updatedCart = state.cartItems.filter((item) => item.productId !== productId);
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
+            return { cartItems: updatedCart };
+          });
+        } catch (error) {
+          console.error("Lỗi xóa sản phẩm:", error);
+        }
+      },
 
     // Xóa giỏ hàng sau khi thanh toán
     clearCart: () => {

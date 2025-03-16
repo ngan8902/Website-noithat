@@ -5,13 +5,16 @@ import useAuthStore from '../../store/authStore';
 import { setCookie } from '../../utils/cookie.util';
 import { TOKEN_KEY } from '../../constants/authen.constant';
 import useProductStore from '../../store/productStore';
+import useCartStore from '../../store/cartStore';
+
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const { user } = useAuthStore((state) => state);
-  const { type, getType} = useProductStore((state) => state);
+  const { type, getType } = useProductStore((state) => state);
   const [cartCount, setCartCount] = useState(0);
+  const { fetchCart, cartItems } = useCartStore();
 
   const logout = () => {
     setCookie(TOKEN_KEY, '');
@@ -23,22 +26,30 @@ const Header = () => {
   }, [getType])
 
   useEffect(() => {
-    getType();
-
     const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-      setCartCount(totalItems);
-    }; 
+      if (user) {
+        fetchCart();
+        const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        setCartCount(totalItems);
+      } else {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        setCartCount(totalItems);
+      }
+    };
 
     updateCartCount();
-
     window.addEventListener("cartUpdated", updateCartCount);
 
     return () => {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
-  },[getType]);
+    
+  }, [user]);
+
+
+
+  
 
   const toSlug = (str) => {
     return str
@@ -90,10 +101,10 @@ const Header = () => {
 
         <div className="d-flex align-items-center">
           <div className="input-group me-3" >
-            <input 
-              type="text" 
-              className="form-control text-black border-0" 
-              placeholder="Tìm kiếm..."  
+            <input
+              type="text"
+              className="form-control text-black border-0"
+              placeholder="Tìm kiếm..."
             />
             <button className="btn bg-primary text-white">
               <i className="bi bi-search"></i>

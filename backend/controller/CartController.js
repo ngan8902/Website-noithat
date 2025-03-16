@@ -37,30 +37,33 @@ const getCart = async (req, res) => {
 
 const removeItem = async (req, res) => {
     try {
-        const { productId } = req.body;
-        const userId = req.payload ? req.payload.id : null;
-        const cart = await CartService.removeItem(userId, productId);
-        return res.status(200).json({ message: "Xóa sản phẩm thành công!", cart });
+        const { productId } = req.params;
+        const userId = req.payload?.id;
+
+        if (!userId) {
+            return res.status(401).json({ message: "Khách vãng lai cần xóa giỏ hàng từ localStorage" });
+        }
+
+        const items = await CartService.removeItem(userId, productId);
+        return res.status(200).json({ message: "Xóa sản phẩm thành công", items });
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        console.error("Lỗi xóa sản phẩm:", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" });
     }
 }
 
 const updateCart = async (req, res) => {
     try {
-        const { productId, quantity } = req.body;
-        const userId = req.payload ? req.payload.id : null;
+        const { productId } = req.params;
+        const { quantity } = req.body;
+        const userId = req.payload?.id;
 
-        if (!productId || quantity < 1) {
-            return res.status(400).json({ message: "Dữ liệu không hợp lệ!" });
+        if (!userId) {
+            return res.status(401).json({ message: "Khách vãng lai cần cập nhật giỏ hàng trên localStorage" });
         }
 
-        if (userId) {
-            const updatedCart = await CartService.updateCart(userId, productId, quantity);
-            return res.status(200).json({ message: "Cập nhật giỏ hàng thành công!", items: updatedCart.items });
-        } else {
-            return res.status(401).json({ message: "Khách vãng lai phải cập nhật giỏ hàng trên localStorage" });
-        }
+        const items = await CartService.updateCart(userId, productId, quantity);
+        return res.status(200).json({ message: "Cập nhật giỏ hàng thành công", items });
     } catch (error) {
         console.error("Lỗi cập nhật giỏ hàng:", error);
         return res.status(500).json({ message: "Lỗi hệ thống" });

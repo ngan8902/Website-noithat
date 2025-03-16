@@ -62,12 +62,13 @@ const getCart = async (userId) => {
 
 const removeItem = async (userId, productId) => {
     try {
-        const cart = await Cart.findOne({ user: userId });
-        if (!cart) throw new Error("Giỏ hàng không tồn tại");
+        let cart = await Cart.findOne({ user: userId });
+
+        if (!cart) throw new Error("Giỏ hàng không tồn tại!");
 
         cart.items = cart.items.filter(item => item.productId.toString() !== productId);
         await cart.save();
-        return cart;
+        return cart.items;
     } catch (error) {
         throw new Error("Lỗi khi xóa sản phẩm khỏi giỏ hàng: " + error.message);
     }
@@ -81,20 +82,21 @@ const updateCart = async (userId, productId, quantity) => {
             cart = new Cart({ user: userId, items: [] });
         }
 
-        const productIndex = cart.items.findIndex(item => item.productId.toString() === productId);
+        const existingItem = cart.items.find(item => item.productId.toString() === productId);
 
-        if (productIndex !== -1) {
-            cart.items[productIndex].quantity = quantity;
+        if (existingItem) {
+            existingItem.quantity = quantity;
         } else {
             cart.items.push({ productId, quantity });
         }
 
         await cart.save();
-        return cart;
+        return cart.items;
+
     } catch (error) {
         throw new Error("Lỗi khi cập nhật giỏ hàng: " + error.message);
     }
-}
+};
 
 module.exports = {
     addToCart,
