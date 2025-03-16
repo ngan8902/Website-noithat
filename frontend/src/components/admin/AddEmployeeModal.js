@@ -3,14 +3,13 @@ import axios from "axios";
 import useStaffStore from "../../store/staffStore";
 
 const AddEmployeeModal = ({ closeModal }) => {
-  const { staffList, getAllStaff } = useStaffStore();
+  const { getAllStaff } = useStaffStore();
   
   const [staff, setStaff] = useState({
     name: "",
     username: "",
     password: "",
     role_id: "",
-    position: "",
     email: "",
     phone: "",
     dob: "",
@@ -20,26 +19,20 @@ const AddEmployeeModal = ({ closeModal }) => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [newPosition, setNewPosition] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
-  const positions = [...new Set(staffList.map((staffItem) => staffItem.position))];
 
   const handleSave = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
-    if (!staff.name || !staff.username || !staff.password || !staff.position || !staff.email || !staff.phone || !staff.dob || !staff.gender || !staff.address) {
+    if (!staff.name || !staff.username || !staff.password || !staff.email || !staff.phone || !staff.dob || !staff.gender || !staff.address) {
       setErrorMessage("Vui lòng điền đầy đủ thông tin!");
       return;
     }
 
-    const finalPosition = staff.position === "new" ? newPosition : staff.position;
-
     try {
       const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/staff/sign-up`, {
         ...staff,
-        position: finalPosition,
       });
 
       if (response.data.status === "SUCCESS") {
@@ -95,38 +88,6 @@ const AddEmployeeModal = ({ closeModal }) => {
                 {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
               </button>
             </div>
-
-            <div className="mb-3">
-              <label className="form-label">Chức vụ</label>
-              <select
-                className="form-select"
-                value={staff.position}
-                onChange={(e) => setStaff({ ...staff, position: e.target.value })}
-                required
-              >
-                <option value="">-- Chọn chức vụ --</option>
-                {positions.map((position, index) => (
-                  <option key={index} value={position}>
-                    {position}
-                  </option>
-                ))}
-                <option value="new">+ Thêm chức vụ mới</option>
-              </select>
-            </div>
-
-            {staff.position === "new" && (
-              <div className="mb-3">
-                <label className="form-label">Nhập chức vụ mới</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Nhập chức vụ mới..."
-                  value={newPosition}
-                  onChange={(e) => setNewPosition(e.target.value)}
-                  required
-                />
-              </div>
-            )}
 
             <input type="email" className="form-control mb-3" placeholder="Email" value={staff.email} onChange={(e) => setStaff({ ...staff, email: e.target.value })} />
             <input type="tel" className="form-control mb-3" placeholder="Số điện thoại" value={staff.phone} onChange={(e) => setStaff({ ...staff, phone: e.target.value })} />

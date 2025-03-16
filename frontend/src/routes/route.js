@@ -16,6 +16,7 @@ import Employee from "../pages/Employee";
 import Resource from "../pages/Resource";
 import ProductType from "../pages/ProductType";
 import Chat from "../pages/Chat";
+import SearchResults from "../pages/SearchResults";
 
 export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
@@ -29,6 +30,7 @@ export const publicRoute = [
   { path: "*", element: <NotFound /> },
   { path: "/account", element: <Account />, isShow: true },
   { path: "/product-type/:id", element: <ProductType />, isShow: true },
+  { path: "/search", element: <SearchResults />, isShow: true}
 ]
 
 export const privateRoute = [

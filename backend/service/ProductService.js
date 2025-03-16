@@ -172,6 +172,51 @@ const getAllProductWithoutFilter = () => {
     })
 }
 
+const removeAccents = (str) => {
+    return str
+        .toLowerCase()
+        .replace(/đ/g, "d")
+        .replace(/Đ/g, "D")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+};
+
+const searchProduct = async (query) => {
+    try {
+        if (!query) {
+            return [];
+        }
+
+        const formattedQuery = removeAccents(query).trim();
+        const regex = new RegExp(`^${formattedQuery}`, 'i');
+
+        const products = await Product.find().lean();
+
+        const filteredProducts = products.filter(product =>
+            removeAccents(product.name).match(regex)
+        );
+
+        return filteredProducts;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const getSuggestions = async (query) => {
+    try {
+        if (!query) return [];
+
+        const formattedQuery = removeAccents(query).trim();
+        const regex = new RegExp(`^${formattedQuery}`, "i");
+
+        return await Product.find({ name: { $regex: regex } })
+            .limit(5)
+            .lean();
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 module.exports = {
     createProduct,
     updateProduct,
@@ -179,5 +224,7 @@ module.exports = {
     deleteProduct,
     getAllProduct,
     getAllType,
-    getAllProductWithoutFilter
+    getAllProductWithoutFilter,
+    searchProduct,
+    getSuggestions
 }

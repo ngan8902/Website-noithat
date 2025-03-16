@@ -1,3 +1,35 @@
+.suggestions-list {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin-top: 40px;
+    z-index: 1000;
+    color: black;
+}
+
+.suggestions-list li {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.suggestions-list li:hover {
+    background: #007bff;
+    color: white;
+}
+
+.suggestions-list li:last-child {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
 /* Đặt font chữ mặc định cho toàn bộ ứng dụng */
 body {
   font-family: 'Playfair Display', serif;

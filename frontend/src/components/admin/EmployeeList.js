@@ -61,7 +61,6 @@ const EmployeeList = () => {
             <th>ID</th>
             <th>Ảnh</th>
             <th>Họ và Tên</th>
-            <th>Chức Vụ</th>
             <th>Email</th>
             <th>Số Điện Thoại</th>
             <th>Ngày Sinh</th>
@@ -86,7 +85,6 @@ const EmployeeList = () => {
                   />
                 </td>
                 <td>{staff.name}</td>
-                <td>{staff.position}</td>
                 <td>{staff.email}</td>
                 <td>{staff.phone}</td>
                 <td>{staff.dob}</td>

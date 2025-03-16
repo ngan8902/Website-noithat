@@ -10,8 +10,24 @@ const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const { user } = useAuthStore((state) => state);
-  const { type, getType} = useProductStore((state) => state);
+  const { type, getType, suggestions = [], getSuggestions, searchProducts} = useProductStore((state) => state);
   const [cartCount, setCartCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    if (searchTerm.length > 0) {
+      getSuggestions(searchTerm);
+    } else {
+      getSuggestions("");
+    }
+  }, [searchTerm, getSuggestions]);
+
+  const handleSearch = () => {
+      if (searchTerm.trim() !== "") {
+          searchProducts(searchTerm);
+          window.location.href = `/search?query=${searchTerm}`;
+      }
+  };
 
   const logout = () => {
     setCookie(TOKEN_KEY, '');
@@ -45,11 +61,11 @@ const Header = () => {
       .toLowerCase()
       .replace(/đ/g, "d")
       .replace(/Đ/g, "D")
-      .normalize("NFD") // Tách dấu khỏi ký tự
-      .replace(/[\u0300-\u036f]/g, "") // Xóa dấu tiếng Việt
-      .replace(/\s+/g, "-") // Thay khoảng trắng bằng dấu '-'
-      .replace(/[^a-z0-9-]/g, "") // Xóa ký tự đặc biệt (nếu có)
-      .replace(/-+/g, "-") // Xóa dấu '-' thừa
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-")
       .trim();
   };
 
@@ -89,16 +105,29 @@ const Header = () => {
         </nav>
 
         <div className="d-flex align-items-center">
-          <div className="input-group me-3" >
-            <input 
-              type="text" 
-              className="form-control text-black border-0" 
-              placeholder="Tìm kiếm..."  
+          <div className="search-bar input-group me-3">
+            <input
+              type="text"
+              className="form-control text-black border-0"
+              placeholder="Tìm kiếm..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-            <button className="btn bg-primary text-white">
+            <button className="btn bg-primary text-white" onClick={handleSearch}>
               <i className="bi bi-search"></i>
             </button>
-          </div>
+
+            {suggestions && suggestions.length > 0 && (
+              <ul className="suggestions-list">
+                {suggestions.map((product) => (
+                  <li key={product._id} onClick={() => setSearchTerm(product.name)}>
+                    {product.name}
+                  </li>
+                  ))}
+              </ul>
+            )}
+        </div>
 
           <a href="/cart" className="nav-link text-white me-3 position-relative">
             <i className="bi bi-cart-fill"></i>

@@ -9,7 +9,6 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
     name: '',
     avatar: '',
     phone: '',
-    position: '',
     email: '',
     dob: '',
     address: ''
@@ -23,7 +22,6 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
         name: employee.name || '',
         avatar: employee.avatar || '',
         phone: employee.phone || '',
-        position: employee.position || '',
         dob: employee.dob || '',
         email: employee.email || '',
         address: employee.address || ''
@@ -42,7 +40,6 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
         name: form.name,
         avatar: form.avatar,
         phone: form.phone,
-        position: form.position,
         email: form.email,
         dob: form.dob,
         address: form.address
@@ -110,15 +107,6 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
               placeholder="Nhập họ và tên"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-
-            <label className="form-label fw-bold">Chức vụ</label>
-            <input
-              type="text"
-              className="form-control mb-3"
-              placeholder="Nhập chức vụ"
-              value={form.position}
-              onChange={(e) => setForm({ ...form, position: e.target.value })}
             />
 
             <label className="form-label fw-bold">Email</label>

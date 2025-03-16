@@ -127,6 +127,37 @@ const getProductByType = async (req, res) => {
     }
 }
 
+const searchProduct = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return res.status(400).json({ status: 'ERR', message: 'Missing search query' });
+        }
+
+        const products = await ProductService.searchProduct(query);
+        return res.status(200).json({
+            status: 'OK',
+            message: 'Search successful',
+            data: products
+        });
+    } catch (e) {
+        return res.status(500).json({ message: e.message });
+    }
+};
+
+const getSuggestions = async (req, res) => {
+    try {
+        const query = req.query.query;
+        if (!query) return res.status(400).json({ status: 'ERR', message: 'Missing query' });
+
+        const suggestions = await ProductService.getSuggestions(query);
+        res.status(200).json({ status: 'OK', data: suggestions });
+    } catch (error) {
+        console.error('Lỗi khi lấy gợi ý:', error);
+        res.status(500).json({ status: 'ERR', message: error.message });
+    }
+};
+
 module.exports = {
     createProduct,
     updateProduct,
@@ -134,5 +165,7 @@ module.exports = {
     deleteProduct,
     getAllProduct,
     getAllType,
-    getProductByType
-}
+    getProductByType,
+    searchProduct,
+    getSuggestions
+};

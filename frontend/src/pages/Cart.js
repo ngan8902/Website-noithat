@@ -10,7 +10,7 @@ const Cart = () => {
 
   useEffect(() => {
     fetchCart(); 
-  }, []);
+  }, [fetchCart]);
 
   console.log("Cart items:", cartItems);
 

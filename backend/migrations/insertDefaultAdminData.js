@@ -7,10 +7,10 @@ const adminData = {
     email: "admin@example.com",
     password: "admin123",
     role_id: 1, 
-    phone: 123456789,
-    position: "Quản lí nhân sự",
+    phone: "0812345678",
     address: "19 ĐHT",
     dob: "1/1/1988",
+    gender: "Nam",
 };
 
 const insertAdminData = async (mongoose) => {

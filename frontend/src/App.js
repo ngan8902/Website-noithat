@@ -7,11 +7,14 @@ import useProductStore from "./store/productStore";
 import Chatbox from "./components/ChatBox";
 
 function App() {
-  const { products, getProducts } = useProductStore();
+  const { products, getProducts, isSearching } = useProductStore();
 
   useEffect(() => {
-    getProducts();
-  }, [getProducts]);
+    if (!isSearching) {
+      getProducts();
+    }
+  }, [getProducts, isSearching]);
+
 
   return (
     <Router>

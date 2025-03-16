@@ -21,9 +21,6 @@ const ManagerInfo = ({ staff }) => {
                 />
                 <h5 className="card-title">{staff?.name}</h5>
                 <p className="card-text">
-                  <i className="bi bi-person-fill"></i> {staff?.position || "Chưa cập nhật"}
-                </p>
-                <p className="card-text">
                   <i className="bi bi-envelope-fill me-2"></i> {staff?.email}
                 </p>
                 <p className="card-text">
@@ -40,7 +37,6 @@ const ManagerInfo = ({ staff }) => {
                 <ul className="list-unstyled">
                   <li className="mb-2"><strong>Họ và Tên:</strong> {staff?.name}</li>
                   <li className="mb-2"><strong>Mã nhân viên:</strong> {staff?.staffcode || "Chưa cập nhật"}</li>
-                  <li className="mb-2"><strong>Chức Vụ:</strong> {staff?.position || "Chưa cập nhật"}</li>
                   <li className="mb-2"><strong>Email:</strong> {staff?.email}</li>
                   <li className="mb-2"><strong>Số Điện Thoại:</strong> {staff?.phone}</li>
                   <li className="mb-2"><strong>Địa Chỉ:</strong> {staff?.address || "Chưa cập nhật"}</li>

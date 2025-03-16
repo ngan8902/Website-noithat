@@ -112,7 +112,7 @@ const EditProductModal = ({ product, closeModal }) => {
     if (selectedCategory === key) {
       setForm((prev) => ({ ...prev, type: newCategory }));
     }
-  }, [newCategory]);
+  }, [newCategory, selectedCategory]);
 
 
   return (

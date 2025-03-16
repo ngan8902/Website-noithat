@@ -3,13 +3,16 @@ import axios from 'axios';
 import { getCookie } from "../utils/cookie.util";
 import { STAFF_TOKEN_KEY } from "../constants/authen.constant";
 
-const useProductStore = create((set) => ({
+const useProductStore = create((set, get) => ({
     products: [],
     totalProducts: 0,
     currentPage: 0,
     productByType: [],
+    isSearching: false,
 
     getProducts: (limit = 8, page = 0, filter = "") => {
+        if (get().isSearching) return;
+
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/all-product`, {
             params: {
                 limit,
@@ -120,6 +123,37 @@ const useProductStore = create((set) => ({
             console.error("Lỗi cập nhật sản phẩm:", error);
         }
     },
+
+    searchProducts: (query) => {
+        set({ isSearching: true });
+        axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/search-product`, {
+            params: { query }
+        }).then(response => {
+            if (response.data && response.data.data) {
+                set({ products: response.data.data });
+            }
+        }).catch(error => {
+            console.error("Lỗi khi tìm kiếm sản phẩm:", error);
+        });
+    },
+    stopSearching: () => set({ isSearching: false }),
+
+    suggestions: [], // Đảm bảo có giá trị mặc định
+    getSuggestions: async (query) => {
+    if (!query) return set({ suggestions: [] });
+
+    try {
+        const apiUrl = `${process.env.REACT_APP_URL_BACKEND}/product/suggestions?query=${query}`;
+        console.log(apiUrl);
+
+        const response = await axios.get(apiUrl);
+        set({ suggestions: response.data.data || [] });
+    } catch (error) {
+        console.error("Lỗi khi lấy gợi ý:", error.response?.status, error.message);
+        set({ suggestions: [] });
+    }
+}
+
 }));
 
 export default useProductStore;
