@@ -25,7 +25,8 @@ const orderSchema = new mongoose.Schema(
         paymentMethod: { 
             type: String, 
             enum: ["COD", "VnPay"],
-            required: true },
+            required: true 
+        },
         itemsPrice: { type: Number, required: true },
         shippingPrice: { type: Number, required: true },
         taxPrice: { type: Number, required: true },

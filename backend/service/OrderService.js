@@ -6,7 +6,7 @@ const User = require("../model/UserModel");
 const generateOrderCode = () => {
     const prefix = "ORD"; // Tiền tố cố định
     const timestamp = Date.now().toString().slice(-6); // 6 chữ số cuối của timestamp
-    const randomDigits = Math.floor(1000 + Math.random() * 9000); // Số ngẫu nhiên 4 chữ số
+    // const randomDigits = Math.floor(1000 + Math.random() * 9000); // Số ngẫu nhiên 4 chữ số
     return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
 };
 // const validPaymentMethods = ["COD", "VnPay"];
@@ -84,7 +84,15 @@ const createOrder = async (userId, productCode, amount, receiver, status, paymen
 
 const getOrdersByUser = async (userId) => {
     try {
-        const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
+        const orders = await Order.find({ user: userId });
+
+        if (!orders) {
+            return {
+                status: "OK",
+                message: "Đơn hàng trống",
+                data: []
+            };
+        }
 
         return {
             status: "OK",

@@ -36,6 +36,8 @@ const Checkout = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
+    console.log("Location state:", location.state);
+
     useEffect(() => {
         const handleUserAddress = () => {
             if (user) {
@@ -172,7 +174,8 @@ const Checkout = () => {
                 />
                 <div className="col-md-6">
                     <ProductInfo
-                        product={cartItems}
+                        cartItems={cartItems}
+                        product={product}
                         quantity={quantity}
                         cart={cartData}
                         totalPrice={totalPrice}

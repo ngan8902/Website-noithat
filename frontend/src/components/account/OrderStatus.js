@@ -1,27 +1,36 @@
 import React from "react";
+import useOrderStore from "../../store/orderStore";
 
 const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
-  const handleCancelOrder = (id) => {
-    setOrders(
-      orders.map(order =>
-        order.id === id ? { ...order, status: "Đã Hủy" } : order
-      )
-    );
+  const { updateOrderStatus } = useOrderStore();
+
+  const handleCancelOrder = async (id) => {
+    await updateOrderStatus(id, "cancelled");
+    setOrders(); 
   };
 
-  const handleReturnOrder = (id) => {
-    setOrders(
-      orders.map(order =>
-        order.id === id ? { ...order, status: "Đang phê duyệt" } : order
-      )
-    );
+  const handleReturnOrder = async (id) => {
+    await updateOrderStatus(id, "pending");
+    setOrders();
   };
 
-  const handleConfirmDelivery = (id) => {
+  const handleConfirmDelivery = async (id) => {
     const confirmedOrder = orders.find(order => order.id === id);
     if (confirmedOrder) {
-      setOrderHistory([...orderHistory, { ...confirmedOrder, status: "Giao hàng thành công" }]);
-      setOrders(orders.filter(order => order.id !== id));
+      await updateOrderStatus(id, "delivered");
+      setOrderHistory([...orderHistory, { ...confirmedOrder, status: "delivered" }]);
+      setOrders();
+    }
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "pending": return "Chờ xác nhận";
+      case "processing": return "Đang xử lý";
+      case "shipped": return "Đã giao cho đơn vị vận chuyển";
+      case "delivered": return "Giao hàng thành công";
+      case "cancelled": return "Đã hủy";
+      default: return "Không xác định";
     }
   };
 
@@ -51,46 +60,46 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
 
           <tbody>
             {orders.map((order) => (
-              <tr key={order.id}>
-                <td className="fw-bold">#{order.id}</td>
-                <td>{order.productName}</td>
-                <td>{order.quantity}</td>
-                <td className="text-success fw-bold">{order.totalPrice} VND</td>
+              <tr key={order._id}>
+                <td className="fw-bold">#{order.orderCode}</td>
+                <td>{order.orderItems?.[0]?.name || "Không có dữ liệu"}</td>
+                <td>{order.orderItems?.[0]?.amount || 1}</td>
+                <td className="text-success fw-bold">{order.totalPrice.toLocaleString()} VND</td>
                 <td>{order.paymentMethod}</td>
                 <td>
-                  <span
+                <span
                     className={`badge ${
-                      order.status === "Đang Xác Nhận" ? "bg-primary" :
-                      order.status === "Đã Xác Nhận" ? "bg-primary" :
-                      order.status === "Đã Giao Cho Đơn Vị Vận Chuyển" ? "bg-warning text-dark" :
-                      order.status === "Đang Giao" ? "bg-info text-dark" :
-                      order.status === "Giao hàng thành công" ? "bg-success" :
-                      "bg-danger"
+                      order.status === "pending" ? "bg-primary" :
+                      order.status === "processing" ? "bg-info text-dark" :
+                      order.status === "shipped" ? "bg-warning text-dark" :
+                      order.status === "delivered" ? "bg-success" :
+                      order.status === "cancelled" ? "bg-danger" :
+                      "bg-light text-dark"
                     }`}
                   >
                     {order.status}
                   </span>
                 </td>
                 <td>
-                  {["Đang Xác Nhận", "Đã Xác Nhận"].includes(order.status) ? (
+                  {["pending", "processing"].includes(order.status) ? (
                     <button
                       className="btn btn-danger btn-sm"
-                      onClick={() => handleCancelOrder(order.id)}
+                      onClick={() => handleCancelOrder(order._id)}
                     >
                       Hủy Đơn
                     </button>
-                  ) : order.status === "Giao hàng thành công" ? (
+                  ) : order.status === "delivered" ? (
                     <div className="d-flex justify-content-center gap-2">
                       <button
                         className="btn btn-success btn-sm"
-                        onClick={() => handleConfirmDelivery(order.id)}
+                        onClick={() => handleConfirmDelivery(order._id)}
                       >
                         Xác Nhận
                       </button>
 
                       <button
                         className="btn btn-warning btn-sm"
-                        onClick={() => handleReturnOrder(order.id)}
+                        onClick={() => handleReturnOrder(order._id)}
                       >
                         Hoàn Trả
                       </button>

@@ -40,14 +40,16 @@ const createOrder = async (req, res) => {
 
 const getOrdersByUser = async (req, res) => {
     try {
-        if (!req.user) {
+        const { payload } = req;
+        if (!payload || !payload.id) {
             return res.status(401).json({
                 status: "ERR",
                 message: "Người dùng chưa được xác thực"
             });
         }
 
-        const response = await OrderService.getOrdersByUser(req.user._id);
+        const userId = payload.id;
+        const response = await OrderService.getOrdersByUser(userId);
         return res.status(200).json(response);
     } catch (e) {
         console.log(e);

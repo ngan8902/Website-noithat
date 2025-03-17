@@ -66,10 +66,6 @@ const ProductType = () => {
     const filteredProducts = applyFilters(products);
     const sortProducts = filteredProducts.sort((a, b) => (b.discount || 0) - (a.discount || 0));
 
-    // const sortProducts = products
-    //     .slice()
-    //     .sort((a, b) => (b.discount || 0) - (a.discount || 0));
-
     const totalPages = Math.ceil(sortProducts.length / PAGE);
 
     const paginatProducts = sortProducts.slice(
