@@ -2,7 +2,7 @@ const OrderService = require('../service/OrderService')
 
 const createOrder = async (req, res) => {
     try {
-        const { userId, productCode, amount, receiver, status, paymentMethod  } = req.body;
+        const { userId, productId, amount, receiver, status, paymentMethod  } = req.body;
         if (!receiver || !receiver.fullname || !receiver.phone || !receiver.address) {
             return res.status(401).json({
                 status: "ERR",
@@ -10,14 +10,21 @@ const createOrder = async (req, res) => {
             });
         }
 
-        if (!productCode || !amount) {
+        if (!productId || !amount) {
             return res.status(401).json({
                 status: "ERR",
                 message: "Thiếu mã sản phẩm hoặc số lượng"
             });
         }
 
-        // const validPaymentMethods = ["COD", "VnPay"];
+        const validAmount = Array.isArray(amount) ? Number(amount[0]) : Number(amount);
+        if (isNaN(validAmount) || validAmount <= 0) {
+            return res.status(401).json({
+                status: "ERR",
+                message: "Số lượng sản phẩm không hợp lệ"
+            });
+        }
+
         if (!paymentMethod) {
             return res.status(401).json({
                 status: "ERR",
@@ -26,7 +33,7 @@ const createOrder = async (req, res) => {
         }
 
 
-        const response = await OrderService.createOrder(userId, productCode, amount, receiver, status, paymentMethod);
+        const response = await OrderService.createOrder(userId, productId, validAmount, receiver, status, paymentMethod);
         return res.status(200).json(response);
     } catch (e) {
         console.log(e)

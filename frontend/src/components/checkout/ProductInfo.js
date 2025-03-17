@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 const ProductInfo = ({ product, quantity, cart, totalPrice, shippingFee, finalPrice }) => {
     const [cartData, setCartData] = useState(cart || []);
 
-    console.log("Received product in ProductInfo:", product);
-
     useEffect(() => {
         setCartData(cart);
     }, [cart])

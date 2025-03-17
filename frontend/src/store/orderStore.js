@@ -30,7 +30,6 @@ const useOrderStore = create((set) => ({
                 params: { userId }
             });
     
-            console.log("API Response:", response);
     
             if (response.data && response.data.data) {
                 const orders = response.data.data || [];
@@ -53,7 +52,6 @@ const useOrderStore = create((set) => ({
                     return { ...order, orderItems: orderItemsWithDetails };
                 }));
     
-                console.log("Dữ liệu đơn hàng sau khi fetch:", fullOrders);
                 set({ orders: fullOrders });
             }
         } catch (error) {

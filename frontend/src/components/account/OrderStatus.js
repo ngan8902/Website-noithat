@@ -23,16 +23,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
     }
   };
 
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case "pending": return "Chờ xác nhận";
-      case "processing": return "Đang xử lý";
-      case "shipped": return "Đã giao cho đơn vị vận chuyển";
-      case "delivered": return "Giao hàng thành công";
-      case "cancelled": return "Đã hủy";
-      default: return "Không xác định";
-    }
-  };
+
 
   return (
     <>
@@ -64,7 +55,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
                 <td className="fw-bold">#{order.orderCode}</td>
                 <td>{order.orderItems?.[0]?.name || "Không có dữ liệu"}</td>
                 <td>{order.orderItems?.[0]?.amount || 1}</td>
-                <td className="text-success fw-bold">{order.totalPrice.toLocaleString()} VND</td>
+                <td className="text-success fw-bold">{order.totalPrice.toLocaleString() || 0} VND</td>
                 <td>{order.paymentMethod}</td>
                 <td>
                 <span

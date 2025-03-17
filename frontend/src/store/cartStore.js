@@ -32,7 +32,6 @@ const useCartStore = create((set, get) => ({
                         return item;
                     }));
 
-                    console.log("Dữ liệu giỏ hàng sau khi fetch:", fullItems);
                     set({ cartItems: fullItems });
                 } else {
                     console.warn("API không trả về dữ liệu giỏ hàng hợp lệ.");

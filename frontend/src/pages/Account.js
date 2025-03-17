@@ -7,10 +7,22 @@ import OrderStatus from "../components/account/OrderStatus";
 import useOrderStore from "../store/orderStore";
 
 const Account = () => {
-  const { getOrderByUser, updateOrderStatus, orders } = useOrderStore();
+  const { getOrderByUser, orders } = useOrderStore();
   const { user, auth } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+
+  const fetchOrders = useCallback(() => {
+    if (user?._id) {
+      getOrderByUser(user._id);
+    }
+  }, [user, getOrderByUser]);
+
+  useEffect(() => {
+    if (user?._id) {
+      getOrderByUser(user._id);
+    }
+  }, [user, getOrderByUser]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -27,18 +39,6 @@ const Account = () => {
     };
     fetchUser();
   }, [auth, navigate]);
-
-  const fetchOrders = useCallback(() => {
-    if (user?._id) {
-      getOrderByUser(user._id);
-    }
-  }, [user, getOrderByUser]);
-
-  useEffect(() => {
-    if (user?._id) {
-      getOrderByUser(user._id);
-    }
-  }, [user, getOrderByUser]);
 
 
   const [orderHistory, setOrderHistory] = useState([]);
@@ -63,6 +63,7 @@ const Account = () => {
           <div className="col-md-8">
             <OrderStatus
               orders={orders}
+              setOrders={fetchOrders}
               orderHistory={orderHistory}
               setOrderHistory={setOrderHistory}
             />

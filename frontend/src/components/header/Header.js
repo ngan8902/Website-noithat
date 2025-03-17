@@ -11,7 +11,7 @@ const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const { user } = useAuthStore((state) => state);
-  const { type, getType, suggestions = [], getSuggestions, searchProducts} = useProductStore((state) => state);
+  const { type, getType, suggestions = [], getSuggestions, searchProducts } = useProductStore((state) => state);
   const [cartCount, setCartCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -24,10 +24,10 @@ const Header = () => {
   }, [searchTerm, getSuggestions]);
 
   const handleSearch = () => {
-      if (searchTerm.trim() !== "") {
-          searchProducts(searchTerm);
-          window.location.href = `/search?query=${searchTerm}`;
-      }
+    if (searchTerm.trim() !== "") {
+      searchProducts(searchTerm);
+      window.location.href = `/search?query=${searchTerm}`;
+    }
   };
 
   const { fetchCart, cartItems } = useCartStore();
@@ -41,18 +41,45 @@ const Header = () => {
     getType()
   }, [getType])
 
+  // useEffect(() => {
+  //   const updateCartCount = () => {
+  //     if (user) {
+  //       fetchCart();
+  //       const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  //       setCartCount(totalItems);
+  //     } else {
+  //       const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  //       const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  //       setCartCount(totalItems);
+  //     }
+  //   };
+
+  //   updateCartCount();
+
+  //   window.addEventListener("cartUpdated", updateCartCount);
+
+  //   return () => {
+  //     window.removeEventListener("cartUpdated", updateCartCount);
+  //   };
+
+  // }, [user, fetchCart]);
   useEffect(() => {
     const updateCartCount = () => {
+      let totalItems = 0;
+
       if (user) {
-        fetchCart();
-        const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-        setCartCount(totalItems);
+        totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
       } else {
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        setCartCount(totalItems);
+        totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
       }
+
+      setCartCount(totalItems);
     };
+
+    if (user && cartItems.length === 0) {
+      fetchCart(); 
+    }
 
     updateCartCount();
 
@@ -61,8 +88,8 @@ const Header = () => {
     return () => {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
-    
-  }, [user, cartItems, fetchCart]);
+
+  }, [user, cartItems]); 
 
   const toSlug = (str) => {
     return str
@@ -132,10 +159,10 @@ const Header = () => {
                   <li key={product._id} onClick={() => setSearchTerm(product.name)}>
                     {product.name}
                   </li>
-                  ))}
+                ))}
               </ul>
             )}
-        </div>
+          </div>
 
           <a href="/cart" className="nav-link text-white me-3 position-relative">
             <i className="bi bi-cart-fill"></i>

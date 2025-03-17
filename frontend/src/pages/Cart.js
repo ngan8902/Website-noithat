@@ -37,7 +37,6 @@ const Cart = () => {
       );
 
       setCartWithProducts(updatedCart);
-      console.log("test",updatedCart)
     };
     
     fetchProductDetails();
@@ -72,7 +71,6 @@ const Cart = () => {
   }, 0);
   
   
-console.log(totalPrice)
   const handleCheckout = () => {
     if (cartItems.length > 0) {
       navigate("/checkout", { state: { cart: cartItems } });

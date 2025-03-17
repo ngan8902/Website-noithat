@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CustomerInfo from "../components/checkout/CustomerInfo";
 import ProductInfo from "../components/checkout/ProductInfo";
 import PaymentMethod from "../components/checkout/PaymentMethod";
@@ -19,6 +19,7 @@ const Checkout = () => {
     const { createOrder } = useOrderStore();
     const { fetchCart, cartItems } = useCartStore();
 
+
     const { product, quantity, cart: cartState } = location.state || {};
     const [cartData, setCartData] = useState(cartState || []);
 
@@ -35,8 +36,7 @@ const Checkout = () => {
 
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
-
-    console.log("Location state:", location.state);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleUserAddress = () => {
@@ -66,9 +66,9 @@ const Checkout = () => {
     }, [user, fetchCart]);
 
     useEffect(() => {
-        if(cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
+        if (cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
             const items = cartItems.map((item) => {
-                if(!item.productId) return { ...item };
+                if (!item.productId) return { ...item };
                 return {
                     quantity: item.quantity,
                     ...item?.productId?.data
@@ -129,24 +129,39 @@ const Checkout = () => {
 
         const orderData = {
             userId: user ? user._id : null,
-            productCode: product ? [product.productCode] : cartData.map((item) => item.productCode),
+            productId: product?._id || cartData.map((item) => item._id),
             amount: product ? quantity : cartData.map((item) => item.quantity),
+            orderItems: product
+                ? [{
+                    product: product._id,
+                    name: product.name,
+                    image: product.image,
+                    amount: quantity,
+                    price: product.price,
+                }]
+                : cartData.map(item => ({
+                    product: item._id,
+                    name: item.name,
+                    image: item.image,
+                    amount: item.quantity,
+                    price: item.price,
+                })),
             receiver: {
                 fullname: receiver?.fullname,
                 phone: receiver?.phone,
                 address: newAddress || selectedAddress
             },
+            itemsPrice: product?.price,
+            totalPrice: finalPrice,
             paymentMethod: formattedPaymentMethod,
             status: "pending"
         };
-
-        console.log(orderData)
-
         try {
             const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
 
             await createOrder(orderData, { headers });
             notifyOfCheckout()
+            navigate("/account");
         } catch (error) {
             console.log(error)
             toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");

@@ -11,7 +11,7 @@ const PaymentMethod = ({ paymentMethod, setPaymentMethod }) => {
         <div>
             <h5 className="fw-bold mt-4">Phương Thức Thanh Toán</h5>
             <div className="d-flex flex-column">
-                {["Thanh Toán Khi Nhận Hàng", "VnPay"].map((method) => (
+                {["COD", "VnPay"].map((method) => (
                     <label key={method} className="payment-option mt-2">
                         <input
                             type="radio"

@@ -6,15 +6,14 @@ const User = require("../model/UserModel");
 const generateOrderCode = () => {
     const prefix = "ORD"; // Tiền tố cố định
     const timestamp = Date.now().toString().slice(-6); // 6 chữ số cuối của timestamp
-    // const randomDigits = Math.floor(1000 + Math.random() * 9000); // Số ngẫu nhiên 4 chữ số
+    const randomDigits = Math.floor(1000 + Math.random() * 9000); // Số ngẫu nhiên 4 chữ số
     return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
 };
-// const validPaymentMethods = ["COD", "VnPay"];
 
-const createOrder = async (userId, productCode, amount, receiver, status, paymentMethod) => {
+const createOrder = async (userId, productId, validAmount, receiver, status, paymentMethod) => {
     try {
-        const product = await Product.findOne({ productCode });
-        const user = userId ? await User.findById(userId) : null;        
+        const product = productId ? await Product.findById(productId) : null;
+        const user = userId ? await User.findById(userId) : null;
         console.log(userId)
         if (!product) {
             return {
@@ -30,9 +29,15 @@ const createOrder = async (userId, productCode, amount, receiver, status, paymen
             };
         }
 
+        if (isNaN(validAmount) || validAmount <= 0) {
+            return {
+                status: "ERR",
+                message: "Số lượng sản phẩm không hợp lệ"
+            };
+        }
+
         // Lưu thông tin người nhận hàng vào database
         const receiverInfor = await ReceiverInfo.create(receiver);
-
         if (!receiverInfor) {
             return {
                 status: "ERR",
@@ -40,10 +45,8 @@ const createOrder = async (userId, productCode, amount, receiver, status, paymen
             };
         }
 
-        const itemsPrice = product.price * amount;
-        const shippingPrice = 50000; // Phí vận chuyển cố định
-        const taxPrice = itemsPrice * 0.1; // Thuế 10%
-        const totalPrice = itemsPrice + shippingPrice + taxPrice;
+        const itemsPrice = product.price * validAmount;
+        const totalPrice = itemsPrice;
 
         const orderCode = generateOrderCode();
 
@@ -51,7 +54,7 @@ const createOrder = async (userId, productCode, amount, receiver, status, paymen
             orderCode,
             orderItems: [{
                 name: product.name,
-                amount,
+                amount: validAmount,
                 image: product.image,
                 price: product.price,
                 product: product._id,
@@ -59,11 +62,9 @@ const createOrder = async (userId, productCode, amount, receiver, status, paymen
             receiver: receiverInfor._id,
             paymentMethod,
             itemsPrice,
-            shippingPrice,
-            taxPrice,
             totalPrice,
             status,
-            user:  user ? user._id : null
+            user: user ? user._id : null
         };
 
         const createdOrder = await Order.create(orderData);

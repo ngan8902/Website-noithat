@@ -20,7 +20,6 @@ const useProductStore = create((set, get) => ({
                 filter
             }
         }).then(response => {
-            console.log(response);
             const { data } = response;
             if (data && data.data) {
                 const products = data.data;
@@ -54,7 +53,6 @@ const useProductStore = create((set, get) => ({
     getProductDetails: (id) => {
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/details-product/${id}`)
         .then(response => {
-            console.log("Product details:", response.data);
             if (response.data && response.data.data) {
                 set({ products: response.data.data });
             }
@@ -67,7 +65,6 @@ const useProductStore = create((set, get) => ({
     type: [],
     getType: () => {
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/get-all-type`).then(response => {
-            console.log('type:', response);
             const { data } = response;
             if (data && data.data) {
                 const type = data.data;
@@ -83,7 +80,6 @@ const useProductStore = create((set, get) => ({
         axios.post(`${process.env.REACT_APP_URL_BACKEND}/product/create-product`, 
             newProduct
         ).then(response => {
-            console.log(response);
             set((state) => ({
                 products: [...state.products, response.data.data]
             }));
@@ -94,7 +90,6 @@ const useProductStore = create((set, get) => ({
 
     removeProduct: (id) => {
         axios.delete(`${process.env.REACT_APP_URL_BACKEND}/product/delete-product/${id}`).then(response => {
-            console.log(response);
             set((state) => ({
                 products: state.products.filter((product) => product.id !== id)
             }));
@@ -113,7 +108,6 @@ const useProductStore = create((set, get) => ({
                     }
                 }
             );
-            console.log("Cập nhật thành công:", response.data);
             set((state) => ({
                 products: state.products.map((product) =>
                     product._id === id ? response.data.data : product
@@ -144,7 +138,6 @@ const useProductStore = create((set, get) => ({
 
     try {
         const apiUrl = `${process.env.REACT_APP_URL_BACKEND}/product/suggestions?query=${query}`;
-        console.log(apiUrl);
 
         const response = await axios.get(apiUrl);
         set({ suggestions: response.data.data || [] });
