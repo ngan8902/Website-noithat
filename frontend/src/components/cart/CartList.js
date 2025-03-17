@@ -2,8 +2,6 @@ import React from "react";
 import CartItem from "./CartItem";
 
 const CartList = ({ cart, updateQuantity, removeFromCart }) => {
-  console.log("🛒 Render CartList với cart:", cart);
-
   return (
     <div className="card">
       <div className="card-body">
@@ -11,12 +9,12 @@ const CartList = ({ cart, updateQuantity, removeFromCart }) => {
         {cart.length === 0 ? (
           <p className="text-center">Giỏ hàng trống.</p>
         ) : (
-          cart.map((item) => (
-            <CartItem 
-              key={item._id} 
-              item={item} 
-              updateQuantity={updateQuantity} 
-              removeFromCart={removeFromCart} 
+          cart.map((item, index) => (
+            <CartItem
+              key={item._id || index}
+              item={item}
+              updateQuantity={updateQuantity}
+              removeFromCart={removeFromCart}
             />
           ))
         )}

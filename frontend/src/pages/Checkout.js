@@ -7,6 +7,7 @@ import LoginModal from "../components/header/LoginModal";
 import RegisterModal from "../components/header/RegisterModal";
 import useAuthStore from '../store/authStore';
 import useOrderStore from "../store/orderStore";
+import useCartStore from "../store/cartStore";
 import { notifyOfCheckout } from "../constants/notify.constant";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
@@ -14,7 +15,12 @@ import { TOKEN_KEY } from "../constants/authen.constant";
 
 const Checkout = () => {
     const location = useLocation();
-    const { product, quantity, cart } = location.state || {};
+    const { user } = useAuthStore();
+    const { createOrder } = useOrderStore();
+    const { fetchCart, cartItems } = useCartStore();
+
+    const { product, quantity, cart: cartState } = location.state || {};
+    const [cartData, setCartData] = useState(cartState || []);
 
     const savedAddresses = [{ id: 1, address: "" }];
     const [, setSavedAddresses] = useState([]);
@@ -31,26 +37,28 @@ const Checkout = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
-    const { user } = useAuthStore();
-    const { createOrder } = useOrderStore();
-
     useEffect(() => {
         if (user) {
-            console.log(user._id)
-            axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`)
-                .then(response => {
-                    if (response.data.status === "SUCCESS") {
-                        setSavedAddresses(response.data.data);
-                        if (response.data.data.length > 0) {
-                            setSelectedAddress(response.data.data[0].address);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error("Lỗi khi lấy danh sách địa chỉ:", error)
-                })
+            handleUserAddress();
+            fetchCart();
+        } else {
+            const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+            setCartData(localCart);
         }
     }, [user]);
+
+    useEffect(() => {
+        if(cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
+            const items = cartItems.map((item) => {
+                if(!item.productId) return { ...item };
+                return {
+                    quantity: item.quantity,
+                    ...item?.productId?.data
+                }
+            });
+            setCartData(items);
+        }
+    }, [cartItems]);
 
     useEffect(() => {
         setShippingFee(calculateShippingFee(selectedAddress || newAddress));
@@ -64,8 +72,9 @@ const Checkout = () => {
         if (lowerAddress.includes("long an")) return 80000;
         if (lowerAddress.includes("hà nội")) return 200000;
         return 100000;
-    };
-    if (!product && (!cart || cart.length === 0)) {
+    }
+
+    if (!product && (!cartData || cartData.length === 0)) {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
     }
 
@@ -73,7 +82,12 @@ const Checkout = () => {
         if (product) {
             return product.price * quantity;
         } else {
-            return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const cartItems = user && user._id ? cartData : JSON.parse(localStorage.getItem("cart")) || [];
+
+            return cartItems.reduce((sum, item) => {
+                const itemTotal = (item?.price || 0) * (item?.quantity || 0);
+                return sum + itemTotal;
+            }, 0);
         }
     };
 
@@ -97,8 +111,8 @@ const Checkout = () => {
 
         const orderData = {
             userId: user ? user._id : null,
-            productCode: product ? [product.productCode] : cart.map((item) => item.productCode),
-            amount: product ? quantity : cart.map((item) => item.quantity),
+            productCode: product ? [product.productCode] : cartData.map((item) => item.productCode),
+            amount: product ? quantity : cartData.map((item) => item.quantity),
             receiver: {
                 fullname: receiver?.fullname,
                 phone: receiver?.phone,
@@ -126,12 +140,29 @@ const Checkout = () => {
     const totalPrice = getTotalPrice();
     const finalPrice = totalPrice + shippingFee;
 
+    const handleUserAddress = () => {
+        if (user) {
+            axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`)
+                .then(response => {
+                    if (response.data.status === "SUCCESS") {
+                        setSavedAddresses(response.data.data);
+                        if (response.data.data.length > 0) {
+                            setSelectedAddress(response.data.data[0].address);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error("Lỗi khi lấy danh sách địa chỉ:", error)
+                })
+        }
+    }
+
     return (
         <div className="container py-5">
             <h2 className="text-center fw-bold mb-5">Thông Tin Đơn Hàng</h2>
             <div className="row">
                 <CustomerInfo
-                    hasAddress={hasAddress}
+                    hasAddress={savedAddresses.length > 0}
                     savedAddresses={savedAddresses}
                     selectedAddress={selectedAddress}
                     setSelectedAddress={setSelectedAddress}
@@ -142,9 +173,9 @@ const Checkout = () => {
                 />
                 <div className="col-md-6">
                     <ProductInfo
-                        product={product}
+                        product={cartItems}
                         quantity={quantity}
-                        cart={cart}
+                        cart={cartData}
                         totalPrice={totalPrice}
                         shippingFee={shippingFee}
                         finalPrice={finalPrice}
@@ -156,19 +187,16 @@ const Checkout = () => {
 
                     {errorMessage && <p className="text-danger text-center mt-3">{errorMessage}</p>}
 
-                    {!!user ? (
-                        null
-                    ) : (
+                    {!user && (
                         <>
-                            <p></p>
-                            Bạn muốn nhận thông báo các ưu đãi và mã giảm giá hấp dẫn hãy
-                            <button
-                                className="btn text-dark text-decoration-none fw-bold"
-                                onClick={() => setShowRegister(true)}
-                            >
-                                Đăng Ký
-                            </button>
-                            ngay!
+                            <p>Bạn muốn nhận thông báo ưu đãi? Hãy
+                                <button
+                                    className="btn text-dark text-decoration-none fw-bold"
+                                    onClick={() => setShowRegister(true)}
+                                >
+                                    Đăng Ký
+                                </button> ngay!
+                            </p>
                         </>
                     )}
 

@@ -54,7 +54,7 @@ const ProductDetail = () => {
     
     const handleAddToCartForGuest = () => {
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const existingProduct = cart.find(item => item._id === product._id); // Sửa id thành _id
+        const existingProduct = cart.find(item => item._id === product._id); 
     
         if (existingProduct) {
             const newQuantity = existingProduct.quantity + quantity;
@@ -80,13 +80,11 @@ const ProductDetail = () => {
     }
 
     const handleAddToCartForCustomer = async () => {
-        console.log(user);
         const res = await addToCartStore(product, 1);
         if(res && res?.data && res?.data?.cart) {
             notifyOfCart()
             await fetchCart();
         }
-        console.log(res);
     }
 
     return (

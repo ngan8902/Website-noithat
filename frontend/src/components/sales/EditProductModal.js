@@ -73,7 +73,6 @@ const EditProductModal = ({ product, closeModal }) => {
       }
       );
       window.location.reload()
-      console.log("Cập nhật thành công:", response.data);
       setProducts((prevProducts) =>
         prevProducts.map((p) =>
           p._id === product._id ? response.data.data : p

@@ -44,7 +44,6 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
       setError("Vui lòng điền đầy đủ thông tin!");
       return;
     }
-    console.log("Dữ liệu gửi lên API:", product);
 
     const finalCategory = selectedCategory === key ? newCategory : selectedCategory;
 

@@ -85,7 +85,7 @@ function LoginAdmin() {
 
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-                <button onClick={handelLogin}>Đăng nhập</button>
+                <button onClick={handelLogin} onKeyDown={(e) => e.key === "Enter" && handelLogin()}>Đăng nhập</button>
             </div>
         </div>
     );

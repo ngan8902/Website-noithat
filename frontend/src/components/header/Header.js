@@ -5,6 +5,7 @@ import useAuthStore from '../../store/authStore';
 import { setCookie } from '../../utils/cookie.util';
 import { TOKEN_KEY } from '../../constants/authen.constant';
 import useProductStore from '../../store/productStore';
+import useCartStore from '../../store/cartStore';
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -29,6 +30,8 @@ const Header = () => {
       }
   };
 
+  const { fetchCart, cartItems } = useCartStore();
+
   const logout = () => {
     setCookie(TOKEN_KEY, '');
     window.location.replace("/home");
@@ -39,13 +42,17 @@ const Header = () => {
   }, [getType])
 
   useEffect(() => {
-    getType();
-
     const updateCartCount = () => {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-      setCartCount(totalItems);
-    }; 
+      if (user) {
+        fetchCart();
+        const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        setCartCount(totalItems);
+      } else {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        setCartCount(totalItems);
+      }
+    };
 
     updateCartCount();
 
@@ -54,7 +61,8 @@ const Header = () => {
     return () => {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
-  },[getType]);
+    
+  }, [user, cartItems, fetchCart]);
 
   const toSlug = (str) => {
     return str

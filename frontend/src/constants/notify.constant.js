@@ -1,4 +1,5 @@
 import { toast } from "react-toastify";
+ 
 
 export const notifyOfCart = () => {
     toast.success("🛒 Đã thêm vào giỏ hàng!", {
@@ -10,6 +11,7 @@ export const notifyOfCart = () => {
         draggable: true,
         progress: undefined,
         theme: "dark",
+        className: "my-toast"
       });
 }
 

@@ -81,11 +81,8 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
       return;
     }
 
-    console.log("Dữ liệu gửi lên API:", user);
-
     axios
       .post(`${process.env.REACT_APP_URL_BACKEND}/user/sign-up`, user).then((response) => {
-        console.log("Phản hồi từ server:", response);
         const { data } = response;
 
         if (data.status === 'SUCCESS') {
