@@ -12,13 +12,8 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-<<<<<<< HEAD
-    fetchCart(); 
-  }, [fetchCart]);
-=======
     fetchCart();
-  }, []);
->>>>>>> 7667b6675956ac8279bd3e522382776b1ae73498
+  }, [fetchCart]);
 
   useEffect(() => {
     const fetchProductDetails = async () => {

@@ -33,11 +33,27 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState("");
     const [receiver, setReceiver] = useState({ fullname: "", phone: "", address: "" });
 
-
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
     useEffect(() => {
+        const handleUserAddress = () => {
+            if (user) {
+                axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`)
+                    .then(response => {
+                        if (response.data.status === "SUCCESS") {
+                            setSavedAddresses(response.data.data);
+                            if (response.data.data.length > 0) {
+                                setSelectedAddress(response.data.data[0].address);
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Lỗi khi lấy danh sách địa chỉ:", error)
+                    })
+            }
+        };
+
         if (user) {
             handleUserAddress();
             fetchCart();
@@ -45,7 +61,7 @@ const Checkout = () => {
             const localCart = JSON.parse(localStorage.getItem("cart")) || [];
             setCartData(localCart);
         }
-    }, [user]);
+    }, [user, fetchCart]);
 
     useEffect(() => {
         if(cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
@@ -139,23 +155,6 @@ const Checkout = () => {
 
     const totalPrice = getTotalPrice();
     const finalPrice = totalPrice + shippingFee;
-
-    const handleUserAddress = () => {
-        if (user) {
-            axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`)
-                .then(response => {
-                    if (response.data.status === "SUCCESS") {
-                        setSavedAddresses(response.data.data);
-                        if (response.data.data.length > 0) {
-                            setSelectedAddress(response.data.data[0].address);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error("Lỗi khi lấy danh sách địa chỉ:", error)
-                })
-        }
-    }
 
     return (
         <div className="container py-5">

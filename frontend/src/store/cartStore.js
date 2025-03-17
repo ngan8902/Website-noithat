@@ -69,29 +69,6 @@ const useCartStore = create((set, get) => ({
         }
     },
 
-    // Xóa sản phẩm khỏi giỏ hàng
-    removeFromCart: async (productId) => {
-        try {
-            const token = getCookie(TOKEN_KEY);
-            if (token) {
-                await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${productId}`, {
-                    headers: { "token": token }
-                });
-            }
-
-            // Cập nhật lại state giỏ hàng sau khi xóa sản phẩm
-            set((state) => {
-                const updatedCart = state.cartItems.filter(item => item.productId !== productId);
-                localStorage.setItem("cart", JSON.stringify(updatedCart));
-                return { cartItems: updatedCart };
-            });
-
-        } catch (error) {
-            console.error("Lỗi khi xóa sản phẩm:", error);
-        }
-    },
-
-
     updateQuantity: async (productId, quantity) => {
         if (quantity < 1) return;
 
