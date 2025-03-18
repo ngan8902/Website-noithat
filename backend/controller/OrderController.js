@@ -10,27 +10,14 @@ const createOrder = async (req, res) => {
             });
         }
 
-        if (!productId || !amount) {
+        if (!productId || !amount || productId.length !== amount.length) {
             return res.status(401).json({
                 status: "ERR",
-                message: "Thiếu mã sản phẩm hoặc số lượng"
+                message: "Dữ liệu sản phẩm không hợp lệ"
             });
         }
 
-        const validAmount = Array.isArray(amount) ? Number(amount[0]) : Number(amount);
-        if (isNaN(validAmount) || validAmount <= 0) {
-            return res.status(401).json({
-                status: "ERR",
-                message: "Số lượng sản phẩm không hợp lệ"
-            });
-        }
-
-        if (!paymentMethod) {
-            return res.status(401).json({
-                status: "ERR",
-                message: "Phương thức thanh toán không hợp lệ"
-            });
-        }
+        const validAmount = amount.map(Number);
 
 
         const response = await OrderService.createOrder(userId, productId, validAmount, receiver, status, paymentMethod);

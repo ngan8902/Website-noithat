@@ -29,11 +29,11 @@ const useOrderStore = create((set) => ({
                 },
                 params: { userId }
             });
-    
-    
+
+
             if (response.data && response.data.data) {
                 const orders = response.data.data || [];
-    
+
                 // Lấy thông tin sản phẩm cho từng orderItems trong đơn hàng
                 const fullOrders = await Promise.all(orders.map(async (order) => {
                     const orderItemsWithDetails = await Promise.all(order.orderItems.map(async (item) => {
@@ -48,17 +48,17 @@ const useOrderStore = create((set) => ({
                         }
                         return item;
                     }));
-    
+
                     return { ...order, orderItems: orderItemsWithDetails };
                 }));
-    
+
                 set({ orders: fullOrders });
             }
         } catch (error) {
             console.error("Lỗi khi lấy đơn hàng của người dùng:", error);
         }
     },
-    
+
 
     updateOrderStatus: async (orderId, newStatus) => {
         if (!["pending", "processing", "shipped", "delivered", "cancelled"].includes(newStatus)) {
@@ -66,19 +66,23 @@ const useOrderStore = create((set) => ({
         }
 
         try {
-            const response = await axios.put(`${process.env.REACT_APP_URL_BACKEND}/orders/update-order-status/${orderId}`, { status: newStatus });
+            const response = await axios.put(`${process.env.REACT_APP_URL_BACKEND}/order/update-order-status/${orderId}`,
+                { status: newStatus });
 
-            if (response.data.status === "OK") {
-                set((state) => ({
-                    orders: state.orders.map(order =>
-                        order._id === orderId ? { ...order, orderStatus: newStatus } : order
-                    ),
-                }));
-            }
+                if (response.data.status === "OK") {
+                    set((state) => ({
+                        orders: state.orders.map(order =>
+                            order._id === orderId ? { ...order, orderStatus: newStatus } : order
+                        ),
+                    }));
+                }
         } catch (error) {
             console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
         }
-    }
+    },
+
+    setOrders: (orders) => set({ orders }),        
+
 }))
 
 export default useOrderStore;

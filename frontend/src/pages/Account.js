@@ -5,12 +5,15 @@ import AccountInfo from "../components/account/AccountInfo";
 import OrderHistory from "../components/account/OrderHistory";
 import OrderStatus from "../components/account/OrderStatus";
 import useOrderStore from "../store/orderStore";
+import OrderCancelled from "../components/account/OrderCancelled";
 
 const Account = () => {
-  const { getOrderByUser, orders } = useOrderStore();
+  const { getOrderByUser, orders, setOrders } = useOrderStore();
   const { user, auth } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [orderHistory, setOrderHistory] = useState([])
+
 
   const fetchOrders = useCallback(() => {
     if (user?._id) {
@@ -41,8 +44,6 @@ const Account = () => {
   }, [auth, navigate]);
 
 
-  const [orderHistory, setOrderHistory] = useState([]);
-
   return (
     <section className="py-5">
       <div className="container">
@@ -64,10 +65,16 @@ const Account = () => {
             <OrderStatus
               orders={orders}
               setOrders={fetchOrders}
+              setOrder={setOrders}
               orderHistory={orderHistory}
               setOrderHistory={setOrderHistory}
             />
-            <OrderHistory orders={orderHistory} setOrders={setOrderHistory} />
+            <OrderHistory
+              orders={orders}
+              setOrder={setOrders} />
+            <OrderCancelled
+              orders={orders}
+              setOrder={setOrders} />
           </div>
         </div>
       </div>

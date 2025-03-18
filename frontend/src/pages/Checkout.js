@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import CustomerInfo from "../components/checkout/CustomerInfo";
 import ProductInfo from "../components/checkout/ProductInfo";
 import PaymentMethod from "../components/checkout/PaymentMethod";
@@ -36,7 +36,6 @@ const Checkout = () => {
 
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const handleUserAddress = () => {
@@ -161,7 +160,7 @@ const Checkout = () => {
 
             await createOrder(orderData, { headers });
             notifyOfCheckout()
-            navigate("/account");
+            // window.location.replace("/account");
         } catch (error) {
             console.log(error)
             toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");

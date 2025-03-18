@@ -12,10 +12,13 @@ const generateOrderCode = () => {
 
 const createOrder = async (userId, productId, validAmount, receiver, status, paymentMethod) => {
     try {
-        const product = productId ? await Product.findById(productId) : null;
+        const products = Array.isArray(productId)
+            ? await Product.find({ _id: { $in: productId } })
+            : await Product.findById(productId);
+
         const user = userId ? await User.findById(userId) : null;
-        console.log(userId)
-        if (!product) {
+
+        if (!products || (Array.isArray(products) && products.length === 0)) {
             return {
                 status: "ERR",
                 message: "Không tìm thấy sản phẩm với mã này"
@@ -29,7 +32,7 @@ const createOrder = async (userId, productId, validAmount, receiver, status, pay
             };
         }
 
-        if (isNaN(validAmount) || validAmount <= 0) {
+        if (!Array.isArray(validAmount) || validAmount.some(a => isNaN(a) || a <= 0)) {
             return {
                 status: "ERR",
                 message: "Số lượng sản phẩm không hợp lệ"
@@ -45,20 +48,22 @@ const createOrder = async (userId, productId, validAmount, receiver, status, pay
             };
         }
 
-        const itemsPrice = product.price * validAmount;
+        const orderItems = products.map((product, index) => ({
+            name: product.name,
+            amount: validAmount[index],
+            image: product.image,
+            price: product.price,
+            product: product._id,
+        }))
+
+        const itemsPrice = orderItems.reduce((sum, item) => sum + item.price * item.amount, 0);
         const totalPrice = itemsPrice;
 
         const orderCode = generateOrderCode();
 
         const orderData = {
             orderCode,
-            orderItems: [{
-                name: product.name,
-                amount: validAmount,
-                image: product.image,
-                price: product.price,
-                product: product._id,
-            }],
+            orderItems,
             receiver: receiverInfor._id,
             paymentMethod,
             itemsPrice,
@@ -141,7 +146,7 @@ const updateOrderStatus = (orderId, newStatus) => {
                 throw new Error("Không tìm thấy đơn hàng.");
             }
 
-            order.orderStatus = newStatus;
+            order.status = newStatus;
 
             if (newStatus === "delivered") {
                 order.isDelivered = true;
