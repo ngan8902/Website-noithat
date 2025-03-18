@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import useAuthStore from '../../store/authStore';
@@ -14,6 +14,7 @@ const Header = () => {
   const { type, getType, suggestions = [], getSuggestions, searchProducts } = useProductStore((state) => state);
   const [cartCount, setCartCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const hasFetchedCart = useRef(false); 
 
   useEffect(() => {
     if (searchTerm.length > 0) {
@@ -39,30 +40,8 @@ const Header = () => {
 
   useEffect(() => {
     getType()
-  }, [getType])
+  }, [])
 
-  // useEffect(() => {
-  //   const updateCartCount = () => {
-  //     if (user) {
-  //       fetchCart();
-  //       const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  //       setCartCount(totalItems);
-  //     } else {
-  //       const cart = JSON.parse(localStorage.getItem("cart")) || [];
-  //       const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  //       setCartCount(totalItems);
-  //     }
-  //   };
-
-  //   updateCartCount();
-
-  //   window.addEventListener("cartUpdated", updateCartCount);
-
-  //   return () => {
-  //     window.removeEventListener("cartUpdated", updateCartCount);
-  //   };
-
-  // }, [user, fetchCart]);
   useEffect(() => {
     const updateCartCount = () => {
       let totalItems = 0;
@@ -77,19 +56,19 @@ const Header = () => {
       setCartCount(totalItems);
     };
 
-    if (user && cartItems.length === 0) {
-      fetchCart(); 
-    }
+    if (user && cartItems.length === 0 && !hasFetchedCart.current) {
+      hasFetchedCart.current = true; 
+      fetchCart();
+  }
 
     updateCartCount();
 
     window.addEventListener("cartUpdated", updateCartCount);
-
     return () => {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
 
-  }, [user, cartItems]); 
+  }, [cartItems, user]);
 
   const toSlug = (str) => {
     return str

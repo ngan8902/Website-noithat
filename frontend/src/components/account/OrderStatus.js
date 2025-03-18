@@ -54,6 +54,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
         style={{
           maxHeight: orders.length > 5 ? "400px" : "auto",
           overflowY: orders.length > 5 ? "auto" : "visible",
+          overflowX: "hidden",
           border: "1px solid #ddd"
         }}
       >

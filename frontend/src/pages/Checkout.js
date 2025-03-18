@@ -17,7 +17,7 @@ const Checkout = () => {
     const location = useLocation();
     const { user } = useAuthStore();
     const { createOrder } = useOrderStore();
-    const { fetchCart, cartItems } = useCartStore();
+    const { fetchCart, cartItems, clearPurchasedItems } = useCartStore();
 
 
     const { product, quantity, cart: cartState } = location.state || {};
@@ -157,10 +157,28 @@ const Checkout = () => {
         };
         try {
             const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
-
             await createOrder(orderData, { headers });
             notifyOfCheckout()
-            // window.location.replace("/account");
+
+            const purchasedItems = product
+                ? [product._id]
+                : (Array.isArray(cartData) && cartData.length > 0)
+                    ? cartData.map((item) => item._id)
+                    : [];
+
+            if (purchasedItems.length > 0) {
+                clearPurchasedItems(purchasedItems);
+            } else {
+                console.log("Không có sản phẩm nào để xóa.");
+            }
+            setTimeout(async () => {
+                await fetchCart();
+                // if (user) {
+                //     window.location.replace("/account");
+                // } else {
+                //     window.location.replace("/home");
+                // }
+            }, 500);
         } catch (error) {
             console.log(error)
             toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");

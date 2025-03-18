@@ -60,19 +60,31 @@ const getCart = async (userId) => {
     }
 }
 
-const removeItem = async (userId, productId) => {
+const removeItem = async (itemId, userId) => {
     try {
         let cart = await Cart.findOne({ user: userId });
 
-        if (!cart) throw new Error("Giỏ hàng không tồn tại!");
+        if (!cart) {
+            return { status: "ERR", message: "Giỏ hàng không tồn tại" };
+        }
 
-        cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+        const itemIndex = cart.items.findIndex(item => item._id.toString() === itemId);
+        if (itemIndex === -1) {
+            return { status: "ERR", message: "Sản phẩm không tồn tại trong giỏ hàng" };
+        }
+
+        cart.items.splice(itemIndex, 1);
         await cart.save();
-        return cart.items;
+
+        return { status: "OK", message: "Xóa sản phẩm thành công", cart };
     } catch (error) {
-        throw new Error("Lỗi khi xóa sản phẩm khỏi giỏ hàng: " + error.message);
+        console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
+        return { status: "ERR", message: "Lỗi server" };
     }
-}
+};
+
+
+
 
 const updateCart = async (userId, productId, quantity) => {
     try {
@@ -98,9 +110,28 @@ const updateCart = async (userId, productId, quantity) => {
     }
 };
 
+const clearPurchasedItems = async (userId, purchasedItems) => {
+    try {
+        let cart = await Cart.findOne({ user: userId });
+        if (!cart) {
+            throw new Error("Giỏ hàng không tồn tại!");
+        }
+
+        const purchasedItemsSet = new Set(purchasedItems.map(item => item.toString()));
+
+        cart.items = cart.items.filter(item => !purchasedItemsSet.includes(item.productId.toString()));
+
+        await cart.save();
+        return cart;
+    } catch (error) {
+        throw new Error("Lỗi khi xóa sản phẩm khỏi giỏ hàng: " + error.message);
+    }
+};
+
 module.exports = {
     addToCart,
     getCart,
     removeItem,
-    updateCart
+    updateCart,
+    clearPurchasedItems
 }

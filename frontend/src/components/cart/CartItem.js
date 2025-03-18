@@ -18,11 +18,9 @@ const CartItem = ({ item, updateQuantity, removeFromCart }) => {
   };
 
   const handleRemove = () => {
-    const idToRemove = item._id;
-    if (idToRemove) {
-      removeFromCart(idToRemove);
-    }
+    removeFromCart(item._id || item.productId);
   };
+
 
   const getDiscountedPrice = (price, discount) => 
     typeof price === "number"

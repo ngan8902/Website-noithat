@@ -31,8 +31,8 @@ const useCartStore = create((set, get) => ({
                         }
                         return item;
                     }));
-
-                    set({ cartItems: fullItems });
+                    console.log(fullItems)
+                    set({ cartItems: fullItems || [] });
                 } else {
                     console.warn("API không trả về dữ liệu giỏ hàng hợp lệ.");
                 }
@@ -74,8 +74,8 @@ const useCartStore = create((set, get) => ({
         const token = getCookie("TOKEN_KEY");
         try {
             if (token) {
-                await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId}`, 
-                    { quantity }, 
+                await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId}`,
+                    { quantity },
                     { headers: { "token": token } }
                 );
             } else {
@@ -92,33 +92,88 @@ const useCartStore = create((set, get) => ({
         }
     },
 
-    removeFromCart: async (productId) => {
-        if (!productId) return;
+    removeFromCart: async (itemId) => {
+        if (!itemId) return;
     
-        try {
-          const token = getCookie("TOKEN_KEY");
-    
-          if (token) {
-            await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${productId}`, 
-              { headers: { "token": token } }
-            );
-          }
-    
-          set((state) => {
-            const updatedCart = state.cartItems.filter((item) => item.productId !== productId);
-            localStorage.setItem("cart", JSON.stringify(updatedCart));
-            return { cartItems: updatedCart };
-          });
-        } catch (error) {
-          console.error("Lỗi xóa sản phẩm:", error);
-        }
-      },
+        const token = getCookie(TOKEN_KEY);
 
-    // Xóa giỏ hàng sau khi thanh toán
-    clearCart: () => {
-        set({ cartItems: [] });
-        localStorage.removeItem("cart");
-    }
+        set((state) => {
+            const updatedCart = state.cartItems.filter((item) => item._id !== itemId);
+            
+            if (updatedCart.length === 0) {
+                window.location.reload();
+            }
+    
+            return { cartItems: updatedCart };
+        });
+        if (token) {
+            try {
+                await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${itemId}`, {
+                    headers: { token },
+                });
+    
+                await get().fetchCart();
+            } catch (error) {
+                console.error("Lỗi xóa sản phẩm:", error);
+    
+                set((state) => ({
+                    cartItems: [...state.cartItems, { _id: itemId }],
+                }));
+            }
+        } else {
+            set((state) => {
+                const updatedCart = state.cartItems.filter((item) => item._id !== itemId);
+                localStorage.setItem("cart", JSON.stringify(updatedCart));
+                return { cartItems: updatedCart };
+            });
+            window.location.reload()
+        }
+    },
+    
+    clearPurchasedItems: async (purchasedItems) => {
+        try {
+            const token = getCookie("TOKEN_KEY");
+    
+            if (token) {
+                try {
+                    const response = await axios.post(
+                        `${process.env.REACT_APP_URL_BACKEND}/cart/clear-purchased`,
+                        { purchasedItems },
+                        { headers: { "token": token } }
+                    );
+                    console.log("Đã xóa sản phẩm từ giỏ hàng của khách hàng đã đăng nhập:", response);
+    
+                    await get().fetchCart();  
+                } catch (error) {
+                    console.error("Lỗi khi xóa sản phẩm từ giỏ hàng của khách hàng đã đăng nhập:", error);
+                }
+    
+                set((state) => {
+                    const updatedCart = state.cartItems.filter(
+                        (item) => !purchasedItems.includes(item._id || item.productId)
+                    );
+                    console.log("Giỏ hàng sau khi cập nhật (đăng nhập):", updatedCart);
+    
+                    localStorage.setItem("cart", JSON.stringify(updatedCart));  
+    
+                    return { cartItems: updatedCart };
+                });
+    
+            } else {
+                console.log("Khách vãng lai: Giỏ hàng đã được xóa sau khi thanh toán.");
+                
+                localStorage.removeItem("cart");
+    
+                set((state) => {
+                    return { cartItems: [] }; 
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi khi xóa sản phẩm sau thanh toán:", error);
+        }
+    },
+    
+
 
 }));
 

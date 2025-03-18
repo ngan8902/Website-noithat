@@ -20,10 +20,10 @@ const OrderCancelled = ({ orders }) => {
       <div
         className="table-responsive"
         style={{
-          maxHeight: cancelledOrders.length > 5 ? "400px" : "auto",
-          overflowY: cancelledOrders.length > 5 ? "auto" : "visible",
-          border: cancelledOrders.length > 5 ? "1px solid #ddd" : "none",
-          borderRadius: "5px",
+          maxHeight: orders.length > 5 ? "400px" : "auto",
+          overflowY: orders.length > 5 ? "auto" : "visible",
+          overflowX: "hidden",
+          border: orders.length > 5 ? "1px solid #ddd" : "none",
         }}
       >
         {cancelledOrders.length === 0 ? (
@@ -46,29 +46,41 @@ const OrderCancelled = ({ orders }) => {
                 <tr key={order._id}>
                   <td className="fw-bold">#{order.orderCode}</td>
                   <td>
-                    <div className="d-flex align-items-center gap-2">
-                      <img
-                        src={order.orderItems[0]?.image || "/default-image.jpg"}
-                        alt={order.orderItems[0]?.name || "Sản phẩm"}
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          objectFit: "cover",
-                          borderRadius: "5px",
-                        }}
-                      />
-                    </div>
+                    <td>
+                      {order.orderItems?.map((item, index) => (
+                        <div key={index} className="mb-2">
+                          <img
+                            src={item.image || "/default-image.jpg"}
+                            alt={item.name}
+                            style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
+                          />
+                          {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                        </div>
+                      ))}
+                    </td>
                   </td>
-                  <td>{order.orderItems.map((item) => item.name).join(", ")}</td>
-                  <td>{order.orderItems.reduce((acc, item) => acc + item.amount, 0)}</td>
+                  <td>
+                    {order.orderItems?.map((item, index) => (
+                      <div key={index}>
+                        {item.name}
+                        {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                      </div>
+                    )) || "Không có dữ liệu"}</td>
+                  <td>
+                    {order.orderItems?.map((item, index) => (
+                      <div key={index}>
+                        {item.amount}
+                        {index < order.orderItems.length - 1 && <hr style={{ borderTop: "1px solid #aaa" }} />}
+                      </div>
+                    )) || 1}</td>
                   <td className="text-danger fw-bold">
                     {Number(order.totalPrice || 0).toLocaleString()} VND
                   </td>
                   <td>
                     <span
                       className={`badge ${order.status === "pending" ? "bg-primary" :
-                              order.status === "cancelled" ? "bg-danger" :
-                                "bg-light text-dark"
+                        order.status === "cancelled" ? "bg-danger" :
+                          "bg-light text-dark"
                         }`}
                     >
                       {getStatusLabel(order.status)}

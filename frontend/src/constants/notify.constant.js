@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 export const notifyOfCart = () => {
     toast.success("🛒 Đã thêm vào giỏ hàng!", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: false,
@@ -18,7 +18,7 @@ export const notifyOfCart = () => {
 export const notifyOfCheckout = () => {
   toast.success("🛍️ Thanh toán thành công!", {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: false,

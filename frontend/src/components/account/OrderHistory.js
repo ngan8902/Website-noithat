@@ -19,10 +19,10 @@ const OrderHistory = ({ orders }) => {
       <div
         className="table-responsive"
         style={{
-          maxHeight: Purchased.length > 5 ? "400px" : "auto",
-          overflowY: Purchased.length > 5 ? "auto" : "visible",
-          border: Purchased.length > 5 ? "1px solid #ddd" : "none",
-          borderRadius: "5px",
+          maxHeight: orders.length > 5 ? "400px" : "auto",
+          overflowY: orders.length > 5 ? "auto" : "visible",
+          overflowX: "hidden",
+          border: "1px solid #ddd"
         }}
       >
         {Purchased.length === 0 ? (
@@ -60,8 +60,19 @@ const OrderHistory = ({ orders }) => {
                       />
                     </div>
                   </td>
-                  <td>{order.orderItems.map((item) => item.name).join(", ")}</td>
-                  <td>{order.orderItems.reduce((acc, item) => acc + item.amount, 0)}</td>
+                  <td>
+                    {order.orderItems?.map((item, index) => (
+                      <div key={index}>
+                        {item.name}
+                        {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                      </div>
+                    )) || "Không có dữ liệu"}</td>
+                  <td> {order.orderItems?.map((item, index) => (
+                    <div key={index}>
+                      {item.amount}
+                      {index < order.orderItems.length - 1 && <hr style={{ borderTop: "1px solid #aaa" }} />}
+                    </div>
+                  )) || 1}</td>
                   <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                   <td>{new Date(order.cancelledAt || new Date()).toLocaleDateString()}</td>
                   <td className="text-danger fw-bold">
