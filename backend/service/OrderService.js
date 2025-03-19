@@ -10,15 +10,11 @@ const generateOrderCode = () => {
     return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
 };
 
-const createOrder = async (userId, productId, validAmount, receiver, status, paymentMethod) => {
+const createOrder = async (userId, productIds, validAmount, receiver, status, paymentMethod) => {
     try {
-        const products = Array.isArray(productId)
-            ? await Product.find({ _id: { $in: productId } })
-            : await Product.findById(productId);
+        const products = await Product.find({ _id: { $in: productIds } });
 
-        const user = userId ? await User.findById(userId) : null;
-
-        if (!products || (Array.isArray(products) && products.length === 0)) {
+        if (!products || products.length === 0) {
             return {
                 status: "ERR",
                 message: "Không tìm thấy sản phẩm với mã này"
@@ -39,7 +35,6 @@ const createOrder = async (userId, productId, validAmount, receiver, status, pay
             };
         }
 
-        // Lưu thông tin người nhận hàng vào database
         const receiverInfor = await ReceiverInfo.create(receiver);
         if (!receiverInfor) {
             return {
@@ -54,12 +49,14 @@ const createOrder = async (userId, productId, validAmount, receiver, status, pay
             image: product.image,
             price: product.price,
             product: product._id,
-        }))
+        }));
 
         const itemsPrice = orderItems.reduce((sum, item) => sum + item.price * item.amount, 0);
         const totalPrice = itemsPrice;
 
         const orderCode = generateOrderCode();
+
+        const user = userId ? await User.findById(userId).catch(() => null) : null;
 
         const orderData = {
             orderCode,
@@ -72,6 +69,7 @@ const createOrder = async (userId, productId, validAmount, receiver, status, pay
             user: user ? user._id : null
         };
 
+        // Tạo đơn hàng trong database
         const createdOrder = await Order.create(orderData);
         return {
             status: "OK",
@@ -79,7 +77,7 @@ const createOrder = async (userId, productId, validAmount, receiver, status, pay
             data: createdOrder
         };
     } catch (e) {
-        console.log(e)
+        console.log(e);
         return {
             status: "ERR",
             message: "Lỗi khi tạo đơn hàng",
@@ -87,6 +85,7 @@ const createOrder = async (userId, productId, validAmount, receiver, status, pay
         };
     }
 };
+
 
 const getOrdersByUser = async (userId) => {
     try {

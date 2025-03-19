@@ -3,6 +3,7 @@ const OrderService = require('../service/OrderService')
 const createOrder = async (req, res) => {
     try {
         const { userId, productId, amount, receiver, status, paymentMethod } = req.body;
+
         if (!receiver || !receiver.fullname || !receiver.phone || !receiver.address) {
             return res.status(401).json({
                 status: "ERR",
@@ -10,27 +11,30 @@ const createOrder = async (req, res) => {
             });
         }
 
-        if (!productId || !amount || productId.length !== amount.length) {
+        const productIds = Array.isArray(productId) ? productId : [productId];
+        const validAmount = Array.isArray(amount) ? amount.map(Number) : [Number(amount)];
+
+        if (productIds.length !== validAmount.length) {
             return res.status(401).json({
                 status: "ERR",
-                message: "Dữ liệu sản phẩm không hợp lệ"
+                message: "Danh sách sản phẩm và số lượng không khớp"
             });
         }
 
-        const validAmount = amount.map(Number);
-
-
-        const response = await OrderService.createOrder(userId, productId, validAmount, receiver, status, paymentMethod);
+        const response = await OrderService.createOrder(userId, productIds, validAmount, receiver, status, paymentMethod);
         return res.status(200).json(response);
     } catch (e) {
-        console.log(e)
+        console.log(e);
         return res.status(500).json({
             status: "ERR",
             message: "Lỗi server",
             error: e.message
         });
     }
-}
+};
+
+
+
 
 const getOrdersByUser = async (req, res) => {
     try {
@@ -77,7 +81,7 @@ const updateOrderStatus = async (req, res) => {
         const { status } = req.body;
         const { orderId } = req.params;
 
-        if (!["pending", "processing", "shipped", "delivered", "cancelled", "return"].includes(status)) {
+        if (!["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested"].includes(status)) {
             return res.status(401).json({ message: "Trạng thái không hợp lệ." });
         }
 

@@ -9,7 +9,7 @@ const useOrderStore = create((set) => ({
 
     fetchOrders: async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/order/get-all-orders`); 
+            const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/order/get-all-orders`);
             set({ orders: response.data.data || [] });
         } catch (error) {
             set({ error: error.message });
@@ -69,7 +69,7 @@ const useOrderStore = create((set) => ({
 
 
     updateOrderStatus: async (orderId, newStatus) => {
-        if (!["pending", "processing", "shipped", "delivered", "cancelled", "return"].includes(newStatus)) {
+        if (!["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested"].includes(newStatus)) {
             return;
         }
 
@@ -83,15 +83,16 @@ const useOrderStore = create((set) => ({
             const response = await axios.put(`${process.env.REACT_APP_URL_BACKEND}/order/update-order-status/${orderId}`,
                 { status: newStatus });
 
-            if (response.data.status === "OK") {
-                set((state) => ({
-                    orders: state.orders.map(order =>
-                        order._id === orderId ? { ...order, orderStatus: newStatus } : order
-                    ),
-                }));
+            if(response.data.status !== "OK") {
+                throw new Error("Cập nhật thất bại!");
             }
         } catch (error) {
             console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
+            set((state) => ({
+                orders: state.orders.map(order =>
+                    order._id === orderId ? { ...order, orderStatus: "pending" } : order
+                ),
+            }));
         }
     },
 

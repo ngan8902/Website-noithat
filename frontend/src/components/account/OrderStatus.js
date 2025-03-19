@@ -2,31 +2,32 @@ import React from "react";
 import useOrderStore from "../../store/orderStore";
 
 const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
-  const { updateOrderStatus } = useOrderStore();
+  const { updateOrderStatus, fetchOrders } = useOrderStore();
 
   const handleUpdateOrder = async (id, status) => {
     try {
       await updateOrderStatus(id, status);
-  
+
       setOrders((prevOrders) => {
         const updatedOrders = prevOrders.map((order) =>
           order._id === id ? { ...order, status } : order
         );
-  
-        return updatedOrders.filter((order) => order.status !== "cancelled"); 
+
+        return updatedOrders.filter((order) => order.status !== "cancelled" && order.status !== "return" && order.status !== "received");
       });
-  
+
       setOrderHistory((prevHistory) => {
-        const cancelledOrder = orders.find((order) => order._id === id);
-        return cancelledOrder ? [...prevHistory, { ...cancelledOrder, status }] : prevHistory;
+        const HistorydOrder = orders.find((order) => order._id === id);
+        return HistorydOrder ? [...prevHistory, { ...HistorydOrder, status }] : prevHistory;
+
       });
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
     }
   };
-  
 
-  const activeOrders = orders.filter((order) => order.status !== "cancelled");
+
+  const activeOrders = orders.filter((order) => order.status !== "cancelled" && order.status !== "return" && order.status !== "delivered");
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -38,13 +39,19 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
         return "Đang giao hàng";
       case "delivered":
         return "Đã giao hàng";
+      case "received":
+        return "Đã nhận hàng";
+      case "return_requested":
+        return "Yêu cầu trả hàng";
+      case "return":
+        return "Đã trả hàng"
       case "cancelled":
         return "Đã hủy";
       default:
         return "Không xác định";
     }
   };
-  
+
 
   return (
     <>
@@ -110,38 +117,33 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
                     className={`badge ${order.status === "pending" ? "bg-primary" :
                       order.status === "processing" ? "bg-info text-dark" :
                         order.status === "shipped" ? "bg-warning text-dark" :
-                          order.status === "delivered" ? "bg-success" :
-                            order.status === "cancelled" ? "bg-danger" :
-                              "bg-light text-dark"
+                          order.status === "return_requested" ? "bg-success" :
+                            "bg-light text-dark"
                       }`}
                   >
                     {getStatusLabel(order.status)}
                   </span>
                 </td>
-                <td>
-                  {["pending", "processing"].includes(order.status) ? (
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() =>handleUpdateOrder(order._id, "cancelled")}
-                    >
-                      Hủy Đơn
-                    </button>
-                  ) : order.status === "shipped" ? (
-                    <button
-                      className="btn btn-success btn-sm"
-                      onClick={() => handleUpdateOrder(order._id, "delivered")}
-                    >
-                      Xác Nhận
-                    </button>
-                  ) : order.status === "delivered" ? (
-                    <button
-                      className="btn btn-warning btn-sm"
-                      onClick={() => handleUpdateOrder(order._id, "pending")}
-                    >
-                      Hoàn Trả
-                    </button>
-                  ) : null}
+                <td className="text-center">
+                  <div className="d-flex justify-content-center gap-2">
+                    {["pending"].includes(order.status) ? (
+                      <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}
+                        disabled={order.status === "processing"}>
+                        Hủy Đơn
+                      </button>
+                    ) : order.status === "shipped" ? (
+                      <>
+                        <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order._id, "received")}>
+                          Đã Nhận Hàng
+                        </button>
+                        <button className="btn btn-warning btn-sm" onClick={() => handleUpdateOrder(order._id, "return_requested")}>
+                          Trả Hàng
+                        </button>
+                      </>
+                    ) : null}
+                  </div>
                 </td>
+
 
               </tr>
             ))}

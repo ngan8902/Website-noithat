@@ -1,13 +1,16 @@
 import React from "react";
 
 const OrderCancelled = ({ orders }) => {
-  const cancelledOrders = orders.filter((order) => order.status === "cancelled");
+  const cancelledOrders = orders.filter((order) => order.status === "cancelled" || order.status === "return");
+
 
   const getStatusLabel = (status) => {
     switch (status) {
       case "pending":
         return "Chờ xác nhận";
       case "cancelled":
+        return "Đã hủy";
+      case "return":
         return "Đã hủy";
       default:
         return "Không xác định";
@@ -77,7 +80,7 @@ const OrderCancelled = ({ orders }) => {
                   <td>
                     <span
                       className={`badge ${order.status === "pending" ? "bg-primary" :
-                        order.status === "cancelled" ? "bg-danger" :
+                        order.status === "cancelled" ? "bg-danger" : order.status === "return" ? "bg-danger" :
                           "bg-light text-dark"
                         }`}
                     >
