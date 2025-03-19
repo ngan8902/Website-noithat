@@ -2,7 +2,7 @@ const OrderService = require('../service/OrderService')
 
 const createOrder = async (req, res) => {
     try {
-        const { userId, productId, amount, receiver, status, paymentMethod  } = req.body;
+        const { userId, productId, amount, receiver, status, paymentMethod } = req.body;
         if (!receiver || !receiver.fullname || !receiver.phone || !receiver.address) {
             return res.status(401).json({
                 status: "ERR",
@@ -77,7 +77,7 @@ const updateOrderStatus = async (req, res) => {
         const { status } = req.body;
         const { orderId } = req.params;
 
-        if (!["pending", "processing", "shipped", "delivered", "cancelled"].includes(status)) {
+        if (!["pending", "processing", "shipped", "delivered", "cancelled", "return"].includes(status)) {
             return res.status(401).json({ message: "Trạng thái không hợp lệ." });
         }
 
@@ -90,9 +90,21 @@ const updateOrderStatus = async (req, res) => {
     }
 }
 
+const getAllOrders = async (req, res) => {
+    try {
+        const response = await OrderService.getAllOrders()
+        return res.status(200).json(response)
+    } catch (e) {
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
 module.exports = {
     createOrder,
     getOrdersByUser,
     getOrderByCode,
-    updateOrderStatus
+    updateOrderStatus,
+    getAllOrders
 }

@@ -167,11 +167,29 @@ const updateOrderStatus = (orderId, newStatus) => {
     })
 }
 
+const getAllOrders = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allOrder = await Order.find()
+                .populate("receiver")
+                .populate("orderItems");
+            resolve({
+                status: 'OK',
+                message: 'success',
+                data: allOrder
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 
 
 module.exports = {
     createOrder,
     getOrdersByUser,
     getOrderByCode,
-    updateOrderStatus
+    updateOrderStatus,
+    getAllOrders
 };

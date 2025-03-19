@@ -21,7 +21,7 @@ const OrderHistory = ({ orders }) => {
         style={{
           maxHeight: orders.length > 5 ? "400px" : "auto",
           overflowY: orders.length > 5 ? "auto" : "visible",
-          overflowX: "hidden",
+          overflowX: "none",
           border: "1px solid #ddd"
         }}
       >

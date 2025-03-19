@@ -22,7 +22,7 @@ const OrderCancelled = ({ orders }) => {
         style={{
           maxHeight: orders.length > 5 ? "400px" : "auto",
           overflowY: orders.length > 5 ? "auto" : "visible",
-          overflowX: "hidden",
+          overflowX: "none",
           border: orders.length > 5 ? "1px solid #ddd" : "none",
         }}
       >
@@ -46,18 +46,16 @@ const OrderCancelled = ({ orders }) => {
                 <tr key={order._id}>
                   <td className="fw-bold">#{order.orderCode}</td>
                   <td>
-                    <td>
-                      {order.orderItems?.map((item, index) => (
-                        <div key={index} className="mb-2">
-                          <img
-                            src={item.image || "/default-image.jpg"}
-                            alt={item.name}
-                            style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
-                          />
-                          {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
-                        </div>
-                      ))}
-                    </td>
+                    {order.orderItems?.map((item, index) => (
+                      <div key={index} className="mb-2">
+                        <img
+                          src={item.image || "/default-image.jpg"}
+                          alt={item.name}
+                          style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
+                        />
+                        {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                      </div>
+                    ))}
                   </td>
                   <td>
                     {order.orderItems?.map((item, index) => (

@@ -8,6 +8,8 @@ router.post('/create-order', orderController.createOrder)
 router.get('/get-order-by-user', authenticateUser, orderController.getOrdersByUser)
 router.get("/get-order/:id", orderController.getOrderByCode)
 router.put("/update-order-status/:orderId", orderController.updateOrderStatus)
+router.get("/get-all-orders", orderController.getAllOrders)
+
 
 
 module.exports = router;

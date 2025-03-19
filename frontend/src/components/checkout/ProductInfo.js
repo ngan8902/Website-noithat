@@ -8,7 +8,7 @@ const ProductInfo = ({ product, quantity, cart, totalPrice, shippingFee, finalPr
     }, [cart])
 
     const displayProducts = product
-    ? [{ ...product, quantity }] // Nếu có sản phẩm đơn, thêm vào danh sách
+    ? [{ ...product, quantity }] 
     : cartData;
 
     return (
