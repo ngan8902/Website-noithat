@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Sidebar from "../components/sales/Sidebar";
 import ProductList from "../components/sales/ProductList";
 import OrderList from "../components/sales/OrderList";
@@ -46,7 +46,7 @@ const SalesManagement = () => {
         <h2 className="text-center fw-bold mb-4">Quản Lý Bán Hàng</h2>
         <ProductList />
         <OrderList onConfirm={handleConfirmOrder} onCancel={handleCancelOrder} />
-        <ConfirmOrderList  onShip={handleShipOrder} onCancel={handleCancelOrder} />
+        <ConfirmOrderList onShip={handleShipOrder} onCancel={handleCancelOrder} />
         <CompleteOrderList onComplete={handleCompleteOrder} onReturn={handleReturnOrder} />
       </div>
     </div>

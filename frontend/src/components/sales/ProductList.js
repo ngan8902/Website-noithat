@@ -55,21 +55,21 @@ const ProductList = () => {
       <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "hidden" }}>
         <table className="table table-bordered mt-3"  >
           <thead
-            // className="table-dark"
+            className="table-dark"
             style={{
               textAlign: "center",
               verticalAlign: "middle",
-              background: "black",
-              color: "white"
             }}
           >
-            <th style={{ width: "10%" }}>ID</th>
-            <th style={{ width: "8%" }}>Hình Ảnh</th>
-            <th style={{ width: "30%" }}>Tên Sản Phẩm</th>
-            <th style={{ width: "10%" }}>Giá</th>
-            <th style={{ width: "10%" }}>Số Lượng</th>
-            <th style={{ width: "10%" }}>Mức Giảm Giá</th>
-            <th style={{ width: "15%" }}>Hành Động</th>
+            <tr>
+              <th style={{ width: "10%" }}>ID</th>
+              <th style={{ width: "8%" }}>Hình Ảnh</th>
+              <th style={{ width: "30%" }}>Tên Sản Phẩm</th>
+              <th style={{ width: "10%" }}>Giá</th>
+              <th style={{ width: "10%" }}>Số Lượng</th>
+              <th style={{ width: "10%" }}>Mức Giảm Giá</th>
+              <th style={{ width: "15%" }}>Hành Động</th>
+            </tr>
           </thead>
         </table>
 

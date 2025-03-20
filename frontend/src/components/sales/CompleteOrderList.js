@@ -12,7 +12,7 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
 };
 
   useEffect(() => {
-    fetchOrders(orders)
+    fetchOrders()
   }, [])
 
 
