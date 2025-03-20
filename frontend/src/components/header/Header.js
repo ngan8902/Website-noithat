@@ -33,13 +33,6 @@ const Header = () => {
 
   const { fetchCart, cartItems } = useCartStore();
 
-  /*
-  const logout = () => {
-    setCookie(TOKEN_KEY, '');
-    window.location.replace("/home");
-  }
-  */
-
   const logout = () => {
     removeCookie(TOKEN_KEY);
     window.location.replace("/home");

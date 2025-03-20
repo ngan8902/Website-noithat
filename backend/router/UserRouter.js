@@ -13,6 +13,7 @@ router.post('/sign-in' , userController.loginUser)
 
 /**API */
 router.put('/update-user/:id' , userController.updateUser)
+router.put('/update-password/:id' , userController.updatePassword)
 router.delete('/delete-user/:id' , authMiddleware, userController.deleteUser)
 router.get('/get-all' , authMiddleware, userController.getAllUser)
 router.get('/get-details/:id' , authUserMiddleware, userController.getDetailsUser)

@@ -79,6 +79,34 @@ const updateUser = async (req, res) => {
     }
 }
 
+const updatePassword = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({
+                status: "ERR",
+                message: "Thiếu thông tin tài khoản",
+            });
+        }
+
+        // Gọi service để xử lý logic đổi mật khẩu
+        const response = await UserService.updatePassword(userId, {
+            currentPassword,
+            newPassword,
+            confirmPassword, // Truyền vào service để xử lý
+        });
+
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: "ERR",
+            message: e.message || "Lỗi server",
+        });
+    }
+};
+
 const deleteUser = async (req, res) => {
     try{
         const userId = req.params.id
@@ -164,6 +192,7 @@ module.exports = {
     createUser,
     loginUser,
     updateUser,
+    updatePassword,
     deleteUser,
     getAllUser,
     getDetailsUser,

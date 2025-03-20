@@ -8,9 +8,10 @@ const AccountInfo = () => {
   const { user, auth, setUser } = useAuthStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-  const [, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [avatar, setAvatar] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -20,7 +21,12 @@ const AccountInfo = () => {
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [error, setError] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const isValidPassword = (password) => /^(?=.*[A-Z]).{8,}$/.test(password);
+  const isValidName = (name) => /^[A-Za-zÀ-ỹ\s]+$/.test(name);
+  const isValidPhone = (phone) => /^(03|05|08|09)\d{8}$/.test(phone);
+  const isValidEmail = (email) => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
 
   useEffect(() => {
     auth();
@@ -84,6 +90,19 @@ const AccountInfo = () => {
       return;
     }
 
+    if (!isValidName(formData.name)) {
+      setErrorMessage("Tên không được chứa số!");
+      return;
+    }
+    if (!isValidPhone(formData.phone)) {
+      setErrorMessage("Số điện thoại phải có 10 số và đúng định dạng!");
+      return;
+    }
+    if (!isValidEmail(formData.email)) {
+      setErrorMessage("Email phải có định dạng @gmail.com!");
+      return;
+    }
+
     try {
       const updatedData = {
         name: formData.name,
@@ -114,24 +133,71 @@ const AccountInfo = () => {
   // Cập nhật mật khẩu
   const handleUpdatePassword = async () => {
     if (!currentPassword || !newPassword) {
-      setError("Vui lòng nhập đầy đủ mật khẩu cũ và mật khẩu mới.");
+      setErrorMessage("Vui lòng nhập đầy đủ mật khẩu cũ và mật khẩu mới.");
+      return;
+    }
+
+    if (!isValidPassword(newPassword)) {
+      setErrorMessage("Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 chữ in hoa!");
       return;
     }
 
     try {
-      await axios.put(
-        `${process.env.REACT_APP_URL_BACKEND}/user/update-user/${user._id}`,
+      const response = await axios.put(
+        `${process.env.REACT_APP_URL_BACKEND}/user/update-password/${user._id}`,
         { currentPassword, newPassword },
         {
           headers: { token: getCookie(TOKEN_KEY) },
         }
       );
 
+      if (response.data.status === "ERR") {
+        setErrorMessage(response.data.message);
+        return;
+      }
+
       setIsChangingPassword(false);
       setCurrentPassword("");
       setNewPassword("");
+      setErrorMessage("Cập nhật thông tin thành công!");
     } catch (error) {
       console.error("Lỗi cập nhật mật khẩu:", error);
+      const message = error?.response?.data?.message || "Có lỗi xảy ra!";
+      setErrorMessage(message);
+    }
+  };
+
+  const handleUpdateNewPassword = async () => {
+    if (!newPassword && !confirmPassword) {
+      setErrorMessage("Vui lòng nhập đầy đủ!");
+      return;
+    }
+
+    if (!isValidPassword(newPassword)) {
+      setErrorMessage("Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 chữ in hoa!");
+      return;
+    }
+
+    try {
+      const response = await axios.put(
+        `${process.env.REACT_APP_URL_BACKEND}/user/update-password/${user._id}`,
+        { newPassword, confirmPassword },
+        {
+          headers: { token: getCookie(TOKEN_KEY) },
+        }
+      );
+
+      if (response.data.status === "ERR") {
+        setErrorMessage(response.data.message);
+        return;
+      }
+
+      setIsChangingPassword(false);
+      setNewPassword("");
+      setConfirmPassword("");
+      setErrorMessage("Cập nhật thông tin thành công!");
+    } catch (error) {
+      console.error("Lỗi tạo mật khẩu:", error);
       const message = error?.response?.data?.message || "Có lỗi xảy ra!";
       setErrorMessage(message);
     }
@@ -158,6 +224,8 @@ const AccountInfo = () => {
           </label>
         </div>
       </div>
+
+      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
 
       {!isEditing ? (
         <div>
@@ -193,44 +261,92 @@ const AccountInfo = () => {
               className="btn btn-outline-danger w-100 mb-3 d-flex align-items-center justify-content-center"
               onClick={() => setIsChangingPassword(true)}
             >
-              <i className="bi bi-lock-fill me-2"></i> Bạn muốn đổi mật khẩu?
+              <i className="bi bi-lock-fill me-2"></i> 
+              {user?.password ? "Bạn muốn đổi mật khẩu?" : "Tạo mật khẩu của bạn!"}
             </button>
           ) : (
             <>
-              <div className="mb-3">
-                <label className="form-label">Mật Khẩu Cũ</label>
-                <input
-                  className="form-control"
-                  type="password"
-                  placeholder="Nhập mật khẩu cũ"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
+              {user?.password && (
+                <div className="mb-3 position-relative">
+                  <label className="form-label">Mật Khẩu Cũ</label>
+                  <div className="input-group">
+                    <input
+                      className="form-control"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Nhập mật khẩu cũ"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                    />
+                    <span
+                      className="input-group-text"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-3 position-relative">
                 <label className="form-label">Mật Khẩu Mới</label>
-                <input
-                  className="form-control"
-                  type="password"
-                  placeholder="Nhập mật khẩu mới"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
+                <div className="input-group">
+                  <input
+                    className="form-control"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Nhập mật khẩu mới"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}                  
+                  />
+                  <span
+                    className="input-group-text"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                  </span>
+                </div>
               </div>
-              {error && <div className="text-danger">{error}</div>}
+
+              {!user.password && (
+                <div className="mb-3 position-relative">
+                  <label className="form-label">Nhập Lại Mật Khẩu</label>
+                  <div className="input-group"> 
+                    <input
+                      className="form-control"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Nhập lại mật khẩu"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                    <span
+                      className="input-group-text"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                    </span>
+                  </div>
+                </div>
+              )}
+              
               <button
                 type="button"
                 className="btn btn-outline-secondary w-100 mb-3"
                 onClick={() => setIsChangingPassword(false)}
               >
-                Hủy đổi mật khẩu
+                Hủy
               </button>
-              <button className="btn btn-success w-100 m-1" type="button" onClick={handleUpdatePassword}>
-                Cập Nhật Mật Khẩu
+
+              <button
+                className="btn btn-success w-100 m-1"
+                type="button"
+                onClick={user?.password ? handleUpdatePassword : handleUpdateNewPassword}
+              >
+                {user?.password ? "Cập Nhật Mật Khẩu" : "Tạo Mật Khẩu"}
               </button>
             </>
           )}
-
           <button className="btn btn-success w-100 m-1" type="button" onClick={handleSave}>
             Lưu Thay Đổi
           </button>

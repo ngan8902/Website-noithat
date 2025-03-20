@@ -90,22 +90,6 @@ const updateUser = (id, data) => {
                     message: 'The user is not defined'
                 })
             }
-            
-            if (data.currentPassword && data.newPassword) {
-                const isMatch = await bcrypt.compare(data.currentPassword, checkUser.password);
-                if (!isMatch) {
-                    return resolve({
-                        status: 'ERR',
-                        message: 'Mật khẩu cũ không đúng'
-                    });
-                }
-
-                const salt = await bcrypt.genSalt(10);
-                data.password = await bcrypt.hash(data.newPassword, salt);
-
-                delete data.currentPassword;
-                delete data.newPassword;
-            }
 
             const updatedUser = await User.findByIdAndUpdate(id, data, {new: true})           
             resolve({
@@ -119,6 +103,69 @@ const updateUser = (id, data) => {
         }
     })
 }
+
+const updatePassword = (id, data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkUser = await User.findById(id);
+
+            if (!checkUser) {
+                return resolve({
+                    status: "ERR",
+                    message: "Người dùng không tồn tại",
+                });
+            }
+
+            // Nếu tài khoản chưa có mật khẩu (VD: đăng nhập Google)
+            if (!checkUser.password) {
+                if (!data.newPassword || !data.confirmPassword) {
+                    return resolve({
+                        status: "ERR",
+                        message: "Vui lòng nhập mật khẩu mới và xác nhận mật khẩu!",
+                    });
+                }
+
+                if (data.newPassword !== data.confirmPassword) {
+                    return resolve({
+                        status: "ERR",
+                        message: "Mật khẩu xác nhận không khớp!",
+                    });
+                }
+            } else {
+                // Nếu tài khoản đã có mật khẩu, yêu cầu currentPassword
+                if (!data.currentPassword || !data.newPassword) {
+                    return resolve({
+                        status: "ERR",
+                        message: "Vui lòng nhập mật khẩu hiện tại và mật khẩu mới!",
+                    });
+                }
+
+                const isMatch = await bcrypt.compare(data.currentPassword, checkUser.password);
+                if (!isMatch) {
+                    return resolve({
+                        status: "ERR",
+                        message: "Mật khẩu cũ không đúng",
+                    });
+                }
+            }
+
+            // Mã hóa mật khẩu mới
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(data.newPassword, salt);
+
+            // Cập nhật mật khẩu mới
+            await User.findByIdAndUpdate(id, { password: hashedPassword });
+
+            resolve({
+                status: "OK",
+                message: "Đổi mật khẩu thành công",
+            });
+
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
 
 const deleteUser = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -190,6 +237,7 @@ module.exports = {
     createUser,
     loginUser,
     updateUser,
+    updatePassword,
     deleteUser,
     getAllUser,
     getDetailsUser
