@@ -11,7 +11,6 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
   const [pass, setPass] = useState("");
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
-
   const getLogin = (email, password) => {
     return axios.post(`${process.env.REACT_APP_URL_BACKEND}/user/sign-in`, {
       email: email,
