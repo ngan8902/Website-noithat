@@ -117,7 +117,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
                     className={`badge ${order.status === "pending" ? "bg-primary" :
                       order.status === "processing" ? "bg-info text-dark" :
                         order.status === "shipped" ? "bg-warning text-dark" :
-                          order.status === "return_requested" ? "bg-success" :
+                          order.status === "return_requested" ? "bg-danger" :
                             "bg-light text-dark"
                       }`}
                   >
