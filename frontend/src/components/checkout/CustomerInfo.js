@@ -11,12 +11,37 @@ const CustomerInfo = ({
     newAddress, 
     setNewAddress,
     receiver, 
-    setReceiver
+    setReceiver,
+    setSavedAddress
 }) => {
     const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
     const [errors, setErrors] = useState({ fullname: "", phone: "" });
     const [isFullnameValid, setIsFullnameValid] = useState(false);
     const [isPhoneValid, setIsPhoneValid] = useState(false);
+
+    const [selectedIndex, setSelectedIndex] = useState(null);
+
+    const handleSelectSavedInfo = (index) => {
+        setSelectedIndex(index);
+        const selectedInfo = savedAddresses[index];
+
+        // Cập nhật thông tin vào form
+        setReceiver({
+            fullname: selectedInfo.fullname,
+            phone: selectedInfo.phone
+        });
+        setSelectedAddress(selectedInfo.address);
+
+        setIsFullnameValid(true);
+        setIsPhoneValid(true);
+        setIsAddingNewAddress(false);
+    };
+
+    const handleDeleteSavedInfo = (index) => {
+        const updatedAddresses = savedAddresses.filter((_, i) => i !== index);
+        setSavedAddress(updatedAddresses);
+    };
+
 
     // Kiểm tra tên khách hàng không chứa số
     const validateFullname = (name) => {
@@ -58,7 +83,7 @@ const CustomerInfo = ({
             }
         }
         
-        if (name === "phone" && isFullnameValid) { // Chỉ cho nhập nếu tên hợp lệ
+        if (name === "phone" && isFullnameValid) {
             const isValid = validatePhone(value);
             setIsPhoneValid(isValid);
             setErrors(prev => ({
@@ -78,6 +103,37 @@ const CustomerInfo = ({
             <h6 className="text-danger">
                 <i> Bạn cần nhập đầy đủ thông tin và chọn phương thức thanh toán trước khi mua hàng! </i>
             </h6>
+
+            <div className="alert alert-secondary">
+                <strong>Thông tin đã lưu:</strong>
+                {savedAddresses.length > 2 ? (
+                    <div className="mt-2">
+                        {savedAddresses.map((info, index) => (
+                            <div key={index} className="form-check d-flex align-items-center justify-content-between mb-2">
+                                <div className="d-flex align-items-center w-100">
+                                    <input
+                                        className="form-check-input me-2"
+                                        type="radio"
+                                        name="savedInfo"
+                                        id={`info-${index}`}
+                                        checked={selectedIndex === index}
+                                        onChange={() => handleSelectSavedInfo(index)}
+                                    />
+                                    <label className="form-check-label w-100 d-flex justify-content-between" htmlFor={`info-${index}`} style={{ color: "#000" }}>
+                                        <span><strong>{info.fullname}</strong></span>
+                                        <span>{info.phone}</span>
+                                        <span>{info.address}</span>
+                                    </label>
+                                </div>
+                                <button className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteSavedInfo(index)}>Xóa</button>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className="text-danger">Thông tin chưa có, bạn chưa từng đặt hàng</p>
+                )}
+            </div>
+
             <form>
                 <div className="mb-3">
                     <label className="form-label">Họ và Tên</label>

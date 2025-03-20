@@ -8,7 +8,7 @@ import axios from "axios";
 const Cart = () => {
   const { cartItems, fetchCart, updateQuantity, removeFromCart } = useCartStore();
   const [cartWithProducts, setCartWithProducts] = useState([]);
-
+  const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,42 +40,25 @@ const Cart = () => {
     };
     
     fetchProductDetails();
-  }, [cartItems]);
+  }, [cartItems]); 
 
-  
+  const totalPrice = selectedItems.reduce((sum, itemId) => {
+    const selectedProduct = cartWithProducts.find(item => item._id === itemId);
+    if (!selectedProduct) return sum;
 
-  const totalPrice = cartWithProducts.reduce((sum, item) => {
-    let product;
-  
-    if (item.productId && typeof item.productId === "object" && item.productId.data) {
-      product = item.productId.data;
-    } 
-    else if (item._id) {
-      product = item; 
-    } else {
-      return sum; 
-    }
-  
-    if (!product || typeof product !== "object") {
-      return sum;
-    }
-  
-    const price = product?.price || 0;
-    const discount = product?.discount || 0;
-  
-    const finalPrice = discount
-      ? (price - (price * discount) / 100) * (item.quantity || 1)
-      : price * (item.quantity || 1);
-  
-    return sum + finalPrice;
-  }, 0);
-  
-  
-  const handleCheckout = () => {
-    if (cartItems.length > 0) {
-      navigate("/checkout", { state: { cart: cartItems } });
-    }
+    const price = selectedProduct.product?.price || 0;
+    const discount = selectedProduct.product?.discount || 0;
+    const finalPrice = discount ? (price - (price * discount) / 100) : price;
     
+    return sum + finalPrice * selectedProduct.quantity;
+  }, 0);
+
+  const handleCheckout = () => {
+    // Lọc ra sản phẩm đã chọn
+    const selectedProducts = cartWithProducts.filter(item => selectedItems.includes(item._id));
+
+    // Chuyển hướng đến trang thanh toán, truyền danh sách sản phẩm đã chọn
+    navigate("/checkout", { state: { selectedProducts } });
   };
 
   return (
@@ -84,11 +67,11 @@ const Cart = () => {
         <h2 className="text-center fw-bold mb-5">Giỏ Hàng</h2>
         <div className="row">
           <div className="col-md-8 mb-4">
-            <CartList cart={cartWithProducts} updateQuantity={updateQuantity} removeFromCart={removeFromCart}  />
+            <CartList cart={cartWithProducts} updateQuantity={updateQuantity} removeFromCart={removeFromCart} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
           </div>
           
           <div className="col-md-4 mb-4">
-            <CartSummary cart={cartItems} totalPrice={totalPrice} handleCheckout={handleCheckout} />
+            <CartSummary cart={cartWithProducts} selectedItems={selectedItems} totalPrice={totalPrice} handleCheckout={handleCheckout} />
           </div>
         </div>
       </div>

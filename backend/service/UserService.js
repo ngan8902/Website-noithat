@@ -116,7 +116,7 @@ const updatePassword = (id, data) => {
                 });
             }
 
-            // Nếu tài khoản chưa có mật khẩu (VD: đăng nhập Google)
+            // Tài khoản chưa có mật khẩu
             if (!checkUser.password) {
                 if (!data.newPassword || !data.confirmPassword) {
                     return resolve({
@@ -132,7 +132,6 @@ const updatePassword = (id, data) => {
                     });
                 }
             } else {
-                // Nếu tài khoản đã có mật khẩu, yêu cầu currentPassword
                 if (!data.currentPassword || !data.newPassword) {
                     return resolve({
                         status: "ERR",

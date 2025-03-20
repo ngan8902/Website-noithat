@@ -1,7 +1,8 @@
 import React from "react";
 import CartItem from "./CartItem";
 
-const CartList = ({ cart, updateQuantity, removeFromCart }) => {
+const CartList = ({ cart, updateQuantity, removeFromCart, selectedItems, setSelectedItems }) => {
+
   return (
     <div className="card">
       <div className="card-body">
@@ -15,6 +16,8 @@ const CartList = ({ cart, updateQuantity, removeFromCart }) => {
               item={item}
               updateQuantity={updateQuantity}
               removeFromCart={removeFromCart}
+              selectedItems={selectedItems}
+              setSelectedItems={setSelectedItems}
             />
           ))
         )}

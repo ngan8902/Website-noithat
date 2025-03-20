@@ -1,8 +1,9 @@
 import React from "react";
 
-const CartItem = ({ item, updateQuantity, removeFromCart }) => {
-  const product = item.productId && typeof item.productId === "object" && item.productId.data
+const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSelectedItems }) => {
 
+  const isSelected = selectedItems.includes(item._id);
+  const product = item.productId && typeof item.productId === "object" && item.productId.data
 
   const handleDecrease = () => {
     if (item.quantity > 1) {
@@ -21,6 +22,11 @@ const CartItem = ({ item, updateQuantity, removeFromCart }) => {
     removeFromCart(item._id || item.productId);
   };
 
+  const handleSelectItem = () => {
+    setSelectedItems((prevSelected) => 
+      isSelected ? prevSelected.filter(id => id !== item._id) : [...prevSelected, item._id]
+    );
+  };
 
   const getDiscountedPrice = (price, discount) => 
     typeof price === "number"
@@ -33,6 +39,12 @@ const CartItem = ({ item, updateQuantity, removeFromCart }) => {
   return (
     <div key={item._id} className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
       <div className="d-flex align-items-center">
+        <input
+          type="checkbox"
+          className="form-check-input me-2"
+          checked={isSelected}
+          onChange={handleSelectItem}
+        />
         <img
           src={product?.image || item?.image}
           alt={product?.name || item?.name}

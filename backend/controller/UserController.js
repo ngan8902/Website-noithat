@@ -90,12 +90,11 @@ const updatePassword = async (req, res) => {
                 message: "Thiếu thông tin tài khoản",
             });
         }
-
-        // Gọi service để xử lý logic đổi mật khẩu
+        
         const response = await UserService.updatePassword(userId, {
             currentPassword,
             newPassword,
-            confirmPassword, // Truyền vào service để xử lý
+            confirmPassword,
         });
 
         return res.status(200).json(response);
