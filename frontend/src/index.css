@@ -1,0 +1,547 @@
+.suggestions-list {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin-top: 40px;
+    z-index: 1000;
+    color: black;
+}
+
+.suggestions-list li {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.suggestions-list li:hover {
+    background: #007bff;
+    color: white;
+}
+
+.suggestions-list li:last-child {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+/* Đặt font chữ mặc định cho toàn bộ ứng dụng */
+body {
+  font-family: 'Playfair Display', serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9fa;
+}
+
+/* Hiệu ứng nổi */
+button, .nav-link {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+button:hover, .nav-link:hover {
+  border-color: transparent;
+  transform: scale(1.025);
+}
+
+.form-control {
+  border-radius: 8px;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.dots::after {
+    content: "";
+    display: inline-block;
+    font-size: 3rem;
+    width: 1em;
+    text-align: left;
+    animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+    0% { content: ""; }
+    33% { content: "."; }
+    66% { content: ".."; }
+    100% { content: "..."; }
+}
+
+/* Căn giữa nội dung theo chiều dọc */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  text-align: center;
+}
+
+/* Tiềm kiếm */
+.input-group .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.input-group .btn:hover {
+  background-color: #0056b3 !important;
+}
+
+/* Hiệu ứng khi hover avatar */
+.avatar {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.avatar-modal-content {
+  position: relative;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.avatar-modal-content img {
+  width: 100%;
+  height: auto;
+  max-width: 500px;
+  border-radius: 8px;
+}
+
+.avatar-modal .close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: red;
+  cursor: pointer;
+}
+
+.avatar-modal .close:hover {
+  color: darkred;
+}
+
+/* Hình ảnh team */
+.rounded-circle {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.container {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+section {
+  padding: 60px 0;
+}
+
+.team img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border: 4px solid #fff;
+  transition: transform 0.3s ease-in-out;
+}
+
+.team img:hover {
+  transform: scale(1.1);
+}
+
+/* Thiết lập layout chính với sidebar và nội dung chính */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar trang admin */
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: #343a40;
+  padding: 20px;
+  overflow-y: auto;
+  width: 20%;
+  transition: width 0.3s ease-in-out;
+  scrollbar-width: thin;
+  scrollbar-color: #6c757d #343a40;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+  overflow: auto;
+}
+
+/* Hover màu cho các phần tử */
+.transition-hover {
+  transition: color 0.3s ease-in-out, background 0.3s ease-in-out;
+}
+
+.transition-hover:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  padding-left: 5px;
+}
+
+/* Hover cho dropdown */
+.dropdown-item:hover {
+  background-color: #495057 !important;
+  color: white !important;
+}
+
+/* Phản hồi cho sales manager */
+.feedback-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 14px;
+  padding: 5px 10px;
+}
+
+.logout-btn {
+  position: absolute;
+  top: 10%;
+  right: 15px;
+  font-size: 15px;
+  padding: 5px 10px;
+}
+
+/* Hình ảnh sản phẩm khi xem chi tiết */
+.product-image {
+    width: 100%; 
+    height: auto; 
+    max-height: 500px;
+    object-fit: contain;
+}
+
+/* Admin Login */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2c2c2c, #1e1e1e);
+}
+
+.login-card {
+    width: 450px;
+    background: #333;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.login-card h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #555;
+    border-radius: 6px;
+    font-size: 16px;
+    background: #222;
+    color: #fff;
+}
+
+.login-card input:focus {
+    border-color: #888;
+    outline: none;
+    box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.3);
+}
+
+.login-card button {
+    width: 100%;
+    background: #444;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.login-card button:hover {
+    background: #666;
+    cursor: pointer;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* Form Password */
+.password-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-container input {
+    width: 100%;
+    padding: 12px;
+    padding-right: 40px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+}
+
+/* Chat Box */
+.chatbox-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 50px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.chatbox-button:hover {
+  background: #0056b3;
+}
+
+.chatbox-container {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 500px;
+  height: 400px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chatbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+  border-radius: 10px 10px 0 0;
+}
+
+.chatbox-header button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.chatbox-body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.message.bot {
+  background: #f1f1f1;
+  align-self: flex-start;
+}
+
+.message.user {
+  background: #007bff;
+  color: white;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.chatbox-footer {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  background: white;
+}
+
+.chatbox-footer input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+}
+
+.chatbox-footer button {
+  margin-left: 8px;
+  padding: 8px 15px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.chatbox-footer button:hover {
+  background: #0056b3;
+}
+
+/* Chat with Customers */
+.chat-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+.chat-list {
+  width: 30%;
+  height: 100vh;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  padding: 15px;
+}
+
+.chat-item {
+  transition: background-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-radius: 10px;
+}
+
+.chat-item:hover {
+  background-color: #e9ecef !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-item img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-messages {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #ffffff;
+  padding: 15px;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message.customer {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: black;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 70%;
+  margin-bottom: 10px;
+}
+
+.message.employee {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 70%;
+  margin-bottom: 10px;
+}
+
+.message-input input {
+  border-radius: 50px;
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+.message-input button {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.my-toast {
+  top: 77px;
+}

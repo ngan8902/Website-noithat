@@ -1,0 +1,37 @@
+{
+  "name": "websitebanhang",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "Noithat"
+  ],
+  "license": "ISC",
+  "author": "Ngan & Thanh",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "migrate": "node migrations/index.js",
+    "start": "node migrations/index.js & nodemon server.js",
+    "build": "nodemon build",
+    "test": "nodemon test",
+    "eject": "nodemon eject"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "google-auth-library": "^9.15.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.12.0",
+    "mongoose": "^8.10.0",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.10.0",
+    "nodemon": "^3.1.9",
+    "socket.io": "^4.8.1"
+  }
+}

@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Noi That Backend Node.js",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "start"
+            ],
+            "args": [],
+            "cwd": "${workspaceFolder}/backend",
+            "envFile": "${workspaceFolder}/backend/.env", 
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "restart": true
+        }
+    ]
+}

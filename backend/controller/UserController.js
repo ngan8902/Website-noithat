@@ -1,0 +1,172 @@
+const UserService = require('../service/UserService') 
+const JwtService = require('../service/JwtService') 
+const { SIGN_UP } = require('../common/messages/user.message')
+const { SIGN_UP_STATUS } = require('../common/constant/status.constant')
+
+const createUser = async (req, res) => {
+    try{
+        const { name, email, password, confirmPassword, phone } = req.body
+        var reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})*$/
+        const isCheckEmail = reg.test(email)
+        if (!name || !email || !password || !confirmPassword || !phone) {
+            return res.status(200).json({
+                status: SIGN_UP_STATUS.ERROR,
+                message: SIGN_UP.VALID_FIELDS_ERR
+            })
+        }else if (!isCheckEmail){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Vui lòng nhập email'
+            })
+        }else if (password !== confirmPassword){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Mật khẩu và mật khẩu xác nhận không trùng khớp!'
+            })
+        }
+        const response = await UserService.createUser(req.body)
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const loginUser = async (req, res) => {
+    try{
+        const { email, password } = req.body
+        var reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})*$/
+        const isCheckEmail = reg.test(email)
+        if ( !email || !password) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Nhập các trường bắt buộc!'
+            })
+        }else if (!isCheckEmail){
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Vui lòng nhập email!'
+            })
+        }
+       
+        const response = await UserService.loginUser(req.body)
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const updateUser = async (req, res) => {
+    try{
+        const userId = req.params.id
+        const data = req.body
+        if(!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is required'
+            })
+        }
+        console.log('userId', userId)
+        const response = await UserService.updateUser(userId, data)
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const deleteUser = async (req, res) => {
+    try{
+        const userId = req.params.id
+        if(!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is required'
+            })
+        }
+        const response = await UserService.deleteUser(userId)
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const getAllUser = async (req, res) => {
+    try{
+        const response = await UserService.getAllUser()
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const getDetailsUser = async (req, res) => {
+    try{
+        const userId = req.params.id
+        if(!userId) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The userId is required'
+            })
+        }
+        const response = await UserService.getDetailsUser(userId)
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const refreshToken = async (req, res) => {
+    try{
+        const token = req.headers.token.split(' ')[1]
+        if(!token) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'The token is required'
+            })
+        }
+        const response = await JwtService.refreshTokenJwtService(token)
+        return res.status(200).json(response) 
+    }catch(e){
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+const getMe = async (req, res) => {
+    try {
+        const { id } = req['payload'];
+        const user = await UserService.getDetailsUser(id);
+        return res.status(200).json({
+            status: SIGN_UP_STATUS.SUCCESS,
+            message: 'Get User Success!',
+            data: user.data
+        })
+    } catch(e) {
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
+module.exports = {
+    createUser,
+    loginUser,
+    updateUser,
+    deleteUser,
+    getAllUser,
+    getDetailsUser,
+    refreshToken,
+    getMe
+}

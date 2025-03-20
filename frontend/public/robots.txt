@@ -1,0 +1,3 @@
+# Prohibit Google index
+User-agent: *
+Disallow:
