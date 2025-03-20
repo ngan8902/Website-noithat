@@ -6,7 +6,7 @@ const OrderList = ({ onConfirm, onCancel }) => {
   const { orders, fetchOrders } = useOrderStore();
 
   useEffect(() => {
-    fetchOrders(orders)
+    fetchOrders()
   }, [])
 
 

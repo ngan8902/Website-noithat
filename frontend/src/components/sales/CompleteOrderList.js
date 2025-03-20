@@ -6,14 +6,22 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const { orders, fetchOrders } = useOrderStore();
 
+  const statusMap = {
+    "delivered": "Đã hoàn thành",
+    "return": "Đã trả hàng"
+};
+
   useEffect(() => {
-    fetchOrders(orders)
+    fetchOrders()
   }, [])
 
 
-  const filteredOrders = (Array.isArray(orders) ? orders : []).filter(order => {
+  const filteredOrders = (Array.isArray(orders) ? orders : [])
+  .filter(order => order.status !== "cancelled")
+  .filter(order => {
     const receiverName = order.receiver?.fullname?.toLowerCase() || "";
     const receiverPhone = order.receiver?.phone || "";
+    const statusFilter = statusMap[order?.status]?.toLowerCase() || "";
 
     const productMatch = order.orderItems.some(item =>
       item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -22,6 +30,7 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
     return (
       receiverName.includes(searchTerm.toLowerCase()) ||
       receiverPhone.includes(searchTerm) ||
+      statusFilter.includes(searchTerm.toLowerCase()) ||
       productMatch
     );
   });
@@ -33,8 +42,10 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
   ];
 
   const sortedOrders = [...filteredOrders].sort((a, b) => {
-    return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+    return (statusOrder.indexOf(a.status) !== -1 ? statusOrder.indexOf(a.status) : Infinity) -
+      (statusOrder.indexOf(b.status) !== -1 ? statusOrder.indexOf(b.status) : Infinity);
   });
+
 
   return (
     <div id="completed-orders" className="mt-4">
@@ -102,26 +113,36 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
                         }`}>
                         {order.status === "return_requested" ? "Yêu cầu trả hàng" : order.status === "received" ? "Đã nhận hàng" : order.status === "shipped" ? "Đã giao hàng" : order.status === "delivered" ? "Đã hoàn thành" :
                           order.status === "return" ? "Đã trả hàng" :
-                            "Đã trả hàng"}
+                            "Đã hủy"}
                       </span>
 
                     </td>
                     <td style={{ width: "12%", textAlign: "center" }}>
-                      {["shipped", "received", "return_requested"].includes(order.status) && (
+                      {["received", "return_requested"].includes(order.status) && (
                         <>
-                          <button className="btn btn-success btn-sm me-2"
-                            style={{ marginBottom: "5px" }}
-                            onClick={() => onComplete(order._id)}>
-                            Xác nhận
-                          </button>
-                          <button className="btn btn-danger btn-sm"
-                            style={{ marginRight: "6px" }}
-                            onClick={() => onReturn(order._id)}>
-                            Trả hàng
-                          </button>
+                          {order.status !== "return_requested" && (
+                            <button
+                              className="btn btn-success btn-sm me-2"
+                              style={{ marginBottom: "5px" }}
+                              onClick={() => onComplete(order._id)}
+                            >
+                              Xác nhận
+                            </button>
+                          )}
+
+                          {order.status !== "received" && (
+                            <button
+                              className="btn btn-danger btn-sm"
+                              style={{ marginRight: "6px" }}
+                              onClick={() => onReturn(order._id)}
+                            >
+                              Trả hàng
+                            </button>
+                          )}
                         </>
                       )}
                     </td>
+
 
                   </tr>
                 ))

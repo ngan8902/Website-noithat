@@ -52,63 +52,78 @@ const ProductList = () => {
         />
       </div>
 
-      <div
-        style={{
-          maxHeight: products.length > 4 ? "400px" : "auto",
-          overflowY: products.length > 4 ? "auto" : "visible",
-          border: "1px solid #ddd",
-          borderRadius: "5px",
-          marginTop: "10px",
-        }}
-      >
-        <table className="table table-bordered mt-3">
-          <thead className="table-dark">
+      <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "hidden" }}>
+        <table className="table table-bordered mt-3"  >
+          <thead
+            className="table-dark"
+            style={{
+              textAlign: "center",
+              verticalAlign: "middle",
+            }}
+          >
             <tr>
-              <th>ID</th>
-              <th>Hình Ảnh</th>
-              <th>Tên Sản Phẩm</th>
-              <th>Giá</th>
-              <th>Số Lượng</th>
-              <th>Mức Giảm Giá</th>
-              <th>Hành Động</th>
+              <th style={{ width: "10%" }}>ID</th>
+              <th style={{ width: "8%" }}>Hình Ảnh</th>
+              <th style={{ width: "30%" }}>Tên Sản Phẩm</th>
+              <th style={{ width: "10%" }}>Giá</th>
+              <th style={{ width: "10%" }}>Số Lượng</th>
+              <th style={{ width: "10%" }}>Mức Giảm Giá</th>
+              <th style={{ width: "15%" }}>Hành Động</th>
             </tr>
           </thead>
-          <tbody>
-            {products && products.length > 0 ? (
-              products.filter(product => 
-                product.name.toLowerCase().includes(search.toLowerCase()) || 
-                product.productCode.toLowerCase().includes(search.toLowerCase())
-              ).map((product) => (
-                <tr key={product._id} >
-                  <td>{product.productCode || ""}</td>
-                  <td>
-                    <img src={product.image || "https://via.placeholder.com/100"}
-                      alt={product.name}
-                      style={{ width: "100px", height: "100px", objectFit: "cover" }} />
-                  </td>
-                  <td>{product.name}</td>
-                  <td>{product.price} VND</td>
-                  <td>{product.countInStock}</td>
-                  <td>{product.discount} %</td>
-                  <td>
-                    <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
-                    <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center text-muted">Không tìm thấy sản phẩm nào!</td>
-              </tr>
-            )}
-          </tbody>
         </table>
+
+        <div
+          style={{
+            maxHeight: "500px",
+            overflowY: "auto",
+            overflowX: "none",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none"
+          }}
+          className="hide-scrollbar"
+        >
+          <table className="table table-bordered">
+            <tbody>
+              {products && products.length > 0 ? (
+                products.filter(product =>
+                  product.name.toLowerCase().includes(search.toLowerCase()) ||
+                  product.productCode.toLowerCase().includes(search.toLowerCase())
+                ).map((product) => (
+                  <tr key={product._id} >
+                    <td style={{ width: "10%" }}>{product.productCode || ""}</td>
+                    <td style={{ width: "8%" }}>
+                      <img src={product.image || "https://via.placeholder.com/100"}
+                        alt={product.name}
+                        style={{ width: "100px", height: "100px", objectFit: "cover" }} />
+                    </td>
+                    <td style={{ width: "30%" }} >{product.name}</td>
+                    <td style={{ width: "10%" }}>{product.price} VND</td>
+                    <td style={{ width: "10%" }}>{product.countInStock}</td>
+                    <td style={{ width: "10%" }}>{product.discount} %</td>
+                    <td style={{
+                      width: "15%", textAlign: "center",
+                      verticalAlign: "middle",
+                    }}>
+                      <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
+                      <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center text-muted">Không tìm thấy sản phẩm nào!</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {modalType === "add" && <AddProductModal closeModal={closeModal} refreshProducts={getProducts} />}
       {modalType === "edit" && selectedProduct && <EditProductModal product={selectedProduct} closeModal={closeModal} />}
 
-    </div>
+    </div >
   );
 };
 

@@ -6,7 +6,7 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
   const { orders, fetchOrders } = useOrderStore();
 
   useEffect(() => {
-    fetchOrders(orders)
+    fetchOrders()
   }, [])
 
 
