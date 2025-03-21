@@ -12,16 +12,18 @@ import { notifyOfCheckout } from "../constants/notify.constant";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { TOKEN_KEY } from "../constants/authen.constant";
+import { Modal, Button } from "react-bootstrap"; // Thêm thư viện Bootstrap Modal
 
 const Checkout = () => {
     const location = useLocation();
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+
     const { user } = useAuthStore();
     const { createOrder } = useOrderStore();
     const { fetchCart, cartItems, clearPurchasedItems } = useCartStore();
 
-
-    const { product, quantity, cart: cartState } = location.state || {};
-    const [cartData, setCartData] = useState(cartState || []);
+    const { product, quantity, selectedProducts } = location.state || {};
+    const [cartData, setCartData] = useState(selectedProducts || []);
 
     const savedAddresses = [{ id: 1, address: "" }];
     const [, setSavedAddresses] = useState([]);
@@ -65,7 +67,7 @@ const Checkout = () => {
     }, [user, fetchCart]);
 
     useEffect(() => {
-        if (cartItems && Array.isArray(cartItems) && cartItems.length > 0) {
+        if (!selectedProducts && cartItems.length > 0) {
             const items = cartItems.map((item) => {
                 if (!item.productId) return { ...item };
                 return {
@@ -75,7 +77,7 @@ const Checkout = () => {
             });
             setCartData(items);
         }
-    }, [cartItems]);
+    }, [cartItems, selectedProducts]);
 
     useEffect(() => {
         setShippingFee(calculateShippingFee(selectedAddress || newAddress));
@@ -95,20 +97,9 @@ const Checkout = () => {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
     }
 
-    const getTotalPrice = () => {
-        if (product) {
-            return product.price * quantity;
-        } else {
-            const cartItems = user && user._id ? cartData : JSON.parse(localStorage.getItem("cart")) || [];
-
-            return cartItems.reduce((sum, item) => {
-                const itemTotal = (item?.price || 0) * (item?.quantity || 0);
-                return sum + itemTotal;
-            }, 0);
-        }
-    };
-
     const handleCheckout = async () => {
+        setShowConfirmModal(false);
+
         const formattedPaymentMethod = paymentMethod === "Thanh Toán Khi Nhận Hàng" ? "COD" :
             paymentMethod === "VnPay" ? "VNPAY" : null;
 
@@ -117,7 +108,7 @@ const Checkout = () => {
             return;
         }
         if (!selectedAddress && !newAddress) {
-            setErrorMessage("Vui lòng chọn hoặc nhập địa chỉ trước khi thanh toán!");
+            setErrorMessage("Vui lòng chọn địa chỉ trước khi thanh toán!");
             return;
         }
         if (!paymentMethod) {
@@ -129,7 +120,7 @@ const Checkout = () => {
         const orderData = {
             userId: user ? user._id : null,
             productId: product?._id || cartData.map((item) => item._id),
-            amount: product ? quantity : cartData.map((item) => item.quantity),
+            amount: product?quantity : cartData.map((item) => item.quantity),
             orderItems: product
                 ? [{
                     product: product._id,
@@ -151,7 +142,7 @@ const Checkout = () => {
                 address: newAddress || selectedAddress
             },
             itemsPrice: product?.price,
-            totalPrice: finalPrice,
+            totalPrice: (product?.price * product?.quantity)+ shippingFee,
             paymentMethod: formattedPaymentMethod,
             status: "pending"
         };
@@ -183,12 +174,11 @@ const Checkout = () => {
             console.log(error)
             toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");
         }
-
-
     };
 
-    const totalPrice = getTotalPrice();
-    const finalPrice = totalPrice + shippingFee;
+    const displayProducts = product
+    ? [{ ...product, quantity }] 
+    : cartData;
 
     return (
         <div className="container py-5">
@@ -210,9 +200,7 @@ const Checkout = () => {
                         product={product}
                         quantity={quantity}
                         cart={cartData}
-                        totalPrice={totalPrice}
                         shippingFee={shippingFee}
-                        finalPrice={finalPrice}
                     />
                     <PaymentMethod
                         paymentMethod={paymentMethod}
@@ -223,7 +211,7 @@ const Checkout = () => {
 
                     {!user && (
                         <>
-                            <p>Bạn muốn nhận thông báo ưu đãi? Hãy
+                            <p>Bạn muốn nhận thông báo về các ưu đãi? Hãy
                                 <button
                                     className="btn text-dark text-decoration-none fw-bold"
                                     onClick={() => setShowRegister(true)}
@@ -236,7 +224,7 @@ const Checkout = () => {
 
                     <button
                         className="btn btn-dark w-100 mt-4"
-                        onClick={handleCheckout}
+                        onClick={() => setShowConfirmModal(true)}
                         disabled={!selectedAddress && !newAddress}
                     >
                         Xác Nhận Mua Hàng
@@ -246,8 +234,43 @@ const Checkout = () => {
             </div>
             <LoginModal show={showLogin} setShow={setShowLogin} setShowRegister={setShowRegister} />
             <RegisterModal show={showRegister} setShow={setShowRegister} setShowLogin={setShowLogin} />
+
+            <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Xác Nhận Đơn Hàng</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p><strong>Tên khách hàng:</strong> {receiver.fullname || user?.name}</p>
+                    <p><strong>Số điện thoại:</strong> {receiver.phone || user?.phone}</p>
+                    <p><strong>Địa chỉ giao hàng:</strong> {selectedAddress || newAddress}</p>
+                    <p><strong>Phương thức thanh toán:</strong> {paymentMethod}</p>
+                    <p><strong>Ngày đặt hàng:</strong> {new Date().toLocaleDateString()}</p>
+                    <p><strong>Ngày giao dự kiến:</strong> {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
+                    
+                    <h5 className="fw-bold mt-3">Sản phẩm:</h5>
+                    {cartData.map((item, index) => (
+                        <div key={index} className="border p-2 mb-2">
+                            <p><strong>{item.productId?.data.name}</strong></p>
+                            <img src={item.productId?.data.image} alt={item.productId?.data.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
+                            <p>Số lượng: {item.quantity}</p>
+                            <p>Giá: {(item.productId?.data.price * item.quantity).toLocaleString()} VND</p>
+                        </div>
+                    ))}
+
+                    <p><strong>Phí Vận Chuyển:</strong> {shippingFee.toLocaleString()} VND</p>
+                    <p><strong>Tổng Thanh Toán:</strong> {(displayProducts.reduce((total, item) => total + (item.productId?.data.price * item.quantity), 0) + shippingFee).toLocaleString()} VND</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>
+                        Hủy
+                    </Button>
+                    <Button variant="primary" onClick={handleCheckout}>
+                        Xác Nhận
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
-    );
+        );
 };
 
 export default Checkout;

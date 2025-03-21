@@ -120,9 +120,9 @@ const CustomerInfo = ({
                                         onChange={() => handleSelectSavedInfo(index)}
                                     />
                                     <label className="form-check-label w-100 d-flex justify-content-between" htmlFor={`info-${index}`} style={{ color: "#000" }}>
-                                        <span><strong>{info.fullname}</strong></span>
-                                        <span>{info.phone}</span>
-                                        <span>{info.address}</span>
+                                        <span><strong>{info.fullname}, </strong></span>
+                                        <span>{info.phone}, </span>
+                                        <span>{info.address}, </span>
                                     </label>
                                 </div>
                                 <button className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteSavedInfo(index)}>Xóa</button>

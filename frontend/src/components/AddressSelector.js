@@ -152,7 +152,7 @@ const AddressSelector = ({ setNewAddress }) => {
                     value={provinceInput}
                     onChange={(e) => setProvinceInput(e.target.value)}
                 />
-                {provinceSuggestions.length > 0 && (
+                {provinceSuggestions.length > 1 && (
                     <ul className="list-group mt-1">
                         {provinceSuggestions.map(province => (
                             <li key={province.code}
@@ -178,7 +178,7 @@ const AddressSelector = ({ setNewAddress }) => {
                     onChange={(e) => setDistrictInput(e.target.value)}
                     disabled={!selectedProvince}
                 />
-                {districtSuggestions.length > 0 && (
+                {districtSuggestions.length > 1 && (
                     <ul className="list-group mt-1">
                         {districtSuggestions.map(district => (
                             <li key={district.code}
@@ -204,7 +204,7 @@ const AddressSelector = ({ setNewAddress }) => {
                     onChange={(e) => setWardInput(e.target.value)}
                     disabled={!selectedDistrict}
                 />
-                {wardSuggestions.length > 0 && (
+                {wardSuggestions.length > 1 && (
                     <ul className="list-group mt-1">
                         {wardSuggestions.map(ward => (
                             <li key={ward.code}
