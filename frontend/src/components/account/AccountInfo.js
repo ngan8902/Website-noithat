@@ -120,13 +120,14 @@ const AccountInfo = () => {
         }
       );
 
-      console.log("Cập nhật thành công:", response.data);
       setUser(response.data.data);
       setIsEditing(false);
       setErrorMessage("Cập nhật thông tin thành công!");
+      setTimeout(() => setErrorMessage(""), 3000);
     } catch (error) {
       console.error("Lỗi cập nhật thông tin:", error);
       setErrorMessage("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại!");
+      setTimeout(() => setErrorMessage(""), 3000);
     }
   };
 
@@ -160,10 +161,12 @@ const AccountInfo = () => {
       setCurrentPassword("");
       setNewPassword("");
       setErrorMessage("Cập nhật thông tin thành công!");
+      setTimeout(() => setErrorMessage(""), 3000);
     } catch (error) {
       console.error("Lỗi cập nhật mật khẩu:", error);
       const message = error?.response?.data?.message || "Có lỗi xảy ra!";
       setErrorMessage(message);
+      setTimeout(() => setErrorMessage(""), 3000);
     }
   };
 
@@ -196,10 +199,12 @@ const AccountInfo = () => {
       setNewPassword("");
       setConfirmPassword("");
       setErrorMessage("Cập nhật thông tin thành công!");
+      setTimeout(() => setErrorMessage(""), 3000);
     } catch (error) {
       console.error("Lỗi tạo mật khẩu:", error);
       const message = error?.response?.data?.message || "Có lỗi xảy ra!";
       setErrorMessage(message);
+      setTimeout(() => setErrorMessage(""), 3000);
     }
   };
 

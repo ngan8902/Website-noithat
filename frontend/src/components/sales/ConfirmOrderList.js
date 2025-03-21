@@ -15,6 +15,8 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
     .filter(order => {
       const receiverName = order.receiver?.fullname?.toLowerCase() || "";
       const receiverPhone = order.receiver?.phone || "";
+      const orderCodeFilter = order?.orderCode?.toLowerCase() || "";
+
 
       // Kiểm tra nếu bất kỳ sản phẩm nào trong orderItems khớp với searchTerm
       const productMatch = order.orderItems.some(item =>
@@ -24,6 +26,7 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
       return (
         receiverName.includes(searchTerm.toLowerCase()) ||
         receiverPhone.includes(searchTerm) ||
+        orderCodeFilter.includes(searchTerm.toLowerCase()) ||
         productMatch
       );
     });
@@ -55,9 +58,10 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
             }}
           >
             <tr>
+            <th style={{ width: "11%" }}>Mã Đơn Hàng</th>
               <th style={{ width: "10%" }}>Khách Hàng</th>
               <th style={{ width: "8%" }}>Số Điện Thoại</th>
-              <th style={{ width: "30%" }}>Địa Chỉ</th>
+              <th style={{ width: "20%" }}>Địa Chỉ</th>
               <th style={{ width: "10%" }}>Sản Phẩm</th>
               <th style={{ width: "10%" }}>Tổng Tiền</th>
               <th style={{ width: "10%" }}>Phương Thức Thanh Toán</th>
@@ -82,16 +86,17 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
                   <tr key={order._id}>
+                    <td style={{ width: "11%" }}>#{order?.orderCode}</td>
                     <td style={{ width: "10%" }}>{order?.receiver?.fullname || "N/A"}</td>
                     <td style={{ width: "8%" }}>{order?.receiver?.phone || "N/A"}</td>
-                    <td style={{ width: "30%" }}>{order?.receiver?.address || "N/A"}</td>
+                    <td style={{ width: "20%" }}>{order?.receiver?.address || "N/A"}</td>
                     <td style={{ width: "10%" }}>{order?.orderItems[0]?.name || "N/A"}</td>
                     <td style={{ width: "10%" }}>{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
                     <td style={{ width: "10%" }}>{order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : order?.paymentMethod}</td>
                     <td style={{ width: "10%", textAlign: "center", verticalAlign: "middle" }}>
                       <span className="badge bg-info text-dark">{order.status === "processing" ? "Đã xác nhận" : orders.status}</span>
                     </td>
-                    <td style={{ width: "15%" , textAlign: "center", verticalAlign: "middle" }}>
+                    <td style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>
                       {order.status === "processing" && (
                         <>
                           <button className="btn btn-success btn-sm me-2" onClick={() => onShip(order._id)}>
