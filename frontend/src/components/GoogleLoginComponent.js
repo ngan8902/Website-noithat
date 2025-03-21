@@ -10,10 +10,10 @@ const GoogleLoginComponent = ({ onSuccess }) => {
     const handleSuccess = async (credentialResponse) => {
         try {
             const googleToken = credentialResponse.credential;
-            console.log("Google Token:", googleToken);
+            //console.log("Google Token:", googleToken);
 
             const response = await GoogleService.googleAuth(googleToken);
-            console.log("Dữ liệu trả về từ Backend:", response);
+            //console.log("Dữ liệu trả về từ Backend:", response);
 
             loginWithGoogle(response.user, response.token);
             onSuccess();

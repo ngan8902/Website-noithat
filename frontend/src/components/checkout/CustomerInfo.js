@@ -106,7 +106,7 @@ const CustomerInfo = ({
 
             <div className="alert alert-secondary">
                 <strong>Thông tin đã lưu:</strong>
-                {savedAddresses.length > 2 ? (
+                {savedAddresses.length > 0 ? (
                     <div className="mt-2">
                         {savedAddresses.map((info, index) => (
                             <div key={index} className="form-check d-flex align-items-center justify-content-between mb-2">
@@ -130,7 +130,7 @@ const CustomerInfo = ({
                         ))}
                     </div>
                 ) : (
-                    <p className="text-danger">Thông tin chưa có, bạn chưa từng đặt hàng</p>
+                    <p className="text-danger">Thông tin chưa có, bạn chưa từng đặt hàng!</p>
                 )}
             </div>
 
@@ -165,7 +165,7 @@ const CustomerInfo = ({
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label">Chọn Địa Chỉ</label>
+                    <label className="form-label">Địa Chỉ</label>
                     <select 
                         className="form-select" 
                         value={selectedAddress || ""} 

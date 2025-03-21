@@ -3,7 +3,6 @@ import axios from "axios";
 import { getCookie } from "../utils/cookie.util";
 import { TOKEN_KEY } from "../constants/authen.constant"
 
-
 const useCartStore = create((set, get) => ({
     cartItems: [],
 
@@ -172,9 +171,6 @@ const useCartStore = create((set, get) => ({
             console.error("Lỗi khi xóa sản phẩm sau thanh toán:", error);
         }
     },
-    
-
-
 }));
 
 export default useCartStore;

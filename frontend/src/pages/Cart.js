@@ -42,15 +42,15 @@ const Cart = () => {
     fetchProductDetails();
   }, [cartItems]); 
 
-  const totalPrice = selectedItems.reduce((sum, itemId) => {
-    const selectedProduct = cartWithProducts.find(item => item._id === itemId);
-    if (!selectedProduct) return sum;
+  const totalPrice = selectedItems.reduce((sum, cartItemId) => {
+      const selectedProduct = cartWithProducts.find(item => item._id === cartItemId);
+      if (!selectedProduct) return sum;
 
-    const price = selectedProduct.product?.price || 0;
-    const discount = selectedProduct.product?.discount || 0;
-    const finalPrice = discount ? (price - (price * discount) / 100) : price;
-    
-    return sum + finalPrice * selectedProduct.quantity;
+      const price = selectedProduct.productId?.data.price || 0;
+      const discount = selectedProduct.productId?.data.discount || 0;
+      const finalPrice = discount ? (price - (price * discount) / 100) : price;
+      
+      return sum + finalPrice * selectedProduct.quantity;
   }, 0);
 
   const handleCheckout = () => {

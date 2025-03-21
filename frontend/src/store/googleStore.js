@@ -13,7 +13,7 @@ const googleStore = create((set) => ({
             return;
         }
 
-        console.log("Lưu user vào Zustand:", userData);
+        //console.log("Lưu user vào Zustand:", userData);
         set({ user: userData, isAuthenticated: true });
 
         // Lưu token vào cookie
