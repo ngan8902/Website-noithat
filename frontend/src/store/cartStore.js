@@ -131,10 +131,9 @@ const useCartStore = create((set, get) => ({
     
     clearPurchasedItems: async (purchasedItems) => {
         try {
-            console.log("Pur: ", purchasedItems)
+            //console.log("Pur: ", purchasedItems)
             const token = getCookie("TOKEN_KEY");
-            console.log("Token hiện tại:", token);
-            console.log("Token từ localStorage:", localStorage.getItem("TOKEN_KEY"));
+            //console.log("Token:", token);
 
             if (token) {
                 try {

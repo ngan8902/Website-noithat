@@ -12,7 +12,7 @@ import { notifyOfCheckout } from "../constants/notify.constant";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { TOKEN_KEY } from "../constants/authen.constant";
-import { Modal, Button } from "react-bootstrap"; // Thêm thư viện Bootstrap Modal
+import { Modal, Button } from "react-bootstrap";
 
 const Checkout = () => {
     const location = useLocation();
@@ -38,6 +38,31 @@ const Checkout = () => {
 
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
+
+    const [finalPrice, setFinalPrice] = useState(0);
+    const [totalPrice, setTotalPrice] = useState(0);
+
+    const calculateFinalPrice = () => {
+        if (!cartData || cartData.length === 0) return 0;
+
+        const totalProductPrice = cartData.reduce((total, item) => {
+            const price = item.productId?.data.price || 0;
+            const discount = item.productId?.data.discount || 0;
+            const finalItemPrice = discount ? price - (price * discount) / 100 : price;
+            return total + (finalItemPrice * item.quantity);
+        }, 0);
+
+        return totalProductPrice;
+    };
+
+    const calculateTotalPrice = () => {
+        return calculateFinalPrice() + shippingFee;
+    };
+
+    useEffect(() => {
+        setFinalPrice(calculateFinalPrice());
+        setTotalPrice(calculateTotalPrice());
+    }, [cartData, shippingFee]);
 
     useEffect(() => {
         const handleUserAddress = () => {
@@ -119,7 +144,7 @@ const Checkout = () => {
 
         const orderData = {
             userId: user ? user._id : null,
-            productId: product?._id || cartData.map((item) => item._id),
+            productId: product?._id || cartData.map((item) => item.productId?._id || item.productId?.data?._id),
             amount: product?quantity : cartData.map((item) => item.quantity),
             orderItems: product
                 ? [{
@@ -131,22 +156,25 @@ const Checkout = () => {
                 }]
                 : cartData.map(item => ({
                     product: item._id,
-                    name: item.name,
-                    image: item.image,
+                    name: item.productId?.data.name,
+                    image: item.productId?.data.image,
                     amount: item.quantity,
-                    price: item.price,
+                    price: item.productId?.data.price,
                 })),
             receiver: {
                 fullname: receiver?.fullname,
                 phone: receiver?.phone,
                 address: newAddress || selectedAddress
             },
-            itemsPrice: product?.price,
-            totalPrice: (product?.price * product?.quantity)+ shippingFee,
+            //itemsPrice: product?.price,
+            shoppingFee: shippingFee,
+            totalPrice: totalPrice,
             paymentMethod: formattedPaymentMethod,
             status: "pending"
         };
         try {
+            console.log("Full order data gửi lên:", orderData);
+
             const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
             await createOrder(orderData, { headers });
             notifyOfCheckout()
@@ -176,10 +204,6 @@ const Checkout = () => {
         }
     };
 
-    const displayProducts = product
-    ? [{ ...product, quantity }] 
-    : cartData;
-
     return (
         <div className="container py-5">
             <h2 className="text-center fw-bold mb-5">Thông Tin Đơn Hàng</h2>
@@ -201,6 +225,8 @@ const Checkout = () => {
                         quantity={quantity}
                         cart={cartData}
                         shippingFee={shippingFee}
+                        finalPrice={finalPrice}
+                        totalPrice={totalPrice}
                     />
                     <PaymentMethod
                         paymentMethod={paymentMethod}
@@ -253,12 +279,18 @@ const Checkout = () => {
                             <p><strong>{item.productId?.data.name}</strong></p>
                             <img src={item.productId?.data.image} alt={item.productId?.data.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
                             <p>Số lượng: {item.quantity}</p>
-                            <p>Giá: {(item.productId?.data.price * item.quantity).toLocaleString()} VND</p>
+                            <p>
+                                Giá: {(
+                                    (item.productId.data.price - 
+                                    (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
+                                    ) * item.quantity
+                                ).toLocaleString()} VND
+                            </p>
                         </div>
                     ))}
 
                     <p><strong>Phí Vận Chuyển:</strong> {shippingFee.toLocaleString()} VND</p>
-                    <p><strong>Tổng Thanh Toán:</strong> {(displayProducts.reduce((total, item) => total + (item.productId?.data.price * item.quantity), 0) + shippingFee).toLocaleString()} VND</p>
+                    <p><strong>Tổng Thanh Toán:</strong> {totalPrice.toLocaleString()} VND</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>

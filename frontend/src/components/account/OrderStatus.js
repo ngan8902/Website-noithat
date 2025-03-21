@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import useOrderStore from "../../store/orderStore";
+import OrderDetailModal from "./OrderModal";
 
 const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
   const { updateOrderStatus, fetchOrders } = useOrderStore();
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const handleUpdateOrder = async (id, status) => {
     try {
@@ -126,6 +129,9 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
                 </td>
                 <td className="text-center">
                   <div className="d-flex justify-content-center gap-2">
+                    <button className="btn btn-info btn-sm me-2" onClick={() => { setSelectedOrder(order); setShowModal(true); }}>
+                      Chi Tiết
+                    </button>
                     {["pending"].includes(order.status) ? (
                       <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}
                         disabled={order.status === "processing"}>
@@ -157,6 +163,8 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
           </tbody>
         </table>
       </div>
+
+      {selectedOrder && <OrderDetailModal order={selectedOrder} show={showModal} handleClose={() => setShowModal(false)} />}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const ProductInfo = ({ product, quantity, cart, shippingFee }) => {
+const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPrice }) => {
     const [cartData, setCartData] = useState(cart || []);
 
     useEffect(() => {
@@ -22,12 +22,19 @@ const ProductInfo = ({ product, quantity, cart, shippingFee }) => {
                         <p><strong>{item.productId?.data.name}</strong></p>
                         <img src={item.productId?.data.image} alt={item.productId?.data.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
                         <p>Số lượng: {item.quantity}</p>
-                        <p>Giá: {(item.productId?.data.price * item.quantity).toLocaleString()} VND</p>
+                        <p>
+                            Giá: {(
+                                (item.productId.data.price - 
+                                (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
+                                ) * item.quantity
+                            ).toLocaleString()} VND
+                        </p>
+
                     </div>
                 ))
             }
             <p><strong>Phí Vận Chuyển:</strong> {shippingFee.toLocaleString()} VND</p>
-            <p><strong>Tổng:</strong> {(displayProducts.reduce((total, item) => total + (item.productId?.data.price * item.quantity), 0) + shippingFee).toLocaleString()} VND</p>
+            <p><strong>Tổng:</strong> {totalPrice.toLocaleString()} VND</p>
         </div>
     );
 };

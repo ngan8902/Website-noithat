@@ -1,21 +1,31 @@
 import React from "react";
+//import useOrderStore from "../../store/orderStore";
 
-const OrderCancelled = ({ orders }) => {
+const OrderCancelled = ({ orders, setOrders }) => {
+  //const { deleteOrder } = useOrderStore();
   const cancelledOrders = orders.filter((order) => order.status === "cancelled" || order.status === "return");
 
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case "pending":
-        return "Chờ xác nhận";
-      case "cancelled":
-        return "Đã hủy";
-      case "return":
-        return "Đã hủy";
-      default:
-        return "Không xác định";
-    }
+  const handleDeleteOrder = async (orderId) => {
+    // try {
+    //   await deleteOrder(orderId);
+    //   setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+    // } catch (error) {
+    //   console.error("Lỗi khi xóa đơn hàng:", error);
+    // }
   };
+
+  // const getStatusLabel = (status) => {
+  //   switch (status) {
+  //     case "pending":
+  //       return "Chờ xác nhận";
+  //     case "cancelled":
+  //       return "Đã hủy";
+  //     case "return":
+  //       return "Đã hủy";
+  //     default:
+  //       return "Không xác định";
+  //   }
+  // };
 
   return (
     <>
@@ -40,7 +50,8 @@ const OrderCancelled = ({ orders }) => {
                 <th>Sản Phẩm</th>
                 <th>Số Lượng</th>
                 <th>Tổng Tiền</th>
-                <th>Trạng Thái</th>
+                {/* <th>Trạng Thái</th> */}
+                <th>Hành Động</th>
               </tr>
             </thead>
 
@@ -77,7 +88,7 @@ const OrderCancelled = ({ orders }) => {
                   <td className="text-danger fw-bold">
                     {Number(order.totalPrice || 0).toLocaleString()} VND
                   </td>
-                  <td>
+                  {/* <td>
                     <span
                       className={`badge ${order.status === "pending" ? "bg-primary" :
                         order.status === "cancelled" ? "bg-danger" : order.status === "return" ? "bg-danger" :
@@ -86,6 +97,11 @@ const OrderCancelled = ({ orders }) => {
                     >
                       {getStatusLabel(order.status)}
                     </span>
+                  </td> */}
+                  <td>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDeleteOrder(order._id)}>
+                      Xóa
+                    </button>
                   </td>
                 </tr>
               ))}
