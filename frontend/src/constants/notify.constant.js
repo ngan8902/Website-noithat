@@ -25,5 +25,6 @@ export const notifyOfCheckout = () => {
       draggable: true,
       progress: undefined,
       theme: "dark",
+      className: "my-toast"
     });
 }

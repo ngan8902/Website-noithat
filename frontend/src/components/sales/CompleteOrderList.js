@@ -9,7 +9,7 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
   const statusMap = {
     "delivered": "Đã hoàn thành",
     "return": "Đã trả hàng"
-};
+  };
 
   useEffect(() => {
     fetchOrders()
@@ -17,23 +17,25 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
 
 
   const filteredOrders = (Array.isArray(orders) ? orders : [])
-  .filter(order => order.status !== "cancelled")
-  .filter(order => {
-    const receiverName = order.receiver?.fullname?.toLowerCase() || "";
-    const receiverPhone = order.receiver?.phone || "";
-    const statusFilter = statusMap[order?.status]?.toLowerCase() || "";
+    .filter(order => order.status !== "cancelled")
+    .filter(order => {
+      const receiverName = order.receiver?.fullname?.toLowerCase() || "";
+      const receiverPhone = order.receiver?.phone || "";
+      const statusFilter = statusMap[order?.status]?.toLowerCase() || "";
+      const orderCodeFilter = order?.orderCode?.toLowerCase() || "";
 
-    const productMatch = order.orderItems.some(item =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+      const productMatch = order.orderItems.some(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
-    return (
-      receiverName.includes(searchTerm.toLowerCase()) ||
-      receiverPhone.includes(searchTerm) ||
-      statusFilter.includes(searchTerm.toLowerCase()) ||
-      productMatch
-    );
-  });
+      return (
+        receiverName.includes(searchTerm.toLowerCase()) ||
+        receiverPhone.includes(searchTerm) ||
+        statusFilter.includes(searchTerm.toLowerCase()) ||
+        orderCodeFilter.includes(searchTerm.toLowerCase()) ||
+        productMatch
+      );
+    });
 
   const statusOrder = [
     "shipped",
@@ -74,9 +76,10 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
             }}
           >
             <tr>
+              <th style={{ width: "11%" }}>Mã Đơn Hàng</th>
               <th style={{ width: "10%" }}>Khách Hàng</th>
               <th style={{ width: "8%" }}>Số Điện Thoại</th>
-              <th style={{ width: "30%" }}>Địa Chỉ</th>
+              <th style={{ width: "20%" }}>Địa Chỉ</th>
               <th style={{ width: "10%" }}>Sản Phẩm</th>
               <th style={{ width: "10%" }}>Tổng Tiền</th>
               <th style={{ width: "10%" }}>Phương Thức Thanh Toán</th>
@@ -100,13 +103,14 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
               {sortedOrders.length > 0 ? (
                 sortedOrders.map((order) => (
                   <tr key={order._id}>
+                    <th style={{ width: "11%" }}>#{order?.orderCode}</th>
                     <td style={{ width: "10%" }}>{order?.receiver?.fullname || "N/A"}</td>
                     <td style={{ width: "8%" }}>{order?.receiver?.phone || "N/A"}</td>
-                    <td style={{ width: "30%" }}>{order?.receiver?.address || "N/A"}</td>
+                    <td style={{ width: "20%" }}>{order?.receiver?.address || "N/A"}</td>
                     <td style={{ width: "10%" }}>{order?.orderItems[0]?.name || "N/A"}</td>
                     <td style={{ width: "10%" }}>{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
                     <td style={{ width: "10%" }}>{order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : order?.paymentMethod}</td>
-                    <td className="text-center">
+                    <td style={{ width: "10%", textAlign: "center", verticalAlign: "middle" }}>
                       <span className={`badge ${order.status === "return_requested" ? "bg-warning text-dark" : order.status === "received" ? "bg-info text-dark" : order.status === "shipped" ? "bg-primary" : order.status === "delivered" ? "bg-success" :
                         order.status === "return" ? "bg-danger" :
                           "bg-danger"
@@ -117,7 +121,7 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
                       </span>
 
                     </td>
-                    <td style={{ width: "12%", textAlign: "center" }}>
+                    <td style={{ width: "12%", textAlign: "center", verticalAlign: "middle"  }}>
                       {["received", "return_requested"].includes(order.status) && (
                         <>
                           {order.status !== "return_requested" && (
