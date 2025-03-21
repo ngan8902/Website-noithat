@@ -9,8 +9,6 @@ const useAuthStore = create((set) => ({
 
     auth: async () => {
         const token = getCookie(TOKEN_KEY);
-        //console.log("Lấy JWT từ cookie:", token);
-
         try {
             const response = await axios.get(
                 `${process.env.REACT_APP_URL_BACKEND}/user/getme`, 
@@ -22,7 +20,6 @@ const useAuthStore = create((set) => ({
                 }
             );
 
-            //console.log("User Data from API:", response.data);
             const { data } = response;
             if (data && data.data) {
                 set({

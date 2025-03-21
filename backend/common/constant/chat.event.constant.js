@@ -8,7 +8,8 @@ const STAFF_EVENTS = {
  recieveMsg: "staff-recieve-msg",
 }
 
+
 module.exports = {
     USER_EVENTS,
-    STAFF_EVENTS
+    STAFF_EVENTS,
 }

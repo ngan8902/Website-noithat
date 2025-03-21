@@ -1,14 +1,41 @@
 import React, { useState, useRef, useEffect } from "react";
 import useAuthStore from "../store/authStore";
+import useAuthAdminStore from "../store/authAdminStore";
 import { SOCKET_URI, USER_EVENTS } from "../constants/chat.constant";
 
 const Chatbox = () => {
   const { isAuthenticated, user } = useAuthStore();
+  const { auth, staff } = useAuthAdminStore();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([{ text: "Tôi có thể giúp gì cho bạn?", sender: "bot" }]);
   const [input, setInput] = useState("");
+  const [userId, setUserId] = useState(null);
   const messagesEndRef = useRef(null);
   const socketIO = useRef(null);
+
+  useEffect(() => {
+    let storedUserId = localStorage.getItem("chatUserId");
+
+    if (isAuthenticated && user?._id) {
+      storedUserId = user._id;
+    } else if (!storedUserId) {
+      storedUserId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+      localStorage.setItem("chatUserId", storedUserId);
+    }
+
+    setUserId(storedUserId);
+  }, [isAuthenticated, user]);
+
+  const fetchStaffInfo = async () => {
+    try {
+      if (!staff) {
+        await auth();
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin nhân viên:", error);
+    }
+  };
+
 
   // Tự động cuộn xuống tin nhắn mới nhất
   useEffect(() => {
@@ -19,7 +46,6 @@ const Chatbox = () => {
     setTimeout(() => {
       socketIO.current = window?.io(SOCKET_URI);
       socketIO.current.on(USER_EVENTS.recieveMsg, (messageObj) => {
-        console.log(`Ms:::`, messageObj);
         setMessages((prev) => [
           ...prev,
           { sender: "bot", text: messageObj.message }
@@ -30,23 +56,41 @@ const Chatbox = () => {
 
   const toggleChatbox = () => {
     setIsOpen(!isOpen);
+    if (!isOpen) fetchStaffInfo();
   };
 
   const sendMessage = () => {
     if (!input.trim()) return;
+    if (!userId) {
+      console.error("Không thể gửi tin nhắn: userId không tồn tại!");
+      return;
+    }
+    if (!staff || !staff?._id) {
+      console.error("Không thể gửi tin nhắn: staff ID không hợp lệ!");
+      return;
+    }
+    if (!socketIO.current) {
+      console.error("Socket chưa khởi tạo!");
+      return;
+    }
 
-    setMessages([...messages, { sender: "user", text: input }]);
+    const isGuest = userId.startsWith("guest_");
 
 
     const messageObj = {
-      from: "user id",
-      to: "chanel id",
+      from: isGuest ? null : userId,
+      fromRole: isGuest ? "Guest" : "User",
+      guestId: isGuest ? localStorage.getItem("guestId") : null,
+      to: staff?._id,
+      toRole: "Staff",
       message: input,
       timestamp: new Date().getTime()
     }
-    socketIO.current.emit(USER_EVENTS.sendMsg, messageObj);
 
+    setMessages([...messages, { sender: "user", text: input }]);
+    socketIO.current.emit(USER_EVENTS.sendMsg, messageObj);
     setInput("");
+
     // Trả lời tự động sau 1s (mô phỏng chatbot đơn giản)
     // setTimeout(() => {
     //   setMessages((prev) => [
