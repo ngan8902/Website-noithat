@@ -13,7 +13,6 @@ const generateOrderCode = () => {
 const createOrder = async (userId, productIds, validAmount, receiver, status, paymentMethod, totalPrice) => {
     try {
         const products = await Product.find({ _id: { $in: productIds } });
-        console.log("San Pham: ", products)
 
         if (!products || products.length === 0) {
             return {
