@@ -16,6 +16,7 @@ import { Modal, Button } from "react-bootstrap";
 
 const Checkout = () => {
     const location = useLocation();
+    
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const { user } = useAuthStore();
@@ -42,12 +43,16 @@ const Checkout = () => {
     const [finalPrice, setFinalPrice] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
 
-    const calculateFinalPrice = () => {
-        if (!cartData || cartData.length === 0) return 0;
+    const displayProducts = product
+    ? [{ ...product, quantity }] 
+    : cartData;
 
-        const totalProductPrice = cartData.reduce((total, item) => {
-            const price = item.productId?.data.price || 0;
-            const discount = item.productId?.data.discount || 0;
+    const calculateFinalPrice = () => {
+        if (!displayProducts || displayProducts.length === 0) return 0;
+
+        const totalProductPrice = displayProducts.reduce((total, item) => {
+            const price = item.productId?.data?.price || item.price || 0;
+            const discount = item.productId?.data?.discount || item.discount || 0;
             const finalItemPrice = discount ? price - (price * discount) / 100 : price;
             return total + (finalItemPrice * item.quantity);
         }, 0);
@@ -166,7 +171,7 @@ const Checkout = () => {
                 phone: receiver?.phone,
                 address: newAddress || selectedAddress
             },
-            //itemsPrice: product?.price,
+            itemsPrice: product?.price,
             shoppingFee: shippingFee,
             totalPrice: totalPrice,
             paymentMethod: formattedPaymentMethod,
@@ -274,21 +279,27 @@ const Checkout = () => {
                     <p><strong>Ngày giao dự kiến:</strong> {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
                     
                     <h5 className="fw-bold mt-3">Sản phẩm:</h5>
-                    {cartData.map((item, index) => (
-                        <div key={index} className="border p-2 mb-2">
-                            <p><strong>{item.productId?.data.name}</strong></p>
-                            <img src={item.productId?.data.image} alt={item.productId?.data.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
-                            <p>Số lượng: {item.quantity}</p>
-                            <p>
-                                Giá: {(
-                                    (item.productId.data.price - 
-                                    (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
-                                    ) * item.quantity
-                                ).toLocaleString()} VND
-                            </p>
-                        </div>
-                    ))}
-
+                    {
+                        displayProducts.map((item, index) => (
+                            <div key={index} className="border p-2 mb-2">
+                                <p><strong>{item.productId?.data?.name || item.name}</strong></p>
+                                <img 
+                                    src={item.productId?.data?.image || item.image} 
+                                    alt={item.productId?.data?.name || item.name} 
+                                    className="img-fluid rounded mb-2" 
+                                    style={{ width: "100px" }} 
+                                />
+                                <p>Số lượng: {item.quantity}</p>
+                                <p>
+                                    Giá: {(
+                                        ((item.productId?.data?.price || item.price) - 
+                                        ((item.productId?.data?.discount || item.discount) ? ((item.productId?.data?.price || item.price) * (item.productId?.data?.discount || item.discount) / 100) : 0)) 
+                                        * item.quantity
+                                    ).toLocaleString()} VND
+                                </p>
+                            </div>
+                        ))
+                    }
                     <p><strong>Phí Vận Chuyển:</strong> {shippingFee.toLocaleString()} VND</p>
                     <p><strong>Tổng Thanh Toán:</strong> {totalPrice.toLocaleString()} VND</p>
                 </Modal.Body>

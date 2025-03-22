@@ -52,7 +52,7 @@ const createOrder = async (userId, productIds, validAmount, receiver, status, pa
             product: product._id,
         }));
 
-        //const itemsPrice = orderItems.reduce((sum, item) => sum + item.price * item.amount, 0);
+        const itemsPrice = orderItems.reduce((sum, item) => sum + item.price * item.amount, 0);
         //const totalPrice = itemsPrice;
 
         const orderCode = generateOrderCode();
@@ -64,7 +64,7 @@ const createOrder = async (userId, productIds, validAmount, receiver, status, pa
             orderItems,
             receiver: receiverInfor._id,
             paymentMethod,
-            //itemsPrice,
+            itemsPrice,
             totalPrice,
             status,
             user: user ? user._id : null

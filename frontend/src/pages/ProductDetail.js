@@ -41,20 +41,22 @@ const ProductDetail = () => {
     };
 
     const handleBuyNow = () => {
-        navigate("/checkout", {
-            state: { 
-                product: { 
-                    _id: product._id, 
-                    name: product.name, 
-                    price: product.price, 
-                    discount: product.discount, 
-                    image: product.image, 
-                    countInStock: product.countInStock 
-                }, 
-                quantity 
-            }
-        });
-    };
+    console.log("Pro : ", product)
+
+    navigate("/checkout", {
+        state: { 
+            product: { 
+                _id: product._id, 
+                name: product.name, 
+                price: product.price, 
+                discount: product.discount, 
+                image: product.image, 
+                countInStock: product.countInStock 
+            }, 
+            quantity 
+        }
+    });
+};
     
 
     const addToCart = () => {
