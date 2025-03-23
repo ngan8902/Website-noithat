@@ -27,13 +27,36 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPr
                                 className="img-fluid rounded mb-2" 
                                 style={{ width: "100px" }} 
                             />
-                            <p>Số lượng: {item.quantity}</p>
                             <p>
-                                Giá: {(
-                                    ((item.productId?.data?.price || item.price) - 
-                                    ((item.productId?.data?.discount || item.discount) ? ((item.productId?.data?.price || item.price) * (item.productId?.data?.discount || item.discount) / 100) : 0)) 
-                                    * item.quantity
-                                ).toLocaleString()} VND
+                                Số lượng: 
+                                <span style={{ fontWeight: "bold" }}>
+                                    {item.quantity}
+                                </span>
+                            </p>
+                            <p>
+                                {item.productId?.data?.discount || item.discount ? (
+                                    <>
+                                        Giá: 
+                                        <span style={{ textDecoration: "line-through", color: "red" }}>
+                                            {(item.productId?.data?.price || item.price).toLocaleString()} VND
+                                        </span>
+                                        {" "} ➝{" "}
+                                        <span style={{ fontWeight: "bold" }}>
+                                            {(
+                                                (item.productId?.data?.price || item.price) - 
+                                                ((item.productId?.data?.price || item.price) * (item.productId?.data?.discount || item.discount) / 100)
+                                            ).toLocaleString()} VND
+                                        </span>
+                                        {" "} (đã giảm {item.productId?.data?.discount || item.discount}%)
+                                    </>
+                                ) : (
+                                    <> 
+                                    Giá: 
+                                        <span style={{ fontWeight: "bold" }}>
+                                            {(item.productId?.data?.price || item.price).toLocaleString()} VND
+                                        </span>
+                                    </>
+                                )}
                             </p>
                         </div>
                     ))

@@ -117,11 +117,21 @@ const Checkout = () => {
     const calculateShippingFee = (address) => {
         if (!address) return 0;
         const lowerAddress = address.toLowerCase();
+
+        if (lowerAddress.includes("gò vấp")) return 20000;
         if (lowerAddress.includes("hồ chí minh")) return 50000;
-        if (lowerAddress.includes("long an")) return 80000;
-        if (lowerAddress.includes("hà nội")) return 200000;
-        return 100000;
-    }
+
+        // Vùng I: Các tỉnh miền Nam từ Bình Định trở vào
+        const regionI = ["bình định", "đồng nai", "bình dương", "cần thơ", "vũng tàu", "long an"];
+        if (regionI.some(province => lowerAddress.includes(province))) return 80000;
+
+        // Vùng II: Từ Quảng Ngãi ra Quảng Bình
+        const regionII = ["quảng ngãi", "quảng nam", "huế", "quảng trị", "quảng bình"];
+        if (regionII.some(province => lowerAddress.includes(province))) return 150000;
+
+        // Vùng III: Miền Bắc từ Hà Tĩnh trở ra
+        return 200000;
+    };
 
     if (!product && (!cartData || cartData.length === 0)) {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
@@ -291,11 +301,30 @@ const Checkout = () => {
                                 />
                                 <p>Số lượng: {item.quantity}</p>
                                 <p>
-                                    Giá: {(
-                                        ((item.productId?.data?.price || item.price) - 
-                                        ((item.productId?.data?.discount || item.discount) ? ((item.productId?.data?.price || item.price) * (item.productId?.data?.discount || item.discount) / 100) : 0)) 
-                                        * item.quantity
-                                    ).toLocaleString()} VND
+                                    {item.productId?.data?.discount || item.discount ? (
+                                        <>
+                                            Giá: 
+                                            <span style={{ textDecoration: "line-through", color: "red" }}>
+                                                {((item.productId?.data?.price || item.price) * item.quantity).toLocaleString()} VND
+                                            </span>
+                                            {" "} ➝{" "}
+                                            <span>
+                                                {(
+                                                    ((item.productId?.data?.price || item.price) - 
+                                                    ((item.productId?.data?.price || item.price) * (item.productId?.data?.discount || item.discount) / 100)) 
+                                                    * item.quantity
+                                                ).toLocaleString()} VND
+                                            </span>
+                                            {" "} (đã giảm {item.productId?.data?.discount || item.discount}%)
+                                        </>
+                                    ) : (
+                                        <>
+                                            Giá: 
+                                            <span>
+                                                {((item.productId?.data?.price || item.price) * item.quantity).toLocaleString()} VND
+                                            </span>
+                                        </>
+                                    )}
                                 </p>
                             </div>
                         ))

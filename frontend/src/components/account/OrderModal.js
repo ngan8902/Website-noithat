@@ -31,11 +31,11 @@ const OrderDetailModal = ({ order, show, handleClose }) => {
       </Modal.Header>
       <Modal.Body>
         <h5 className="fw-bold text-center mt-3">Thông Tin Khách Hàng</h5>
-        <p><strong>Tên khách hàng:</strong> {order.customerName || "Không có dữ liệu"}</p>
-        <p><strong>Số điện thoại:</strong> {order.phoneNumber || "Không có dữ liệu"}</p>
+        <p><strong>Tên khách hàng:</strong> {order.fullname || "Không có dữ liệu"}</p>
+        <p><strong>Số điện thoại:</strong> {order.phone || "Không có dữ liệu"}</p>
         <p><strong>Địa chỉ giao hàng:</strong> {order.address || "Không có dữ liệu"}</p>
         <p><strong>Ngày đặt hàng:</strong> {order.orderDate ? new Date(order.orderDate).toLocaleString() : "Không có dữ liệu"}</p>
-        <p><strong>Ngày giao dự kiến:</strong> {order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleString() : "Không có dữ liệu"}</p>
+        <p><strong>Ngày giao dự kiến:</strong> {order.orderDelivery ? new Date(order.orderDelivery).toLocaleString() : "Không có dữ liệu"}</p>
 
         <h5 className="fw-bold mt-3 text-center">Thông Tin Đơn Hàng</h5>
         <p><strong>Phương thức thanh toán:</strong> {getOrderLabel(order.paymentMethod)}</p>
