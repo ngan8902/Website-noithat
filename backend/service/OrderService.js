@@ -10,7 +10,7 @@ const generateOrderCode = () => {
     return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
 };
 
-const createOrder = async (userId, productIds, discount, validAmount, receiver, status,shoppingFee, paymentMethod, totalPrice, orderDate, delivered) => {
+const createOrder = async (userId, productIds, discount, validAmount, receiver, status,shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock) => {
     try {
         const products = await Product.find({ _id: { $in: productIds } });
 
@@ -51,6 +51,22 @@ const createOrder = async (userId, productIds, discount, validAmount, receiver, 
             discount: product.discount,
             product: product._id,
         }));
+
+        for (const item of orderItems) {
+            const product = await Product.findById(item.product);
+            if (!product) {
+                return res.status(404).json({ message: `Sản phẩm không tồn tại: ${item.name}` });
+            }
+    
+            if (product.countInStock < item.amount) {
+                return res.status(400).json({
+                    message: `Sản phẩm ${item.name} chỉ còn ${product.countInStock} trong kho`,
+                });
+            }
+    
+            product.countInStock -= item.amount;
+            await product.save();
+        }
 
         const itemsPrice = orderItems.reduce((sum, item) => {
             const itemTotal = item.price * item.amount;

@@ -11,6 +11,7 @@ const orderSchema = new mongoose.Schema(
                 image: { type: String, required: true },
                 price: { type: Number, required: true },
                 discount: { type: Number, required: false },
+                countInStock: { type: Number, required: false },
                 product: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "Product",

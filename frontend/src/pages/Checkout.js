@@ -109,8 +109,6 @@ const Checkout = () => {
         }
     }, [cartItems, selectedProducts]);
 
-    console.log(cartItems)
-
     useEffect(() => {
         setShippingFee(calculateShippingFee(selectedAddress || newAddress));
     }, [selectedAddress, newAddress]);
@@ -132,8 +130,6 @@ const Checkout = () => {
     const orderDate = new Date().toLocaleDateString("vi-VN")
 
     const delivered = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("vi-VN")
-
-    console.log(product)
 
     const handleCheckout = async () => {
         setShowConfirmModal(false);
@@ -170,11 +166,11 @@ const Checkout = () => {
                 }]
                 : cartData.map(item => ({
                     product: item._id,
-                    name: item.productId?.data.name,
-                    image: item.productId?.data.image,
+                    name: item.productId?.data?.name,
+                    image: item.productId?.data?.image,
                     amount: item.quantity,
-                    price: item.productId?.data.price,
-                    discount: item.productId?.data.discount
+                    price: item.productId?.data?.price,
+                    discount: item.productId?.data?.discount
                 })),
             receiver: {
                 fullname: receiver?.fullname,
@@ -190,8 +186,6 @@ const Checkout = () => {
             delivered: delivered
         };
         try {
-            console.log("Full order data gửi lên:", orderData);
-
             const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
             await createOrder(orderData, { headers });
             notifyOfCheckout()
@@ -283,8 +277,8 @@ const Checkout = () => {
                     <Modal.Title>Xác Nhận Đơn Hàng</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p><strong>Tên khách hàng:</strong> {receiver.fullname || user?.name}</p>
-                    <p><strong>Số điện thoại:</strong> {receiver.phone || user?.phone}</p>
+                    <p><strong>Tên khách hàng:</strong> {receiver?.fullname || user?.name}</p>
+                    <p><strong>Số điện thoại:</strong> {receiver?.phone || user?.phone}</p>
                     <p><strong>Địa chỉ giao hàng:</strong> {selectedAddress || newAddress}</p>
                     <p><strong>Phương thức thanh toán:</strong> {paymentMethod}</p>
                     <p><strong>Ngày đặt hàng:</strong> {orderDate}</p>
@@ -293,13 +287,13 @@ const Checkout = () => {
                     <h5 className="fw-bold mt-3">Sản phẩm:</h5>
                     {cartData.map((item, index) => (
                         <div key={index} className="border p-2 mb-2">
-                            <p><strong>{item.productId?.data.name}</strong></p>
-                            <img src={item.productId?.data.image} alt={item.productId?.data.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
+                            <p><strong>{item.productId?.data?.name}</strong></p>
+                            <img src={item.productId?.data?.image} alt={item.productId?.data?.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
                             <p>Số lượng: {item.quantity}</p>
                             <p>
                                 Giá: {(
                                     (item.productId.data.price -
-                                        (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
+                                        (item.productId?.data?.discount ? (item.productId?.data?.price * item.productId?.data?.discount) / 100 : 0)
                                     ) * item.quantity
                                 ).toLocaleString()} VND
                             </p>
