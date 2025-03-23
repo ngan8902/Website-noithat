@@ -16,6 +16,7 @@ import { Modal, Button } from "react-bootstrap";
 
 const Checkout = () => {
     const location = useLocation();
+    
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const { user } = useAuthStore();
@@ -42,15 +43,12 @@ const Checkout = () => {
     const [finalPrice, setFinalPrice] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
 
-
-
-
     const calculateFinalPrice = () => {
-        if (!cartData || cartData.length === 0) return 0;
+        if (!displayProducts || displayProducts.length === 0) return 0;
 
-        const totalProductPrice = cartData.reduce((total, item) => {
-            const price = item.productId?.data.price || 0;
-            const discount = item.productId?.data.discount || 0;
+        const totalProductPrice = displayProducts.reduce((total, item) => {
+            const price = item.productId?.data?.price || item.price || 0;
+            const discount = item.productId?.data?.discount || item.discount || 0;
             const finalItemPrice = discount ? price - (price * discount) / 100 : price;
             return total + (finalItemPrice * item.quantity);
         }, 0);
@@ -179,7 +177,7 @@ const Checkout = () => {
                 phone: receiver?.phone,
                 address: newAddress || selectedAddress
             },
-            //itemsPrice: product?.price,
+            itemsPrice: product?.price,
             shoppingFee: shippingFee,
             totalPrice: totalPrice,
             paymentMethod: formattedPaymentMethod,
@@ -291,13 +289,13 @@ const Checkout = () => {
                     <h5 className="fw-bold mt-3">Sản phẩm:</h5>
                     {cartData.map((item, index) => (
                         <div key={index} className="border p-2 mb-2">
-                            <p><strong>{item.productId?.data?.name}</strong></p>
-                            <img src={item.productId?.data?.image} alt={item.productId?.data?.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
+                            <p><strong>{item.productId?.data.name}</strong></p>
+                            <img src={item.productId?.data.image} alt={item.productId?.data.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
                             <p>Số lượng: {item.quantity}</p>
                             <p>
                                 Giá: {(
-                                    (item.productId?.data?.price -
-                                        (item.productId?.data?.discount ? (item.productId?.data?.price * item.productId?.data?.discount) / 100 : 0)
+                                    (item.productId.data.price - 
+                                    (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
                                     ) * item.quantity
                                 ).toLocaleString()} VND
                             </p>
