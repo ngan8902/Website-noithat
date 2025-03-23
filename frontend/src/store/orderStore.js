@@ -6,13 +6,67 @@ import { TOKEN_KEY } from "../constants/authen.constant";
 const useOrderStore = create((set) => ({
     order: null,
     orders: [],
+    receivers: {},
 
     fetchOrders: async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/order/get-all-orders`);
-            set({ orders: response.data.data || [] });
+            let orders = response.data.data || [];
+
+            // Lọc danh sách receiver ID cần lấy
+            const receiverIds = [...new Set(orders
+                .filter(order => typeof order.receiver === "string")
+                .map(order => order.receiver))];
+
+            if (receiverIds.length > 0) {
+                try {
+                    // Gửi 1 request để lấy tất cả receivers
+                    const receiverRes = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/get-multiple-receivers`, {
+                        receiverIds
+                    });
+
+                    const receiverMap = receiverRes.data.reduce((acc, receiver) => {
+                        acc[receiver._id] = receiver;
+                        return acc;
+                    }, {});
+
+                    set({ receivers: receiverMap });
+
+                    // Gán thông tin receiver vào orders
+                    orders = orders.map(order => ({
+                        ...order,
+                        receiver: receiverMap[order.receiver] || order.receiver
+                    }));
+                } catch (error) {
+                    console.error("Lỗi lấy danh sách receiver:", error);
+                }
+            }
+
+            set({ orders });
+
         } catch (error) {
+            console.error("Lỗi khi lấy đơn hàng:", error);
             set({ error: error.message });
+        }
+    },
+
+    getReceiver: async (receiverId) => {
+        const { receivers } = useOrderStore.getState();
+
+        if (receivers[receiverId]) {
+            return receivers[receiverId]; 
+        }
+
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-receiver/${receiverId}`);
+            set((state) => ({
+                receivers: { ...state.receivers, [receiverId]: response.data }
+            }));
+
+            return response.data;
+        } catch (error) {
+            console.error("Lỗi khi lấy receiver:", error);
+            return null;
         }
     },
 
@@ -83,7 +137,7 @@ const useOrderStore = create((set) => ({
             const response = await axios.put(`${process.env.REACT_APP_URL_BACKEND}/order/update-order-status/${orderId}`,
                 { status: newStatus });
 
-            if(response.data.status !== "OK") {
+            if (response.data.status !== "OK") {
                 throw new Error("Cập nhật thất bại!");
             }
         } catch (error) {

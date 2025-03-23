@@ -10,6 +10,7 @@ const orderSchema = new mongoose.Schema(
                 amount: { type: [Number], required: true },
                 image: { type: String, required: true },
                 price: { type: Number, required: true },
+                discount: { type: Number, required: false },
                 product: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "Product",
@@ -22,18 +23,20 @@ const orderSchema = new mongoose.Schema(
             ref: "ReceiverInfo",
             required: true,
         },
-        paymentMethod: { 
-            type: String, 
+        paymentMethod: {
+            type: String,
             enum: ["COD", "VnPay"],
-            required: true 
+            required: true
         },
-        itemsPrice: { type: String, required: true },
+        itemsPrice: { type: String, required: false },
         totalPrice: { type: String, required: true },
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
         isPaid: { type: Boolean, default: false },
         paidAt: { type: Date },
+        orderDate: { type: String },
         isDelivered: { type: Boolean, default: false },
-        deliveredAt: { type: Date },
+        delivered: { type: String },
+        shoppingFee: {type: Number, default: 0},
         status: {
             type: String,
             enum: ["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested"],

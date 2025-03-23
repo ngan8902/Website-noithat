@@ -16,7 +16,7 @@ import { Modal, Button } from "react-bootstrap";
 
 const Checkout = () => {
     const location = useLocation();
-    
+
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const { user } = useAuthStore();
@@ -44,8 +44,8 @@ const Checkout = () => {
     const [totalPrice, setTotalPrice] = useState(0);
 
     const displayProducts = product
-    ? [{ ...product, quantity }] 
-    : cartData;
+        ? [{ ...product, quantity }]
+        : cartData;
 
     const calculateFinalPrice = () => {
         if (!displayProducts || displayProducts.length === 0) return 0;
@@ -109,6 +109,8 @@ const Checkout = () => {
         }
     }, [cartItems, selectedProducts]);
 
+    console.log(cartItems)
+
     useEffect(() => {
         setShippingFee(calculateShippingFee(selectedAddress || newAddress));
     }, [selectedAddress, newAddress]);
@@ -137,6 +139,12 @@ const Checkout = () => {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
     }
 
+    const orderDate = new Date().toLocaleDateString("vi-VN")
+
+    const delivered = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("vi-VN")
+
+    console.log(product)
+
     const handleCheckout = async () => {
         setShowConfirmModal(false);
 
@@ -160,7 +168,7 @@ const Checkout = () => {
         const orderData = {
             userId: user ? user._id : null,
             productId: product?._id || cartData.map((item) => item.productId?._id || item.productId?.data?._id),
-            amount: product?quantity : cartData.map((item) => item.quantity),
+            amount: product ? quantity : cartData.map((item) => item.quantity),
             orderItems: product
                 ? [{
                     product: product._id,
@@ -168,6 +176,7 @@ const Checkout = () => {
                     image: product.image,
                     amount: quantity,
                     price: product.price,
+                    discount: product.discount
                 }]
                 : cartData.map(item => ({
                     product: item._id,
@@ -175,6 +184,7 @@ const Checkout = () => {
                     image: item.productId?.data.image,
                     amount: item.quantity,
                     price: item.productId?.data.price,
+                    discount: item.productId?.data.discount
                 })),
             receiver: {
                 fullname: receiver?.fullname,
@@ -185,7 +195,9 @@ const Checkout = () => {
             shoppingFee: shippingFee,
             totalPrice: totalPrice,
             paymentMethod: formattedPaymentMethod,
-            status: "pending"
+            status: "pending",
+            orderDate: orderDate,
+            delivered: delivered
         };
         try {
             console.log("Full order data gửi lên:", orderData);
@@ -285,10 +297,11 @@ const Checkout = () => {
                     <p><strong>Số điện thoại:</strong> {receiver.phone || user?.phone}</p>
                     <p><strong>Địa chỉ giao hàng:</strong> {selectedAddress || newAddress}</p>
                     <p><strong>Phương thức thanh toán:</strong> {paymentMethod}</p>
-                    <p><strong>Ngày đặt hàng:</strong> {new Date().toLocaleDateString()}</p>
-                    <p><strong>Ngày giao dự kiến:</strong> {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
-                    
+                    <p><strong>Ngày đặt hàng:</strong> {orderDate}</p>
+                    <p><strong>Ngày giao dự kiến:</strong> {delivered}</p>
+
                     <h5 className="fw-bold mt-3">Sản phẩm:</h5>
+<<<<<<< HEAD
                     {
                         displayProducts.map((item, index) => (
                             <div key={index} className="border p-2 mb-2">
@@ -329,6 +342,23 @@ const Checkout = () => {
                             </div>
                         ))
                     }
+=======
+                    {cartData.map((item, index) => (
+                        <div key={index} className="border p-2 mb-2">
+                            <p><strong>{item.productId?.data.name}</strong></p>
+                            <img src={item.productId?.data.image} alt={item.productId?.data.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
+                            <p>Số lượng: {item.quantity}</p>
+                            <p>
+                                Giá: {(
+                                    (item.productId.data.price -
+                                        (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
+                                    ) * item.quantity
+                                ).toLocaleString()} VND
+                            </p>
+                        </div>
+                    ))}
+
+>>>>>>> 181f265796a2ca2c9ecc7a1f705cc270af3f7765
                     <p><strong>Phí Vận Chuyển:</strong> {shippingFee.toLocaleString()} VND</p>
                     <p><strong>Tổng Thanh Toán:</strong> {totalPrice.toLocaleString()} VND</p>
                 </Modal.Body>
@@ -342,7 +372,7 @@ const Checkout = () => {
                 </Modal.Footer>
             </Modal>
         </div>
-        );
+    );
 };
 
 export default Checkout;

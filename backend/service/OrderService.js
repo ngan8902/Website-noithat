@@ -10,7 +10,7 @@ const generateOrderCode = () => {
     return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
 };
 
-const createOrder = async (userId, productIds, validAmount, receiver, status, paymentMethod, totalPrice) => {
+const createOrder = async (userId, productIds, discount, validAmount, receiver, status,shoppingFee, paymentMethod, totalPrice, orderDate, delivered) => {
     try {
         const products = await Product.find({ _id: { $in: productIds } });
 
@@ -48,11 +48,16 @@ const createOrder = async (userId, productIds, validAmount, receiver, status, pa
             amount: validAmount[index],
             image: product.image,
             price: product.price,
+            discount: product.discount,
             product: product._id,
         }));
 
-        const itemsPrice = orderItems.reduce((sum, item) => sum + item.price * item.amount, 0);
-        //const totalPrice = itemsPrice;
+        const itemsPrice = orderItems.reduce((sum, item) => {
+            const itemTotal = item.price * item.amount;
+            const discount = item.discount ? itemTotal * (item.discount / 100) : 0;
+            return sum + (itemTotal - discount);
+        }, 0);
+        const totalPrice = itemsPrice;
 
         const orderCode = generateOrderCode();
 
@@ -65,6 +70,9 @@ const createOrder = async (userId, productIds, validAmount, receiver, status, pa
             paymentMethod,
             itemsPrice,
             totalPrice,
+            orderDate,
+            delivered,
+            shoppingFee,
             status,
             user: user ? user._id : null
         };
