@@ -16,7 +16,7 @@ import { Modal, Button } from "react-bootstrap";
 
 const Checkout = () => {
     const location = useLocation();
-    
+
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const { user } = useAuthStore();
@@ -42,6 +42,10 @@ const Checkout = () => {
 
     const [finalPrice, setFinalPrice] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
+
+    const displayProducts = product
+        ? [{ ...product, quantity }]
+        : cartData;
 
     const calculateFinalPrice = () => {
         if (!displayProducts || displayProducts.length === 0) return 0;
@@ -125,7 +129,7 @@ const Checkout = () => {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
     }
 
-    const orderDate = new Date().toLocaleDateString("vi-VN") 
+    const orderDate = new Date().toLocaleDateString("vi-VN")
 
     const delivered = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("vi-VN")
 
@@ -294,8 +298,8 @@ const Checkout = () => {
                             <p>Số lượng: {item.quantity}</p>
                             <p>
                                 Giá: {(
-                                    (item.productId.data.price - 
-                                    (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
+                                    (item.productId.data.price -
+                                        (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
                                     ) * item.quantity
                                 ).toLocaleString()} VND
                             </p>
