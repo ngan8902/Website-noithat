@@ -23,7 +23,7 @@ const Footer = () => {
         {/* Contact Information */}
         <p className="mb-1"> <i className="bi bi-geo-alt-fill me-2"></i>Địa chỉ: 123 Đường ABC, Quận 1, TP. Hồ Chí Minh</p>
         <p className="mb-1"> <i className="bi bi-telephone-fill me-2"></i>Số điện thoại: 0123 456 789</p>
-        <p className="mb-2"> <i className="bi bi-bi-envelope-fill me-2"></i>📧 Email: info@furniture.com</p>
+        <p className="mb-2"> <i className="bi bi-bi-envelope-fill me-2"></i>📧 Email: furniture112025@gmail.com</p>
 
         {/* Đường dẫn nhanh */}
         <div className="mt-3">

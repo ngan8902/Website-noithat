@@ -17,6 +17,7 @@ import Resource from "../pages/Resource";
 import ProductType from "../pages/ProductType";
 import Chat from "../pages/Chat";
 import SearchResults from "../pages/SearchResults";
+import ForgotPassword from "../pages/ForgotPassword";
 
 export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
@@ -30,7 +31,8 @@ export const publicRoute = [
   { path: "*", element: <NotFound /> },
   { path: "/account", element: <Account />, isShow: true },
   { path: "/product-type/:id", element: <ProductType />, isShow: true },
-  { path: "/search", element: <SearchResults />, isShow: true}
+  { path: "/search", element: <SearchResults />, isShow: true},
+  { path: "/forgot-password", element: <ForgotPassword /> }
 ]
 
 export const privateRoute = [

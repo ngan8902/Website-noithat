@@ -26,7 +26,7 @@ function App() {
 const AppRoutes = ({ products }) => {
   const location = useLocation();
 
-  const isPublicRoute = !location.pathname.startsWith("/admin");
+  const isPublicRoute = !location.pathname.startsWith("/admin") && !location.pathname.startsWith("/forgot-password");
 
   return (
     <div className="bg-gray-100 text-gray-900">

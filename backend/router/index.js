@@ -8,7 +8,7 @@ const ChatRouter = require('./ChatRouter')
 const ReciverInfoRouter = require('./ReciverInfoRouter')
 const CartRoute = require('./CartRoute')
 const GoogleRoute = require('./GoogleRoute')
-
+const ForgotRoute = require('./ForgotRoute') 
 
 const routers = (app) => {
     app.use('/api/staff', StaffRouter)
@@ -21,6 +21,7 @@ const routers = (app) => {
     app.use('/api/address', ReciverInfoRouter)
     app.use('/api/cart', CartRoute)
     app.use('/api/auth', GoogleRoute)
+    app.use('/api/auth', ForgotRoute)
 }
 
 module.exports = routers;
