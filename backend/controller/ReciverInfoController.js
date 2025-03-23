@@ -54,10 +54,28 @@ const setDefaultAddress = async (req, res) => {
             error: error.message
         });
     }
-};
+}
+
+const getReceiverById = async (req, res) => {
+    try {
+        const { receiverId } = req.params;
+        const receiver = await ReciverInfoService.getReceiverById(receiverId);
+        if (!receiver) {
+            return res.status(404).json({ message: "Receiver not found" });
+        }
+        res.json(receiver);
+    } catch (error) {
+        return res.status(500).json({
+            status: "ERR",
+            message: "Lỗi server",
+            error: error.message
+        });
+    }
+}
 
 module.exports = {
     saveNewAddress,
     getAddress,
-    setDefaultAddress
+    setDefaultAddress,
+    getReceiverById
 }

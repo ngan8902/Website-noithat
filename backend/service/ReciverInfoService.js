@@ -71,8 +71,30 @@ const setDefaultAddress = (userId) => {
     })
 }
 
+const getReceiverById = (receiverId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+           const receiver = await ReceiverInfo.findById(receiverId);
+            resolve({
+                status: "OK",
+                message: "Lấy địa chỉ thành công",
+                data: receiver
+            })
+        } catch (error) {
+            reject({
+                status: "ERR",
+                message: "Lỗi khi lấy địa chỉ ",
+                error: error.message
+            })
+        }
+    })
+}
+
+
+
 module.exports = {
     saveNewAddress,
     getAddress,
-    setDefaultAddress
+    setDefaultAddress,
+    getReceiverById
 }

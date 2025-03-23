@@ -47,7 +47,7 @@ const ProductDetail = () => {
                     _id: product._id, 
                     name: product.name, 
                     price: product.price, 
-                    discount: product.discount, 
+                    discount: product.discount || 0, 
                     image: product.image, 
                     countInStock: product.countInStock 
                 }, 

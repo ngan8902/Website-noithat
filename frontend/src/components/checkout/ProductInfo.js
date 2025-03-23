@@ -20,13 +20,13 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPr
             {
                 displayProducts.map((item, index) => (
                     <div key={index} className="border p-2 mb-2">
-                        <p><strong>{item.productId?.data.name || item.name}</strong></p>
-                        <img src={item.productId?.data.image || item.image} alt={item.productId?.data.name || item.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
+                        <p><strong>{item.productId?.data?.name || item.name}</strong></p>
+                        <img src={item.productId?.data?.image || item.image} alt={item.productId?.data?.name || item.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
                         <p>Số lượng: {item.quantity}</p>
                         <p>
                             Giá: {(
-                                (item.productId?.data.price || item.price - 
-                                ((item.productId?.data.discount) || (item.discount) ? (item.productId.data.price || item.price * item.productId.data.discount || item.discount) / 100 : 0)
+                                (item.productId?.data?.price || item.price - 
+                                ((item.productId?.data?.discount) || (item.discount) ? (item.productId?.data?.price || item.price * item.productId?.data?.discount || item.discount) / 100 : 0)
                                 ) * item.quantity
                             ).toLocaleString()} VND
                         </p>
