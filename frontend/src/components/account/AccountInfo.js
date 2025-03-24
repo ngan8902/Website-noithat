@@ -12,6 +12,8 @@ const AccountInfo = () => {
   const [avatar, setAvatar] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);  
 
   const [formData, setFormData] = useState({
     name: '',
@@ -298,7 +300,7 @@ const AccountInfo = () => {
                 <div className="input-group">
                   <input
                     className="form-control"
-                    type={showPassword ? "text" : "password"}
+                    type={showNewPassword ? "text" : "password"}
                     placeholder="Nhập mật khẩu mới"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}                  
@@ -306,9 +308,9 @@ const AccountInfo = () => {
                   <span
                     className="input-group-text"
                     style={{ cursor: "pointer" }}
-                    onClick={() => setShowPassword(!showPassword)}
+                    onClick={() => setShowNewPassword(!showNewPassword)}
                   >
-                    {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                    {showNewPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
                   </span>
                 </div>
               </div>
@@ -319,7 +321,7 @@ const AccountInfo = () => {
                   <div className="input-group"> 
                     <input
                       className="form-control"
-                      type={showPassword ? "text" : "password"}
+                      type={showConfirmPassword ? "text" : "password"}
                       placeholder="Nhập lại mật khẩu"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
@@ -327,9 +329,9 @@ const AccountInfo = () => {
                     <span
                       className="input-group-text"
                       style={{ cursor: "pointer" }}
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     >
-                      {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                      {showConfirmPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
                     </span>
                   </div>
                 </div>

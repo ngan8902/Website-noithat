@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AddressSelector from "../AddressSelector";
 
-const key = "BGHUSY73645";
+//const key = "BGHUSY73645";
 
 const CustomerInfo = ({
     hasAddress,
@@ -14,11 +14,8 @@ const CustomerInfo = ({
     setReceiver,
     setSavedAddress
 }) => {
-    const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
-    const [errors, setErrors] = useState({ fullname: "", phone: "" });
-    const [isFullnameValid, setIsFullnameValid] = useState(false);
-    const [isPhoneValid, setIsPhoneValid] = useState(false);
 
+    const [errors, setErrors] = useState({ fullname: "", phone: "" });
     const [selectedIndex, setSelectedIndex] = useState(null);
 
     const handleSelectSavedInfo = (index) => {
@@ -31,17 +28,12 @@ const CustomerInfo = ({
             phone: selectedInfo.phone
         });
         setSelectedAddress(selectedInfo.address);
-
-        setIsFullnameValid(true);
-        setIsPhoneValid(true);
-        setIsAddingNewAddress(false);
     };
 
     const handleDeleteSavedInfo = (index) => {
         const updatedAddresses = savedAddresses.filter((_, i) => i !== index);
         setSavedAddress(updatedAddresses);
     };
-
 
     // Kiểm tra tên khách hàng không chứa số
     const validateFullname = (name) => {
@@ -53,25 +45,12 @@ const CustomerInfo = ({
         return /^(03|05|08|09)[0-9]{8}$/.test(phone);
     };
 
-    const handleAddressChange = (e) => {
-        const value = e.target.value;
-        if (value === key) {
-            setIsAddingNewAddress(true);
-            setSelectedAddress("");
-            setNewAddress("");
-        } else {
-            setIsAddingNewAddress(false);
-            setSelectedAddress(value);
-        }
-    };
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setReceiver(prev => ({ ...prev, [name]: value }));
 
         if (name === "fullname") {
             const isValid = validateFullname(value);
-            setIsFullnameValid(isValid);
             setErrors(prev => ({
                 ...prev,
                 fullname: isValid ? "" : "Tên không được chứa số hoặc ký tự đặc biệt!"
@@ -79,13 +58,11 @@ const CustomerInfo = ({
 
             if (!isValid) {
                 setReceiver(prev => ({ ...prev, phone: "" }));
-                setIsPhoneValid(false);
             }
         }
         
-        if (name === "phone" && isFullnameValid) {
+        if (name === "phone") {
             const isValid = validatePhone(value);
-            setIsPhoneValid(isValid);
             setErrors(prev => ({
                 ...prev,
                 phone: isValid ? "" : "Số điện thoại phải có 10 số và phải đúng định dạng!"
@@ -158,7 +135,6 @@ const CustomerInfo = ({
                         name="phone"
                         value={receiver?.phone || ""}
                         onChange={handleInputChange}
-                        disabled={!isFullnameValid}
                         required
                     />
                     {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
@@ -166,20 +142,8 @@ const CustomerInfo = ({
 
                 <div className="mb-3">
                     <label className="form-label">Địa Chỉ</label>
-                    <select 
-                        className="form-select" 
-                        value={selectedAddress || ""} 
-                        onChange={handleAddressChange}
-                        disabled={!isPhoneValid}
-                    >
-                        {savedAddresses.map((addr) => (
-                            <option key={addr.id} value={addr.address}>{addr.address}</option>
-                        ))}
-                        <option value={key}>Nhập địa chỉ mới</option>
-                    </select>
+                    <AddressSelector setNewAddress={setNewAddress} />
                 </div>
-
-                {isAddingNewAddress && <AddressSelector setNewAddress={setNewAddress} />}
             </form>
         </div>
     );

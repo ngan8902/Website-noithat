@@ -59,6 +59,7 @@ const Cart = () => {
 
     // Chuyển hướng đến trang thanh toán, truyền danh sách sản phẩm đã chọn
     navigate("/checkout", { state: { selectedProducts } });
+    localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
   };
 
   return (

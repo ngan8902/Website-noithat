@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const OrderHistory = ({ orders }) => {
-  const Purchased = orders.filter((order) => order.status === "delivered");
+const OrderHistory = ({ orders = [], userId }) => {
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (orders.length > 0) {
+      // Chỉ lấy đơn hàng của user hiện tại và đã giao hàng
+      const userOrders = Array.isArray(orders)
+      ? orders.filter(order => order?.user === userId && order.status === "delivered")
+      : [];
+      setFilteredOrders(userOrders);
+      setLoading(false);
+    }
+  }, [orders, userId])
+
+  const Purchased = Array.isArray(orders)
+  ? orders.filter((order) => order.status === "delivered")
+  : [];
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -16,18 +32,18 @@ const OrderHistory = ({ orders }) => {
   return (
     <>
       <h5 className="fw-bold mb-3">Lịch Sử Mua Hàng</h5>
-      <div
-        className="table-responsive"
-        style={{
-          maxHeight: orders.length > 5 ? "400px" : "auto",
-          overflowY: orders.length > 5 ? "auto" : "visible",
-          overflowX: "none",
-          border: "1px solid #ddd"
-        }}
-      >
-        {Purchased.length === 0 ? (
-          <p className="text-center text-muted">Bạn chưa có đơn hàng nào hoàn thành.</p>
-        ) : (
+
+      {loading ? (
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Đang tải...</span>
+          </div>
+          <p className="text-muted mt-2">Đang tải dữ liệu...</p>
+        </div>
+      ) : filteredOrders.length === 0 ? (
+        <p className="text-center text-muted">Bạn chưa có đơn hàng nào hoàn thành.</p>
+      ) : (
+        <div className="table-responsive" style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ddd" }}>
           <table className="table table-striped table-hover text-center align-middle">
             <thead className="table-dark">
               <tr>
@@ -41,7 +57,6 @@ const OrderHistory = ({ orders }) => {
                 <th>Trạng Thái</th>
               </tr>
             </thead>
-
             <tbody>
               {Purchased.map((order) => (
                 <tr key={order._id}>
@@ -91,10 +106,9 @@ const OrderHistory = ({ orders }) => {
                 </tr>
               ))}
             </tbody>
-
           </table>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 };

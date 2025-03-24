@@ -59,7 +59,7 @@ const Header = () => {
     if (user && cartItems.length === 0 && !hasFetchedCart.current) {
       hasFetchedCart.current = true; 
       fetchCart();
-  }
+    }
 
     updateCartCount();
 

@@ -14,7 +14,6 @@ const Account = () => {
   const [loading, setLoading] = useState(true);
   const [orderHistory, setOrderHistory] = useState([])
 
-
   const fetchOrders = useCallback(() => {
     if (user?._id) {
       getOrderByUser(user._id);
@@ -71,10 +70,12 @@ const Account = () => {
             />
             <OrderHistory
               orders={orders}
-              setOrder={setOrders} />
+              setOrders={setOrders}
+              userId={user?._id} />
             <OrderCancelled
               orders={orders}
-              setOrder={setOrders} />
+              setOrders={setOrders} 
+              userId={user?._id}/>
           </div>
         </div>
       </div>

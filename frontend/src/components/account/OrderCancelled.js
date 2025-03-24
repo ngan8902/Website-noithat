@@ -1,9 +1,26 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 //import useOrderStore from "../../store/orderStore";
 
-const OrderCancelled = ({ orders, setOrders }) => {
+const OrderCancelled = ({ orders = [], setOrders, userId }) => {
   //const { deleteOrder } = useOrderStore();
-  const cancelledOrders = orders.filter((order) => order.status === "cancelled" || order.status === "return");
+
+  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (orders.length > 0) {
+      // Chỉ lấy đơn hàng của user hiện tại và đã giao hàng
+      const cancelledOrders = Array.isArray(orders)
+      ? orders.filter(order => order?.user === userId && (order.status === "cancelled" || order.status === "return"))
+      : [];
+      setFilteredOrders(cancelledOrders);
+      setLoading(false);
+    }
+  }, [orders, userId]);
+
+  const cancelledOrders = Array.isArray(orders)
+  ? orders.filter((order) => order.status === "cancelled" || order.status === "return")
+  : [];
 
   const handleDeleteOrder = async (orderId) => {
     // try {
@@ -30,18 +47,26 @@ const OrderCancelled = ({ orders, setOrders }) => {
   return (
     <>
       <h5 className="fw-bold mb-3">Đơn hàng đã hủy</h5>
-      <div
-        className="table-responsive"
-        style={{
-          maxHeight: orders.length > 5 ? "400px" : "auto",
-          overflowY: orders.length > 5 ? "auto" : "visible",
-          overflowX: "none",
-          border: orders.length > 5 ? "1px solid #ddd" : "none",
-        }}
-      >
-        {cancelledOrders.length === 0 ? (
-          <p className="text-center text-muted">Bạn chưa có đơn hàng nào đã hủy.</p>
-        ) : (
+
+      {loading ? (
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Đang tải...</span>
+          </div>
+          <p className="text-muted mt-2">Đang tải dữ liệu...</p>
+        </div>
+      ) : filteredOrders.length === 0 ? (
+        <p className="text-center text-muted">Bạn chưa có đơn hàng nào đã hủy.</p>
+      ) : (
+        <div
+          className="table-responsive"
+          style={{
+            maxHeight: orders.length > 5 ? "400px" : "auto",
+            overflowY: orders.length > 5 ? "auto" : "visible",
+            overflowX: "none",
+            border: orders.length > 5 ? "1px solid #ddd" : "none",
+          }}
+        >
           <table className="table table-striped table-hover text-center align-middle">
             <thead className="table-dark">
               <tr>
@@ -106,10 +131,9 @@ const OrderCancelled = ({ orders, setOrders }) => {
                 </tr>
               ))}
             </tbody>
-
           </table>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 };

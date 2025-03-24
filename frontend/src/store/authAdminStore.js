@@ -7,6 +7,14 @@ const useAuthAdminStore = create((set, get) => ({
     staff: null,
     staffList: [],
     auth: () => {
+        const token = getCookie(STAFF_TOKEN_KEY);
+
+        // Nếu không có token, không gọi API
+        if (!token) {
+            console.warn("Không có token, bỏ qua xác thực.");
+            return Promise.resolve(false);
+        }
+
         return axios.get(`${process.env.REACT_APP_URL_BACKEND}/staff/getme`, {
             headers: {
                 'staff-token': getCookie(STAFF_TOKEN_KEY)

@@ -23,8 +23,34 @@ const Checkout = () => {
     const { createOrder } = useOrderStore();
     const { fetchCart, cartItems, clearPurchasedItems } = useCartStore();
 
-    const { product, quantity, selectedProducts } = location.state || {};
-    const [cartData, setCartData] = useState(selectedProducts || []);
+    const { product: initialProduct, quantity, selectedProducts } = location.state || {};
+    const storedProducts = JSON.parse(localStorage.getItem("selectedProducts")) || [];
+    const [cartData, setCartData] = useState(selectedProducts || storedProducts);
+    const [product, setProduct] = useState(initialProduct || (cartData.length === 1 ? cartData[0] : null));
+
+    useEffect(() => {
+        if (!product && selectedProducts?.length === 1) {
+            setProduct(selectedProducts[0]);
+        }
+    }, [selectedProducts, product]);
+
+    useEffect(() => {
+        const storedCart = JSON.parse(localStorage.getItem("selectedProducts")) || [];
+        
+        if (selectedProducts) {
+            setCartData(selectedProducts);
+            localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
+        } else if (storedCart.length > 0) {
+            setCartData(storedCart);
+        } else if (cartItems.length > 0) {
+            const items = cartItems.map((item) => ({
+                quantity: item.quantity,
+                ...item?.productId?.data
+            }));
+            setCartData(items);
+            localStorage.setItem("selectedProducts", JSON.stringify(items));
+        }
+    }, [selectedProducts, cartItems]);
 
     const savedAddresses = [{ id: 1, address: "" }];
     const [, setSavedAddresses] = useState([]);
@@ -135,6 +161,7 @@ const Checkout = () => {
         return 200000;
     };
 
+    console.log("Cart: ", cartData)
     if (!product && (!cartData || cartData.length === 0)) {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
     }
@@ -214,6 +241,7 @@ const Checkout = () => {
 
             if (purchasedItems.length > 0) {
                 clearPurchasedItems(purchasedItems);
+                localStorage.removeItem("selectedProducts");
             } else {
                 console.log("Không có sản phẩm nào để xóa.");
             }
@@ -301,7 +329,6 @@ const Checkout = () => {
                     <p><strong>Ngày giao dự kiến:</strong> {delivered}</p>
 
                     <h5 className="fw-bold mt-3">Sản phẩm:</h5>
-<<<<<<< HEAD
                     {
                         displayProducts.map((item, index) => (
                             <div key={index} className="border p-2 mb-2">
@@ -342,23 +369,6 @@ const Checkout = () => {
                             </div>
                         ))
                     }
-=======
-                    {cartData.map((item, index) => (
-                        <div key={index} className="border p-2 mb-2">
-                            <p><strong>{item.productId?.data.name}</strong></p>
-                            <img src={item.productId?.data.image} alt={item.productId?.data.name} className="img-fluid rounded mb-2" style={{ width: "100px" }} />
-                            <p>Số lượng: {item.quantity}</p>
-                            <p>
-                                Giá: {(
-                                    (item.productId.data.price -
-                                        (item.productId.data.discount ? (item.productId.data.price * item.productId.data.discount) / 100 : 0)
-                                    ) * item.quantity
-                                ).toLocaleString()} VND
-                            </p>
-                        </div>
-                    ))}
-
->>>>>>> 181f265796a2ca2c9ecc7a1f705cc270af3f7765
                     <p><strong>Phí Vận Chuyển:</strong> {shippingFee.toLocaleString()} VND</p>
                     <p><strong>Tổng Thanh Toán:</strong> {totalPrice.toLocaleString()} VND</p>
                 </Modal.Body>

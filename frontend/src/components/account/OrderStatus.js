@@ -1,13 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useOrderStore from "../../store/orderStore";
 import OrderDetailModal from "./OrderModal";
 
-const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
-  const { updateOrderStatus, fetchOrders } = useOrderStore();
+const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) => {
+  const { updateOrderStatus, fetchOrder } = useOrderStore();
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const getOrders = async () => {
+      setLoading(true);
+      try {
+        const fetchedOrders = await fetchOrder();
+        setOrders(fetchedOrders);
+      } catch (error) {
+        console.error("Lỗi khi tải đơn hàng:", error);
+        setOrders([]);
+      }
+      setLoading(false);
+    };
 
+    getOrders();
+  }, []);
+
+  // Xử lý cập nhật đơn hàng
   const handleUpdateOrder = async (id, status) => {
     try {
       await updateOrderStatus(id, status);
@@ -30,8 +47,9 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
     }
   };
 
-
-  const activeOrders = orders.filter((order) => order.status !== "cancelled" && order.status !== "return" && order.status !== "delivered");
+  const activeOrders = Array.isArray(orders)
+  ? orders.filter(order => order.status !== "cancelled" && order.status !== "return" && order.status !== "delivered")
+  : [];
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -56,16 +74,23 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
     }
   };
 
-
   return (
     <>
       <h5 className="fw-bold mb-3 text-center">Đơn Hàng Của Bạn</h5>
-      <div
+      {loading ? (
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Đang tải...</span>
+          </div>
+          <p className="mt-2 text-muted">Đang tải danh sách đơn hàng...</p>
+        </div>
+      ) : (
+        <div
         className="table-responsive"
         style={{
           maxHeight: orders.length > 5 ? "400px" : "auto",
           overflowY: orders.length > 5 ? "auto" : "visible",
-          overflowX: "hidden",
+          overflowX: "none",
           border: "1px solid #ddd"
         }}
       >
@@ -164,6 +189,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
           </tbody>
         </table>
       </div>
+      )}
 
       {selectedOrder && <OrderDetailModal order={selectedOrder} show={showModal} handleClose={() => setShowModal(false)} />}
     </>
