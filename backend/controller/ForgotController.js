@@ -8,7 +8,8 @@ exports.sendOTP = async (req, res) => {
   
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ status: "ERR", message: "Email không tồn tại!" });
+    console.log("User tìm thấy:", user);
+    if (!user) return res.status(401).json({ status: "ERR", message: "Email không tồn tại!" });
 
     // Tạo mã OTP
     const otp = crypto.randomInt(100000, 999999).toString();
@@ -44,7 +45,7 @@ exports.verifyOTP = async (req, res) => {
 
     // Kiểm tra mã OTP
     if (user.resetPasswordOTP !== otp || user.otpExpires < Date.now()) {
-      return res.status(400).json({ status: "ERR", message: "Mã OTP không hợp lệ hoặc đã hết hạn!" });
+      return res.status(401).json({ status: "ERR", message: "Mã OTP không hợp lệ hoặc đã hết hạn!" });
     }
 
     // Xác minh thành công, có thể chuyển user sang bước đặt lại mật khẩu

@@ -30,7 +30,8 @@ const useCartStore = create((set, get) => ({
                         }
                         return item;
                     }));
-                    console.log(fullItems)
+
+                    console.log(items)
                     set({ cartItems: fullItems || [] });
                 } else {
                     console.warn("API không trả về dữ liệu giỏ hàng hợp lệ.");
@@ -59,7 +60,7 @@ const useCartStore = create((set, get) => ({
                 const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/cart/add-cart`, { productId: product._id, quantity },
                     { headers: { "token": token } }
                 );
-                set({ cartItems: response.data.cart.items || [] });
+                // set({ cartItems: response.data.cart.items || [] });
                 return response;
             } catch (error) {
                 console.error("Lỗi khi thêm vào giỏ hàng API:", error);
@@ -68,15 +69,32 @@ const useCartStore = create((set, get) => ({
     },
 
     updateQuantity: async (productId, quantity) => {
-        if (quantity < 1) return;
+        if (!productId) {
+            console.error("ID sản phẩm không hợp lệ");
+            return;
+        }
 
-        const token = getCookie("TOKEN_KEY");
+        if (quantity < 1) {
+            get().removeFromCart(productId);
+            return;
+        }
+
+        const token = getCookie(TOKEN_KEY);
         try {
             if (token) {
-                await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId}`,
+                set((state) => {
+                    const updatedCart = state.cartItems.map(item =>
+                        item.productId === productId ? { ...item, quantity } : item
+                    );
+                    return { cartItems: updatedCart };
+                });
+
+                const response = await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId}`,
                     { quantity },
                     { headers: { "token": token } }
                 );
+                console.log(response)
+                set({ cartItems: response.data.items || [] });
             } else {
                 set((state) => {
                     const updatedCart = state.cartItems.map(item =>
@@ -93,28 +111,32 @@ const useCartStore = create((set, get) => ({
 
     removeFromCart: async (itemId) => {
         if (!itemId) return;
-    
+
+        const isLastItem = get().cartItems.length === 1;
+
         const token = getCookie(TOKEN_KEY);
 
         set((state) => {
             const updatedCart = state.cartItems.filter((item) => item._id !== itemId);
-            
-            if (updatedCart.length === 0) {
-                window.location.reload();
-            }
-    
+            localStorage.setItem("cart", JSON.stringify(updatedCart));
             return { cartItems: updatedCart };
         });
+
         if (token) {
             try {
                 await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${itemId}`, {
                     headers: { token },
                 });
-    
-                await get().fetchCart();
+
+
+                if (isLastItem) {
+                    window.location.reload(); 
+                } else {
+                    await get().fetchCart();
+                }
             } catch (error) {
                 console.error("Lỗi xóa sản phẩm:", error);
-    
+
                 set((state) => ({
                     cartItems: [...state.cartItems, { _id: itemId }],
                 }));
@@ -125,15 +147,12 @@ const useCartStore = create((set, get) => ({
                 localStorage.setItem("cart", JSON.stringify(updatedCart));
                 return { cartItems: updatedCart };
             });
-            window.location.reload()
         }
     },
-    
+
     clearPurchasedItems: async (purchasedItems) => {
         try {
-            //console.log("Pur: ", purchasedItems)
             const token = getCookie("TOKEN_KEY");
-            //console.log("Token:", token);
 
             if (token) {
                 try {
@@ -143,30 +162,30 @@ const useCartStore = create((set, get) => ({
                         { headers: { "token": token } }
                     );
                     console.log("Đã xóa sản phẩm từ giỏ hàng của khách hàng đã đăng nhập:", response);
-    
-                    await get().fetchCart();  
+
+                    await get().fetchCart();
                 } catch (error) {
                     console.error("Lỗi khi xóa sản phẩm từ giỏ hàng của khách hàng đã đăng nhập:", error);
                 }
-    
+
                 set((state) => {
                     const updatedCart = state.cartItems.filter(
                         (item) => !purchasedItems.includes(item._id || item.productId)
                     );
                     console.log("Giỏ hàng sau khi cập nhật (đăng nhập):", updatedCart);
-    
-                    localStorage.setItem("cart", JSON.stringify(updatedCart));  
-    
+
+                    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
                     return { cartItems: updatedCart };
                 });
-    
+
             } else {
                 console.log("Khách vãng lai: Giỏ hàng đã được xóa sau khi thanh toán.");
-                
+
                 localStorage.removeItem("cart");
-    
+
                 set((state) => {
-                    return { cartItems: [] }; 
+                    return { cartItems: [] };
                 });
             }
         } catch (error) {

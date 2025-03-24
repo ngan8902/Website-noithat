@@ -6,8 +6,7 @@ const User = require("../model/UserModel");
 const generateOrderCode = () => {
     const prefix = "ORD"; // Tiền tố cố định
     const timestamp = Date.now().toString().slice(-6); // 6 chữ số cuối của timestamp
-    const randomDigits = Math.floor(1000 + Math.random() * 9000); // Số ngẫu nhiên 4 chữ số
-    return `${prefix}${timestamp}${randomDigits}`; // Ví dụ: ORD4567891234
+    return `${prefix}${timestamp}`; 
 };
 
 const createOrder = async (userId, productIds, discount, validAmount, receiver, status,shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock) => {

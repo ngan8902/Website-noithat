@@ -33,14 +33,14 @@ const loginStaff = async (req, res) => {
         const { username, password } = req.body
         const isCheckUsername = username
         if ( !username || !password) {
-            return res.status(200).json({
+            return res.status(401).json({
                 status: 'ERR',
                 message: 'Nhập các trường bắt buộc!'
             })
         }else if (!isCheckUsername){
-            return res.status(200).json({
+            return res.status(401).json({
                 status: 'ERR',
-                message: 'Vui lòng nhập email!'
+                message: 'Vui lòng nhập username!'
             })
         }
        

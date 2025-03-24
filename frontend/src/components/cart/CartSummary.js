@@ -1,6 +1,7 @@
 import React from "react";
 
 const CartSummary = ({ cart, selectedItems, totalPrice, handleCheckout }) => {
+
   if (!selectedItems || selectedItems.length === 0) {
     return (
       <div className="card">
@@ -12,11 +13,13 @@ const CartSummary = ({ cart, selectedItems, totalPrice, handleCheckout }) => {
     );
   }
 
-  // Chỉ lấy sản phẩm được chọn
-  const selectedProducts = cart.filter((item) => selectedItems.includes(item._id));
+  const selectedProducts = cart.filter((item) => {
+    const itemId = item._id ?? (typeof item.productId === "string" ? item.productId : null);
+    return itemId && selectedItems.includes(itemId);
+  });
+
   const totalQuantity = selectedProducts.reduce((sum, item) => sum + item.quantity, 0);
 
-  console.log("Item: "+ selectedProducts)
   return (
     <div className="card">
       <div className="card-body">
@@ -24,17 +27,18 @@ const CartSummary = ({ cart, selectedItems, totalPrice, handleCheckout }) => {
         <hr />
 
         {selectedProducts.map((item) => {
-          const price = item.productId?.data.price || 0;
-          const discount = item.productId?.data.discount || 0;
+          const productData = item.productId?.data || item.product || item; 
+          const price = productData.price || 0;
+          const discount = productData.discount || 0;
           const finalPrice = discount ? price - (price * discount) / 100 : price;
           const totalItemPrice = finalPrice * item.quantity;
 
           return (
-            <div key={item._id} className="mb-3">
-              <p className="mb-1"><strong>{item.productId?.data.name || "Sản phẩm không xác định"}</strong></p>
+            <div key={item._id || item.productId} className="mb-3">
+              <p className="mb-1"><strong>{productData.name || "Sản phẩm không xác định"}</strong></p>
               <p className="mb-1">Số lượng: <strong>{item.quantity}</strong></p>
               <p className="mb-1">
-                Đơn giá: <strong>{finalPrice.toLocaleString()} VND</strong> 
+                Đơn giá: <strong>{finalPrice.toLocaleString()} VND</strong>
                 {discount > 0 && (
                   <span className="text-danger ms-2">
                     (Đã giảm {discount}%)
@@ -53,7 +57,7 @@ const CartSummary = ({ cart, selectedItems, totalPrice, handleCheckout }) => {
 
         <button
           className="btn btn-primary w-100 mt-3"
-          onClick={handleCheckout} 
+          onClick={handleCheckout}
           disabled={selectedItems.length === 0}
         >
           Thanh Toán
@@ -61,6 +65,7 @@ const CartSummary = ({ cart, selectedItems, totalPrice, handleCheckout }) => {
       </div>
     </div>
   );
+
 };
 
 export default CartSummary;
