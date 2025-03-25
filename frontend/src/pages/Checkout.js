@@ -77,8 +77,8 @@ const Checkout = () => {
         if (!displayProducts || displayProducts.length === 0) return 0;
 
         const totalProductPrice = displayProducts.reduce((total, item) => {
-            const price = item.productId?.data?.price || item.price || 0;
-            const discount = item.productId?.data?.discount || item.discount || 0;
+            const price = item.price || item.product.price || 0;
+            const discount = item.discount || item.product.discount || 0;
             const finalItemPrice = discount ? price - (price * discount) / 100 : price;
             return total + (finalItemPrice * (item.quantity || selectedProducts?.reduce((acc, item) => acc + item.quantity, 0)));
         }, 0);
@@ -324,36 +324,36 @@ const Checkout = () => {
                     {
                         displayProducts.map((item, index) => (
                             <div key={index} className="border p-2 mb-2">
-                                <p><strong>{item.productId?.data?.name || item.name}</strong></p>
+                                <p><strong>{item.name || item.product?.name}</strong></p>
                                 <img 
-                                    src={item.productId?.data?.image || item.image} 
-                                    alt={item.productId?.data?.name || item.name} 
+                                    src={item.image || item.product?.image} 
+                                    alt={item.name || item.product?.name} 
                                     className="img-fluid rounded mb-2" 
                                     style={{ width: "100px" }} 
                                 />
                                 <p>Số lượng: {item.quantity}</p>
                                 <p>
-                                    {item.productId?.data?.discount || item.discount ? (
+                                    {item.discount || item.product?.discount ? (
                                         <>
                                             Giá: 
                                             <span style={{ textDecoration: "line-through", color: "red" }}>
-                                                {((item.productId?.data?.price || item.price) * item.quantity).toLocaleString()} VND
+                                                {((item.price || item.product?.price) * item.quantity)?.toLocaleString()} VND
                                             </span>
                                             {" "} ➝{" "}
                                             <span>
                                                 {(
-                                                    ((item.productId?.data?.price || item.price) - 
-                                                    ((item.productId?.data?.price || item.price) * (item.productId?.data?.discount || item.discount) / 100)) 
+                                                    ((item.price || item.product?.price) - 
+                                                    ((item.price || item.product?.price) * (item.discount || item.product?.discount) / 100)) 
                                                     * item.quantity
-                                                ).toLocaleString()} VND
+                                                )?.toLocaleString()} VND
                                             </span>
-                                            {" "} (đã giảm {item.productId?.data?.discount || item.discount}%)
+                                            {" "} (đã giảm {item.discount || item.product?.discount}%)
                                         </>
                                     ) : (
                                         <>
                                             Giá: 
                                             <span>
-                                                {((item.productId?.data?.price || item.price) * item.quantity).toLocaleString()} VND
+                                                {((item.price || item.product?.price) * item.quantity)?.toLocaleString()} VND
                                             </span>
                                         </>
                                     )}
@@ -361,8 +361,8 @@ const Checkout = () => {
                             </div>
                         ))
                     }
-                    <p><strong>Phí Vận Chuyển:</strong> {shippingFee.toLocaleString()} VND</p>
-                    <p><strong>Tổng Thanh Toán:</strong> {totalPrice.toLocaleString()} VND</p>
+                    <p><strong>Phí Vận Chuyển:</strong> {shippingFee?.toLocaleString()} VND</p>
+                    <p><strong>Tổng Thanh Toán:</strong> {totalPrice?.toLocaleString()} VND</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>

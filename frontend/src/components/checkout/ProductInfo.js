@@ -13,16 +13,18 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPr
     ? [{ ...product, quantity }] 
     : cartData;
 
+    console.log(displayProducts)
+
     return (
         <div className="col-md-6">
             <h5 className="fw-bold">Thông Tin Sản Phẩm</h5>
             {
                     displayProducts.map((item, index) => (
                         <div key={index} className="border p-2 mb-2">
-                            <p><strong>{item.productId?.data?.name || item.name}</strong></p>
+                            <p><strong>{item.productId?.data.name || item.name || item.product.name}</strong></p>
                             <img 
-                                src={item.productId?.data?.image || item.image} 
-                                alt={item.productId?.data?.name || item.name} 
+                                src={item.productId?.data.image || item.image || item.product.image} 
+                                alt={item.productId?.data.name || item.name || item.product.name} 
                                 className="img-fluid rounded mb-2" 
                                 style={{ width: "100px" }} 
                             />
@@ -33,7 +35,7 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPr
                                 </span>
                             </p>
                             <p>
-                                {item.productId?.data?.discount || item.discount ? (
+                                {/* {item.productId?.data?.discount || item.discount ? (
                                     <>
                                         Giá: 
                                         <span style={{ textDecoration: "line-through", color: "red" }}>
@@ -52,7 +54,28 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPr
                                     <> 
                                     Giá: 
                                         <span style={{ fontWeight: "bold" }}>
-                                            {((item.productId?.data?.price || item.price) * item.quantity).toLocaleString()} VND
+                                            {((item.productId?.data?.price || item.price) * item.quantity).toLocaleString()} VND */}
+                            {item.productId?.data.discount || item.discount || item.product.discount ? (
+                                        <>
+                                            Giá: 
+                                            <span style={{ textDecoration: "line-through", color: "red" }}>
+                                                {((item.productId?.data.price || item.price || item.product.price) * item.quantity)?.toLocaleString()} VND
+                                            </span>
+                                            {" "} ➝{" "}
+                                            <span>
+                                                {(
+                                                    ((item.productId?.data.price || item.price || item.product.price) - 
+                                                    ((item.productId?.data.price || item.price || item.product.price) * (item.productId?.data.discount || item.discount || item.product.discount) / 100)) 
+                                                    * item.quantity
+                                                )?.toLocaleString()} VND
+                                            </span>
+                                            {" "} (đã giảm {item.productId?.data.discount || item.discount || item.product.discount}%)
+                                        </>
+                                    ) : (
+                                    <> 
+                                    Giá: 
+                                        <span style={{ fontWeight: "bold" }}>
+                                            {(item.productId?.data.price || item.price || item.product.price)?.toLocaleString()} VND
                                         </span>
                                     </>
                                 )}
