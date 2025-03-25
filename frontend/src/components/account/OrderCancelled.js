@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from "react";
 //import useOrderStore from "../../store/orderStore";
 
-const OrderCancelled = ({ orders = [], setOrders, userId }) => {
+const OrderCancelled = ({ orders = [], setOrders }) => {
   //const { deleteOrder } = useOrderStore();
 
-  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (orders.length > 0) {
-      // Chỉ lấy đơn hàng của user hiện tại và đã hủy
-      const cancelledOrders = Array.isArray(orders)
-      ? orders.filter(order => order?.user === userId && (order.status === "cancelled" || order.status === "return"))
-      : [];
-      setFilteredOrders(cancelledOrders);
       setLoading(false);
     }
-  }, [orders, userId]);
+  }, [orders]);
 
   const cancelledOrders = Array.isArray(orders)
   ? orders.filter((order) => order.status === "cancelled" || order.status === "return")
@@ -55,7 +49,7 @@ const OrderCancelled = ({ orders = [], setOrders, userId }) => {
           </div>
           <p className="text-muted mt-2">Đang tải dữ liệu...</p>
         </div>
-      ) : filteredOrders.length === 0 ? (
+      ) : cancelledOrders.length === 0 ? (
         <p className="text-center text-muted">Bạn chưa có đơn hàng nào đã hủy.</p>
       ) : (
         <div

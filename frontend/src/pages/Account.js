@@ -67,16 +67,13 @@ const Account = () => {
               setOrder={setOrders}
               orderHistory={orderHistory}
               setOrderHistory={setOrderHistory}
-              userId={user?._id}
             />
             <OrderHistory
               orders={orders}
-              setOrders={setOrders}
-              userId={user?._id} />
+              setOrders={setOrders} />
             <OrderCancelled
               orders={orders}
-              setOrders={setOrders} 
-              userId={user?._id}/>
+              setOrders={setOrders} />
           </div>
         </div>
       </div>

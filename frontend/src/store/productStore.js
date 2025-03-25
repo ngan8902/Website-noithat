@@ -10,15 +10,10 @@ const useProductStore = create((set, get) => ({
     productByType: [],
     isSearching: false,
 
-    getProducts: (limit = 8, page = 0, filter = "") => {
+    getProducts: () => {
         if (get().isSearching) return;
 
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/all-product`, {
-            params: {
-                limit,
-                page,
-                filter
-            }
         }).then(response => {
             const { data } = response;
             if (data && data.data) {

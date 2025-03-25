@@ -114,25 +114,35 @@ const updateCart = async (userId, productId, quantity) => {
 };
 
 
-
-
 const clearPurchasedItems = async (userId, purchasedItems) => {
     try {
-        let cart = await Cart.findOne({ user: userId });
+        const cart = await Cart.findOne({ user: userId });
+
         if (!cart) {
-            throw new Error("Giỏ hàng không tồn tại!");
+            throw new Error("Giỏ hàng không tồn tại.");
         }
 
-        const purchasedItemsSet = new Set(purchasedItems.map(item => item.toString()));
+        const updatedItems = cart.items.filter(item => !purchasedItems.includes(item._id.toString()));
 
-        cart.items = cart.items.filter(item => !purchasedItemsSet.includes(item.productId.toString()));
 
-        await cart.save();
-        return cart;
+        const updatedCart = await Cart.findOneAndUpdate(
+            { _id: cart._id, __v: cart.__v }, 
+            { $set: { items: updatedItems } },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedCart) {
+            throw new Error("Không tìm thấy giỏ hàng hoặc phiên bản không khớp.");
+        }
+
+        return updatedCart;
     } catch (error) {
+        console.error(error.message);
         throw new Error("Lỗi khi xóa sản phẩm khỏi giỏ hàng: " + error.message);
     }
 };
+
+
 
 module.exports = {
     addToCart,

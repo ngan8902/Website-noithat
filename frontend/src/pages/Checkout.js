@@ -69,16 +69,17 @@ const Checkout = () => {
     const [finalPrice, setFinalPrice] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
 
-    const displayProducts = product
-        ? [{ ...product, quantity }]
-        : cartData;
+    console.log(cartItems)
+
+    const displayProducts = selectedProducts?.length > 0
+        ? selectedProducts
+        : (product ? [{ ...product, quantity }] : cartData);
+
 
     const calculateFinalPrice = () => {
-        if (!displayProducts || displayProducts.length === 0) return 0;
-
         const totalProductPrice = displayProducts.reduce((total, item) => {
-            const price = item.price || item.product.price || 0;
-            const discount = item.discount || item.product.discount || 0;
+            const price = item.productId?.data?.price || item.price || item.product?.price || 0;
+            const discount = item.productId?.data?.discount || item.discount || item.product?.discount || 0;
             const finalItemPrice = discount ? price - (price * discount) / 100 : price;
             return total + (finalItemPrice * (item.quantity || selectedProducts?.reduce((acc, item) => acc + item.quantity, 0)));
         }, 0);
@@ -96,31 +97,50 @@ const Checkout = () => {
     }, [cartData, shippingFee]);
 
     useEffect(() => {
-        const handleUserAddress = () => {
-            if (user) {
-                axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`)
-                    .then(response => {
-                        if (response.data.status === "SUCCESS") {
-                            setSavedAddresses(response.data.data);
-                            if (response.data.data.length > 0) {
-                                setSelectedAddress(response.data.data[0].address);
-                            }
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Lỗi khi lấy danh sách địa chỉ:", error)
-                    })
+        const handleUserAddress = async () => {
+            if (!user) return;
+
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`);
+                if (response.data.status === "SUCCESS") {
+                    setSavedAddresses(response.data.data);
+                    if (response.data.data.length > 0) {
+                        setSelectedAddress(response.data.data[0].address);
+                    }
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy danh sách địa chỉ:", error);
             }
         };
 
-        if (user) {
-            handleUserAddress();
-            fetchCart();
-        } else {
-            const localCart = JSON.parse(localStorage.getItem("cart")) || [];
-            setCartData(localCart);
+        handleUserAddress();
+    }, [user]);
+
+    useEffect(() => {
+        const handleUserCart = async () => {
+            if (user) {
+                await fetchCart();
+            } else {
+                const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+                setCartData(localCart);
+            }
+        };
+
+        handleUserCart();
+    }, [user]);
+
+    useEffect(() => {
+        if (selectedProducts) {
+            setCartData(selectedProducts);
+        } else if (user && cartItems.length > 0) {
+            setCartData(
+                cartItems.map((item) => ({
+                    quantity: item.quantity,
+                    ...item?.productId?.data,
+                }))
+            );
         }
-    }, [user, fetchCart]);
+    }, [cartItems, selectedProducts, user]);
 
     useEffect(() => {
         if (!selectedProducts && cartItems.length > 0) {
@@ -165,6 +185,7 @@ const Checkout = () => {
     const orderDate = new Date().toLocaleDateString("vi-VN")
 
     const delivered = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("vi-VN")
+
 
     const handleCheckout = async () => {
         setShowConfirmModal(false);
@@ -225,11 +246,19 @@ const Checkout = () => {
             await createOrder(orderData, { headers });
             notifyOfCheckout()
 
-            const purchasedItems = product
-                ? [product._id]
-                : (Array.isArray(cartData) && cartData.length > 0)
-                    ? cartData.map((item) => item._id)
-                    : [];
+            const purchasedItems = cartData?.map((item) => item._id) || [];
+
+            if (purchasedItems.length > 0) {
+                clearPurchasedItems(purchasedItems);
+                console.log("Đã xóa các items có _id:", purchasedItems);
+            } else {
+                console.log("Không có sản phẩm nào để xóa.");
+            }
+            
+
+            setTimeout(async () => {
+                await fetchCart();
+            }, 500);
 
             if (purchasedItems.length > 0) {
                 clearPurchasedItems(purchasedItems);
@@ -237,6 +266,7 @@ const Checkout = () => {
             } else {
                 console.log("Không có sản phẩm nào để xóa.");
             }
+
             setTimeout(async () => {
                 await fetchCart();
                 // if (user) {
@@ -250,6 +280,7 @@ const Checkout = () => {
             toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");
         }
     };
+
 
     return (
         <div className="container py-5">
@@ -274,6 +305,7 @@ const Checkout = () => {
                         shippingFee={shippingFee}
                         finalPrice={finalPrice}
                         totalPrice={totalPrice}
+                        selectedProducts={selectedProducts}
                     />
                     <PaymentMethod
                         paymentMethod={paymentMethod}
@@ -322,44 +354,51 @@ const Checkout = () => {
 
                     <h5 className="fw-bold mt-3">Sản phẩm:</h5>
                     {
-                        displayProducts.map((item, index) => (
-                            <div key={index} className="border p-2 mb-2">
-                                <p><strong>{item.name || item.product?.name}</strong></p>
-                                <img 
-                                    src={item.image || item.product?.image} 
-                                    alt={item.name || item.product?.name} 
-                                    className="img-fluid rounded mb-2" 
-                                    style={{ width: "100px" }} 
-                                />
-                                <p>Số lượng: {item.quantity}</p>
-                                <p>
-                                    {item.discount || item.product?.discount ? (
-                                        <>
-                                            Giá: 
-                                            <span style={{ textDecoration: "line-through", color: "red" }}>
-                                                {((item.price || item.product?.price) * item.quantity)?.toLocaleString()} VND
-                                            </span>
-                                            {" "} ➝{" "}
-                                            <span>
-                                                {(
-                                                    ((item.price || item.product?.price) - 
-                                                    ((item.price || item.product?.price) * (item.discount || item.product?.discount) / 100)) 
-                                                    * item.quantity
-                                                )?.toLocaleString()} VND
-                                            </span>
-                                            {" "} (đã giảm {item.discount || item.product?.discount}%)
-                                        </>
-                                    ) : (
-                                        <>
-                                            Giá: 
-                                            <span>
-                                                {((item.price || item.product?.price) * item.quantity)?.toLocaleString()} VND
-                                            </span>
-                                        </>
-                                    )}
-                                </p>
-                            </div>
-                        ))
+                        displayProducts.map((item, index) => {
+                            const productName = item.productId?.data?.name || item.name || item.product?.name;
+                            const productImage = item.productId?.data?.image || item.image || item.product?.image;
+                            const productPrice = item.productId?.data?.price || item.price || item.product?.price;
+                            const discount = item.productId?.data?.discount || item.discount || item.product?.discount;
+                            const hasDiscount = discount > 0;
+                            return (
+                                <div key={index} className="border p-2 mb-2">
+                                    <p><strong>{productName}</strong></p>
+                                    <img
+                                        src={productImage}
+                                        alt={productName}
+                                        className="img-fluid rounded mb-2"
+                                        style={{ width: "100px" }}
+                                    />
+                                    <p>Số lượng: {item.quantity}</p>
+                                    <p>
+                                        {hasDiscount ? (
+                                            <>
+                                                Giá:
+                                                <span style={{ textDecoration: "line-through", color: "red" }}>
+                                                    {((productPrice) * item.quantity)?.toLocaleString()} VND
+                                                </span>
+                                                {" "} ➝{" "}
+                                                <span>
+                                                    {(
+                                                        ((productPrice) -
+                                                            ((productPrice) * (discount) / 100))
+                                                        * item.quantity
+                                                    )?.toLocaleString()} VND
+                                                </span>
+                                                {" "} (đã giảm {discount}%)
+                                            </>
+                                        ) : (
+                                            <>
+                                                Giá:
+                                                <span>
+                                                    {((productPrice) * item.quantity)?.toLocaleString()} VND
+                                                </span>
+                                            </>
+                                        )}
+                                    </p>
+                                </div>
+                            );
+                        })
                     }
                     <p><strong>Phí Vận Chuyển:</strong> {shippingFee?.toLocaleString()} VND</p>
                     <p><strong>Tổng Thanh Toán:</strong> {totalPrice?.toLocaleString()} VND</p>

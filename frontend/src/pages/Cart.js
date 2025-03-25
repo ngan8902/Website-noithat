@@ -12,8 +12,13 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCart();
-  }, [fetchCart]);
+    const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (localCart.length > 0) {
+        setCartWithProducts(localCart);
+    } else {
+        fetchCart();
+    }
+}, [fetchCart]);
 
   useEffect(() => {
     if (!Array.isArray(cartItems)) {
@@ -45,9 +50,16 @@ const Cart = () => {
 
     fetchProductDetails();
   }, [cartItems]);
-  
+
   const handleCheckout = () => {
     const selectedProducts = cartWithProducts.filter(item => selectedItems.includes(item._id));
+    console.log(selectedProducts)
+
+    if (selectedProducts.length === 0) {
+      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
+      return;
+    }
+
     navigate("/checkout", { state: { selectedProducts } });
     localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
   };

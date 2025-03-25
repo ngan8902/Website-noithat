@@ -17,7 +17,6 @@ const OrderList = ({ onConfirm, onCancel }) => {
       const receiverPhone = order.receiver?.phone || "";
       const orderCodeFilter = order?.orderCode?.toLowerCase() || "";
 
-      // Kiểm tra nếu bất kỳ sản phẩm nào trong orderItems khớp với searchTerm
       const productMatch = order.orderItems.some(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -30,7 +29,6 @@ const OrderList = ({ onConfirm, onCancel }) => {
       );
     });
 
-  console.log(orders)
 
   return (
     <div id="pending-orders" className="mt-4">
@@ -50,7 +48,6 @@ const OrderList = ({ onConfirm, onCancel }) => {
       </div>
 
       <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "hidden" }}>
-        {/* Table chứa thead riêng biệt */}
         <table className="table table-bordered mt-3"  >
           <thead
             className="table-dark"

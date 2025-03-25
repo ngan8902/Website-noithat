@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-const OrderHistory = ({ orders = [], userId }) => {
-  const [filteredOrders, setFilteredOrders] = useState([]);
+const OrderHistory = ({ orders = [] }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (orders.length > 0) {
-      // Chỉ lấy đơn hàng của user hiện tại và đã giao hàng
-      const userOrders = Array.isArray(orders)
-      ? orders.filter(order => order?.user === userId && order.status === "delivered")
-      : [];
-      setFilteredOrders(userOrders);
       setLoading(false);
     }
-  }, [orders, userId])
+  }, [orders])
 
   const Purchased = Array.isArray(orders)
   ? orders.filter((order) => order.status === "delivered")
@@ -40,7 +34,7 @@ const OrderHistory = ({ orders = [], userId }) => {
           </div>
           <p className="text-muted mt-2">Đang tải dữ liệu...</p>
         </div>
-      ) : filteredOrders.length === 0 ? (
+      ) : Purchased.length === 0 ? (
         <p className="text-center text-muted">Bạn chưa có đơn hàng nào hoàn thành.</p>
       ) : (
         <div className="table-responsive" style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ddd" }}>
