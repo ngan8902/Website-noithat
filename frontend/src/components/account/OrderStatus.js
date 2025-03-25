@@ -31,7 +31,7 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
   };
 
 
-  const activeOrders = orders.filter((order) => order.status !== "cancelled" && order.status !== "return" && order.status !== "delivered");
+  const activeOrders = orders.filter((order) => order?.status !== "cancelled" && order?.status !== "return" && order?.status !== "delivered");
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -83,78 +83,79 @@ const OrderStatus = ({ orders, setOrders, orderHistory, setOrderHistory }) => {
             </tr>
           </thead>
           <tbody>
-            {activeOrders.map((order) => (
-              <tr key={order._id}>
-                <td className="fw-bold">#{order.orderCode}</td>
-                <td>
-                  {order.orderItems?.map((item, index) => (
-                    <div key={index} className="mb-2">
-                      <img
-                        src={item.image || "/default-image.jpg"}
-                        alt={item.name}
-                        style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
-                      />
-                      {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
-                    </div>
-                  ))}
-                </td>
-                <td>
-                  {order.orderItems?.map((item, index) => (
-                    <div key={index}>
-                      {item.name}
-                      {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
-                    </div>
-                  )) || "Không có dữ liệu"}
-                </td>
-                <td>
-                  {order.orderItems?.map((item, index) => (
-                    <div key={index}>
-                      {item.amount}
-                      {index < order.orderItems.length - 1 && <hr style={{ borderTop: "1px solid #aaa" }} />}
-                    </div>
-                  )) || 1}
-                </td>
-                <td className="text-success fw-bold">{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
-                <td>{order.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : order.paymentMethod === "VnPay" ? "Thanh toán qua VnPay" : order.paymentMethod}</td>
-                <td>
-                  <span
-                    className={`badge ${order.status === "pending" ? "bg-primary" :
-                      order.status === "processing" ? "bg-info text-dark" :
-                        order.status === "shipped" ? "bg-warning text-dark" :
-                          order.status === "return_requested" ? "bg-danger" :
-                            "bg-light text-dark"
-                      }`}
-                  >
-                    {getStatusLabel(order.status)}
-                  </span>
-                </td>
-                <td className="text-center">
-                  <div className="d-flex justify-content-center gap-2">
-                    <button className="btn btn-info btn-sm me-2" onClick={() => { setSelectedOrder(order); setShowModal(true); }}>
-                      Chi Tiết
-                    </button>
-                    {["pending"].includes(order.status) ? (
-                      <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}
-                        disabled={order.status === "processing"}>
-                        Hủy Đơn
+            {Array.isArray(activeOrders) && activeOrders.length > 0 ? (
+              activeOrders.map((order) => (
+                <tr key={order?._id}>
+                  <td className="fw-bold">#{order?.orderCode}</td>
+                  <td>
+                    {order?.orderItems?.map((item, index) => (
+                      <div key={index} className="mb-2">
+                        <img
+                          src={item.image || "/default-image.jpg"}
+                          alt={item.name}
+                          style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
+                        />
+                        {index < order?.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                      </div>
+                    ))}
+                  </td>
+                  <td>
+                    {order?.orderItems?.map((item, index) => (
+                      <div key={index}>
+                        {item.name}
+                        {index < order?.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                      </div>
+                    )) || "Không có dữ liệu"}
+                  </td>
+                  <td>
+                    {order?.orderItems?.map((item, index) => (
+                      <div key={index}>
+                        {item.amount}
+                        {index < order.orderItems.length - 1 && <hr style={{ borderTop: "1px solid #aaa" }} />}
+                      </div>
+                    )) || 1}
+                  </td>
+                  <td className="text-success fw-bold">{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
+                  <td>{order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : order?.paymentMethod === "VnPay" ? "Thanh toán qua VnPay" : order?.paymentMethod}</td>
+                  <td>
+                    <span
+                      className={`badge ${order?.status === "pending" ? "bg-primary" :
+                        order?.status === "processing" ? "bg-info text-dark" :
+                          order?.status === "shipped" ? "bg-warning text-dark" :
+                            order?.status === "return_requested" ? "bg-danger" :
+                              "bg-light text-dark"
+                        }`}
+                    >
+                      {getStatusLabel(order?.status)}
+                    </span>
+                  </td>
+                  <td className="text-center">
+                    <div className="d-flex justify-content-center gap-2">
+                      <button className="btn btn-info btn-sm me-2" onClick={() => { setSelectedOrder(order); setShowModal(true); }}>
+                        Chi Tiết
                       </button>
-                    ) : order.status === "shipped" ? (
-                      <>
-                        <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order._id, "received")}>
-                          Đã Nhận Hàng
+                      {["pending"].includes(order?.status) ? (
+                        <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}
+                          disabled={order?.status === "processing"}>
+                          Hủy Đơn
                         </button>
-                        <button className="btn btn-warning btn-sm" onClick={() => handleUpdateOrder(order._id, "return_requested")}>
-                          Trả Hàng
-                        </button>
-                      </>
-                    ) : null}
-                  </div>
-                </td>
+                      ) : order?.status === "shipped" ? (
+                        <>
+                          <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order._id, "received")}>
+                            Đã Nhận Hàng
+                          </button>
+                          <button className="btn btn-warning btn-sm" onClick={() => handleUpdateOrder(order._id, "return_requested")}>
+                            Trả Hàng
+                          </button>
+                        </>
+                      ) : null}
+                    </div>
+                  </td>
 
 
-              </tr>
-            ))}
-            {activeOrders.length === 0 && (
+                </tr>
+              ))
+            ) : (
               <tr>
                 <td colSpan="8" className="text-muted">
                   Không có đơn hàng nào.

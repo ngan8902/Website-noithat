@@ -3,7 +3,7 @@ import React from "react";
 
 const OrderCancelled = ({ orders, setOrders }) => {
   //const { deleteOrder } = useOrderStore();
-  const cancelledOrders = orders.filter((order) => order.status === "cancelled" || order.status === "return");
+  const cancelledOrders = orders.filter((order) => order?.status === "cancelled" || order?.status === "return");
 
   const handleDeleteOrder = async (orderId) => {
     // try {

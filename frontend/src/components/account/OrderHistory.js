@@ -1,7 +1,7 @@
 import React from "react";
 
 const OrderHistory = ({ orders }) => {
-  const Purchased = orders.filter((order) => order.status === "delivered");
+  const Purchased = orders.filter((order) => order?.status === "delivered");
 
   const getStatusLabel = (status) => {
     switch (status) {

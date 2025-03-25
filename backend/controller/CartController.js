@@ -52,7 +52,7 @@ const removeItem = async (req, res) => {
         if (!userId) {
             return res.status(401).json({ message: "Khách vãng lai cần xóa giỏ hàng từ localStorage" });
         }
-        
+
 
         const response = await CartService.removeItem(itemId, userId)
         return res.status(200).json(response)
@@ -97,25 +97,26 @@ const updateCart = async (req, res) => {
 const clearPurchasedItems = async (req, res) => {
     try {
         const userId = req.payload?.id;
-        const { purchasedItems } = req.body;
-
-        console.log(purchasedItems)
+        const { purchasedItems } = req.body; 
 
         if (!userId) {
             return res.status(401).json({ message: "Người dùng chưa đăng nhập!" });
         }
 
-        if (!purchasedItems || !Array.isArray(purchasedItems) || purchasedItems.length === 0) {
+        if (!Array.isArray(purchasedItems) || purchasedItems.length === 0) {
             return res.status(400).json({ message: "Danh sách sản phẩm cần xóa không hợp lệ!" });
         }
 
         const currentCart = await CartService.getCart(userId);
-        if (!currentCart || currentCart.items.length === 0) {
+
+        if (!currentCart || !currentCart.data || !Array.isArray(currentCart.data.items)) {
             return res.status(404).json({ message: "Giỏ hàng không có sản phẩm nào để xóa!" });
         }
 
+        const cartItems = currentCart.data.items; 
+
         const notInCart = purchasedItems.filter(itemId =>
-            !currentCart.items.some(item => item._id.toString() === itemId)
+            !cartItems.some(item => item._id.toString() === itemId)
         );
 
         if (notInCart.length > 0) {
@@ -133,10 +134,12 @@ const clearPurchasedItems = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Lỗi khi xóa sản phẩm sau thanh toán:", error);
-        return res.status(500).json({ message: "Lỗi hệ thống!" });
+        console.log(error);
+        return res.status(500).json({ message: "Lỗi hệ thống!", error: error.message });
     }
 };
+
+
 
 module.exports = {
     addToCart,

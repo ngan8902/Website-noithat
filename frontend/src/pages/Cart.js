@@ -12,8 +12,14 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchCart();
-  }, [fetchCart]);
+    const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (localCart.length > 0) {
+        setCartWithProducts(localCart);
+    } else {
+        fetchCart();
+    }
+}, [fetchCart]);
+
 
   useEffect(() => {
     if (!Array.isArray(cartItems)) {
@@ -48,24 +54,33 @@ const Cart = () => {
 
 
   const totalPrice = (Array.isArray(selectedItems) ? selectedItems : []).reduce((sum, cartItemId) => {
-    const selectedProduct = cartWithProducts.find(item => item._id === cartItemId) 
+    const selectedProduct = cartWithProducts.find(item => item._id === cartItemId)
       || JSON.parse(localStorage.getItem("cart") || "[]").find(item => item._id === cartItemId);
-  
+
     if (!selectedProduct) return sum;
-  
-    const price = selectedProduct.product?.price || selectedProduct.price || 0; 
+
+    const price = selectedProduct.product?.price || selectedProduct.price || 0;
     const discount = selectedProduct.product?.discount || selectedProduct.discount || 0;
     const finalPrice = discount ? (price - (price * discount) / 100) : price;
-  
+
     return sum + finalPrice * selectedProduct.quantity;
   }, 0);
-  
+
 
 
   const handleCheckout = () => {
     const selectedProducts = cartWithProducts.filter(item => selectedItems.includes(item._id));
+    console.log(selectedProducts)
+
+    if (selectedProducts.length === 0) {
+      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
+      return;
+    }
+
     navigate("/checkout", { state: { selectedProducts } });
   };
+
+
 
   return (
     <section className="py-5">
