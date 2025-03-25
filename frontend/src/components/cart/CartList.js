@@ -12,7 +12,7 @@ const CartList = ({ cart, updateQuantity, removeFromCart, selectedItems, setSele
         ) : (
           cart.map((item, index) => (
             <CartItem
-              key={item._id || index}
+              key={item._id || item.productId?._id || index}
               item={item}
               updateQuantity={updateQuantity}
               removeFromCart={removeFromCart}

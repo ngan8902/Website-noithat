@@ -1,4 +1,5 @@
 const CartService = require('../service/CartService')
+const mongoose = require('mongoose')
 
 const addToCart = async (req, res) => {
     try {
@@ -51,6 +52,7 @@ const removeItem = async (req, res) => {
         if (!userId) {
             return res.status(401).json({ message: "Khách vãng lai cần xóa giỏ hàng từ localStorage" });
         }
+        
 
         const response = await CartService.removeItem(itemId, userId)
         return res.status(200).json(response)
@@ -60,8 +62,6 @@ const removeItem = async (req, res) => {
         })
     }
 }
-
-
 
 const updateCart = async (req, res) => {
     try {
@@ -73,13 +73,26 @@ const updateCart = async (req, res) => {
             return res.status(401).json({ message: "Khách vãng lai cần cập nhật giỏ hàng trên localStorage" });
         }
 
-        const items = await CartService.updateCart(userId, productId, quantity);
-        return res.status(200).json({ message: "Cập nhật giỏ hàng thành công", items });
+        if (!productId) {
+            return res.status(400).json({ message: "ID sản phẩm không hợp lệ" });
+        }
+
+        if (!quantity || quantity < 1) {
+            return res.status(401).json({ message: "Số lượng không hợp lệ" });
+        }
+
+        const result = await CartService.updateCart(userId, productId, quantity);
+
+        if (!result.success) {
+            return res.status(400).json({ message: result.message });
+        }
+
+        return res.status(200).json({ message: "Cập nhật giỏ hàng thành công", items: result.items });
     } catch (error) {
         console.error("Lỗi cập nhật giỏ hàng:", error);
         return res.status(500).json({ message: "Lỗi hệ thống" });
     }
-}
+};
 
 const clearPurchasedItems = async (req, res) => {
     try {
@@ -94,14 +107,14 @@ const clearPurchasedItems = async (req, res) => {
 
         if (!purchasedItems || !Array.isArray(purchasedItems) || purchasedItems.length === 0) {
             return res.status(400).json({ message: "Danh sách sản phẩm cần xóa không hợp lệ!" });
-        }   
+        }
 
         const currentCart = await CartService.getCart(userId);
         if (!currentCart || currentCart.items.length === 0) {
             return res.status(404).json({ message: "Giỏ hàng không có sản phẩm nào để xóa!" });
         }
 
-        const notInCart = purchasedItems.filter(itemId => 
+        const notInCart = purchasedItems.filter(itemId =>
             !currentCart.items.some(item => item._id.toString() === itemId)
         );
 

@@ -16,6 +16,7 @@ const useAuthAdminStore = create((set, get) => ({
         }
 
         return axios.get(`${process.env.REACT_APP_URL_BACKEND}/staff/getme`, {
+            withCredentials: true,
             headers: {
                 'staff-token': getCookie(STAFF_TOKEN_KEY)
             }
@@ -34,8 +35,8 @@ const useAuthAdminStore = create((set, get) => ({
     },
     permissions: (roles) => {
         const staffs = get().staff;
-        if(!staffs || !staffs.role_id) return false;
-        if(!roles || !Array.isArray(roles)) return false;
+        if (!staffs || !staffs.role_id) return false;
+        if (!roles || !Array.isArray(roles)) return false;
 
         const isAllowAccess = roles.includes(staffs.role_id);
         return isAllowAccess;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TOKEN_KEY } from "../../constants/authen.constant";
+import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
 import { setCookie } from "../../utils/cookie.util";
 import useAuthAdminStore from "../../store/authAdminStore";
 import useChatStore from "../../store/chatStore";
@@ -13,7 +13,7 @@ const Sidebar = () => {
   const { customers } = useChatStore();
 
   const handleLogout = () => {
-    setCookie(TOKEN_KEY, '');
+    setCookie(STAFF_TOKEN_KEY, '');
     window.location.replace("/admin/login");
   };
 

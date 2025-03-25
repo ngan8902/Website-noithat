@@ -67,6 +67,7 @@ const Account = () => {
               setOrder={setOrders}
               orderHistory={orderHistory}
               setOrderHistory={setOrderHistory}
+              userId={user?._id}
             />
             <OrderHistory
               orders={orders}

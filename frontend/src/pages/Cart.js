@@ -6,7 +6,7 @@ import useCartStore from "../store/cartStore";
 import axios from "axios";
 
 const Cart = () => {
-  const { cartItems, fetchCart, updateQuantity, removeFromCart } = useCartStore();
+  const { cartItems = [], fetchCart, updateQuantity, removeFromCart } = useCartStore();
   const [cartWithProducts, setCartWithProducts] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
@@ -16,8 +16,12 @@ const Cart = () => {
   }, [fetchCart]);
 
   useEffect(() => {
+    if (!Array.isArray(cartItems)) {
+      console.warn("cartItems không phải là mảng:", cartItems);
+      return;
+    }
     const fetchProductDetails = async () => {
-      if (!cartItems || cartItems.length === 0) return;
+      if (cartItems.length === 0) return;
 
       const updatedCart = await Promise.all(
         cartItems.map(async (item) => {
@@ -38,26 +42,12 @@ const Cart = () => {
 
       setCartWithProducts(updatedCart);
     };
-    
+
     fetchProductDetails();
-  }, [cartItems]); 
-
-  const totalPrice = selectedItems.reduce((sum, cartItemId) => {
-      const selectedProduct = cartWithProducts.find(item => item._id === cartItemId);
-      if (!selectedProduct) return sum;
-
-      const price = selectedProduct.productId?.data.price || 0;
-      const discount = selectedProduct.productId?.data.discount || 0;
-      const finalPrice = discount ? (price - (price * discount) / 100) : price;
-      
-      return sum + finalPrice * selectedProduct.quantity;
-  }, 0);
-
+  }, [cartItems]);
+  
   const handleCheckout = () => {
-    // Lọc ra sản phẩm đã chọn
     const selectedProducts = cartWithProducts.filter(item => selectedItems.includes(item._id));
-
-    // Chuyển hướng đến trang thanh toán, truyền danh sách sản phẩm đã chọn
     navigate("/checkout", { state: { selectedProducts } });
     localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
   };
@@ -70,9 +60,9 @@ const Cart = () => {
           <div className="col-md-8 mb-4">
             <CartList cart={cartWithProducts} updateQuantity={updateQuantity} removeFromCart={removeFromCart} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
           </div>
-          
+
           <div className="col-md-4 mb-4">
-            <CartSummary cart={cartWithProducts} selectedItems={selectedItems} totalPrice={totalPrice} handleCheckout={handleCheckout} />
+            <CartSummary cart={cartWithProducts} selectedItems={selectedItems} handleCheckout={handleCheckout} />
           </div>
         </div>
       </div>

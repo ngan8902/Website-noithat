@@ -45,30 +45,32 @@ const Header = () => {
   useEffect(() => {
     const updateCartCount = () => {
       let totalItems = 0;
-
+  
       if (user) {
-        totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        if (Array.isArray(cartItems)) {
+          totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+        }
       } else {
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
       }
-
+  
       setCartCount(totalItems);
     };
-
+  
     if (user && cartItems.length === 0 && !hasFetchedCart.current) {
       hasFetchedCart.current = true; 
       fetchCart();
     }
-
     updateCartCount();
-
+  
     window.addEventListener("cartUpdated", updateCartCount);
     return () => {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
-
+  
   }, [cartItems, user]);
+  
 
   const toSlug = (str) => {
     return str

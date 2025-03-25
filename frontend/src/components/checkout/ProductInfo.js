@@ -8,7 +8,6 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPr
             setCartData(cart);
         }
     }, [cart])
-    console.log(cartData)
 
     const displayProducts = product
     ? [{ ...product, quantity }] 

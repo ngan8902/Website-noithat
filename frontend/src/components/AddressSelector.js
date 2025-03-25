@@ -226,7 +226,6 @@ const AddressSelector = ({ setNewAddress }) => {
                 <input
                     type="text"
                     className="form-control"
-                    placeholder="Nhập tên đường"
                     value={street}
                     onChange={(e) => setStreet(e.target.value)}
                     disabled={!selectedWard}
@@ -253,7 +252,6 @@ const AddressSelector = ({ setNewAddress }) => {
                 <input
                     type="text"
                     className="form-control"
-                    placeholder="Nhập số nhà"
                     value={houseNumber}
                     onChange={(e) => setHouseNumber(e.target.value)}
                     disabled={!street}

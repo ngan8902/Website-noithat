@@ -15,7 +15,7 @@ const ProductDetail = () => {
     const { products } = useProductStore();
     const { user } = useAuthStore();
     const { addToCart: addToCartStore, fetchCart } = useCartStore();
-    const product = products.find(p => p._id === id); 
+    const product = products.find(p => p._id === id);
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
 
@@ -42,36 +42,36 @@ const ProductDetail = () => {
 
     const handleBuyNow = () => {
         navigate("/checkout", {
-            state: { 
-                product: { 
-                    _id: product._id, 
-                    name: product.name, 
-                    price: product.price, 
-                    discount: product.discount || 0, 
-                    image: product.image, 
-                    countInStock: product.countInStock 
-                }, 
-                quantity 
+            state: {
+                product: {
+                    _id: product._id,
+                    name: product.name,
+                    price: product.price,
+                    discount: product.discount || 0,
+                    image: product.image,
+                    countInStock: product.countInStock
+                },
+                quantity
             }
         });
     };
-    
+
 
     const addToCart = () => {
-        if(user) {
+        if (user) {
             handleAddToCartForCustomer();
         } else {
             handleAddToCartForGuest();
         }
     };
-    
+
     const handleAddToCartForGuest = () => {
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const existingProduct = cart.find(item => item._id === product._id); 
-    
+        const existingProduct = cart.find(item => item._id === product._id);
+
         if (existingProduct) {
             const newQuantity = existingProduct.quantity + quantity;
-    
+
             if (newQuantity > product.countInStock) {
                 toast.error(`Số lượng tồn kho chỉ còn ${product.countInStock} sản phẩm.`);
                 return;
@@ -84,17 +84,17 @@ const ProductDetail = () => {
             }
             cart.push({ ...product, quantity });
         }
-    
+
         localStorage.setItem("cart", JSON.stringify(cart));
-    
+
         window.dispatchEvent(new Event("cartUpdated"));
-    
+
         notifyOfCart()
     }
 
     const handleAddToCartForCustomer = async () => {
-        const res = await addToCartStore(product, 1);
-        if(res && res?.data && res?.data?.cart) {
+        const res = await addToCartStore(product, quantity);
+        if (res && res?.data && res?.data?.cart) {
             notifyOfCart()
             await fetchCart();
         }

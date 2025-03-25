@@ -9,7 +9,7 @@ const OrderCancelled = ({ orders = [], setOrders, userId }) => {
 
   useEffect(() => {
     if (orders.length > 0) {
-      // Chỉ lấy đơn hàng của user hiện tại và đã giao hàng
+      // Chỉ lấy đơn hàng của user hiện tại và đã hủy
       const cancelledOrders = Array.isArray(orders)
       ? orders.filter(order => order?.user === userId && (order.status === "cancelled" || order.status === "return"))
       : [];

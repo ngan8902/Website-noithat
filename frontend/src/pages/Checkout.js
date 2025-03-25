@@ -80,7 +80,7 @@ const Checkout = () => {
             const price = item.productId?.data?.price || item.price || 0;
             const discount = item.productId?.data?.discount || item.discount || 0;
             const finalItemPrice = discount ? price - (price * discount) / 100 : price;
-            return total + (finalItemPrice * item.quantity);
+            return total + (finalItemPrice * (item.quantity || selectedProducts?.reduce((acc, item) => acc + item.quantity, 0)));
         }, 0);
 
         return totalProductPrice;
@@ -135,12 +135,9 @@ const Checkout = () => {
         }
     }, [cartItems, selectedProducts]);
 
-    console.log(cartItems)
-
     useEffect(() => {
         setShippingFee(calculateShippingFee(selectedAddress || newAddress));
     }, [selectedAddress, newAddress]);
-
 
     const calculateShippingFee = (address) => {
         if (!address) return 0;
@@ -161,7 +158,6 @@ const Checkout = () => {
         return 200000;
     };
 
-    console.log("Cart: ", cartData)
     if (!product && (!cartData || cartData.length === 0)) {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
     }
@@ -169,8 +165,6 @@ const Checkout = () => {
     const orderDate = new Date().toLocaleDateString("vi-VN")
 
     const delivered = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("vi-VN")
-
-    console.log(product)
 
     const handleCheckout = async () => {
         setShowConfirmModal(false);
@@ -207,11 +201,11 @@ const Checkout = () => {
                 }]
                 : cartData.map(item => ({
                     product: item._id,
-                    name: item.productId?.data.name,
-                    image: item.productId?.data.image,
+                    name: item.productId?.data?.name,
+                    image: item.productId?.data?.image,
                     amount: item.quantity,
-                    price: item.productId?.data.price,
-                    discount: item.productId?.data.discount
+                    price: item.productId?.data?.price,
+                    discount: item.productId?.data?.discount
                 })),
             receiver: {
                 fullname: receiver?.fullname,
@@ -227,8 +221,6 @@ const Checkout = () => {
             delivered: delivered
         };
         try {
-            console.log("Full order data gửi lên:", orderData);
-
             const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
             await createOrder(orderData, { headers });
             notifyOfCheckout()
@@ -277,7 +269,7 @@ const Checkout = () => {
                     <ProductInfo
                         cartItems={cartItems}
                         product={product}
-                        quantity={quantity}
+                        quantity={quantity || selectedProducts?.reduce((acc, item) => acc + item.quantity, 0)}
                         cart={cartData}
                         shippingFee={shippingFee}
                         finalPrice={finalPrice}
@@ -321,8 +313,8 @@ const Checkout = () => {
                     <Modal.Title>Xác Nhận Đơn Hàng</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p><strong>Tên khách hàng:</strong> {receiver.fullname || user?.name}</p>
-                    <p><strong>Số điện thoại:</strong> {receiver.phone || user?.phone}</p>
+                    <p><strong>Tên khách hàng:</strong> {receiver?.fullname || user?.name}</p>
+                    <p><strong>Số điện thoại:</strong> {receiver?.phone || user?.phone}</p>
                     <p><strong>Địa chỉ giao hàng:</strong> {selectedAddress || newAddress}</p>
                     <p><strong>Phương thức thanh toán:</strong> {paymentMethod}</p>
                     <p><strong>Ngày đặt hàng:</strong> {orderDate}</p>

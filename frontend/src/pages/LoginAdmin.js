@@ -5,26 +5,28 @@ import { STAFF_TOKEN_KEY } from "../constants/authen.constant";
 
 function LoginAdmin() {
     const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [pass, setPass] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const getLogin = (email, password) => {
+    const getLogin = (username, password) => {
         return axios.post(`${process.env.REACT_APP_URL_BACKEND}/staff/sign-in`, {
             username: username,
             password: password,
         });
     };
 
-    const handelLogin = () => {
-        if (!username.trim() || !password.trim()) {
+    const handelLogin = (e) => {
+        e.preventDefault();
+
+        if (!username.trim() || !pass.trim()) {
             setErrorMessage("Vui lòng nhập đầy đủ thông tin");
             return;
         }
 
         setErrorMessage("");
 
-        getLogin(username, password)
+        getLogin(username, pass)
             .then((response) => {
                 let data = response.data;
                 if (data && !data.error) {
@@ -49,7 +51,7 @@ function LoginAdmin() {
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
-            handelLogin();
+            handelLogin(e);
         }
     };
 
@@ -71,8 +73,8 @@ function LoginAdmin() {
                     <input
                         type={showPassword ? "text" : "password"}
                         placeholder="Mật khẩu"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={pass}
+                        onChange={(e) => setPass(e.target.value)}
                         onKeyDown={handleKeyDown}
                     />
                     <span

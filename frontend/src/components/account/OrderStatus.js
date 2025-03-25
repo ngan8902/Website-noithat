@@ -2,27 +2,23 @@ import React, { useState, useEffect } from "react";
 import useOrderStore from "../../store/orderStore";
 import OrderDetailModal from "./OrderModal";
 
-const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) => {
-  const { updateOrderStatus, fetchOrder } = useOrderStore();
+const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory, userId }) => {
+  const { updateOrderStatus } = useOrderStore();
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getOrders = async () => {
-      setLoading(true);
-      try {
-        const fetchedOrders = await fetchOrder();
-        setOrders(fetchedOrders);
-      } catch (error) {
-        console.error("Lỗi khi tải đơn hàng:", error);
-        setOrders([]);
-      }
+    if (orders.length > 0) {
+      // Chỉ lấy đơn hàng của user hiện tại
+      const userOrders = Array.isArray(orders)
+      ? orders.filter(order => order?.user === userId && (order.status !== "cancelled" && order.status !== "return" && order.status !== "delivered"))
+      : [];
+      setFilteredOrders(userOrders);
       setLoading(false);
-    };
-
-    getOrders();
-  }, []);
+    }
+  }, [orders, userId])
 
   // Xử lý cập nhật đơn hàng
   const handleUpdateOrder = async (id, status) => {
@@ -82,8 +78,10 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Đang tải...</span>
           </div>
-          <p className="mt-2 text-muted">Đang tải danh sách đơn hàng...</p>
+          <p className="text-muted mt-2">Đang tải dữ liệu...</p>
         </div>
+      ) : filteredOrders.length === 0 ? (
+        <p className="text-center text-muted">Không có đơn hàng nào.</p>
       ) : (
         <div
         className="table-responsive"
@@ -175,17 +173,8 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                     ) : null}
                   </div>
                 </td>
-
-
               </tr>
             ))}
-            {activeOrders.length === 0 && (
-              <tr>
-                <td colSpan="8" className="text-muted">
-                  Không có đơn hàng nào.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
