@@ -17,8 +17,7 @@ function LoginAdmin() {
     };
 
     const handelLogin = (e) => {
-        e.preventDefault();
-
+        e?.preventDefault();
         if (!username.trim() || !pass.trim()) {
             setErrorMessage("Vui lòng nhập đầy đủ thông tin");
             return;

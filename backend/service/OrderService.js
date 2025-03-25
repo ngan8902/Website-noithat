@@ -112,9 +112,11 @@ const createOrder = async (userId, productIds, discount, validAmount, receiver, 
 
 const getOrdersByUser = async (userId) => {
     try {
-        const orders = await Order.find({ user: userId });
+        const orders = await Order.find({ user: userId })
+        .populate("orderItems.product")
+        .populate("receiver"); 
 
-        if (!orders) {
+        if (!orders || orders.length === 0) {
             return {
                 status: "OK",
                 message: "Đơn hàng trống",
@@ -148,6 +150,8 @@ const getOrderByCode = async (id) => {
                 })
             }
 
+            console.log()
+
             resolve({
                 status: 'OK',
                 message: 'success',
@@ -166,7 +170,7 @@ const updateOrderStatus = (orderId, newStatus) => {
             const order = await Order.findById(orderId);
             if (!order) {
                 throw new Error("Không tìm thấy đơn hàng.");
-            }
+            } 
 
             order.status = newStatus;
 

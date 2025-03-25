@@ -1,4 +1,5 @@
-const OrderService = require('../service/OrderService')
+const OrderService = require('../service/OrderService');
+const Product = require('../model/ProductModel')
 
 const createOrder = async (req, res) => {
     try {
@@ -21,7 +22,7 @@ const createOrder = async (req, res) => {
             });
         }
 
-        const response = await OrderService.createOrder(userId, productIds, discount, validAmount, receiver, status,shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock);
+        const response = await OrderService.createOrder(userId, productIds, discount, validAmount, receiver, status, shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock);
         return res.status(200).json(response);
     } catch (e) {
         console.log(e);
@@ -82,9 +83,32 @@ const updateOrderStatus = async (req, res) => {
             return res.status(401).json({ message: "Trạng thái không hợp lệ." });
         }
 
-        const response = await OrderService.updateOrderStatus(orderId, status)
-        return res.status(200).json(response)
+        const order = await OrderService.getOrdersByUser(orderId);
+        if (!order) {
+            return res.status(401).json({ message: "Không tìm thấy đơn hàng." });
+        }
+
+        if (status === "cancelled" && Array.isArray(order.orderItems)) {
+            for (const item of order.orderItems) {
+                if (item.product) { 
+                    const product = await Product.findById(item.product);
+                    
+                    if (product) {
+                        product.countInStock += item.amount;
+                        await product.save();
+                    } else {
+                        console.warn(`Không tìm thấy sản phẩm với ID: ${item.product}`);
+                    }
+                }
+            }
+        }
+        
+        
+
+        const updatedOrder = await OrderService.updateOrderStatus(orderId, status);
+        return res.status(200).json(updatedOrder)
     } catch (e) {
+        console.log(e)
         return res.status(500).json({
             message: e
         })
