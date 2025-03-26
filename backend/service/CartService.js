@@ -126,7 +126,7 @@ const clearPurchasedItems = async (userId, purchasedItems) => {
 
 
         const updatedCart = await Cart.findOneAndUpdate(
-            { _id: cart._id, __v: cart.__v }, 
+            { _id: cart._id, __v: cart.__v },
             { $set: { items: updatedItems } },
             { new: true, runValidators: true }
         );

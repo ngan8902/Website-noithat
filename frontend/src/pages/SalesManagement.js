@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Sidebar from "../components/sales/Sidebar";
 import ProductList from "../components/sales/ProductList";
 import OrderList from "../components/sales/OrderList";
@@ -9,10 +9,6 @@ import useOrderStore from "../store/orderStore";
 const SalesManagement = () => {
   const { fetchOrders, updateOrderStatus } = useOrderStore();
 
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
 
   const handleConfirmOrder = (orderId) => {
     updateOrderStatus(orderId, "processing");
@@ -37,6 +33,10 @@ const SalesManagement = () => {
     updateOrderStatus(orderId, "cancelled");
   };
 
+  const onConfirmCancel = async (orderId) => {
+    await updateOrderStatus(orderId, "cancelled_confirmed");
+  };
+
 
 
   return (
@@ -47,7 +47,7 @@ const SalesManagement = () => {
         <ProductList />
         <OrderList onConfirm={handleConfirmOrder} onCancel={handleCancelOrder} />
         <ConfirmOrderList onShip={handleShipOrder} onCancel={handleCancelOrder} />
-        <CompleteOrderList onComplete={handleCompleteOrder} onReturn={handleReturnOrder} />
+        <CompleteOrderList onComplete={handleCompleteOrder} onReturn={handleReturnOrder} onConfirmCancel={onConfirmCancel} />
       </div>
     </div>
   );

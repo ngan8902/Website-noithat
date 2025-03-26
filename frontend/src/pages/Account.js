@@ -32,7 +32,6 @@ const Account = () => {
         await auth();
       } catch (error) {
         console.error("Lỗi khi lấy thông tin người dùng:", error);
-        alert("Không thể lấy thông tin người dùng. Vui lòng đăng nhập lại.");
         localStorage.removeItem("user");
         navigate("/home");
       } finally {

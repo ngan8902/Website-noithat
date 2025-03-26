@@ -19,7 +19,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
   }
 
   const handelLogin = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
 
     if (!email.trim() || !pass.trim()) {
       setErrorMessage("Vui lòng nhập đầy đủ thông tin");

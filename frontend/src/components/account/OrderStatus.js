@@ -8,11 +8,14 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
+
+
   useEffect(() => {
     if (orders.length > 0) {
       setLoading(false);
     }
   }, [orders])
+
 
   // Xử lý cập nhật đơn hàng
   const handleUpdateOrder = async (id, status) => {
@@ -24,7 +27,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
           order._id === id ? { ...order, status } : order
         );
 
-        return updatedOrders.filter((order) => order.status !== "cancelled" && order.status !== "return" && order.status !== "received");
+        return updatedOrders.filter((order) => order.status !== "cancelled" && order.status !== "return" && order.status !== "cancelled_confirmed" && order.status !== "received");
       });
 
       setOrderHistory((prevHistory) => {
@@ -38,8 +41,8 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
   };
 
   const activeOrders = Array.isArray(orders)
-  ? orders.filter(order => order.status !== "cancelled" && order.status !== "return" && order.status !== "delivered")
-  : [];
+    ? orders.filter(order => order.status !== "cancelled" && order.status !== "return" && order.status !== "cancelled_confirmed" && order.status !== "delivered")
+    : [];
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -59,6 +62,8 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
         return "Đã trả hàng"
       case "cancelled":
         return "Đã hủy";
+      case "cancelled_confirmed":
+        return "Đã hủy";
       default:
         return "Không xác định";
     }
@@ -77,85 +82,85 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
       ) : activeOrders.length === 0 ? (
         <p className="text-center text-muted">Không có đơn hàng nào.</p>
       ) : (
-      <div
-        className="table-responsive"
-        style={{
-          maxHeight: orders.length > 5 ? "400px" : "auto",
-          overflowY: orders.length > 5 ? "auto" : "visible",
-          overflowX: "none",
-          border: "1px solid #ddd"
-        }}
-      >
-        <table className="table table-hover table-bordered text-center align-middle">
-          <thead className="table-dark">
-            <tr>
-              <th>Mã Đơn Hàng</th>
-              <th>Hình Ảnh</th>
-              <th>Tên Sản Phẩm</th>
-              <th>Số Lượng</th>
-              <th>Tổng Tiền</th>
-              <th>Phương Thức Thanh Toán</th>
-              <th>Trạng Thái</th>
-              <th>Hành Động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(activeOrders) && activeOrders.length > 0 ? (
-              activeOrders.map((order) => (
-                <tr key={order?._id}>
-                  <td className="fw-bold">#{order?.orderCode}</td>
-                  <td>
-                    {order?.orderItems?.map((item, index) => (
-                      <div key={index} className="mb-2">
-                        <img
-                          src={item.image || "/default-image.jpg"}
-                          alt={item.name}
-                          style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
-                        />
-                        {index < order?.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
-                      </div>
-                    ))}
-                  </td>
-                  <td>
-                    {order?.orderItems?.map((item, index) => (
-                      <div key={index}>
-                        {item.name}
-                        {index < order?.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
-                      </div>
-                    )) || "Không có dữ liệu"}
-                  </td>
-                  <td>
-                    {order?.orderItems?.map((item, index) => (
-                      <div key={index}>
-                        {item.amount}
-                        {index < order.orderItems.length - 1 && <hr style={{ borderTop: "1px solid #aaa" }} />}
-                      </div>
-                    )) || 1}
-                  </td>
-                  <td className="text-success fw-bold">{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
-                  <td>{order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : order?.paymentMethod === "VnPay" ? "Thanh toán qua VnPay" : order?.paymentMethod}</td>
-                  <td>
-                    <span
-                      className={`badge ${order?.status === "pending" ? "bg-primary" :
-                        order?.status === "processing" ? "bg-info text-dark" :
-                          order?.status === "shipped" ? "bg-warning text-dark" :
-                            order?.status === "return_requested" ? "bg-danger" :
-                              "bg-light text-dark"
-                        }`}
-                    >
-                      {getStatusLabel(order?.status)}
-                    </span>
-                  </td>
-                  <td className="text-center">
-                    <div className="d-flex justify-content-center gap-2">
-                      <button className="btn btn-info btn-sm me-2" onClick={() => { setSelectedOrder(order); setShowModal(true); }}>
-                        Chi Tiết
-                      </button>
-                      {["pending"].includes(order?.status) ? (
-                        <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}
-                          disabled={order?.status === "processing"}>
-                          Hủy Đơn
+        <div
+          className="table-responsive"
+          style={{
+            maxHeight: orders.length > 5 ? "400px" : "auto",
+            overflowY: orders.length > 5 ? "auto" : "visible",
+            overflowX: "none",
+            border: "1px solid #ddd"
+          }}
+        >
+          <table className="table table-hover table-bordered text-center align-middle">
+            <thead className="table-dark">
+              <tr>
+                <th>Mã Đơn Hàng</th>
+                <th>Hình Ảnh</th>
+                <th>Tên Sản Phẩm</th>
+                <th>Số Lượng</th>
+                <th>Tổng Tiền</th>
+                <th>Phương Thức Thanh Toán</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.isArray(activeOrders) && activeOrders.length > 0 ? (
+                activeOrders.map((order) => (
+                  <tr key={order?._id}>
+                    <td className="fw-bold">#{order?.orderCode}</td>
+                    <td>
+                      {order?.orderItems?.map((item, index) => (
+                        <div key={index} className="mb-2">
+                          <img
+                            src={item.image || "/default-image.jpg"}
+                            alt={item.name}
+                            style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
+                          />
+                          {index < order?.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                        </div>
+                      ))}
+                    </td>
+                    <td>
+                      {order?.orderItems?.map((item, index) => (
+                        <div key={index}>
+                          {item.name}
+                          {index < order?.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                        </div>
+                      )) || "Không có dữ liệu"}
+                    </td>
+                    <td>
+                      {order?.orderItems?.map((item, index) => (
+                        <div key={index}>
+                          {item.amount}
+                          {index < order.orderItems.length - 1 && <hr style={{ borderTop: "1px solid #aaa" }} />}
+                        </div>
+                      )) || 1}
+                    </td>
+                    <td className="text-success fw-bold">{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
+                    <td>{order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : order?.paymentMethod === "VnPay" ? "Thanh toán qua VnPay" : order?.paymentMethod}</td>
+                    <td>
+                      <span
+                        className={`badge ${order?.status === "pending" ? "bg-primary" :
+                          order?.status === "processing" ? "bg-info text-dark" :
+                            order?.status === "shipped" ? "bg-warning text-dark" :
+                              order?.status === "return_requested" ? "bg-danger" :
+                                "bg-light text-dark"
+                          }`}
+                      >
+                        {getStatusLabel(order?.status)}
+                      </span>
+                    </td>
+                    <td className="text-center">
+                      <div className="d-flex justify-content-center gap-2">
+                        <button className="btn btn-info btn-sm me-2" onClick={() => { setSelectedOrder(order); setShowModal(true); }}>
+                          Chi Tiết
                         </button>
+                        {["pending"].includes(order?.status) ? (
+                          <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}
+                            disabled={order?.status === "processing"}>
+                            Hủy Đơn
+                          </button>
                         ) : order?.status === "shipped" ? (
                           <>
                             <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order._id, "received")}>
@@ -166,14 +171,14 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                             </button>
                           </>
                         ) : null}
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : null}
-          </tbody>
-        </table>
-      </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : null}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {selectedOrder && <OrderDetailModal order={selectedOrder} show={showModal} handleClose={() => setShowModal(false)} />}

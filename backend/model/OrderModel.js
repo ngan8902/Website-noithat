@@ -40,7 +40,7 @@ const orderSchema = new mongoose.Schema(
         shoppingFee: {type: Number, default: 0},
         status: {
             type: String,
-            enum: ["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested"],
+            enum: ["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested","cancelled_confirmed"],
             default: "pending",
         },
     },

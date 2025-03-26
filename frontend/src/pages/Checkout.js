@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import CustomerInfo from "../components/checkout/CustomerInfo";
 import ProductInfo from "../components/checkout/ProductInfo";
@@ -16,6 +17,7 @@ import { Modal, Button } from "react-bootstrap";
 
 const Checkout = () => {
     const location = useLocation();
+    const navigate = useNavigate();
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -36,7 +38,7 @@ const Checkout = () => {
 
     useEffect(() => {
         const storedCart = JSON.parse(localStorage.getItem("selectedProducts")) || [];
-        
+
         if (selectedProducts) {
             setCartData(selectedProducts);
             localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
@@ -69,7 +71,6 @@ const Checkout = () => {
     const [finalPrice, setFinalPrice] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
 
-    console.log(cartItems)
 
     const displayProducts = selectedProducts?.length > 0
         ? selectedProducts
@@ -250,18 +251,6 @@ const Checkout = () => {
 
             if (purchasedItems.length > 0) {
                 clearPurchasedItems(purchasedItems);
-                console.log("Đã xóa các items có _id:", purchasedItems);
-            } else {
-                console.log("Không có sản phẩm nào để xóa.");
-            }
-            
-
-            setTimeout(async () => {
-                await fetchCart();
-            }, 500);
-
-            if (purchasedItems.length > 0) {
-                clearPurchasedItems(purchasedItems);
                 localStorage.removeItem("selectedProducts");
             } else {
                 console.log("Không có sản phẩm nào để xóa.");
@@ -269,12 +258,12 @@ const Checkout = () => {
 
             setTimeout(async () => {
                 await fetchCart();
-                // if (user) {
-                //     window.location.replace("/account");
-                // } else {
-                //     window.location.replace("/home");
-                // }
-            }, 500);
+                if (user) {
+                    navigate("/account");
+                } else {
+                    navigate("/home");
+                }
+            }, 2000);
         } catch (error) {
             console.log(error)
             toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");

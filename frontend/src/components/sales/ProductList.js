@@ -11,7 +11,14 @@ const ProductList = () => {
 
   useEffect(() => {
     getProducts();
+
+    const interval = setInterval(() => {
+      getProducts();
+    }, 20000); 
+
+    return () => clearInterval(interval);
   }, [getProducts]);
+
 
   const handleDelete = async (_id) => {
     await removeProduct(_id);
@@ -33,8 +40,6 @@ const ProductList = () => {
     product.productCode?.toLowerCase().includes(search.toLowerCase())
   );
 
-  console.log("Danh sách sản phẩm:", products);
-  console.log("Sản phẩm sau khi lọc:", filteredProducts);
 
   return (
     <div id="products" className="mt-4">

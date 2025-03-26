@@ -79,33 +79,34 @@ const updateOrderStatus = async (req, res) => {
         const { status } = req.body;
         const { orderId } = req.params;
 
-        if (!["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested"].includes(status)) {
+        if (!["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested", "cancelled_confirmed"].includes(status)) {
             return res.status(401).json({ message: "Trạng thái không hợp lệ." });
         }
 
-        const order = await OrderService.getOrdersByUser(orderId);
-        if (!order) {
-            return res.status(401).json({ message: "Không tìm thấy đơn hàng." });
-        }
+        const updatedOrder = await OrderService.updateOrderStatus(orderId, status);
 
-        if (status === "cancelled" && Array.isArray(order.orderItems)) {
-            for (const item of order.orderItems) {
-                if (item.product) { 
-                    const product = await Product.findById(item.product);
-                    
-                    if (product) {
-                        product.countInStock += item.amount;
-                        await product.save();
-                    } else {
-                        console.warn(`Không tìm thấy sản phẩm với ID: ${item.product}`);
-                    }
+        if ((status === "cancelled_confirmed" || status === "return") &&
+            Array.isArray(updatedOrder?.data?.orderItems)) {
+
+            for (const item of updatedOrder.data.orderItems) {
+                if (!item.product) {
+                    console.warn(`Sản phẩm không có ID hợp lệ:`, item);
+                    continue; 
+                }
+
+                const product = await Product.findById(item.product.toString());
+                if (product) {
+                    product.countInStock = (Number(product.countInStock) || 0) + Number(item.amount);
+                    await product.save();
+                } else {
+                    console.warn(`Không tìm thấy sản phẩm với ID: ${item.product}`);
                 }
             }
+        } else {
+            console.error("Lỗi: updatedOrder.data.orderItems bị undefined hoặc không phải mảng!", updatedOrder?.data?.orderItems);
         }
-        
-        
 
-        const updatedOrder = await OrderService.updateOrderStatus(orderId, status);
+
         return res.status(200).json(updatedOrder)
     } catch (e) {
         console.log(e)

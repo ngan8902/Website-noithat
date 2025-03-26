@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import useOrderStore from "../../store/orderStore";
 
 
-const CompleteOrderList = ({ onComplete, onReturn }) => {
+const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const { orders, fetchOrders } = useOrderStore();
 
@@ -11,13 +11,22 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
     "return": "Đã trả hàng"
   };
 
+  // useEffect(() => {
+  //   fetchOrders();
+
+  //   const interval = setInterval(() => {
+  //     fetchOrders();
+  //   }, 5000);
+
+  //   return () => clearInterval(interval);
+  // }, [fetchOrders]);
+
   useEffect(() => {
     fetchOrders()
   }, [])
 
-
   const filteredOrders = (Array.isArray(orders) ? orders : [])
-    .filter(order => order.status !== "cancelled")
+    .filter(order => order.status !== "cancelled_confirmed" && order.status !== "pending")
     .filter(order => {
       const receiverName = order.receiver?.fullname?.toLowerCase() || "";
       const receiverPhone = order.receiver?.phone || "";
@@ -160,9 +169,17 @@ const CompleteOrderList = ({ onComplete, onReturn }) => {
                           )}
                         </>
                       )}
+
+                      {order.status === "cancelled" && (
+                        <button
+                          className="btn btn-warning btn-sm"
+                          style={{ marginBottom: "5px" }}
+                          onClick={() => onConfirmCancel(order._id)}
+                        >
+                          Xác nhận hủy
+                        </button>
+                      )}
                     </td>
-
-
                   </tr>
                 ))
               ) : (

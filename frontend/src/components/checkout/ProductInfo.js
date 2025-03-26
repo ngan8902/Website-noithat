@@ -13,8 +13,6 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPr
         ? selectedProducts
         : (product ? [{ ...product, quantity }] : cartData);
 
-    console.log(displayProducts)
-
     return (
         <div className="col-md-6">
             <h5 className="fw-bold">Thông Tin Sản Phẩm</h5>
