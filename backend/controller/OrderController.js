@@ -103,7 +103,7 @@ const updateOrderStatus = async (req, res) => {
                 }
             }
         } else {
-            console.error("Lỗi: updatedOrder.data.orderItems bị undefined hoặc không phải mảng!", updatedOrder?.data?.orderItems);
+            console.error("Lỗi: updatedOrder.data.orderItems bị undefined hoặc không phải mảng!");
         }
 
 
@@ -127,10 +127,27 @@ const getAllOrders = async (req, res) => {
     }
 }
 
+const deleteOrderId = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const result = await OrderService.deleteOrderId(orderId);
+
+        if (!result.success) {
+            return res.status(401).json({ success: false, message: result.message });
+        }
+
+        res.status(200).json({ success: true, message: result.message, data: result.data });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
 module.exports = {
     createOrder,
     getOrdersByUser,
     getOrderByCode,
     updateOrderStatus,
-    getAllOrders
+    getAllOrders,
+    deleteOrderId
 }

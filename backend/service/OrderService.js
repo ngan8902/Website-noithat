@@ -210,6 +210,18 @@ const getAllOrders = () => {
     })
 }
 
+const deleteOrderId = async (orderId) => {
+    try {
+        const deletedOrder = await Order.findByIdAndDelete(orderId);
+        if (!deletedOrder) {
+            return { success: false, message: "Order not found" };
+        }
+        return { success: true, message: "Order deleted successfully", data: deletedOrder };
+    } catch (error) {
+        throw new Error("Error deleting order: " + error.message);
+    }
+};
+
 
 
 module.exports = {
@@ -217,5 +229,6 @@ module.exports = {
     getOrdersByUser,
     getOrderByCode,
     updateOrderStatus,
-    getAllOrders
+    getAllOrders,
+    deleteOrderId
 };

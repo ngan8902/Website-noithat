@@ -9,6 +9,8 @@ router.get('/get-order-by-user', authenticateUser, orderController.getOrdersByUs
 router.get("/get-order/:id", orderController.getOrderByCode)
 router.put("/update-order-status/:orderId", orderController.updateOrderStatus)
 router.get("/get-all-orders", orderController.getAllOrders)
+router.delete("/delete-orders/:orderId", orderController.deleteOrderId)
+
 
 
 

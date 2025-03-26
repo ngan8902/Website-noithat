@@ -142,7 +142,7 @@ const useOrderStore = create((set, get) => ({
             }
 
             if (newStatus === "cancelled_confirmed") {
-                const updatedOrder = response.data.updatedOrder; 
+                const updatedOrder = response.data.updatedOrder;
                 if (updatedOrder?.orderItems) {
                     set((state) => ({
                         orders: state.orders.map(order =>
@@ -160,6 +160,19 @@ const useOrderStore = create((set, get) => ({
                     order._id === orderId ? { ...order, orderStatus: "pending" } : order
                 ),
             }));
+        }
+    },
+
+    deleteOrderById: async (orderId) => {
+        set({ loading: true, error: null });
+        try {
+            await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/order/delete-orders/${orderId}`);
+            set((state) => ({
+                orders: state.orders.filter((order) => order._id !== orderId),
+                loading: false
+            }));
+        } catch (error) {
+            set({ error: error.message, loading: false });
         }
     },
 

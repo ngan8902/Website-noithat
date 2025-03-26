@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-//import useOrderStore from "../../store/orderStore";
+import useOrderStore from "../../store/orderStore";
 
 const OrderCancelled = ({ orders = [], setOrders }) => {
-  //const { deleteOrder } = useOrderStore();
+  const { deleteOrderById } = useOrderStore();
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (orders.length > 0) {
-      setLoading(false);
-    }
+    setLoading(orders.length === 0);
   }, [orders]);
 
   const cancelledOrders = Array.isArray(orders)
@@ -17,12 +15,11 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
   : [];
 
   const handleDeleteOrder = async (orderId) => {
-    // try {
-    //   await deleteOrder(orderId);
-    //   setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
-    // } catch (error) {
-    //   console.error("Lỗi khi xóa đơn hàng:", error);
-    // }
+    try {
+      await deleteOrderById(orderId);
+    } catch (error) {
+      console.error("Lỗi khi xóa đơn hàng:", error);
+    }
   };
 
   // const getStatusLabel = (status) => {
