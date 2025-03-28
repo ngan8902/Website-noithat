@@ -27,16 +27,6 @@ const Account = () => {
   }, [user, getOrderByUser]);
 
   useEffect(() => {
-    if (!user?._id) return;
-
-    const interval = setInterval(() => {
-      fetchOrders();
-    }, 10000); 
-
-    return () => clearInterval(interval); 
-  }, [user, fetchOrders]);
-
-  useEffect(() => {
     const fetchUser = async () => {
       try {
         await auth();

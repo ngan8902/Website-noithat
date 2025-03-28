@@ -102,9 +102,7 @@ const updateOrderStatus = async (req, res) => {
                     console.warn(`Không tìm thấy sản phẩm với ID: ${item.product}`);
                 }
             }
-        } else {
-            console.error("Lỗi: updatedOrder.data.orderItems bị undefined hoặc không phải mảng!");
-        }
+        } 
 
 
         return res.status(200).json(updatedOrder)

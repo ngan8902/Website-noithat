@@ -6,12 +6,14 @@ const OrderHistory = ({ orders = [] }) => {
   useEffect(() => {
     if (orders.length > 0) {
       setLoading(false);
+    } if (orders.length === 0) {
+      setLoading(false);
     }
-  }, [orders])
+  }, [orders]);
 
   const Purchased = Array.isArray(orders)
-  ? orders.filter((order) => order?.status === "delivered")
-  : [];
+    ? orders.filter((order) => order?.status === "delivered")
+    : [];
 
   const getStatusLabel = (status) => {
     switch (status) {

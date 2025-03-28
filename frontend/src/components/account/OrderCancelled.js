@@ -6,9 +6,13 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
 
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(orders.length === 0);
-  }, [orders]);
+ useEffect(() => {
+     if (orders.length > 0) {
+       setLoading(false);
+     }if (orders.length === 0) {
+      setLoading(false);
+    }
+   }, [orders]);
 
   const cancelledOrders = Array.isArray(orders)
   ? orders.filter((order) => order?.status === "cancelled" || order?.status === "return" || order?.status === "cancelled_confirmed")

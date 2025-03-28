@@ -9,12 +9,16 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(orders.length === 0);
+    if (orders.length > 0) {
+      setLoading(false);
+    } if (orders.length === 0) {
+      setLoading(false);
+    }
   }, [orders]);
 
   // Tạo danh sách đơn hàng hợp lệ
-  const activeOrders = useMemo(() => 
-    orders.filter(order => !["cancelled", "return", "cancelled_confirmed", "delivered"].includes(order?.status)), 
+  const activeOrders = useMemo(() =>
+    orders.filter(order => !["cancelled", "return", "cancelled_confirmed", "delivered"].includes(order?.status)),
     [orders]
   );
 
@@ -35,7 +39,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
   const handleUpdateOrder = async (id, status) => {
     try {
       await updateOrderStatus(id, status);
-      
+
       setOrders((prevOrders) => {
         const updatedOrders = prevOrders.map(order =>
           order?._id === id ? { ...order, status } : order
@@ -122,15 +126,15 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                   </td>
                   <td className="text-success fw-bold">{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
                   <td>
-                    {order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : 
-                     order?.paymentMethod === "VnPay" ? "Thanh toán qua VnPay" : order?.paymentMethod}
+                    {order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" :
+                      order?.paymentMethod === "VnPay" ? "Thanh toán qua VnPay" : order?.paymentMethod}
                   </td>
                   <td>
                     <span className={`badge ${order?.status === "pending" ? "bg-primary" :
                       order?.status === "processing" ? "bg-info text-dark" :
-                      order?.status === "shipped" ? "bg-warning text-dark" :
-                      order?.status === "return_requested" ? "bg-danger" :
-                      "bg-light text-dark"}`}>
+                        order?.status === "shipped" ? "bg-warning text-dark" :
+                          order?.status === "return_requested" ? "bg-danger" :
+                            "bg-light text-dark"}`}>
                       {statusLabels[order?.status] || "Không xác định"}
                     </span>
                   </td>
