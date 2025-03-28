@@ -10,7 +10,7 @@ const OrderHistory = ({ orders = [] }) => {
   }, [orders])
 
   const Purchased = Array.isArray(orders)
-  ? orders.filter((order) => order.status === "delivered")
+  ? orders.filter((order) => order?.status === "delivered")
   : [];
 
   const getStatusLabel = (status) => {

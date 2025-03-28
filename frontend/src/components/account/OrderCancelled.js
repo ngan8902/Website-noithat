@@ -11,7 +11,7 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
   }, [orders]);
 
   const cancelledOrders = Array.isArray(orders)
-  ? orders.filter((order) => order.status === "cancelled" || order.status === "return" || order.status === "cancelled_confirmed")
+  ? orders.filter((order) => order?.status === "cancelled" || order?.status === "return" || order?.status === "cancelled_confirmed")
   : [];
 
   const handleDeleteOrder = async (orderId) => {

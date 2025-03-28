@@ -19,9 +19,7 @@ const AddressSelector = ({ setNewAddress }) => {
     const [selectedWard, setSelectedWard] = useState("");
 
     const [street, setStreet] = useState("");
-    const [streetSuggestions, setStreetSuggestions] = useState([]);
     const [houseNumber, setHouseNumber] = useState("");
-
     const [selectedAddressText, setSelectedAddressText] = useState("");
 
     // Lấy danh sách tỉnh/thành phố
@@ -31,20 +29,24 @@ const AddressSelector = ({ setNewAddress }) => {
             .catch(error => console.error("Lỗi khi lấy danh sách tỉnh/thành phố:", error));
     }, []);
 
-    // Khi nhập tỉnh/thành phố, tìm kiếm gợi ý
-    useEffect(() => {
-        if (provinceInput.length >= 1) {
-            setProvinceSuggestions(
-                provinces.filter(province => province.name.toLowerCase().includes(provinceInput.toLowerCase()))
-            );
-        } else {
-            setProvinceSuggestions([]);
-        }
-    }, [provinceInput, provinces]);
+    // Xử lý nhập tỉnh/thành phố
+    const handleProvinceChange = (e) => {
+        const value = e.target.value;
+        setProvinceInput(value);
+        const found = provinces.find(p => p.name.toLowerCase() === value.toLowerCase());
+        setSelectedProvince(found ? found.code : value);
+        setProvinceSuggestions(provinces.filter(p => p.name.toLowerCase().includes(value.toLowerCase())));
+    };
 
-    // Khi chọn tỉnh/thành phố, lấy danh sách quận/huyện
+    const handleSelectProvince = (province) => {
+        setProvinceInput(province.name);
+        setSelectedProvince(province.code);
+        setProvinceSuggestions([]);
+    };
+
+    // Khi chọn tỉnh, lấy danh sách quận/huyện
     useEffect(() => {
-        if (selectedProvince) {
+        if (selectedProvince && typeof selectedProvince === "number") {
             axios.get(`https://provinces.open-api.vn/api/p/${selectedProvince}?depth=2`)
                 .then(response => setDistricts(response.data.districts))
                 .catch(error => console.error("Lỗi khi lấy danh sách quận/huyện:", error));
@@ -54,20 +56,24 @@ const AddressSelector = ({ setNewAddress }) => {
         }
     }, [selectedProvince]);
 
-    // Khi nhập quận/huyện, tìm kiếm gợi ý
-    useEffect(() => {
-        if (districtInput.length > 1) {
-            setDistrictSuggestions(
-                districts.filter(district => district.name.toLowerCase().includes(districtInput.toLowerCase()))
-            );
-        } else {
-            setDistrictSuggestions([]);
-        }
-    }, [districtInput, districts]);
+    // Xử lý nhập quận/huyện
+    const handleDistrictChange = (e) => {
+        const value = e.target.value;
+        setDistrictInput(value);
+        const found = districts.find(d => d.name.toLowerCase() === value.toLowerCase());
+        setSelectedDistrict(found ? found.code : value);
+        setDistrictSuggestions(districts.filter(d => d.name.toLowerCase().includes(value.toLowerCase())));
+    };
 
-    // Khi chọn quận/huyện, lấy danh sách phường/xã
+    const handleSelectDistrict = (district) => {
+        setDistrictInput(district.name);
+        setSelectedDistrict(district.code);
+        setDistrictSuggestions([]);
+    };
+
+    // Khi chọn quận, lấy danh sách phường/xã
     useEffect(() => {
-        if (selectedDistrict) {
+        if (selectedDistrict && typeof selectedDistrict === "number") {
             axios.get(`https://provinces.open-api.vn/api/d/${selectedDistrict}?depth=2`)
                 .then(response => setWards(response.data.wards))
                 .catch(error => console.error("Lỗi khi lấy danh sách phường/xã:", error));
@@ -76,66 +82,30 @@ const AddressSelector = ({ setNewAddress }) => {
         }
     }, [selectedDistrict]);
 
-    // Khi nhập phường/xã, tìm kiếm gợi ý
-    useEffect(() => {
-        if (wardInput.length > 1) {
-            setWardSuggestions(
-                wards.filter(ward => ward.name.toLowerCase().includes(wardInput.toLowerCase()))
-            );
-        } else {
-            setWardSuggestions([]);
-        }
-    }, [wardInput, wards]);
-
-    useEffect(() => {
-        if (street.length > 2 && selectedProvince && selectedDistrict) {
-            const fetchStreets = async () => {
-                try {
-                    const response = await axios.get(
-                        `https://nominatim.openstreetmap.org/search`,
-                        {
-                            params: {
-                                format: "json",
-                                country: "Vietnam",
-                                state: provinces.find(p => p.code === Number(selectedProvince))?.name || "",
-                                county: districts.find(d => d.code === Number(selectedDistrict))?.name || "",
-                                city: wards.find(w => w.code === Number(selectedWard))?.name || "",
-                                street: street,
-                                addressdetails: 1,
-                                limit: 5
-                            }
-                        }
-                    );
-                    setStreetSuggestions(response.data.map(item => item.address?.road || "Không có tên đường"));
-                } catch (error) {
-                    console.error("Lỗi khi lấy danh sách đường:", error);
-                }
-            };
-
-            const debounceTimeout = setTimeout(fetchStreets, 500);
-            return () => clearTimeout(debounceTimeout);
-        } else {
-            setStreetSuggestions([]);
-        }
-    }, [street, selectedProvince, selectedDistrict, selectedWard, districts, provinces, wards]);
-
-    const handleSelectStreet = (streetName) => {
-        setStreet(streetName);
-        setStreetSuggestions([]);
+    // Xử lý nhập phường/xã
+    const handleWardChange = (e) => {
+        const value = e.target.value;
+        setWardInput(value);
+        const found = wards.find(w => w.name.toLowerCase() === value.toLowerCase());
+        setSelectedWard(found ? found.code : value);
+        setWardSuggestions(wards.filter(w => w.name.toLowerCase().includes(value.toLowerCase())));
     };
 
-    // Cập nhật địa chỉ
+    const handleSelectWard = (ward) => {
+        setWardInput(ward.name);
+        setSelectedWard(ward.code);
+        setWardSuggestions([]);
+    };
+
+    // Cập nhật địa chỉ hiển thị
     useEffect(() => {
-        const provinceName = provinces.find(p => p.code === Number(selectedProvince))?.name || "";
-        const districtName = districts.find(d => d.code === Number(selectedDistrict))?.name || "";
-        const wardName = wards.find(w => w.code === Number(selectedWard))?.name || "";
+        const provinceName = provinces.find(p => p.code === selectedProvince)?.name || (typeof selectedProvince === "string" ? selectedProvince : "");
+        const districtName = districts.find(d => d.code === selectedDistrict)?.name || (typeof selectedDistrict === "string" ? selectedDistrict : "");
+        const wardName = wards.find(w => w.code === selectedWard)?.name || (typeof selectedWard === "string" ? selectedWard : "");
 
         const fullAddress = `${houseNumber ? houseNumber + ", " : ""}${street ? street + ", " : ""}${wardName ? wardName + ", " : ""}${districtName ? districtName + ", " : ""}${provinceName}`;
         setSelectedAddressText(fullAddress);
-
-        if (provinceName && districtName && wardName) {
-            setNewAddress(fullAddress);
-        }
+        setNewAddress(fullAddress);
     }, [selectedProvince, selectedDistrict, selectedWard, street, houseNumber, provinces, districts, wards, setNewAddress]);
 
     return (
@@ -144,121 +114,37 @@ const AddressSelector = ({ setNewAddress }) => {
                 <strong>Địa chỉ:</strong> {selectedAddressText || "Chưa hoàn thành"}
             </div>
 
-            <div className="mb-3 position-relative">
-                <label className="form-label fw-bold">Tỉnh/Thành phố</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    value={provinceInput}
-                    onChange={(e) => setProvinceInput(e.target.value)}
-                />
-                {provinceSuggestions.length > 1 && (
-                    <ul className="list-group mt-1">
-                        {provinceSuggestions.map(province => (
-                            <li key={province.code}
-                                className="list-group-item list-group-item-action"
-                                onClick={() => {
-                                    setSelectedProvince(province.code);
-                                    setProvinceInput(province.name);
-                                    setProvinceSuggestions([]);
-                                }}>
-                                {province.name}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-
-            <div className="mb-3 position-relative">
-                <label className="form-label fw-bold">Quận/Huyện</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    value={districtInput}
-                    onChange={(e) => setDistrictInput(e.target.value)}
-                    disabled={!selectedProvince}
-                />
-                {districtSuggestions.length > 1 && (
-                    <ul className="list-group mt-1">
-                        {districtSuggestions.map(district => (
-                            <li key={district.code}
-                                className="list-group-item list-group-item-action"
-                                onClick={() => {
-                                    setSelectedDistrict(district.code);
-                                    setDistrictInput(district.name);
-                                    setDistrictSuggestions([]);
-                                }}>
-                                {district.name}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-
-            <div className="mb-3 position-relative">
-                <label className="form-label fw-bold">Phường/Xã</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    value={wardInput}
-                    onChange={(e) => setWardInput(e.target.value)}
-                    disabled={!selectedDistrict}
-                />
-                {wardSuggestions.length > 1 && (
-                    <ul className="list-group mt-1">
-                        {wardSuggestions.map(ward => (
-                            <li key={ward.code}
-                                className="list-group-item list-group-item-action"
-                                onClick={() => {
-                                    setSelectedWard(ward.code);
-                                    setWardInput(ward.name);
-                                    setWardSuggestions([]);
-                                }}>
-                                {ward.name}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+            <InputField label="Tỉnh/Thành phố" value={provinceInput} onChange={handleProvinceChange} suggestions={provinceSuggestions} onSelect={handleSelectProvince} />
+            <InputField label="Quận/Huyện" value={districtInput} onChange={handleDistrictChange} suggestions={districtSuggestions} onSelect={handleSelectDistrict} disabled={!selectedProvince} />
+            <InputField label="Phường/Xã" value={wardInput} onChange={handleWardChange} suggestions={wardSuggestions} onSelect={handleSelectWard} disabled={!selectedDistrict} />
 
             <div className="mb-3">
                 <label className="form-label fw-bold">Tên Đường</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    value={street}
-                    onChange={(e) => setStreet(e.target.value)}
-                    disabled={!selectedWard}
-                />
-                {streetSuggestions.length > 1 && (
-                    <ul className="list-group mt-1">
-                        {streetSuggestions.map((suggestion, index) => (
-                            <li
-                                key={index}
-                                className="list-group-item list-group-item-action"
-                                onClick={() => {
-                                    handleSelectStreet(suggestion);
-                                }}
-                            >
-                                {suggestion}
-                            </li>
-                        ))}
-                    </ul>
-                )}
+                <input type="text" className="form-control" value={street} onChange={(e) => setStreet(e.target.value)} disabled={!selectedWard} />
             </div>
 
             <div className="mb-3">
                 <label className="form-label fw-bold">Số Nhà</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    value={houseNumber}
-                    onChange={(e) => setHouseNumber(e.target.value)}
-                    disabled={!street}
-                />
+                <input type="text" className="form-control" value={houseNumber} onChange={(e) => setHouseNumber(e.target.value)} disabled={!street} />
             </div>
         </div>
     );
 };
+
+const InputField = ({ label, value, onChange, suggestions, onSelect, disabled }) => (
+    <div className="mb-3 position-relative">
+        <label className="form-label fw-bold">{label}</label>
+        <input type="text" className="form-control" value={value} onChange={onChange} disabled={disabled} />
+        {suggestions.length > 0 && (
+            <ul className="list-group mt-1">
+                {suggestions.map(item => (
+                    <li key={item.code} className="list-group-item list-group-item-action" onClick={() => onSelect(item)}>
+                        {item.name}
+                    </li>
+                ))}
+            </ul>
+        )}
+    </div>
+);
 
 export default AddressSelector;
