@@ -187,7 +187,6 @@ const Checkout = () => {
 
     const delivered = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("vi-VN")
 
-
     const handleCheckout = async () => {
         setShowConfirmModal(false);
 
@@ -210,31 +209,32 @@ const Checkout = () => {
 
         const orderData = {
             userId: user ? user._id : null,
-            productId: product?._id || cartData.map((item) => item.productId?._id || item.productId?.data?._id),
-            amount: product ? quantity : cartData.map((item) => item.quantity),
+            productId: product
+                ? product.productId?.data?._id || product._id
+                : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
+            amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
             orderItems: product
                 ? [{
-                    product: product._id,
-                    name: product.name,
-                    image: product.image,
-                    amount: quantity,
-                    price: product.price,
-                    discount: product.discount
+                    product: product.productId?.data?._id || product._id,
+                    name: product.productId?.data?.name || product.name,
+                    image: product.productId?.data?.image || product.image,
+                    amount: product.quantity || quantity,
+                    price: product.productId?.data?.price || product.price,
+                    discount: product.productId?.data?.discount || product.discount
                 }]
                 : cartData.map(item => ({
-                    product: item._id,
-                    name: item.productId?.data?.name,
-                    image: item.productId?.data?.image,
+                    product: item.productId?.data?._id || item._id,
+                    name: item.productId?.data?.name || item.name,
+                    image: item.productId?.data?.image || item.image,
                     amount: item.quantity,
-                    price: item.productId?.data?.price,
-                    discount: item.productId?.data?.discount
+                    price: item.productId?.data?.price || item.price,
+                    discount: item.productId?.data?.discount || item.discount
                 })),
             receiver: {
                 fullname: receiver?.fullname,
                 phone: receiver?.phone,
                 address: newAddress || selectedAddress
             },
-            itemsPrice: product?.price,
             shoppingFee: shippingFee,
             totalPrice: totalPrice,
             paymentMethod: formattedPaymentMethod,
@@ -242,6 +242,7 @@ const Checkout = () => {
             orderDate: orderDate,
             delivered: delivered
         };
+
         try {
             const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
             await createOrder(orderData, { headers });
@@ -259,7 +260,7 @@ const Checkout = () => {
             setTimeout(async () => {
                 await fetchCart();
                 if (user) {
-                    navigate("/account");
+                    window.location.replace("/account");
                 } else {
                     navigate("/home");
                 }

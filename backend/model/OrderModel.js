@@ -29,7 +29,7 @@ const orderSchema = new mongoose.Schema(
             enum: ["COD", "VnPay"],
             required: true
         },
-        itemsPrice: { type: String, required: false },
+        // itemsPrice: { type: String, required: false },
         totalPrice: { type: String, required: true },
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
         isPaid: { type: Boolean, default: false },

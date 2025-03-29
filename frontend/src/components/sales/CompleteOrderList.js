@@ -26,7 +26,7 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   }, [])
 
   const filteredOrders = (Array.isArray(orders) ? orders : [])
-    .filter(order => order.status !== "cancelled_confirmed" && order.status !== "pending")
+    .filter(order => order.status !== "cancelled_confirmed" && order.status !== "pending" && order.status !== "processing")
     .filter(order => {
       const receiverName = order.receiver?.fullname?.toLowerCase() || "";
       const receiverPhone = order.receiver?.phone || "";
@@ -47,9 +47,11 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
     });
 
   const statusOrder = [
-    "shipped",
     "received",
     "return_requested",
+    "cancelled",
+    "cancelled_confirmed",
+    "shipped",
   ];
 
   const sortedOrders = [...filteredOrders].sort((a, b) => {
@@ -137,12 +139,12 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
                     <td style={{ width: "10%" }}>{order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : order?.paymentMethod}</td>
                     <td style={{ width: "8%", textAlign: "center", verticalAlign: "middle" }}>
                       <span className={`badge ${order.status === "return_requested" ? "bg-warning text-dark" : order.status === "received" ? "bg-info text-dark" : order.status === "shipped" ? "bg-primary" : order.status === "delivered" ? "bg-success" :
-                        order.status === "return" ? "bg-danger" :
+                        order.status === "return" ? "bg-danger" : order.status === "cancelled" ? "bg-danger" :
                           "bg-danger"
                         }`}>
                         {order.status === "return_requested" ? "Yêu cầu trả hàng" : order.status === "received" ? "Đã nhận hàng" : order.status === "shipped" ? "Đã giao hàng" : order.status === "delivered" ? "Đã hoàn thành" :
-                          order.status === "return" ? "Đã trả hàng" :
-                            "Đã hủy"}
+                          order.status === "return" ? "Đã trả hàng" : order.status === "cancelled" ? "Đã hủy" :
+                            ""}
                       </span>
                     </td>
                     <td style={{ width: "12%", textAlign: "center", verticalAlign: "middle" }}>

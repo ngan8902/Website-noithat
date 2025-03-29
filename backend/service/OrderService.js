@@ -83,7 +83,6 @@ const createOrder = async (userId, productIds, discount, validAmount, receiver, 
             orderItems,
             receiver: receiverInfor._id,
             paymentMethod,
-            itemsPrice,
             totalPrice,
             orderDate,
             delivered,
@@ -164,34 +163,33 @@ const getOrderByCode = async (id) => {
     })
 };
 
-const updateOrderStatus = (orderId, newStatus) => {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const order = await Order.findById(orderId);
-            if (!order) {
-                throw new Error("Không tìm thấy đơn hàng.");
-            } 
-
-            order.status = newStatus;
-
-            if (newStatus === "delivered") {
-                order.isDelivered = true;
-                order.deliveredAt = new Date();
-            }
-
-            await order.save();
-
-            resolve({
-                status: 'OK',
-                message: 'success',
-                data: order
-            })
-
-        } catch (e) {
-            reject(e)
+const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return { status: "ERR", message: "Không tìm thấy đơn hàng." };
         }
-    })
-}
+
+        if (order.status === newStatus) {
+            return { status: "OK", message: "Trạng thái đơn hàng không thay đổi.", data: order };
+        }
+
+        order.status = newStatus;
+        if (newStatus === "delivered") {
+            order.isDelivered = true;
+            order.deliveredAt = new Date();
+        }
+        order.updatedAt = new Date();
+
+        await order.save();
+
+        return { status: "OK", message: "Cập nhật trạng thái thành công", data: order };
+    } catch (e) {
+        console.error("Lỗi cập nhật trạng thái đơn hàng:", e);
+        return { status: "ERR", message: "Lỗi server" };
+    }
+};
+
 
 const getAllOrders = () => {
     return new Promise(async (resolve, reject) => {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import Sidebar from "../components/sales/Sidebar";
 import ProductList from "../components/sales/ProductList";
 import OrderList from "../components/sales/OrderList";
@@ -9,6 +9,15 @@ import useOrderStore from "../store/orderStore";
 const SalesManagement = () => {
   const { fetchOrders, updateOrderStatus } = useOrderStore();
 
+   useEffect(() => {
+        fetchOrders();
+    
+        const interval = setInterval(() => {
+          fetchOrders();
+        }, 10000); 
+    
+        return () => clearInterval(interval);
+      }, [fetchOrders]);
 
   const handleConfirmOrder = (orderId) => {
     updateOrderStatus(orderId, "processing");
