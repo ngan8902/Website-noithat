@@ -1,18 +1,18 @@
-const { Server } = require('socket.io');
-const { STAFF_EVENTS, USER_EVENTS } = require('../common/constant/chat.event.constant');
-const ChatService = require('../service/ChatService');
+const { Server } = require("socket.io");
+const { STAFF_EVENTS, USER_EVENTS } = require("../common/constant/chat.event.constant");
+const ChatService = require("../service/ChatService");
 const mongoose = require("mongoose");
 
-function initalizeChatSocket(server) {
-    const io = new Server(server, { cors: { origin: '*' } });
-    io.on('connection', (socket) => {
-        // Nghe su kien chat tu phia Client
+function initializeChatSocket(server) {
+    const io = new Server(server, { cors: { origin: "*" } });
+
+    io.on("connection", (socket) => {
         socket.on(USER_EVENTS.sendMsg, async (messageObj) => {
             try {
-                let { from, guestId, to, message, timestamp } = messageObj;
+                let { from, to, message, timestamp, guestId, conversationId } = messageObj;
                 ({ from, to } = validateAndFixIds(from, to));
 
-                if (!to || !message) {
+                if ((!from && !guestId) || !to || !message) {
                     console.error("Dữ liệu tin nhắn không hợp lệ:", messageObj);
                     return;
                 }
@@ -20,22 +20,37 @@ function initalizeChatSocket(server) {
                 timestamp = validateTimestamp(timestamp);
                 messageObj.timestamp = timestamp;
 
+                if (!conversationId) {
+                    conversationId = guestId ? `guest-${guestId}-${to}` : `${from}-${to}`;
+                }
 
-                socket.broadcast.emit(STAFF_EVENTS.recieveMsg, messageObj)
-                await ChatService.sendChat(messageObj);
+                await ChatService.createMessage({
+                    from: from,
+                    fromRole: "User",
+                    to: to,
+                    toRole: "Staff",
+                    message: message,
+                    timestamp: timestamp,
+                    conversationId: conversationId,
+                    guestId: guestId,
+                });
 
+                socket.broadcast.emit(STAFF_EVENTS.recieveMsg, messageObj);
+                socket.broadcast.emit(STAFF_EVENTS.newMessage, {
+                    conversationId: conversationId,
+                    from: from,
+                });
             } catch (error) {
                 console.error("Lỗi khi lưu tin nhắn:", error);
             }
-        })
+        });
 
-        //Nghe su kien chat tu phia Admibn
         socket.on(STAFF_EVENTS.sendMsg, async (messageObj) => {
             try {
-                let { from, to, message, timestamp } = messageObj;
+                let { from, to, message, timestamp, guestId, conversationId } = messageObj;
                 ({ from, to } = validateAndFixIds(from, to));
 
-                if (!from || !message) {
+                if (!from || !to || !message) {
                     console.error("Dữ liệu tin nhắn từ nhân viên không hợp lệ:", messageObj);
                     return;
                 }
@@ -43,22 +58,48 @@ function initalizeChatSocket(server) {
                 timestamp = validateTimestamp(timestamp);
                 messageObj.timestamp = timestamp;
 
+                if (!conversationId) {
+                    conversationId = guestId ? `${from}-guest-${guestId}` : `${from}-${to}`;
+                }
 
-                socket.broadcast.emit(USER_EVENTS.recieveMsg, messageObj)
-                await ChatService.sendChat(messageObj);
+                await ChatService.createMessage({
+                    from: from,
+                    fromRole: "Staff",
+                    to: to,
+                    toRole: guestId ? null : "User",
+                    message: message,
+                    timestamp: timestamp,
+                    guestId: guestId,
+                    conversationId: conversationId,
+                });
+
+                socket.broadcast.emit(USER_EVENTS.recieveMsg, messageObj);
             } catch (error) {
                 console.error("Lỗi khi xử lý tin nhắn nhân viên:", error);
             }
-        })
+        });
 
-        socket.on('disconnect', () => {
-            console.log('user disconnected');
+        socket.on(STAFF_EVENTS.markAsRead, async (readObj) => {
+            try {
+                const { conversationId, staffId } = readObj;
+                await ChatService.markAsRead(conversationId, staffId);
+
+                socket.broadcast.emit(USER_EVENTS.messagesRead, { conversationId: conversationId });
+            } catch (error) {
+                console.error("Lỗi khi đánh dấu tin nhắn đã đọc:", error);
+            }
+        });
+
+        socket.on("connect_error", (err) => {
+            console.error("Lỗi kết nối Socket.IO:", err);
+        });
+
+        socket.on("connect_timeout", (timeout) => {
+            console.error("Kết nối Socket.IO hết thời gian chờ:", timeout);
         });
     });
-
 }
 
-//Hàm chuẩn hóa ID để tránh lỗi
 function validateAndFixIds(from, to) {
     if (typeof from === "object" && from !== null && from.from) from = from.from;
     if (typeof to === "object" && to !== null && to.to) to = to.to;
@@ -72,11 +113,10 @@ function validateAndFixIds(from, to) {
     return { from, to };
 }
 
-//Hàm kiểm tra timestamp hợp lệ
 function validateTimestamp(timestamp) {
-    return (!timestamp || isNaN(timestamp)) ? Date.now() : timestamp;
+    return !timestamp || isNaN(timestamp) ? Date.now() : timestamp;
 }
 
 module.exports = {
-    initalizeChatSocket
-}
+    initializeChatSocket,
+};

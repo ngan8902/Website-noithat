@@ -1,13 +1,43 @@
 const mongoose = require('mongoose');
 
 const ChatSchema = new mongoose.Schema({
-  from: { type: mongoose.Schema.Types.ObjectId, enum: ["User", "Staff", "Guest"], required: false },
-  fromRole: { type: String, enum: ["User", "Staff", "Guest"], required: true },
-  guestId: { type: String, required: false }, 
-  to: { type: mongoose.Schema.Types.ObjectId, refPath: "toRole", required: false },
-  toRole: { type: String, enum: ["User", "Staff", "Guest"], required: true },
-  message: { type: String, required: true },
-  timestamp: { type: Date, default: Date.now }
-});
+  from: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'fromRole',
+    required: function () {
+      return !this.guestId;
+    },
+  },
+  fromRole: {
+    type: String,
+    enum: ['User', 'Staff'],
+    required: function () {
+      return !this.guestId;
+    },
+  },
+  guestId: {
+    type: String,
+    required: function () {
+      return !this.from;
+    },
+  },
+  to: {
+    type: mongoose.Schema.Types.ObjectId,
+    refPath: 'toRole',
+    required: true,
+  },
+  toRole: {
+    type: String,
+    enum: ['User', 'Staff'],
+    required: true,
+  },
+  isRead: {
+    type: Boolean,
+    default: false,
+  },
+    message: { type: String, required: true },
+    timestamp: { type: Date, default: Date.now },
+    conversationId: { type: String, required: true },
+  });
 
-module.exports = mongoose.model("Chat", ChatSchema);
+module.exports = mongoose.model('Chat', ChatSchema);

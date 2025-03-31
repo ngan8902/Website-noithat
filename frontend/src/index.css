@@ -545,3 +545,11 @@ section {
 .my-toast {
   top: 77px;
 }
+
+.custom-red-dot {
+  width: 5px; 
+  height: 5px; 
+  background-color: #dc3545;
+  border-radius: 50%; 
+  display: inline-block; 
+}

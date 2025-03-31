@@ -3,8 +3,10 @@ const router = express.Router();
 const ChatController = require('../controller/ChatController');
 
 
-router.post('/send', ChatController.sendChat)
-router.get('/messages', ChatController.getMessages)
+router.get('/:receiverId/:receiverRole', ChatController.getMessagesByReceiver);
+router.post('/createMess', ChatController.createMessage);
+router.get('/:conversationId', ChatController.getMessagesByConversationId);
+router.post("/mark-as-read", ChatController.markAsRead);
 
 
 

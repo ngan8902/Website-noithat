@@ -55,11 +55,11 @@ const Sidebar = () => {
             <a href="/admin/chat" className="position-relative d-block text-white py-2 text-decoration-none fw-bold transition-hover">
               <i className="bi bi-chat-fill me-2"></i> 
               Tin nhắn Khách Hàng
-              {customers.length > 0 && (
+              {/* {customers.length > 0 && (
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {customers.length}
                 </span>
-              )}
+              )} */}
             </a>
           )}
 

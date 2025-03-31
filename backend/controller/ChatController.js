@@ -1,55 +1,53 @@
 const ChatService = require('../service/ChatService');
-const mongoose = require("mongoose");
 
 
-const sendChat = async (req, res) => {
+// Lấy tin nhắn theo người nhận
+const getMessagesByReceiver = async (req, res) => {
     try {
-        const { from, fromRole, guestId, to, toRole, message } = req.body;
+        const { receiverId, receiverRole } = req.params;
+        console.log("Receiver ID:", receiverId, "Receiver Role:", receiverRole);
 
-        if (!to || !toRole || !message) {
-            return res.status(401).json({
-                status: 'ERR',
-                message: 'Thiếu thông tin bắt buộc (người nhận, vai trò hoặc tin nhắn).'
-            });
-        }
+        const messages = await ChatService.getMessagesByReceiver(receiverId, receiverRole);
+        res.status(200).json(messages);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
-        const chat = await ChatService.sendChat({ from, fromRole, guestId, to, toRole, message });
-
-        return res.status(200).json({
-            status: 'OK',
-            message: 'Gửi tin nhắn thành công!',
-            data: chat
-        });
-    } catch (e) {
-        console.error(e.message);
-        return res.status(500).json({ message: error.message });
+// Tạo tin nhắn
+const createMessage = async (req, res) => {
+    try {
+        const messageData = req.body;
+        const newMessage = await ChatService.createMessage(messageData);
+        res.status(201).json(newMessage);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 }
 
-const getMessages = async (req, res) => {
+const getMessagesByConversationId = async (req, res) => {
     try {
-        console.log("Query nhận được:", req.query); 
-
-
-        const { from, fromRole, to, toRole, guestId } = req.query;
-
-        if (!from || !to) {
-            return res.status(400).json({ message: "Thiếu thông tin người gửi hoặc người nhận!" });
-        }
-
-        if (!fromRole || !toRole) {
-            return res.status(400).json({ message: "Thiếu vai trò của người gửi hoặc người nhận!" });
-        }
-
-        const messages = await ChatService.getMessages(from, fromRole, guestId, to, toRole);
-        return res.status(200).json({ message: "Lấy tin nhắn thành công!", data: messages });
-    } catch (e) {
-        console.log(e)
-        return res.status(500).json({ message: e.message });
+        const { conversationId } = req.params;
+        const messages = await ChatService.getMessagesByConversationId(conversationId);
+        res.status(200).json(messages);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-}
+};
+
+const markAsRead = async (req, res) => {
+    try {
+        const { conversationId, to } = req.body;
+        const result = await ChatService.markAsRead(conversationId, to);
+        res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 module.exports = {
-    sendChat,
-    getMessages
+    getMessagesByReceiver,
+    createMessage,
+    markAsRead,
+    getMessagesByConversationId
 }
