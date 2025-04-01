@@ -13,15 +13,34 @@ const Chatbox = () => {
   const [userId, setUserId] = useState(null);
   const messagesEndRef = useRef(null);
   const socketIO = useRef(null);
+  const staffFetched = useRef(false);
 
   useEffect(() => {
     let storedUserId = localStorage.getItem("chatUserId");
+    let storedGuestId = localStorage.getItem("guestId");
 
     if (isAuthenticated && user?._id) {
       storedUserId = user._id;
+      localStorage.removeItem("chatUserId");
+      localStorage.removeItem("chatUserIdExpiration");
+      localStorage.removeItem("guestId");
     } else if (!storedUserId) {
       storedUserId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
       localStorage.setItem("chatUserId", storedUserId);
+
+      if (!storedGuestId) {
+        storedGuestId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+        localStorage.setItem("guestId", storedGuestId);
+      }
+
+      const expireInMilliseconds = 1.5 * 24 * 60 * 60 * 1000;
+      localStorage.setItem("chatUserIdExpiration", (Date.now() + expireInMilliseconds).toString());
+
+      setTimeout(() => {
+        localStorage.removeItem("chatUserId");
+        localStorage.removeItem("chatUserIdExpiration");
+        localStorage.removeItem("guestId");
+      }, expireInMilliseconds);
     }
 
     setUserId(storedUserId);
@@ -29,8 +48,9 @@ const Chatbox = () => {
 
   const fetchStaffInfo = async () => {
     try {
-      if (!staff) {
+      if (!staffFetched.current) {
         await auth();
+        staffFetched.current = true;
       }
     } catch (error) {
       console.error("Lỗi khi lấy thông tin nhân viên:", error);
@@ -61,7 +81,6 @@ const Chatbox = () => {
         const sortedMessages = allMessages.sort((a, b) => a.timestamp - b.timestamp);
         let formattedMessages = sortedMessages.map(msg => ({ text: msg.message, sender: msg.fromRole === "User" || msg.fromRole === "Guest" ? "user" : "bot" }));
 
-        // Thêm tin nhắn chào mừng nếu cuộc trò chuyện trống
         if (formattedMessages.length === 0) {
           formattedMessages = [{ text: "Tôi có thể giúp gì cho bạn?", sender: "bot" }];
         }
@@ -80,8 +99,9 @@ const Chatbox = () => {
   }, [messages]);
 
   useEffect(() => {
-    setTimeout(() => {
+    if (userId && staff?._id) {
       socketIO.current = window?.io(SOCKET_URI);
+
       socketIO.current.on(USER_EVENTS.recieveMsg, (messageObj) => {
         const conversationId1 = `${userId}-${staff?._id}`;
         const conversationId2 = `${staff?._id}-${userId}`;
@@ -93,7 +113,23 @@ const Chatbox = () => {
           ]);
         }
       });
-    }, 1000);
+
+      socketIO.current.on("connect_error", (err) => {
+        console.error("Lỗi kết nối Socket.IO:", err);
+      });
+
+      socketIO.current.on("connect_timeout", (timeout) => {
+        console.error("Kết nối Socket.IO hết thời gian chờ:", timeout);
+      });
+
+      return () => {
+        if (socketIO.current) {
+          socketIO.current.off(USER_EVENTS.recieveMsg);
+          socketIO.current.off("connect_error");
+          socketIO.current.off("connect_timeout");
+        }
+      };
+    }
   }, [userId, staff]);
 
   const toggleChatbox = () => {
@@ -104,19 +140,37 @@ const Chatbox = () => {
   const sendMessage = () => {
     if (!input.trim() || !userId || !staff?._id || !socketIO.current) return;
 
-    const isGuest = userId.startsWith("guest_");
-    const conversationId = `${userId}-${staff._id}`; // Chọn conversationId1 để gửi tin nhắn
+    let storedGuestId = localStorage.getItem("guestId");
+    let isGuest = userId.startsWith("guest_");
+    let conversationId = `${userId}-${staff._id}`;
+    // Tạo lại guestId nếu cần
+    if (isGuest && !storedGuestId) {
+      storedGuestId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+      localStorage.setItem("guestId", storedGuestId);
+
+      const expireInMilliseconds = 1.5 * 24 * 60 * 60 * 1000;
+      localStorage.setItem("chatUserIdExpiration", (Date.now() + expireInMilliseconds).toString());
+
+      setTimeout(() => {
+        localStorage.removeItem("chatUserId");
+        localStorage.removeItem("chatUserIdExpiration");
+        localStorage.removeItem("guestId");
+      }, expireInMilliseconds);
+    }
 
     const messageObj = {
       from: isGuest ? null : userId,
       fromRole: isGuest ? "Guest" : "User",
-      guestId: isGuest ? localStorage.getItem("guestId") : null,
+      guestId: isGuest ? storedGuestId : null,
       to: staff._id,
       toRole: "Staff",
       message: input,
       timestamp: new Date().getTime(),
-      conversationId: conversationId
+      conversationId: conversationId,
     };
+
+    console.log(messageObj)
+
 
     setMessages([...messages, { sender: "user", text: input }]);
     socketIO.current.emit(USER_EVENTS.sendMsg, messageObj);

@@ -15,14 +15,19 @@ const ChatMessages = ({ customer }) => {
   const socketIO = useRef(null);
   const { user, isAuthenticated } = useAuthStore();
   const { staff } = useAuthAdminStore();
+  const expireInMilliseconds = 24 * 60 * 60 * 1000;
 
   useEffect(() => {
     let storedUserId = localStorage.getItem("chatUserId");
+    const expirationTime = localStorage.getItem("chatUserIdExpiration");
+
     if (isAuthenticated && user?._id) {
       storedUserId = user._id;
-    } else if (!storedUserId) {
+    } else if (storedUserId && expirationTime && Date.now() < parseInt(expirationTime)) {
+    } else {
       storedUserId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
       localStorage.setItem("chatUserId", storedUserId);
+      localStorage.setItem("chatUserIdExpiration", (Date.now() + expireInMilliseconds).toString());
     }
     setUserId(storedUserId);
   }, [isAuthenticated, user]);
@@ -32,26 +37,27 @@ const ChatMessages = ({ customer }) => {
 
     const fetchMessages = async () => {
       if (customer?.id && staff?._id) {
-        const conversationId1 = `${customer.id}-${staff._id}`;
-        const conversationId2 = `${staff._id}-${customer.id}`;
-        let allMessages = [];
-
-        try {
-          const response1 = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId1}`);
-          allMessages = [...response1.data];
-        } catch (error) {
-          console.error(`Lỗi khi lấy tin nhắn cho ${conversationId1}:`, error);
+        let conversationId;
+        if (customer.id.startsWith("guest_")) {
+          conversationId = `${customer.id}-${staff._id}`;
+        } else {
+          conversationId = `${customer.id}-${staff._id}`;
         }
 
         try {
-          const response2 = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId2}`);
-          allMessages = [...allMessages, ...response2.data];
+          const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId}`);
+          const sortedMessages = response.data.sort((a, b) => a.timestamp - b.timestamp);
+          setMessages(sortedMessages);
+          if (!customer.id.startsWith("guest_")) {
+            await axios.post(`${process.env.REACT_APP_URL_BACKEND}/chat/mark-as-read`, {
+              conversationId: conversationId,
+              to: staff?._id,
+            });
+          }
         } catch (error) {
-          console.error(`Lỗi khi lấy tin nhắn cho ${conversationId2}:`, error);
+          console.error(`Lỗi khi lấy tin nhắn cho ${conversationId}:`, error);
+          setMessages([]);
         }
-
-        const sortedMessages = allMessages.sort((a, b) => a.timestamp - b.timestamp);
-        setMessages(sortedMessages);
       } else {
         setMessages([]);
       }
@@ -88,7 +94,7 @@ const ChatMessages = ({ customer }) => {
     if (!newMessage.trim() || !userId || !staff?._id || !socketIO.current || !customer?.id) return;
 
     let conversationId = `${customer?.id}-${staff?._id}`;
-
+    const guestId = localStorage.getItem("chatUserId");
     const messageObj = {
       from: staff._id,
       fromRole: "Staff",
@@ -97,9 +103,8 @@ const ChatMessages = ({ customer }) => {
       message: newMessage,
       timestamp: new Date().getTime(),
       conversationId: conversationId,
+      guestId: guestId,
     };
-
-    console.log("Sent message:", messageObj);
 
     socketIO.current.emit(STAFF_EVENTS.sendMsg, messageObj);
     setMessages((prev) => {

@@ -10,7 +10,11 @@ function initializeChatSocket(server) {
         socket.on(USER_EVENTS.sendMsg, async (messageObj) => {
             try {
                 let { from, to, message, timestamp, guestId, conversationId } = messageObj;
+
                 ({ from, to } = validateAndFixIds(from, to));
+                if (!guestId) {
+                    guestId = messageObj.localGuestId;
+                }
 
                 if ((!from && !guestId) || !to || !message) {
                     console.error("Dữ liệu tin nhắn không hợp lệ:", messageObj);
@@ -50,7 +54,7 @@ function initializeChatSocket(server) {
                 let { from, to, message, timestamp, guestId, conversationId } = messageObj;
                 ({ from, to } = validateAndFixIds(from, to));
 
-                if (!from || !to || !message) {
+                if (!from || (!to && !to.startsWith("guest_")) || !message) {
                     console.error("Dữ liệu tin nhắn từ nhân viên không hợp lệ:", messageObj);
                     return;
                 }
@@ -59,19 +63,31 @@ function initializeChatSocket(server) {
                 messageObj.timestamp = timestamp;
 
                 if (!conversationId) {
-                    conversationId = guestId ? `${from}-guest-${guestId}` : `${from}-${to}`;
+                    conversationId = guestId ? `${guestId}-${to}` : `${from}-${to}`;
                 }
 
-                await ChatService.createMessage({
-                    from: from,
-                    fromRole: "Staff",
-                    to: to,
-                    toRole: guestId ? null : "User",
-                    message: message,
-                    timestamp: timestamp,
-                    guestId: guestId,
-                    conversationId: conversationId,
-                });
+                if (guestId) {
+                    await ChatService.createMessage({
+                        from: from,
+                        fromRole: "Staff",
+                        to: to,
+                        toRole: "Guest",
+                        message: message,
+                        timestamp: timestamp,
+                        guestId: guestId,
+                        conversationId: conversationId,
+                    });
+                } else {
+                    await ChatService.createMessage({
+                        from: from,
+                        fromRole: "Staff",
+                        to: to,
+                        toRole: "User",
+                        message: message,
+                        timestamp: timestamp,
+                        conversationId: conversationId,
+                    });
+                }
 
                 socket.broadcast.emit(USER_EVENTS.recieveMsg, messageObj);
             } catch (error) {
@@ -107,8 +123,13 @@ function validateAndFixIds(from, to) {
     if (mongoose.Types.ObjectId.isValid(from)) from = new mongoose.Types.ObjectId(from);
     else from = null;
 
-    if (mongoose.Types.ObjectId.isValid(to)) to = new mongoose.Types.ObjectId(to);
-    else to = null;
+    if (typeof to === "string" && to.startsWith("guest_")) {
+    } else if (mongoose.Types.ObjectId.isValid(to)) {
+        to = new mongoose.Types.ObjectId(to);
+    } else {
+        console.log("to không phải là ObjectId hợp lệ:", to);
+        to = null;
+    }
 
     return { from, to };
 }

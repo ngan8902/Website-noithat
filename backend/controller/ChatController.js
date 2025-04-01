@@ -17,11 +17,20 @@ const getMessagesByReceiver = async (req, res) => {
 // Tạo tin nhắn
 const createMessage = async (req, res) => {
     try {
-        const messageData = req.body;
-        const newMessage = await ChatService.createMessage(messageData);
-        res.status(201).json(newMessage);
+        const messageData = req.body; 
+
+        const savedMessage = await ChatService.createMessage(messageData);
+
+        res.status(201).json({
+            message: "Tin nhắn đã được lưu thành công",
+            data: savedMessage,
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Lỗi khi lưu tin nhắn:", error);
+        res.status(500).json({
+            message: "Lỗi khi lưu tin nhắn",
+            error: error.message,
+        });
     }
 }
 

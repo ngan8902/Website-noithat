@@ -22,14 +22,14 @@ const ChatSchema = new mongoose.Schema({
     },
   },
   to: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.Mixed,
     refPath: 'toRole',
     required: true,
   },
   toRole: {
     type: String,
     enum: ['User', 'Staff'],
-    required: true,
+    required: false,
   },
   isRead: {
     type: Boolean,

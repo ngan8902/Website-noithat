@@ -28,52 +28,95 @@ const ChatList = ({ onSelectCustomer }) => {
         const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/user/get-all`);
         const users = response.data.data;
 
-        if (Array.isArray(users)) {
-          const customersWithMessages = await Promise.all(
-            users.map(async (user) => {
-              const conversationId1 = `${user._id}-${staff?._id}`;
-              const conversationId2 = `${staff?._id}-${user._id}`;
-              let allMessages = [];
+        let allCustomers = await Promise.all(
+          users.map(async (user) => {
+            const conversationId1 = `${user._id}-${staff?._id}`;
+            const conversationId2 = `${staff?._id}-${user._id}`;
+            let allMessages = [];
 
-              try {
-                const messagesResponse1 = await axios.get(
-                  `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId1}`
-                );
-                allMessages = [...messagesResponse1.data];
-              } catch (error) {
-                console.error(`Lỗi khi lấy tin nhắn cho ${user.name} với ${conversationId1}:`, error);
-              }
+            try {
+              const messagesResponse1 = await axios.get(
+                `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId1}`
+              );
+              allMessages = [...messagesResponse1.data];
+            } catch (error) {
+              console.error(`Lỗi khi lấy tin nhắn cho ${user.name} với ${conversationId1}:`, error);
+            }
 
-              try {
-                const messagesResponse2 = await axios.get(
-                  `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId2}`
-                );
-                allMessages = [...allMessages, ...messagesResponse2.data];
-              } catch (error) {
-                console.error(`Lỗi khi lấy tin nhắn cho ${user.name} với ${conversationId2}:`, error);
-              }
+            try {
+              const messagesResponse2 = await axios.get(
+                `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId2}`
+              );
+              allMessages = [...allMessages, ...messagesResponse2.data];
+            } catch (error) {
+              console.error(`Lỗi khi lấy tin nhắn cho ${user.name} với ${conversationId2}:`, error);
+            }
 
-              const sortedMessages = allMessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-              const lastMessage = sortedMessages?.[0]?.message || "";
-              const toRole = sortedMessages?.[0]?.toRole || null;
-              const isRead = sortedMessages?.[0]?.fromRole === "Staff" ? true : sortedMessages?.[0]?.isRead;
-              
-              return {
-                id: user._id,
-                name: user.name,
-                avatar: user.avatar,
-                lastMessage: lastMessage,
-                toRole,
-                isRead,
-                conversationId: conversationId1,
-              };
-            })
+            const sortedMessages = allMessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const lastMessage = sortedMessages?.[0]?.message || "";
+            const toRole = sortedMessages?.[0]?.toRole || null;
+            const isRead =
+              sortedMessages?.[0]?.fromRole === "Staff" ||
+              sortedMessages?.[0]?.isRead;
+
+            return {
+              id: user._id,
+              name: user.name,
+              avatar: user.avatar,
+              lastMessage: lastMessage,
+              toRole,
+              isRead,
+              conversationId: conversationId1,
+            };
+          })
+        );
+
+        let guestId = localStorage.getItem("chatUserId");
+        const expirationTime = localStorage.getItem("chatUserIdExpiration");
+
+        if (guestId && expirationTime && Date.now() < parseInt(expirationTime)) {
+          const guestConversationId = `${guestId}-${staff?._id}`;
+          let guestMessages = [];
+
+          try {
+            const guestMessagesResponse = await axios.get(
+              `${process.env.REACT_APP_URL_BACKEND}/chat/${guestConversationId}`
+            );
+            guestMessages = [...guestMessagesResponse.data];
+          } catch (error) {
+            console.error(
+              `Lỗi khi lấy tin nhắn cho khách ${guestId} với ${guestConversationId}:`,
+              error
+            );
+          }
+
+          const sortedGuestMessages = guestMessages.sort(
+            (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
           );
-          setCustomersList(customersWithMessages);
-          setCustomers(customersWithMessages);
-        } else {
-          console.error("Dữ liệu trả về từ /user/get-all không phải là một mảng:");
+          const lastGuestMessage = sortedGuestMessages?.[0]?.message || "";
+          const isGuestRead =
+            sortedGuestMessages?.[0]?.fromRole === "Staff"
+              ? true
+              : sortedGuestMessages?.[0]?.isRead;
+
+          let guestCounter = 1;
+          const guestName = `Khách hàng ${guestCounter++}`;
+
+          allCustomers = [
+            ...allCustomers,
+            {
+              id: guestId,
+              name: guestName,
+              avatar: avatarDefautl,
+              lastMessage: lastGuestMessage,
+              isRead: isGuestRead,
+              conversationId: guestConversationId,
+            },
+          ];
         }
+
+        setCustomersList(allCustomers);
+        setCustomers(allCustomers);
       } catch (error) {
         console.error("Lỗi khi lấy danh sách khách hàng:", error);
       }
@@ -82,16 +125,23 @@ const ChatList = ({ onSelectCustomer }) => {
 
     socketIO.current = window?.io(SOCKET_URI);
 
-    socketIO.current.on(STAFF_EVENTS.newMessage, (newMessageObj) => {
-      setCustomersList((prevCustomers) =>
-        prevCustomers.map((c) =>
-          c.id === newMessageObj.from ? { ...c, isRead: false } : c
-        )
-      );
+    socketIO.current.on(STAFF_EVENTS.recieveMsg, (messageObj) => {
+      setCustomersList((prevCustomers) => {
+        return prevCustomers.map((c) => {
+          if (c.id === messageObj.guestId || c.id === messageObj.from) {
+            return { ...c, lastMessage: messageObj.message, isRead: false };
+          }
+          return c;
+        });
+      });
+      setHasNewMessage((prevStatus) => ({
+        ...prevStatus,
+        [messageObj.guestId || messageObj.from]: true,
+      }));
     });
 
     return () => {
-      socketIO.current.off(STAFF_EVENTS.newMessage);
+      socketIO.current.off(STAFF_EVENTS.recieveMsg);
     };
   }, [setCustomers, staff]);
 
@@ -104,11 +154,12 @@ const ChatList = ({ onSelectCustomer }) => {
     onSelectCustomer(customer);
 
     try {
-      await axios.post(`${process.env.REACT_APP_URL_BACKEND}/chat/mark-as-read`, {
-        conversationId: customer.conversationId,
-        to: staff?._id,
-      });
-
+      if (!customer.id.startsWith("guest_")) {
+        await axios.post(`${process.env.REACT_APP_URL_BACKEND}/chat/mark-as-read`, {
+          conversationId: customer.conversationId,
+          to: staff?._id,
+        });
+      }
       setCustomersList((prevCustomers) =>
         prevCustomers.map((c) =>
           c.id === customer.id ? { ...c, isRead: true } : c
@@ -118,8 +169,6 @@ const ChatList = ({ onSelectCustomer }) => {
       console.error("Lỗi khi cập nhật trạng thái đã đọc:", error);
     }
   };
-
-  console.log(customers);
 
   return (
     <div className="chat-list p-3">
@@ -140,10 +189,16 @@ const ChatList = ({ onSelectCustomer }) => {
                   alt={customer.name}
                 />
                 <div className="ms-3 flex-grow-1">
-                  <h6 className="fw-bold mb-1 text-truncate" style={{ maxWidth: "180px" }}>
+                  <h6
+                    className="fw-bold mb-1 text-truncate"
+                    style={{ maxWidth: "180px" }}
+                  >
                     {customer.name}
                   </h6>
-                  <p className="mb-0 text-muted small text-truncate" style={{ maxWidth: "200px" }}>
+                  <p
+                    className="mb-0 text-muted small text-truncate"
+                    style={{ maxWidth: "200px" }}
+                  >
                     {customer.lastMessage}
                   </p>
                 </div>
