@@ -5,7 +5,7 @@ const { authenticateStaff, authenticateUser } = require('../middleware/authMiddl
 const { upload } = require('../service/ImagesService')
 
 router.post('/create-product', upload.single("image"), productController.createProduct)
-router.put('/update-product/:id', authenticateStaff, productController.updateProduct)
+router.put('/update-product/:id',upload.single("image"), authenticateStaff, productController.updateProduct)
 router.get('/details-product/:id', productController.getDetailsProduct)
 router.delete('/delete-product/:id', productController.deleteProduct)
 router.get('/all-product', productController.getAllProduct)

@@ -61,6 +61,15 @@ const updateProduct = async (req, res) => {
                 message: 'The productId is required'
             })
         }
+
+        if (req.file) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(req.file.mimetype)) {
+                return res.status(400).json({ message: "Loại file không được hỗ trợ. Chỉ hỗ trợ JPEG, PNG và GIF." });
+            }
+            data.image = `/upload/${req.file.filename}`;
+        }
+        
         const response = await ProductService.updateProduct(productId, data)
         return res.status(200).json(response)
     } catch (e) {

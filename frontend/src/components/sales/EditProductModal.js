@@ -11,7 +11,7 @@ const EditProductModal = ({ product, closeModal }) => {
     name: '',
     price: '',
     countInStock: '',
-    image: '',
+    image: null,
     description: '',
     descriptionDetail: '',
     discount: '',
@@ -22,11 +22,10 @@ const EditProductModal = ({ product, closeModal }) => {
     size: '',
     warranty: ''
   });
-  const { products, setProducts } = useProductStore((state) => state)
+  const { products, setProducts } = useProductStore((state) => state);
   const [, setErrorMessage] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [newCategory, setNewCategory] = useState("");
-
 
   useEffect(() => {
     if (product) {
@@ -34,7 +33,7 @@ const EditProductModal = ({ product, closeModal }) => {
         name: product.name || '',
         price: product.price || '',
         countInStock: product.countInStock || '',
-        image: product.image || '',
+        image: null, // Khởi tạo image là null
         description: product.description || '',
         descriptionDetail: product.descriptionDetail || '',
         discount: product.discount || '',
@@ -49,7 +48,6 @@ const EditProductModal = ({ product, closeModal }) => {
     }
   }, [product]);
 
-
   const handleSave = async () => {
     if (!product || !product._id) {
       console.log("Không tìm thấy sản phẩm");
@@ -59,20 +57,32 @@ const EditProductModal = ({ product, closeModal }) => {
     try {
       const finalCategory = selectedCategory === key ? newCategory : selectedCategory;
 
-      const updatedData = {
-        ...form,
-        type: finalCategory,
-      };
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('price', form.price);
+      formData.append('countInStock', form.countInStock);
+      if (form.image) {
+        formData.append('image', form.image);
+      }
+      formData.append('description', form.description);
+      formData.append('descriptionDetail', form.descriptionDetail);
+      formData.append('discount', form.discount);
+      formData.append('type', finalCategory);
+      formData.append('isBestSeller', form.isBestSeller);
+      formData.append('origin', form.origin);
+      formData.append('material', form.material);
+      formData.append('size', form.size);
+      formData.append('warranty', form.warranty);
 
       const response = await axios.put(
         `${process.env.REACT_APP_URL_BACKEND}/product/update-product/${product._id}`,
-        updatedData, {
+        formData, {
         headers: {
           'staff-token': getCookie(STAFF_TOKEN_KEY)
         }
       }
       );
-      window.location.reload()
+      closeModal()
       setProducts((prevProducts) =>
         prevProducts.map((p) =>
           p._id === product._id ? response.data.data : p
@@ -84,15 +94,10 @@ const EditProductModal = ({ product, closeModal }) => {
     }
   };
 
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setForm({ ...form, image: reader.result });
-      };
-      reader.readAsDataURL(file);
+      setForm({ ...form, image: file });
     }
   };
 
@@ -113,7 +118,6 @@ const EditProductModal = ({ product, closeModal }) => {
     }
   }, [newCategory, selectedCategory]);
 
-
   return (
     <div className="modal fade show d-block" id="editProductModal">
       <div className="modal-dialog">
@@ -123,16 +127,17 @@ const EditProductModal = ({ product, closeModal }) => {
             <button type="button" className="btn-close" onClick={closeModal}></button>
           </div>
           <div className="modal-body">
-            <label className="form-label">
+            <label className="form-label fw-bold">
               Đổi ảnh sản phẩm
               <input type="file" className="form-control mb-3" onChange={handleFileChange} />
             </label>
             {form.image && <img
-              src={form.image}
+              src={URL.createObjectURL(form.image)}
               alt="Product"
               style={{ width: "100px", height: "100px", objectFit: "cover", marginBottom: "10px" }}
               className="m-3"
             />}
+            <div></div>
             <label className="form-label fw-bold">Tên sản phẩm</label>
             <input
               type="text"
@@ -243,7 +248,7 @@ const EditProductModal = ({ product, closeModal }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

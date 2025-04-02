@@ -106,7 +106,7 @@ const AddProductModal = ({ closeModal }) => {
 
         if (data.status === "OK") {
           addProducts(data.data);
-          // closeModal();
+          closeModal();
         } else {
           setError(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
           console.error("lỗi:", setError);
