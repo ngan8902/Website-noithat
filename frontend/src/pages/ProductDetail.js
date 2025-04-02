@@ -48,11 +48,11 @@ const ProductDetail = () => {
                     name: product.name,
                     price: product.price,
                     discount: product.discount || 0,
-                    image: product.image,
+                    image: `http://localhost:8000${product.image}` ,
                     countInStock: product.countInStock
                 },
                 quantity
-            }
+            },
         });
     };
 
@@ -104,7 +104,7 @@ const ProductDetail = () => {
         <section className="py-5">
             <div className="container">
                 <div className="row">
-                    <ProductImage image={product?.image} name={product?.name} />
+                    <ProductImage image={`http://localhost:8000/upload/${product.image.split("/").pop()}` } name={product?.name} />
                     <div className="col-md-6">
                         <h3 className="fw-bold mb-3">{product?.name}</h3>
                         <p className="text-muted mb-4">{product?.descriptionDetail}</p>

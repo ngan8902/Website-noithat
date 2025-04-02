@@ -7,18 +7,30 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
         if (cart) {
             setCartData(cart);
         }
-    }, [cart])
+    }, [cart]);
 
     const displayProducts = selectedProducts?.length > 0
         ? selectedProducts
         : (product ? [{ ...product, quantity }] : cartData);
+
+    const getImageUrl = (item, product) => {
+        if (item?.image) {
+            return item.image;
+        }
+        if (item?.productId?.data?.image) {
+            return `http://localhost:8000${item.productId.data.image}`;
+        }
+        if (product?.image) {
+            return product.image;
+        }
+        return "https://via.placeholder.com/100";
+    };
 
     return (
         <div className="col-md-6">
             <h5 className="fw-bold">Thông Tin Sản Phẩm</h5>
             {displayProducts.map((item, index) => {
                 const productName = item.productId?.data?.name || item.name || item.product?.name;
-                const productImage = item.productId?.data?.image || item.image || item.product?.image;
                 const productPrice = item.productId?.data?.price || item.price || item.product?.price;
                 const discount = item.productId?.data?.discount || item.discount || item.product?.discount;
                 const hasDiscount = discount > 0;
@@ -30,7 +42,7 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
                     <div key={index} className="border p-2 mb-2">
                         <p><strong>{productName}</strong></p>
                         <img
-                            src={productImage}
+                            src={getImageUrl(item, product)}
                             alt={productName}
                             className="img-fluid rounded mb-2"
                             style={{ width: "100px" }}
@@ -65,7 +77,6 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
             <p><strong>Tổng:</strong> {totalPrice.toLocaleString()} VND</p>
         </div>
     );
-
 };
 
 export default ProductInfo;

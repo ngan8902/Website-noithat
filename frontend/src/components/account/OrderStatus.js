@@ -8,6 +8,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     if (orders.length > 0) {
       setLoading(false);
@@ -57,6 +58,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
     }
   };
 
+
   return (
     <>
       <h5 className="fw-bold mb-3 text-center">Đơn Hàng Của Bạn</h5>
@@ -100,7 +102,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                     {order?.orderItems?.map((item, index) => (
                       <div key={index} className="mb-2">
                         <img
-                          src={item.image || "/default-image.jpg"}
+                          src={`http://localhost:8000${item.image}` || "/default-image.jpg"}
                           alt={item.name}
                           style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
                         />

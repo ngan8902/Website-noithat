@@ -1,10 +1,10 @@
-const UserService = require('../service/UserService') 
-const JwtService = require('../service/JwtService') 
+const UserService = require('../service/UserService')
+const JwtService = require('../service/JwtService')
 const { SIGN_UP } = require('../common/messages/user.message')
 const { SIGN_UP_STATUS } = require('../common/constant/status.constant')
 
 const createUser = async (req, res) => {
-    try{
+    try {
         const { name, email, password, confirmPassword, phone } = req.body
         var reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})*$/
         const isCheckEmail = reg.test(email)
@@ -13,20 +13,20 @@ const createUser = async (req, res) => {
                 status: SIGN_UP_STATUS.ERROR,
                 message: SIGN_UP.VALID_FIELDS_ERR
             })
-        }else if (!isCheckEmail){
+        } else if (!isCheckEmail) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Vui lòng nhập email'
             })
-        }else if (password !== confirmPassword){
+        } else if (password !== confirmPassword) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Mật khẩu và mật khẩu xác nhận không trùng khớp!'
             })
         }
         const response = await UserService.createUser(req.body)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -34,25 +34,25 @@ const createUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-    try{
+    try {
         const { email, password } = req.body
         var reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})*$/
         const isCheckEmail = reg.test(email)
-        if ( !email || !password) {
+        if (!email || !password) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Nhập các trường bắt buộc!'
             })
-        }else if (!isCheckEmail){
+        } else if (!isCheckEmail) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'Vui lòng nhập email!'
             })
         }
-       
+
         const response = await UserService.loginUser(req.body)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -60,19 +60,33 @@ const loginUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-    try{
+    try {
         const userId = req.params.id
         const data = req.body
-        if(!userId) {
+        if (!userId) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The userId is required'
             })
         }
         console.log('userId', userId)
+
+        if (req.file) {
+            const uploadsPath = path.join(__dirname, "..", "upload");
+
+            // Xóa avatar cũ nếu có
+            if (existingUser.avatar) {
+                const oldImagePath = path.join(uploadsPath, existingUser.avatar);
+                if (fs.existsSync(oldImagePath)) {
+                    fs.unlinkSync(oldImagePath); // Xóa ảnh cũ
+                }
+            }
+
+            data.avatar = req.file.filename;
+        }
         const response = await UserService.updateUser(userId, data)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -90,7 +104,7 @@ const updatePassword = async (req, res) => {
                 message: "Thiếu thông tin tài khoản",
             });
         }
-        
+
         const response = await UserService.updatePassword(userId, {
             currentPassword,
             newPassword,
@@ -107,17 +121,17 @@ const updatePassword = async (req, res) => {
 };
 
 const deleteUser = async (req, res) => {
-    try{
+    try {
         const userId = req.params.id
-        if(!userId) {
+        if (!userId) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The userId is required'
             })
         }
         const response = await UserService.deleteUser(userId)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -125,10 +139,10 @@ const deleteUser = async (req, res) => {
 }
 
 const getAllUser = async (req, res) => {
-    try{
+    try {
         const response = await UserService.getAllUser()
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -136,17 +150,17 @@ const getAllUser = async (req, res) => {
 }
 
 const getDetailsUser = async (req, res) => {
-    try{
+    try {
         const userId = req.params.id
-        if(!userId) {
+        if (!userId) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The userId is required'
             })
         }
         const response = await UserService.getDetailsUser(userId)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -154,17 +168,17 @@ const getDetailsUser = async (req, res) => {
 }
 
 const refreshToken = async (req, res) => {
-    try{
+    try {
         const token = req.headers.token.split(' ')[1]
-        if(!token) {
+        if (!token) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The token is required'
             })
         }
         const response = await JwtService.refreshTokenJwtService(token)
-        return res.status(200).json(response) 
-    }catch(e){
+        return res.status(200).json(response)
+    } catch (e) {
         return res.status(500).json({
             message: e
         })
@@ -180,7 +194,7 @@ const getMe = async (req, res) => {
             message: 'Get User Success!',
             data: user.data
         })
-    } catch(e) {
+    } catch (e) {
         return res.status(500).json({
             message: e
         })

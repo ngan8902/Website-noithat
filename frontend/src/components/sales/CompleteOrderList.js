@@ -11,15 +11,15 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
     "return": "Đã trả hàng"
   };
 
-  // useEffect(() => {
-  //   fetchOrders();
+  useEffect(() => {
+    fetchOrders();
 
-  //   const interval = setInterval(() => {
-  //     fetchOrders();
-  //   }, 5000);
+    const interval = setInterval(() => {
+      fetchOrders();
+    }, 10000);
 
-  //   return () => clearInterval(interval);
-  // }, [fetchOrders]);
+    return () => clearInterval(interval);
+  }, [fetchOrders]);
 
   useEffect(() => {
     fetchOrders()

@@ -2,10 +2,9 @@ const Product = require("../model/ProductModel")
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
-        const { name, image, type, price, countInStock, description, descriptionDetail, isBestSeller, discount, productCode, origin, material, size, warranty} = newProduct
         try {
             const checkProduct = await Product.findOne({
-                name: name
+                name: newProduct.name
             })
             if (checkProduct !== null) {
                 resolve({
@@ -15,33 +14,18 @@ const createProduct = (newProduct) => {
             }
 
             const lastProduct = await Product.findOne().sort({ createdAt: -1 });
-
-            // Tạo productCode tự động
             let newCode = 'SP1000';
             if (lastProduct && lastProduct.productCode) {
-                // Tách phần số khỏi productCode bằng RegEx
                 const lastCodeNumber = parseInt(lastProduct.productCode.match(/\d+/)) || 1000;
                 newCode = `SP${lastCodeNumber + 1}`;
             }
 
 
             const createdProduct = await Product.create({
-                name,
-                image,
-                type,
-                price,
-                countInStock,
-                description,
-                descriptionDetail,
-                isBestSeller,
-                discount,
-                origin,
-                material,
-                size,
-                warranty,
                 ...newProduct,
                 productCode: newCode
-            })
+            });
+
             if (createdProduct) {
                 resolve({
                     status: 'OK',
@@ -113,7 +97,7 @@ const getAllProduct = () => {
             resolve({
                 status: 'OK',
                 message: 'success',
-                data: allProduct               
+                data: allProduct
             })
         } catch (e) {
             reject(e)

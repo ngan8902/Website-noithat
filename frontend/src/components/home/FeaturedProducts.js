@@ -5,13 +5,13 @@ import useProductStore from "../../store/productStore";
 const FeaturedProducts = () => {
     const navigate = useNavigate();
     const { products, getProducts } = useProductStore();
-
+    console.log(products);
     useEffect(() => {
         getProducts();
     }, [getProducts]);
 
     const bestSellerProducts = products.filter(product => product.isBestSeller) || [];
-    
+
     const itemsPerPage = 3;
     const totalProducts = bestSellerProducts.length;
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -31,12 +31,12 @@ const FeaturedProducts = () => {
         }
     }, [totalProducts, nextSlide]);
 
-    const visibleProducts = totalProducts >= itemsPerPage 
+    const visibleProducts = totalProducts >= itemsPerPage
         ? [
             bestSellerProducts[currentIndex % totalProducts] || {},
             bestSellerProducts[(currentIndex + 1) % totalProducts] || {},
             bestSellerProducts[(currentIndex + 2) % totalProducts] || {}
-          ]
+        ]
         : bestSellerProducts;
 
     return (
@@ -44,9 +44,9 @@ const FeaturedProducts = () => {
             <div className="container">
                 <h2 className="text-center fw-bold mb-5">Sản Phẩm Nổi Bật</h2>
                 <div className="position-relative overflow-hidden">
-                    
+
                     {totalProducts > itemsPerPage && (
-                        <button 
+                        <button
                             className="btn btn-dark d-flex align-items-center justify-content-center shadow"
                             onClick={prevSlide}
                             style={{
@@ -70,52 +70,51 @@ const FeaturedProducts = () => {
                         </button>
                     )}
 
-
-                    <div 
-                      className="d-flex justify-content-center"
-                      style={{
-                          transition: "transform 0.5s ease-in-out",
-                          transform: `translateX(0%)`
-                      }}
+                    <div
+                        className="d-flex justify-content-center"
+                        style={{
+                            transition: "transform 0.5s ease-in-out",
+                            transform: `translateX(0%)`
+                        }}
                     >
-                      {visibleProducts.map((product, index) => 
-                        product && product.image ? (
-                          <div 
-                              className="col-md-4 flex-shrink-0"
-                              key={index} 
-                              style={{ 
-                                  minWidth: `calc(100% / ${itemsPerPage})`,
-                                  padding: "0 10px"
-                              }}
-                          >
-                              <div className="card h-100 shadow-sm">
-                                  <img 
-                                    src={product.image} 
-                                    className="card-img-top" 
-                                    alt={product.name || "Sản phẩm"} 
-                                    style={{ 
-                                        height: "400px",
-                                        objectFit: "cover",
-                                        width: "100%"
+                        {visibleProducts.map((product, index) =>
+                            product && `http://localhost:8000${product.image}` ? (
+                                <div
+                                    className="col-md-4 flex-shrink-0"
+                                    key={index}
+                                    style={{
+                                        minWidth: `calc(100% / ${itemsPerPage})`,
+                                        padding: "0 10px"
                                     }}
-                                  />
-                                  <div className="card-body d-flex flex-column">
-                                      <h5 className="card-title">{product.name || "Sản phẩm chưa có tên"}</h5>
-                                      <p className="card-text">{product.description || "Mô tả chưa có"}</p>
-                                      <button 
-                                          className="btn btn-link text-decoration-none mt-auto"
-                                          onClick={() => navigate(`/product/${product._id}`)}
-                                      >
-                                          Xem Chi Tiết
-                                      </button>
-                                  </div>
-                              </div>
-                          </div>
-                        ) : null
-                      )}
+                                >
+                                    <div className="card h-100 shadow-sm">
+                                        <img
+                                            src={`http://localhost:8000${product.image}`}
+                                            className="card-img-top"
+                                            alt={product.name || "Sản phẩm"}
+                                            style={{
+                                                height: "400px",
+                                                objectFit: "cover",
+                                                width: "100%"
+                                            }}
+                                        />
+                                        <div className="card-body d-flex flex-column">
+                                            <h5 className="card-title">{product.name || "Sản phẩm chưa có tên"}</h5>
+                                            <p className="card-text">{product.description || "Mô tả chưa có"}</p>
+                                            <button
+                                                className="btn btn-link text-decoration-none mt-auto"
+                                                onClick={() => navigate(`/product/${product._id}`)}
+                                            >
+                                                Xem Chi Tiết
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : null
+                        )}
 
                         {totalProducts > itemsPerPage && (
-                            <button 
+                            <button
                                 className="btn btn-dark d-flex align-items-center justify-content-center shadow"
                                 onClick={nextSlide}
                                 style={{
@@ -140,7 +139,7 @@ const FeaturedProducts = () => {
                         )}
 
                     </div>
-                </div>  
+                </div>
             </div>
         </section>
     );

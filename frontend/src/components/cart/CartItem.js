@@ -5,6 +5,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
   const itemId = item._id || item.productId?._id || item.productId;
   const isSelected = selectedItems.includes(itemId);
 
+
   const handleDecrease = () => {
     if (item.quantity > 1 && itemId) {
       updateQuantity(itemId, item.quantity - 1);
@@ -40,6 +41,16 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
   const itemPrice = getDiscountedPrice(item?.price, item?.discount);
   const productPrice = getDiscountedPrice(product?.price, product?.discount);
 
+  const getImageUrl = (item, product) => {
+    if (item?.image) {
+      return `http://localhost:8000${item.image}`;
+    }
+    if (product?.image) {
+      return `http://localhost:8000/upload/${product.image.split("/").pop()}`;
+    }
+    return "https://via.placeholder.com/80";
+  };
+
   return (
     <div key={itemId} className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
       <div className="d-flex align-items-center">
@@ -50,7 +61,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
           onChange={handleSelectItem}
         />
         <img
-          src={product?.image || item?.image || "/default-product.png"}
+          src={getImageUrl(item, product)}
           alt={product?.name || item?.name || "Sản phẩm"}
           className="img-fluid rounded"
           width="80"

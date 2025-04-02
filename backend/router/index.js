@@ -9,6 +9,8 @@ const ReciverInfoRouter = require('./ReciverInfoRouter')
 const CartRoute = require('./CartRoute')
 const GoogleRoute = require('./GoogleRoute')
 const ForgotRoute = require('./ForgotRoute') 
+const ImagesRoute = require('./ImagesRoute') 
+
 
 const routers = (app) => {
     app.use('/api/staff', StaffRouter)
@@ -22,6 +24,8 @@ const routers = (app) => {
     app.use('/api/cart', CartRoute)
     app.use('/api/auth', GoogleRoute)
     app.use('/api/auth', ForgotRoute)
+    app.use("/api/upload", ImagesRoute);
+
 }
 
 module.exports = routers;
