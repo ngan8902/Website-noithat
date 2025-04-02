@@ -25,8 +25,6 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
       console.error("Lỗi khi xóa đơn hàng:", error);
     }
   };
-  console.log(cancelledOrders)
-
 
   return (
     <>

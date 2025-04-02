@@ -220,7 +220,7 @@ const AccountInfo = () => {
           alt="Avatar"
           className="avatar mb-3 rounded-circle border"
           height="150"
-          src={avatar || "/images/logo.png"}
+          src={avatar}
           width="150"
           onClick={() => setShowModal(true)}
           style={{ cursor: "pointer" }}
