@@ -52,7 +52,7 @@ const useCartStore = create((set, get) => ({
                 const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/cart/add-cart`, { productId: product._id, quantity },
                     { headers: { "token": token } }
                 );
-                // set({ cartItems: response.data.cart.items || [] });
+                set({ cartItems: response.data.cart.items || [] });
                 return response;
             } catch (error) {
                 console.error("Lỗi khi thêm vào giỏ hàng API:", error);

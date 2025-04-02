@@ -60,7 +60,7 @@ const OrderHistory = ({ orders = [] }) => {
                   <td>
                     <div className="d-flex align-items-center gap-2">
                       <img
-                        src={order.orderItems[0]?.image || "/default-image.jpg"}
+                        src={`http://localhost:8000${order.orderItems[0]?.image}` || "/default-image.jpg"}
                         alt={order.orderItems[0]?.name || "Sản phẩm"}
                         style={{
                           width: "60px",

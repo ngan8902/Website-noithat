@@ -25,19 +25,8 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
       console.error("Lỗi khi xóa đơn hàng:", error);
     }
   };
+  console.log(cancelledOrders)
 
-  // const getStatusLabel = (status) => {
-  //   switch (status) {
-  //     case "pending":
-  //       return "Chờ xác nhận";
-  //     case "cancelled":
-  //       return "Đã hủy";
-  //     case "return":
-  //       return "Đã hủy";
-  //     default:
-  //       return "Không xác định";
-  //   }
-  // };
 
   return (
     <>
@@ -70,7 +59,6 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
                 <th>Sản Phẩm</th>
                 <th>Số Lượng</th>
                 <th>Tổng Tiền</th>
-                {/* <th>Trạng Thái</th> */}
                 <th>Hành Động</th>
               </tr>
             </thead>
@@ -83,7 +71,7 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
                     {order.orderItems?.map((item, index) => (
                       <div key={index} className="mb-2">
                         <img
-                          src={item.image || "/default-image.jpg"}
+                          src={`http://localhost:8000${item.image}` || "/default-image.jpg"}
                           alt={item.name}
                           style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
                         />

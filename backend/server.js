@@ -11,8 +11,16 @@ const routers = require("./router");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { initializeChatSocket } = require("./chat/chat.socket");
+const ImagesRoute = require("./router/ImagesRoute")
 
 dotenv.config();
+
+// Tắt các chính sách bảo mật ngăn chặn tải tài nguyên chéo
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
+  res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
+  next();
+});
 
 // Cấu hình cookie-parser trước CORS
 app.use(cookieParser());
@@ -31,19 +39,14 @@ app.use(
 // Hỗ trợ preflight requests
 app.options("*", cors());
 
-// Tắt các chính sách bảo mật ngăn chặn tải tài nguyên chéo
-app.use((req, res, next) => {
-  res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
-  res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
-  next();
-});
-
 // Middleware xử lý dữ liệu request
 app.use(express.static(__dirname + "/public/build"));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/upload", express.static("upload"));
 
 routers(app);
 
@@ -52,7 +55,7 @@ mongoose.connect(`${process.env.MONGO_DB}`)
     console.log('Connect Db success!')
   })
   .catch((err) => {
-    console.log(err)
+    console.error("Lỗi kết nối MongoDB:", err)  
   })
 
 initializeChatSocket(server);

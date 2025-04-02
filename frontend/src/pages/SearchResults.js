@@ -16,6 +16,8 @@ const SearchResults = () => {
     const [filters, setFilters] = useState({ priceRange: "", rating: "" });
     const [, setLoading] = useState(true);
 
+    console.log(products)
+
     useEffect(() => {
         if (query) {
             const fetchData = async () => {
@@ -97,7 +99,7 @@ const SearchResults = () => {
                                                 <div className="col-md-4" key={product._id || product.id}>
                                                     <div className="card h-100 text-center">
                                                         <img
-                                                            src={product.image || defaultImage}
+                                                            src={`http://localhost:8000${product.image}` || defaultImage}
                                                             className="card-img-top"
                                                             alt={product.name}
                                                         />

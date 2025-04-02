@@ -13,7 +13,7 @@ const AccountInfo = () => {
   const [showModal, setShowModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);  
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -53,32 +53,33 @@ const AccountInfo = () => {
     }));
   };
 
-  // Xử lý đổi avatar
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const newAvatar = reader.result;
-        setAvatar(newAvatar);
-        updateAvatar(newAvatar);
-      };
-      reader.readAsDataURL(file);
+      setAvatar(URL.createObjectURL(file));
+      updateAvatar(file);
     }
   };
 
-  // Gửi request cập nhật avatar
-  const updateAvatar = async (newAvatar) => {
+
+  const updateAvatar = async (file) => {
     if (!user?._id) return console.error("Không tìm thấy user");
 
     try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
       const { data } = await axios.put(
         `${process.env.REACT_APP_URL_BACKEND}/user/update-user/${user._id}`,
-        { avatar: newAvatar },
+        formData,
         {
-          headers: { token: getCookie(TOKEN_KEY) },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            token: getCookie(TOKEN_KEY),
+          },
         }
       );
+
       setUser(data.data);
     } catch (error) {
       console.error("Lỗi cập nhật avatar:", error);
@@ -268,7 +269,7 @@ const AccountInfo = () => {
               className="btn btn-outline-danger w-100 mb-3 d-flex align-items-center justify-content-center"
               onClick={() => setIsChangingPassword(true)}
             >
-              <i className="bi bi-lock-fill me-2"></i> 
+              <i className="bi bi-lock-fill me-2"></i>
               {user?.password ? "Bạn muốn đổi mật khẩu?" : "Tạo mật khẩu của bạn!"}
             </button>
           ) : (
@@ -303,7 +304,7 @@ const AccountInfo = () => {
                     type={showNewPassword ? "text" : "password"}
                     placeholder="Nhập mật khẩu mới"
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}                  
+                    onChange={(e) => setNewPassword(e.target.value)}
                   />
                   <span
                     className="input-group-text"
@@ -318,7 +319,7 @@ const AccountInfo = () => {
               {!user.password && (
                 <div className="mb-3 position-relative">
                   <label className="form-label">Nhập Lại Mật Khẩu</label>
-                  <div className="input-group"> 
+                  <div className="input-group">
                     <input
                       className="form-control"
                       type={showConfirmPassword ? "text" : "password"}
@@ -336,7 +337,7 @@ const AccountInfo = () => {
                   </div>
                 </div>
               )}
-              
+
               <button
                 type="button"
                 className="btn btn-outline-secondary w-100 mb-3"
@@ -359,7 +360,7 @@ const AccountInfo = () => {
           </button>
         </form>
       )}
-      
+
       {/* Modal Hiển Thị Ảnh */}
       {showModal && (
         <div className="avatar-modal">

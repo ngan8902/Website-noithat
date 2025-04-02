@@ -2,16 +2,18 @@ import React, { useState } from "react";
 import axios from "axios";
 import useProductStore from "../../store/productStore";
 
-const key = "BGSJ6545DHHHFGS"; // Key nay dung de tranh User nhap trung key tam
+const key = "BGSJ6545DHHHFGS";
 
-const AddProductModal = ({ closeModal, refreshProducts }) => {
-  const [error, setError] = useState('');
+const AddProductModal = ({ closeModal }) => {
+  const [error, setError] = useState("");
   const { addProducts, products } = useProductStore((state) => state);
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [product, setProduct] = useState({
     name: "",
     price: "",
-    image: "",
+    image: null,
     countInStock: "",
     description: "",
     descriptionDetail: "",
@@ -21,7 +23,7 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
     origin: "",
     material: "",
     size: "",
-    warranty: ""
+    warranty: "",
   });
 
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -38,51 +40,83 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProduct({ ...product, image: file });
+      console.log("Selected file:", file); 
+      setError("");
+    }
+  };
+
   const handleAdd = (e) => {
     e.preventDefault();
-    if (!product.name || !product.price || !product.image || !product.countInStock || !product.type === (!selectedCategory && !newCategory) || !product.origin || !product.material || !product.size || !product.warranty) {
+    let type = product.type;
+    if (!selectedCategory && !newCategory) {
+      setError("Vui lòng chọn hoặc nhập loại sản phẩm");
+      return;
+    }
+
+    if (selectedCategory === key) {
+      type = newCategory;
+    } else {
+      type = selectedCategory;
+    }
+
+    if (
+      !product.name ||
+      !product.price ||
+      !product.image ||
+      !product.countInStock ||
+      !type ||
+      !product.origin ||
+      !product.material ||
+      !product.size ||
+      !product.warranty
+    ) {
       setError("Vui lòng điền đầy đủ thông tin!");
       return;
     }
 
-    const finalCategory = selectedCategory === key ? newCategory : selectedCategory;
+    const formData = new FormData();
+    formData.append("name", product.name);
+    formData.append("price", product.price);
+    formData.append("countInStock", product.countInStock);
+    formData.append("description", product.description);
+    formData.append("descriptionDetail", product.descriptionDetail);
+    formData.append("discount", product.discount);
+    formData.append("type", type);
+    formData.append("isBestSeller", product.isBestSeller);
+    formData.append("origin", product.origin);
+    formData.append("material", product.material);
+    formData.append("size", product.size);
+    formData.append("warranty", product.warranty);
+    formData.append("image", product.image);
 
-    const newProduct = {
-      ...product,
-      price: parseFloat(product.price),
-      countInStock: parseInt(product.countInStock, 10),
-      discount: parseFloat(product.discount) || 0,
-      type: finalCategory,
-    };
+    console.log("FormData image:", formData.get("image"));
 
+    setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_URL_BACKEND}/product/create-product`, newProduct).then((response) => {
-        console.log("Phản hồi từ server:", response);
+      .post(`${process.env.REACT_APP_URL_BACKEND}/product/create-product`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((response) => {
+        setLoading(false);
         const { data } = response;
 
-        if (data.status === 'OK') {
-          addProducts(newProduct)
-          window.location.reload({ closeModal })
+        if (data.status === "OK") {
+          addProducts(data.data);
+          // closeModal();
         } else {
           setError(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
-          console.error('lỗi:', setError)
+          console.error("lỗi:", setError);
         }
       })
       .catch((err) => {
+        setLoading(false);
         console.error("Lỗi đăng ký:", err);
         setError("Không thể kết nối với server. Vui lòng thử lại!");
       });
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProduct({ ...product, image: reader.result });
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   return (
@@ -98,12 +132,12 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
               Ảnh sản phẩm (*)
               <input type="file" className="form-control mb-3" accept="image/*" onChange={handleFileChange} />
             </label>
+
             {product.image && (
               <img
-                src={product.image}
+                src={URL.createObjectURL(product.image)}
                 alt="Product"
                 style={{ width: "100px", height: "100px", objectFit: "cover", marginBottom: "10px" }}
-                className="m-3"
               />
             )}
 
@@ -124,13 +158,17 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
                 required
               >
                 <option value="">-- Chọn loại sản phẩm (*) --</option>
-                {[...new Set(products.map((productItem) => productItem.type))].map((type, index) => (
-                  <option key={index} value={type}>{type}</option>
-                ))}
+                {[...new Set(products.map((productItem) => productItem.type))].map(
+                  (type, index) => (
+                    <option key={index} value={type}>
+                      {type}
+                    </option>
+                  )
+                )}
                 <option value={key}>+ Thêm loại mới</option>
               </select>
             </div>
-            
+
             {selectedCategory === key && (
               <div className="mb-3">
                 <label className="form-label">Nhập Loại Mới</label>
@@ -145,10 +183,34 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
               </div>
             )}
 
-            <input type="text" className="form-control mb-3" placeholder="Xuất xứ (*)" value={product.origin} onChange={(e) => setProduct({ ...product, origin: e.target.value })} />
-            <input type="text" className="form-control mb-3" placeholder="Chất liệu (*)" value={product.material} onChange={(e) => setProduct({ ...product, material: e.target.value })} />
-            <input type="text" className="form-control mb-3" placeholder="Kích thước (*)" value={product.size} onChange={(e) => setProduct({ ...product, size: e.target.value })} />
-            <input type="text" className="form-control mb-3" placeholder="Bảo hành (*)" value={product.warranty} onChange={(e) => setProduct({ ...product, warranty: e.target.value })} />
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Xuất xứ (*)"
+              value={product.origin}
+              onChange={(e) => setProduct({ ...product, origin: e.target.value })}
+            />
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Chất liệu (*)"
+              value={product.material}
+              onChange={(e) => setProduct({ ...product, material: e.target.value })}
+            />
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Kích thước (*)"
+              value={product.size}
+              onChange={(e) => setProduct({ ...product, size: e.target.value })}
+            />
+            <input
+              type="text"
+              className="form-control mb-3"
+              placeholder="Bảo hành (*)"
+              value={product.warranty}
+              onChange={(e) => setProduct({ ...product, warranty: e.target.value })}
+            />
 
             <input
               type="number"
@@ -196,15 +258,15 @@ const AddProductModal = ({ closeModal, refreshProducts }) => {
                 checked={product.isBestSeller}
                 onChange={(e) => setProduct({ ...product, isBestSeller: e.target.checked })}
               />
-              <label className="form-check-label" htmlFor="bestSeller">Sản phẩm bán chạy</label>
+              <label className="form-check-label" htmlFor="bestSeller">
+                Sản phẩm bán chạy
+              </label>
               <br></br>
-              {
-                error ? <code>{error}</code> : null
-              }
+              {error ? <code>{error}</code> : null}
             </div>
 
-            <button className="btn btn-primary w-100" onClick={handleAdd}>
-              Thêm
+            <button className="btn btn-primary w-100" onClick={handleAdd} disabled={loading}>
+              {loading ? "Đang xử lý..." : "Thêm"}
             </button>
           </div>
         </div>

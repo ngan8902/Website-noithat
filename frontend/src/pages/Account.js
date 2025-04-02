@@ -27,14 +27,14 @@ const Account = () => {
   }, [user, getOrderByUser]);
 
    useEffect(() => {
-      fetchOrders();
+    getOrderByUser();
   
       const interval = setInterval(() => {
-        fetchOrders();
+        getOrderByUser();
       }, 10000); 
   
       return () => clearInterval(interval);
-    }, [fetchOrders]);
+    }, [getOrderByUser]);
 
   useEffect(() => {
     const fetchUser = async () => {

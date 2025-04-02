@@ -4,15 +4,44 @@ const { paginateArray } = require('../common/utils/pagination')
 
 const createProduct = async (req, res) => {
     try {
-        const { name, image, type, price, countInStock, description, descriptionDetail, discount, productCode, isBestSeller, origin, material, size, warranty} = req.body
+        const { name, type, price, countInStock, description, descriptionDetail, discount, productCode, isBestSeller, origin, material, size, warranty } = req.body
 
-        if (!name || !image || !type || !price || !countInStock) {
+        if (!name || !type || !price || !countInStock) {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'The input is required'
             })
         }
-        const response = await ProductService.createProduct(req.body)
+
+        if (!req.file) {
+            return res.status(400).json({ message: "Không có file nào được tải lên" });
+        }
+
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(req.file.mimetype)) {
+            return res.status(400).json({ message: "Loại file không được hỗ trợ. Chỉ hỗ trợ JPEG, PNG và GIF." });
+        }
+
+        const imageUrl = `/upload/${req.file.filename}` || null;
+
+        const newProduct = {
+            name,
+            image: imageUrl,
+            type,
+            price,
+            countInStock,
+            description,
+            descriptionDetail,
+            discount,
+            productCode,
+            isBestSeller,
+            origin,
+            material,
+            size,
+            warranty
+        };
+
+        const response = await ProductService.createProduct(newProduct)
         return res.status(200).json(response)
     } catch (e) {
         console.log(e)

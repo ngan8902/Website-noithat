@@ -30,6 +30,8 @@ const Checkout = () => {
     const [cartData, setCartData] = useState(selectedProducts || storedProducts);
     const [product, setProduct] = useState(initialProduct || (cartData.length === 1 ? cartData[0] : null));
 
+    console.log(product)
+
     useEffect(() => {
         if (!product && selectedProducts?.length === 1) {
             setProduct(selectedProducts[0]);
@@ -217,7 +219,7 @@ const Checkout = () => {
                 ? [{
                     product: product.productId?.data?._id || product._id,
                     name: product.productId?.data?.name || product.name,
-                    image: product.productId?.data?.image || product.image,
+                    image: `http://localhost:8000${product.image}` || product.image,
                     amount: product.quantity || quantity,
                     price: product.productId?.data?.price || product.price,
                     discount: product.productId?.data?.discount || product.discount
@@ -225,7 +227,7 @@ const Checkout = () => {
                 : cartData.map(item => ({
                     product: item.productId?.data?._id || item._id,
                     name: item.productId?.data?.name || item.name,
-                    image: item.productId?.data?.image || item.image,
+                    image: `http://localhost:8000${item.image}` || item.image,
                     amount: item.quantity,
                     price: item.productId?.data?.price || item.price,
                     discount: item.productId?.data?.discount || item.discount
@@ -259,16 +261,29 @@ const Checkout = () => {
 
             setTimeout(async () => {
                 await fetchCart();
-                if (user) {
-                    window.location.replace("/account");
-                } else {
-                    navigate("/home");
-                }
+                // if (user) {
+                //     window.location.replace("/account");
+                // } else {
+                //     navigate("/home");
+                // }
             }, 2000);
         } catch (error) {
             console.log(error)
             toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");
         }
+    };
+
+    const getImageUrl = (item, product) => {
+        if (item?.image) {
+            return item.image;
+        }
+        if (item?.productId?.data?.image) {
+            return `http://localhost:8000${item.productId.data.image}`;
+        }
+        if (product?.image) {
+            return product.image;
+        }
+        return "https://via.placeholder.com/100";
     };
 
 
@@ -346,7 +361,6 @@ const Checkout = () => {
                     {
                         displayProducts.map((item, index) => {
                             const productName = item.productId?.data?.name || item.name || item.product?.name;
-                            const productImage = item.productId?.data?.image || item.image || item.product?.image;
                             const productPrice = item.productId?.data?.price || item.price || item.product?.price;
                             const discount = item.productId?.data?.discount || item.discount || item.product?.discount;
                             const hasDiscount = discount > 0;
@@ -354,7 +368,7 @@ const Checkout = () => {
                                 <div key={index} className="border p-2 mb-2">
                                     <p><strong>{productName}</strong></p>
                                     <img
-                                        src={productImage}
+                                        src={getImageUrl(item, product)}
                                         alt={productName}
                                         className="img-fluid rounded mb-2"
                                         style={{ width: "100px" }}

@@ -14,7 +14,7 @@ const ProductList = () => {
 
     const interval = setInterval(() => {
       getProducts();
-    }, 20000); 
+    }, 5000); 
 
     return () => clearInterval(interval);
   }, [getProducts]);
@@ -36,10 +36,9 @@ const ProductList = () => {
   };
 
   const filteredProducts = products.filter(product =>
-    product.name?.toLowerCase().includes(search.toLowerCase()) ||
-    product.productCode?.toLowerCase().includes(search.toLowerCase())
+    product?.name?.toLowerCase().includes(search.toLowerCase()) ||
+    product?.productCode?.toLowerCase().includes(search.toLowerCase())
   );
-
 
   return (
     <div id="products" className="mt-4">
@@ -92,7 +91,7 @@ const ProductList = () => {
                     <td style={{ width: "10%" }}>{product.productCode || ""}</td>
                     <td style={{ width: "8%" }}>
                       <img
-                        src={product.image || "https://via.placeholder.com/100"}
+                        src={`http://localhost:8000/upload/${product.image.split("/").pop()}` || "https://via.placeholder.com/100"}
                         alt={product.name}
                         style={{ width: "100px", height: "100px", objectFit: "cover" }}
                       />
