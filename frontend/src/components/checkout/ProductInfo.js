@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const ProductInfo = ({ product, quantity, cart, shippingFee, finalPrice, totalPrice, selectedProducts }) => {
+const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selectedProducts }) => {
     const [cartData, setCartData] = useState(cart || []);
 
     useEffect(() => {

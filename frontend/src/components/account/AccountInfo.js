@@ -365,7 +365,7 @@ const AccountInfo = () => {
         <div className="avatar-modal">
           <div className="avatar-modal-content">
             <span className="close" onClick={() => setShowModal(false)}>
-              <i className="bi bi-x"></i>
+              <i className="bi bi-x-circle-fill"></i>
             </span>
             <img
               src={user.avatar || "/images/logo.png"}

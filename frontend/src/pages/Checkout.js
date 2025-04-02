@@ -68,7 +68,7 @@ const Checkout = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
-    const [finalPrice, setFinalPrice] = useState(0);
+    const [, setFinalPrice] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
 
 
@@ -76,6 +76,7 @@ const Checkout = () => {
         ? selectedProducts
         : (product ? [{ ...product, quantity }] : cartData);
 
+    const orderId = displayProducts.map(item => item.productId?.data?._id || item._id || item.product?._id).join(",");
 
     const calculateFinalPrice = () => {
         const totalProductPrice = displayProducts.reduce((total, item) => {
@@ -288,18 +289,18 @@ const Checkout = () => {
                 />
                 <div className="col-md-6">
                     <ProductInfo
-                        cartItems={cartItems}
                         product={product}
                         quantity={quantity || selectedProducts?.reduce((acc, item) => acc + item.quantity, 0)}
                         cart={cartData}
                         shippingFee={shippingFee}
-                        finalPrice={finalPrice}
                         totalPrice={totalPrice}
                         selectedProducts={selectedProducts}
                     />
                     <PaymentMethod
                         paymentMethod={paymentMethod}
                         setPaymentMethod={setPaymentMethod}
+                        orderId={orderId}
+                        amount={totalPrice}
                     />
 
                     {errorMessage && <p className="text-danger text-center mt-3">{errorMessage}</p>}
