@@ -1,71 +1,90 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AddressSelector from "../AddressSelector";
 
-//const key = "BGHUSY73645";
-
 const CustomerInfo = ({
-    hasAddress,
-    savedAddresses,
+    info,
     selectedAddress,
     setSelectedAddress,
-    newAddress, 
+    newAddress,
     setNewAddress,
-    receiver, 
+    receiver,
     setReceiver,
-    setSavedAddress
 }) => {
-
     const [errors, setErrors] = useState({ fullname: "", phone: "" });
     const [selectedIndex, setSelectedIndex] = useState(null);
+    const [displayAddresses, setDisplayAddresses] = useState([]);
+
+    useEffect(() => {
+        if (info && info.address) {
+            const userInfo = {
+                fullname: info.name,
+                phone: info.phone,
+                address: info.address,
+            };
+
+            setDisplayAddresses([userInfo]);
+        } else {
+            setDisplayAddresses([]);
+        }
+    }, [info]);
 
     const handleSelectSavedInfo = (index) => {
-        setSelectedIndex(index);
-        const selectedInfo = savedAddresses[index];
-
-        // Cập nhật thông tin vào form
-        setReceiver({
-            fullname: selectedInfo.fullname,
-            phone: selectedInfo.phone
-        });
-        setSelectedAddress(selectedInfo.address);
+        if (selectedIndex === index) {
+            // Nếu đã chọn, hủy chọn
+            setSelectedIndex(null);
+            setReceiver({
+                fullname: '',
+                phone: '',
+                address: ''
+            });
+            setSelectedAddress('');
+        } else {
+            // Nếu chưa chọn, chọn
+            setSelectedIndex(index);
+            const selectedInfo = displayAddresses[index];
+            setReceiver({
+                fullname: selectedInfo.fullname,
+                phone: selectedInfo.phone,
+                address: selectedInfo.address
+            });
+            setSelectedAddress(selectedInfo.address);
+        }
     };
 
     const handleDeleteSavedInfo = (index) => {
-        const updatedAddresses = savedAddresses.filter((_, i) => i !== index);
-        setSavedAddress(updatedAddresses);
+        const updatedAddresses = displayAddresses.filter((_, i) => i !== index);
+        setDisplayAddresses(updatedAddresses);
     };
 
-    // Kiểm tra tên khách hàng không chứa số
     const validateFullname = (name) => {
         return /^[A-Za-zÀ-ỹ\s]+$/.test(name.trim());
     };
 
-    // Kiểm tra số điện thoại có đúng định dạng không
     const validatePhone = (phone) => {
         return /^(03|05|08|09)[0-9]{8}$/.test(phone);
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setReceiver(prev => ({ ...prev, [name]: value }));
+        setReceiver((prev) => ({ ...prev, [name]: value }));
 
         if (name === "fullname") {
             const isValid = validateFullname(value);
-            setErrors(prev => ({
+            setErrors((prev) => ({
                 ...prev,
-                fullname: isValid ? "" : "Tên không được chứa số hoặc ký tự đặc biệt!"
+                fullname: isValid ? "" : "Tên không được chứa số hoặc ký tự đặc biệt!",
             }));
 
             if (!isValid) {
-                setReceiver(prev => ({ ...prev, phone: "" }));
+                setReceiver((prev) => ({ ...prev, phone: "" }));
             }
         }
-        
+
         if (name === "phone") {
             const isValid = validatePhone(value);
-            setErrors(prev => ({
+            setErrors((prev) => ({
                 ...prev,
-                phone: isValid ? "" : "Số điện thoại phải có 10 số và phải đúng định dạng!"
+                phone: isValid ? "" : "Số điện thoại phải có 10 số và phải đúng định dạng!",
             }));
 
             if (!isValid) {
@@ -83,9 +102,9 @@ const CustomerInfo = ({
 
             <div className="alert alert-secondary">
                 <strong>Thông tin đã lưu:</strong>
-                {savedAddresses.length > 0 ? (
+                {displayAddresses.length > 0 ? (
                     <div className="mt-2">
-                        {savedAddresses.map((info, index) => (
+                        {displayAddresses.map((info, index) => (
                             <div key={index} className="form-check d-flex align-items-center justify-content-between mb-2">
                                 <div className="d-flex align-items-center w-100">
                                     <input
@@ -142,7 +161,7 @@ const CustomerInfo = ({
 
                 <div className="mb-3">
                     <label className="form-label">Địa Chỉ</label>
-                    <AddressSelector setNewAddress={setNewAddress} />
+                    <AddressSelector setNewAddress={setNewAddress} savedAddress={receiver.address} />
                 </div>
             </form>
         </div>

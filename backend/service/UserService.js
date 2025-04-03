@@ -91,6 +91,10 @@ const updateUser = (id, data) => {
                 })
             }
 
+            if (data.address) {
+                checkUser.address = data.address;
+            }
+
             const updatedUser = await User.findByIdAndUpdate(id, data, {new: true})           
             resolve({
                 status: 'OK',

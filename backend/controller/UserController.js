@@ -69,7 +69,6 @@ const updateUser = async (req, res) => {
                 message: 'The userId is required'
             })
         }
-        console.log('userId', userId)
 
         if (req.file) {
             const uploadsPath = path.join(__dirname, "..", "upload");

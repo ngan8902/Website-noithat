@@ -34,6 +34,7 @@ async function googleLogin(req) {
                 avatar: payload.picture,
                 phone: "",
                 password: "",
+                address: "",
             });
         }
 

@@ -14,6 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { TOKEN_KEY } from "../constants/authen.constant";
 import { Modal, Button } from "react-bootstrap";
+import { getCookie } from "../utils/cookie.util";
 
 const Checkout = () => {
     const location = useLocation();
@@ -29,8 +30,6 @@ const Checkout = () => {
     const storedProducts = JSON.parse(localStorage.getItem("selectedProducts")) || [];
     const [cartData, setCartData] = useState(selectedProducts || storedProducts);
     const [product, setProduct] = useState(initialProduct || (cartData.length === 1 ? cartData[0] : null));
-
-    console.log(product)
 
     useEffect(() => {
         if (!product && selectedProducts?.length === 1) {
@@ -65,6 +64,7 @@ const Checkout = () => {
     const [shippingFee, setShippingFee] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
     const [paymentMethod, setPaymentMethod] = useState("");
+    const [info, setInfo] = useState('');
     const [receiver, setReceiver] = useState({ fullname: "", phone: "", address: "" });
 
     const [showLogin, setShowLogin] = useState(false);
@@ -100,23 +100,42 @@ const Checkout = () => {
     }, [cartData, shippingFee]);
 
     useEffect(() => {
-        const handleUserAddress = async () => {
-            if (!user) return;
+        const saveAddress = async () => {
+            if (user && newAddress) {
+                try {
+                    const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
+                        userId: user._id,
+                        address: newAddress,
+                        fullname: receiver.fullname,
+                        phone: receiver.phone,
+                    });
 
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/address/get-address/${user._id}`);
-                if (response.data.status === "SUCCESS") {
-                    setSavedAddresses(response.data.data);
-                    if (response.data.data.length > 0) {
-                        setSelectedAddress(response.data.data[0].address);
-                    }
+                    console.log("Địa chỉ đã được lưu thành công.", response);
+                } catch (error) {
+                    console.error("Lỗi khi lưu địa chỉ:", error);
                 }
-            } catch (error) {
-                console.error("Lỗi khi lấy danh sách địa chỉ:", error);
+            }
+        };
+        saveAddress();
+    }, [newAddress, user, receiver.fullname, receiver.phone]);
+
+    useEffect(() => {
+        const fetchAddress = async () => {
+            if (user && user._id) {
+                try {
+                    const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/user/get-details/${user._id}`, {
+                        headers: {
+                            'token': getCookie(TOKEN_KEY)
+                        }
+                    });
+                    setInfo(response.data.data);
+                } catch (error) {
+                    console.error('Lỗi lấy địa chỉ:', error);
+                }
             }
         };
 
-        handleUserAddress();
+        fetchAddress();
     }, [user]);
 
     useEffect(() => {
@@ -261,11 +280,11 @@ const Checkout = () => {
 
             setTimeout(async () => {
                 await fetchCart();
-                // if (user) {
-                //     window.location.replace("/account");
-                // } else {
-                //     navigate("/home");
-                // }
+                if (user) {
+                    window.location.replace("/account");
+                } else {
+                    navigate("/home");
+                }
             }, 2000);
         } catch (error) {
             console.log(error)
@@ -300,6 +319,7 @@ const Checkout = () => {
                     setNewAddress={setNewAddress}
                     receiver={receiver}
                     setReceiver={setReceiver}
+                    info={info}
                 />
                 <div className="col-md-6">
                     <ProductInfo

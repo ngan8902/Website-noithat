@@ -19,6 +19,7 @@ const AccountInfo = () => {
     name: '',
     email: '',
     phone: '',
+    address: ''
   });
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -40,6 +41,7 @@ const AccountInfo = () => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
+        address: user.address || ''
       });
       setAvatar(user.avatar || '');
     }
@@ -111,6 +113,7 @@ const AccountInfo = () => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
+        address: formData.address,
       };
 
       const response = await axios.put(
@@ -241,7 +244,8 @@ const AccountInfo = () => {
             <p><i className="bi bi-person-circle text-dark m-2"></i> <strong>Họ và Tên:</strong> {user?.name}</p>
             <p><i className="bi bi-envelope text-dark m-2"></i> <strong>Email:</strong> {user?.email}</p>
             <p><i className="bi bi-telephone text-dark m-2"></i> <strong>Số Điện Thoại:</strong> {user?.phone}</p>
-          </div>
+            <p><i className="bi bi-telephone text-dark m-2"></i> <strong>Địa Chỉ:</strong> {user?.address}</p>
+          </div>          
 
           <button className="btn btn-primary w-100" onClick={() => setIsEditing(true)}>
             Cập Nhật Thông Tin
@@ -260,6 +264,10 @@ const AccountInfo = () => {
           <div className="mb-3">
             <label className="form-label">Số Điện Thoại</label>
             <input className="form-control" name="phone" type="tel" value={formData.phone} onChange={handleChange} />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Địa Chỉ</label>
+            <input className="form-control" name="address" type="text" value={formData.address} onChange={handleChange} />
           </div>
 
           {/* Đổi mật khẩu */}
