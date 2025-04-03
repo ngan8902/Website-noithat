@@ -31,7 +31,7 @@ const Account = () => {
   
       const interval = setInterval(() => {
         getOrderByUser();
-      }, 10000); 
+      }, 5000); 
   
       return () => clearInterval(interval);
     }, [getOrderByUser]);

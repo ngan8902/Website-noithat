@@ -14,7 +14,7 @@ const SalesManagement = () => {
     
         const interval = setInterval(() => {
           fetchOrders();
-        }, 10000); 
+        }, 5000); 
     
         return () => clearInterval(interval);
       }, [fetchOrders]);
