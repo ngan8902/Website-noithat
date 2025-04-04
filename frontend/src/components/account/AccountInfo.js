@@ -14,12 +14,13 @@ const AccountInfo = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    address: ''
+    address: '',
+    avatar: null
   });
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -58,20 +59,19 @@ const AccountInfo = () => {
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setAvatar(URL.createObjectURL(file));
       updateAvatar(file);
     }
   };
 
-
   const updateAvatar = async (file) => {
     if (!user?._id) return console.error("Không tìm thấy user");
+    setLoading(true);
 
     try {
       const formData = new FormData();
       formData.append("avatar", file);
 
-      const { data } = await axios.put(
+      const data = await axios.put(
         `${process.env.REACT_APP_URL_BACKEND}/user/update-user/${user._id}`,
         formData,
         {
@@ -82,9 +82,16 @@ const AccountInfo = () => {
         }
       );
 
-      setUser(data.data);
+      setUser({ ...user, avatar: data.data.avatar });
+      setAvatar(data.data.avatar);
+      setErrorMessage("Cập nhật avatar thành công!");
+      setTimeout(() => setErrorMessage(""), 3000);
     } catch (error) {
-      console.error("Lỗi cập nhật avatar:", error);
+      console.log("Lỗi cập nhật avatar:", error);
+      setErrorMessage("Lỗi cập nhật avatar. Vui lòng thử lại!");
+      setTimeout(() => setErrorMessage(""), 3000);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -245,7 +252,7 @@ const AccountInfo = () => {
             <p><i className="bi bi-envelope text-dark m-2"></i> <strong>Email:</strong> {user?.email}</p>
             <p><i className="bi bi-telephone text-dark m-2"></i> <strong>Số Điện Thoại:</strong> {user?.phone}</p>
             <p><i className="bi bi-telephone text-dark m-2"></i> <strong>Địa Chỉ:</strong> {user?.address}</p>
-          </div>          
+          </div>
 
           <button className="btn btn-primary w-100" onClick={() => setIsEditing(true)}>
             Cập Nhật Thông Tin

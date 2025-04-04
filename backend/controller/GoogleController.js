@@ -9,6 +9,15 @@ module.exports = {
                 return res.status(400).json({ message: "Lỗi xác thực Google", status: "ERR" });
             }
 
+            if (data.user && data.user.avatar) {
+                try {
+                    const imageUrl = await authService.uploadGoogleAvatar(data.user.avatar);
+                    data.user.avatar = imageUrl; 
+                } catch (avatarError) {
+                    console.error("Lỗi tải và lưu avatar:", avatarError.message);
+                }
+            }
+
             res.cookie("token", data.token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
@@ -36,6 +45,21 @@ module.exports = {
             if (!res.headersSent) {
                 return res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
             }
+        }
+    },
+
+    uploadGoogleAvatar: async (req, res) => {
+        const googleAvatarUrl = req.body.url;
+
+        if (!googleAvatarUrl) {
+            return res.status(400).json({ message: 'URL ảnh không được cung cấp.' });
+        }
+
+        try {
+            const imageUrl = await authService.uploadGoogleAvatar(googleAvatarUrl);
+            res.json({ imageUrl });
+        } catch (error) {
+            res.status(500).json({ message: error.message });
         }
     },
 };

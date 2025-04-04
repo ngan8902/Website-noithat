@@ -1,8 +1,15 @@
 const { OAuth2Client } = require("google-auth-library");
+const path = require('path');
+const axios = require('axios');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const User = require("../model/UserModel");
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
 
+
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const uploadDir = path.join(__dirname, '../upload');
 
 async function verifyGoogleToken(token) {
     const ticket = await client.verifyIdToken({
@@ -19,7 +26,6 @@ async function googleLogin(req) {
 
         // Xác thực token từ Google
         const payload = await verifyGoogleToken(token);
-        console.log("Payload từ Google:", payload);
 
         if (!payload.email) throw new Error("Không thể lấy email từ tài khoản Google.");
 
@@ -36,6 +42,16 @@ async function googleLogin(req) {
                 password: "",
                 address: "",
             });
+        }
+        
+        if (user.avatar) {
+            try {
+                const imageUrl = await uploadGoogleAvatar(user.avatar);
+                user.avatar = imageUrl; 
+                await user.save(); 
+            } catch (avatarError) {
+                console.error("Lỗi tải và lưu avatar:", avatarError.message);
+            }
         }
 
         // Tạo JWT accessToken & refreshToken
@@ -60,6 +76,27 @@ async function googleLogin(req) {
     }
 }
 
+async function uploadGoogleAvatar(googleAvatarUrl) {
+    try {
+        const response = await axios.get(googleAvatarUrl, { responseType: 'arraybuffer' });
+        const fileExtension = response.headers['content-type'].split('/')[1];
+        const filename = `${uuidv4()}.${fileExtension}`;
+        const filePath = path.join(uploadDir, filename);
+
+        fs.writeFileSync(filePath, Buffer.from(response.data, 'binary'));
+
+        const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
+
+
+        return `${baseUrl}/upload/${filename}`;
+    } catch (error) {
+        console.error('Lỗi tải và lưu ảnh:', error);
+        throw new Error('Lỗi tải và lưu ảnh.');
+    }
+}
+
+
 module.exports = {
     googleLogin,
+    uploadGoogleAvatar
 };
