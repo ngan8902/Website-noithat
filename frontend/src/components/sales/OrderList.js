@@ -57,7 +57,7 @@ const OrderList = ({ onConfirm, onCancel }) => {
             }}
           >
             <tr>
-              <th style={{ width: "8%" }}>Mã Đơn Hàng</th>
+              <th style={{ width: "9%" }}>Mã Đơn Hàng</th>
               <th style={{ width: "10%" }}>Khách Hàng</th>
               <th style={{ width: "8%" }}>Số Điện Thoại</th>
               <th style={{ width: "15%" }}>Địa Chỉ</th>
@@ -86,7 +86,7 @@ const OrderList = ({ onConfirm, onCancel }) => {
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
                   <tr key={order._id}>
-                    <td style={{ width: "8%" }}>#{order?.orderCode}</td>
+                    <td style={{ width: "9%" }}>#{order?.orderCode}</td>
                     <td style={{ width: "10%" }}>{order?.receiver?.fullname || "N/A"}</td>
                     <td style={{ width: "8%" }}>{order?.receiver?.phone || "N/A"}</td>
                     <td style={{ width: "15%" }}>{order?.receiver?.address || "N/A"}</td>

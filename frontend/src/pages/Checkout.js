@@ -229,10 +229,47 @@ const Checkout = () => {
 
         if (paymentMethod === "Chuyển Khoản Ngân Hàng") {
             try {
-                const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/payos/create-payment`, {
+                const orderData = {
+                    userId: user ? user._id : null,
+                    productId: product
+                        ? product.productId?.data?._id || product._id
+                        : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
+                    amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
+                    orderItems: product
+                        ? [{
+                            product: product.productId?.data?._id || product._id,
+                            name: product.productId?.data?.name || product.name,
+                            image: `http://localhost:8000${product.image}` || product.image,
+                            amount: product.quantity || quantity,
+                            price: product.productId?.data?.price || product.price,
+                            discount: product.productId?.data?.discount || product.discount
+                        }]
+                        : cartData.map(item => ({
+                            product: item.productId?.data?._id || item._id,
+                            name: item.productId?.data?.name || item.name,
+                            image: `http://localhost:8000${item.image}` || item.image,
+                            amount: item.quantity,
+                            price: item.productId?.data?.price || item.price,
+                            discount: item.productId?.data?.discount || item.discount
+                        })),
+                    receiver: {
+                        fullname: receiver?.fullname,
+                        phone: receiver?.phone,
+                        address: newAddress || selectedAddress
+                    },
+                    shoppingFee: shippingFee,
+                    totalPrice: totalPrice,
+                    paymentMethod: formattedPaymentMethod,
+                    status: "pending",
+                    orderDate: orderDate,
+                    delivered: delivered
+                };
+
+                const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/payos/create-payment-link`, {
                     amount: totalPrice,
-                    description: "Thanh toán đơn hàng",
-                    orderCode: `ORDER-${Date.now()}`,
+                    description: paymentMethod,
+                    orderCode: Math.floor(Math.random() * 1_000_000_000),
+                    tempOrderData: orderData
                 });
                 window.location.href = response.data?.checkoutUrl;
             } catch (error) {
@@ -250,68 +287,79 @@ const Checkout = () => {
                 });
                 window.location.href = response.data?.payUrl;
 
-                if (response.data?.momoStatus?.resultCode === 0) {
-                    const orderData = {
-                        userId: user ? user._id : null,
-                        productId: product
-                            ? product.productId?.data?._id || product._id
-                            : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
-                        amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
-                        orderItems: product
-                            ? [{
-                                product: product.productId?.data?._id || product._id,
-                                name: product.productId?.data?.name || product.name,
-                                image: `http://localhost:8000${product.image}` || product.image,
-                                amount: product.quantity || quantity,
-                                price: product.productId?.data?.price || product.price,
-                                discount: product.productId?.data?.discount || product.discount
-                            }]
-                            : cartData.map(item => ({
-                                product: item.productId?.data?._id || item._id,
-                                name: item.productId?.data?.name || item.name,
-                                image: `http://localhost:8000${item.image}` || item.image,
-                                amount: item.quantity,
-                                price: item.productId?.data?.price || item.price,
-                                discount: item.productId?.data?.discount || item.discount
-                            })),
-                        receiver: {
-                            fullname: receiver?.fullname,
-                            phone: receiver?.phone,
-                            address: newAddress || selectedAddress
-                        },
-                        shoppingFee: shippingFee,
-                        totalPrice: totalPrice,
-                        paymentMethod: formattedPaymentMethod,
-                        status: "pending",
-                        orderDate: orderDate,
-                        delivered: delivered
-                    };
+                const orderId = response.data?.orderId;
 
-                    try {
-                        const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
-                        await createOrder(orderData, { headers });
-                        notifyOfCheckout()
+                if (orderId) {
+                    // Sau khi quay lại từ MoMo, gọi API để xác minh giao dịch
+                    const paymentStatusResponse = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/momo/payment-status`, {
+                        orderId: orderId,
+                    });
 
-                        const purchasedItems = cartData?.map((item) => item._id) || [];
+                    if (paymentStatusResponse.data?.message === "Transaction success") {
+                        const orderData = {
+                            userId: user ? user._id : null,
+                            productId: product
+                                ? product.productId?.data?._id || product._id
+                                : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
+                            amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
+                            orderItems: product
+                                ? [{
+                                    product: product.productId?.data?._id || product._id,
+                                    name: product.productId?.data?.name || product.name,
+                                    image: `http://localhost:8000${product.image}` || product.image,
+                                    amount: product.quantity || quantity,
+                                    price: product.productId?.data?.price || product.price,
+                                    discount: product.productId?.data?.discount || product.discount
+                                }]
+                                : cartData.map(item => ({
+                                    product: item.productId?.data?._id || item._id,
+                                    name: item.productId?.data?.name || item.name,
+                                    image: `http://localhost:8000${item.image}` || item.image,
+                                    amount: item.quantity,
+                                    price: item.productId?.data?.price || item.price,
+                                    discount: item.productId?.data?.discount || item.discount
+                                })),
+                            receiver: {
+                                fullname: receiver?.fullname,
+                                phone: receiver?.phone,
+                                address: newAddress || selectedAddress
+                            },
+                            shoppingFee: shippingFee,
+                            totalPrice: totalPrice,
+                            paymentMethod: formattedPaymentMethod,
+                            status: "pending",
+                            orderDate: orderDate,
+                            delivered: delivered
+                        };
 
-                        if (purchasedItems.length > 0) {
-                            clearPurchasedItems(purchasedItems);
-                            localStorage.removeItem("selectedProducts");
-                        } else {
-                            console.log("Không có sản phẩm nào để xóa.");
+                        try {
+                            const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
+                            await createOrder(orderData, { headers });
+                            notifyOfCheckout()
+
+                            const purchasedItems = cartData?.map((item) => item._id) || [];
+
+                            if (purchasedItems.length > 0) {
+                                clearPurchasedItems(purchasedItems);
+                                localStorage.removeItem("selectedProducts");
+                            } else {
+                                console.log("Không có sản phẩm nào để xóa.");
+                            }
+
+                            setTimeout(async () => {
+                                await fetchCart();
+                                // if (user) {
+                                //     window.location.replace("/account");
+                                // } else {
+                                //     navigate("/home");
+                                // }
+                            }, 2000);
+                        } catch (error) {
+                            console.log(error)
+                            toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");
                         }
-
-                        setTimeout(async () => {
-                            await fetchCart();
-                            // if (user) {
-                            //     window.location.replace("/account");
-                            // } else {
-                            //     navigate("/home");
-                            // }
-                        }, 2000);
-                    } catch (error) {
-                        console.log(error)
-                        toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");
+                    } else {
+                        toast.error("Thanh toán thất bại!");
                     }
                 }
             } catch (error) {
