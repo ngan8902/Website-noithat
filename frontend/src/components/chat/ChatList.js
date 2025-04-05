@@ -4,7 +4,7 @@ import axios from "axios";
 import useAuthAdminStore from "../../store/authAdminStore";
 import { SOCKET_URI, STAFF_EVENTS } from "../../constants/chat.constant";
 
-const avatarDefautl = "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg";
+const avatarDefautl = "http://localhost:8000/upload/guest.png"
 
 const ChatList = ({ onSelectCustomer }) => {
   const { setCustomers } = useChatStore();
@@ -71,50 +71,7 @@ const ChatList = ({ onSelectCustomer }) => {
           })
         );
 
-        let guestId = localStorage.getItem("chatUserId");
-        const expirationTime = localStorage.getItem("chatUserIdExpiration");
-
-        if (guestId && expirationTime && Date.now() < parseInt(expirationTime)) {
-          const guestConversationId = `${guestId}-${staff?._id}`;
-          let guestMessages = [];
-
-          try {
-            const guestMessagesResponse = await axios.get(
-              `${process.env.REACT_APP_URL_BACKEND}/chat/${guestConversationId}`
-            );
-            guestMessages = [...guestMessagesResponse.data];
-          } catch (error) {
-            console.error(
-              `Lỗi khi lấy tin nhắn cho khách ${guestId} với ${guestConversationId}:`,
-              error
-            );
-          }
-
-          const sortedGuestMessages = guestMessages.sort(
-            (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-          );
-          const lastGuestMessage = sortedGuestMessages?.[0]?.message || "";
-          const isGuestRead =
-            sortedGuestMessages?.[0]?.fromRole === "Staff"
-              ? true
-              : sortedGuestMessages?.[0]?.isRead;
-
-          let guestCounter = 1;
-          const guestName = `Khách hàng ${guestCounter++}`;
-
-          allCustomers = [
-            ...allCustomers,
-            {
-              id: guestId,
-              name: guestName,
-              avatar: avatarDefautl,
-              lastMessage: lastGuestMessage,
-              isRead: isGuestRead,
-              conversationId: guestConversationId,
-            },
-          ];
-        }
-
+       
         setCustomersList(allCustomers);
         setCustomers(allCustomers);
       } catch (error) {
@@ -170,6 +127,20 @@ const ChatList = ({ onSelectCustomer }) => {
     }
   };
 
+  const getImageUrl = (avatar, avatarDefautl) => {
+    let src;
+  
+    if (avatar && avatar.startsWith('http://')) {
+      src = avatar;
+    } else if (avatar) {
+      src = `http://localhost:8000${avatar}`;
+    } else {
+      src = avatarDefautl;
+    }
+  
+    return src;
+  };
+
   return (
     <div className="chat-list p-3">
       <h5 className="fw-bold mb-4">Khách Hàng</h5>
@@ -184,7 +155,7 @@ const ChatList = ({ onSelectCustomer }) => {
                 <img
                   className="rounded-circle border border-secondary shadow-sm"
                   height="50"
-                  src={customer.avatar || avatarDefautl}
+                  src={getImageUrl(customer.avatar, avatarDefautl)}
                   width="50"
                   alt={customer.name}
                 />
