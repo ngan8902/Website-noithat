@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
 import { setCookie } from "../../utils/cookie.util";
 import useAuthAdminStore from "../../store/authAdminStore";
@@ -10,12 +10,20 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isOrderDropdownOpen, setIsOrderDropdownOpen] = useState(false);
   const { permissions } = useAuthAdminStore((state) => state);
-  const { customers } = useChatStore();
+  const customers = useChatStore((state) => state.customers);
 
   const handleLogout = () => {
     setCookie(STAFF_TOKEN_KEY, '');
     window.location.replace("/admin/login");
   };
+
+  const unreadMessageCount = useMemo(() => {
+    if (!customers || !Array.isArray(customers)) {
+      return 0;
+    }
+    return customers.filter((customer) => customer.isRead === false).length;
+  }, [customers]);
+
 
   return (
     <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
@@ -53,32 +61,32 @@ const Sidebar = () => {
 
           {!collapsed && (
             <a href="/admin/chat" className="position-relative d-block text-white py-2 text-decoration-none fw-bold transition-hover">
-              <i className="bi bi-chat-fill me-2"></i> 
+              <i className="bi bi-chat-fill me-2"></i>
               Tin nhắn Khách Hàng
-              {/* {customers.length > 0 && (
+              {unreadMessageCount > 0 && (
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {customers.length}
+                  {unreadMessageCount}
                 </span>
-              )} */}
+              )}
             </a>
           )}
 
           <a href="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-calendar-check me-2"></i>Lịch Sử Chấm Công
           </a>
-          
-          { permissions([ROLE.ADMIN]) && <a href="/admin/employee" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+
+          {permissions([ROLE.ADMIN]) && <a href="/admin/employee" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-people me-2"></i>Quản Lý Nhân Sự
-          </a> }
-          { permissions([ROLE.ADMIN]) && <a href="/admin/resource" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
-           <i className="bi bi-file-earmark-person me-2"></i>Quản Lý Chấm Công
-          </a> }
+          </a>}
+          {permissions([ROLE.ADMIN]) && <a href="/admin/resource" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+            <i className="bi bi-file-earmark-person me-2"></i>Quản Lý Chấm Công
+          </a>}
         </div>
       )}
 
       <button
         className="btn btn-danger mt-3 logout-btn"
-        style={{ bottom: "50px", top: "auto", right: "90px"}}
+        style={{ bottom: "50px", top: "auto", right: "90px" }}
         onClick={handleLogout}
       >
         Đăng Xuất

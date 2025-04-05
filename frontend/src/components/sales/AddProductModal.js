@@ -44,7 +44,6 @@ const AddProductModal = ({ closeModal }) => {
     const file = e.target.files[0];
     if (file) {
       setProduct({ ...product, image: file });
-      console.log("Selected file:", file); 
       setError("");
     }
   };
@@ -92,8 +91,6 @@ const AddProductModal = ({ closeModal }) => {
     formData.append("size", product.size);
     formData.append("warranty", product.warranty);
     formData.append("image", product.image);
-
-    console.log("FormData image:", formData.get("image"));
 
     setLoading(true);
     axios
