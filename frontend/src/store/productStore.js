@@ -26,7 +26,7 @@ const useProductStore = create((set, get) => ({
         );
     },
 
-    getProductByType: (slug = "", limit = 8, page = 0) => {
+    getProductByType: (slug = "", limit = 20, page = 0) => {
         axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/get-product-by-type`, {
             params: {
                 limit,

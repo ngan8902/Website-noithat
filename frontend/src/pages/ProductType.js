@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import Pagination from "../components/product/Pagination";
 
 const defaultImage = "https://via.placeholder.com/300";
-const PAGE = 9;
+const PAGE = 6;
 
 const ProductType = () => {
     const { productByType: products, getProductByType } = useProductStore();

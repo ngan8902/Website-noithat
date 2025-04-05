@@ -6,6 +6,7 @@ import { removeCookie } from '../../utils/cookie.util';
 import { TOKEN_KEY } from '../../constants/authen.constant';
 import useProductStore from '../../store/productStore';
 import useCartStore from '../../store/cartStore';
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -71,7 +72,6 @@ const Header = () => {
   
   }, [cartItems, user]);
   
-
   const toSlug = (str) => {
     return str
       .toLowerCase()
@@ -88,9 +88,9 @@ const Header = () => {
   return (
     <header className="bg-dark text-white">
       <div className="container d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center">
+        <Link to="/home" className="d-flex align-items-center">
           <img src="/images/logo.png" alt="Logo Nội Thất" height="80" width="80" />
-        </div>
+        </Link>
 
         <nav className="d-flex align-items-center">
           <ul className="nav">

@@ -70,14 +70,13 @@ const Checkout = () => {
     const [showLogin, setShowLogin] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
-    const [finalPrice, setFinalPrice] = useState(0);
+    const [, setFinalPrice] = useState(0);
     const [totalPrice, setTotalPrice] = useState(0);
 
 
     const displayProducts = selectedProducts?.length > 0
         ? selectedProducts
         : (product ? [{ ...product, quantity }] : cartData);
-
 
     const calculateFinalPrice = () => {
         const totalProductPrice = displayProducts.reduce((total, item) => {
@@ -212,7 +211,8 @@ const Checkout = () => {
         setShowConfirmModal(false);
 
         const formattedPaymentMethod = paymentMethod === "Thanh Toán Khi Nhận Hàng" ? "COD" :
-            paymentMethod === "VnPay" ? "VNPAY" : null;
+            paymentMethod === "Chuyển Khoản Ngân Hàng" ? "VietQR" :
+            paymentMethod === "MoMo" ? "MoMo" : null;
 
         if (!formattedPaymentMethod) {
             setErrorMessage("Phương thức thanh toán không hợp lệ!");
@@ -226,6 +226,101 @@ const Checkout = () => {
             setErrorMessage("Vui lòng chọn phương thức thanh toán!");
             return;
         }
+
+        if (paymentMethod === "Chuyển Khoản Ngân Hàng") {
+            try {
+                const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/payos/create-payment`, {
+                    amount: totalPrice,
+                    description: "Thanh toán đơn hàng",
+                    orderCode: `ORDER-${Date.now()}`,
+                });
+                window.location.href = response.data?.checkoutUrl;
+            } catch (error) {
+                console.error("Lỗi khi thanh toán PayOS:", error);
+                return;
+            }
+            return;
+        }
+        
+        if (paymentMethod === "MoMo") {
+            try {
+                const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/momo/pay`, {
+                    amount: totalPrice,
+                    orderInfo: paymentMethod,
+                });
+                window.location.href = response.data?.payUrl;
+
+                if (response.data?.momoStatus?.resultCode === 0) {
+                    const orderData = {
+                        userId: user ? user._id : null,
+                        productId: product
+                            ? product.productId?.data?._id || product._id
+                            : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
+                        amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
+                        orderItems: product
+                            ? [{
+                                product: product.productId?.data?._id || product._id,
+                                name: product.productId?.data?.name || product.name,
+                                image: `http://localhost:8000${product.image}` || product.image,
+                                amount: product.quantity || quantity,
+                                price: product.productId?.data?.price || product.price,
+                                discount: product.productId?.data?.discount || product.discount
+                            }]
+                            : cartData.map(item => ({
+                                product: item.productId?.data?._id || item._id,
+                                name: item.productId?.data?.name || item.name,
+                                image: `http://localhost:8000${item.image}` || item.image,
+                                amount: item.quantity,
+                                price: item.productId?.data?.price || item.price,
+                                discount: item.productId?.data?.discount || item.discount
+                            })),
+                        receiver: {
+                            fullname: receiver?.fullname,
+                            phone: receiver?.phone,
+                            address: newAddress || selectedAddress
+                        },
+                        shoppingFee: shippingFee,
+                        totalPrice: totalPrice,
+                        paymentMethod: formattedPaymentMethod,
+                        status: "pending",
+                        orderDate: orderDate,
+                        delivered: delivered
+                    };
+
+                    try {
+                        const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
+                        await createOrder(orderData, { headers });
+                        notifyOfCheckout()
+
+                        const purchasedItems = cartData?.map((item) => item._id) || [];
+
+                        if (purchasedItems.length > 0) {
+                            clearPurchasedItems(purchasedItems);
+                            localStorage.removeItem("selectedProducts");
+                        } else {
+                            console.log("Không có sản phẩm nào để xóa.");
+                        }
+
+                        setTimeout(async () => {
+                            await fetchCart();
+                            // if (user) {
+                            //     window.location.replace("/account");
+                            // } else {
+                            //     navigate("/home");
+                            // }
+                        }, 2000);
+                    } catch (error) {
+                        console.log(error)
+                        toast.error("Lỗi khi đặt hàng, vui lòng thử lại!");
+                    }
+                }
+            } catch (error) {
+                console.error("Lỗi khi thanh toán MoMo:", error);
+                return;
+            }
+            return;
+        }
+
         setErrorMessage("");
 
         const orderData = {
@@ -323,12 +418,10 @@ const Checkout = () => {
                 />
                 <div className="col-md-6">
                     <ProductInfo
-                        cartItems={cartItems}
                         product={product}
                         quantity={quantity || selectedProducts?.reduce((acc, item) => acc + item.quantity, 0)}
                         cart={cartData}
                         shippingFee={shippingFee}
-                        finalPrice={finalPrice}
                         totalPrice={totalPrice}
                         selectedProducts={selectedProducts}
                     />
@@ -341,13 +434,13 @@ const Checkout = () => {
 
                     {!user && (
                         <>
-                            <p>Bạn muốn nhận thông báo về các ưu đãi? Hãy
+                            <p>Bạn muốn nhận thông báo về các ưu đãi? Hãy 
                                 <button
-                                    className="btn text-dark text-decoration-none fw-bold"
+                                    className="btn btn-outline-primary text-dark text-decoration-none fw-bold"
                                     onClick={() => setShowRegister(true)}
                                 >
                                     Đăng Ký
-                                </button> ngay!
+                                </button>ngay!
                             </p>
                         </>
                     )}
