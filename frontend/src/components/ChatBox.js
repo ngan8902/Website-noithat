@@ -14,6 +14,13 @@ const Chatbox = () => {
   const messagesEndRef = useRef(null);
   const socketIO = useRef(null);
   const staffFetched = useRef(false);
+  const [showLabel, setShowLabel] = useState(true);
+
+  useEffect(() => {
+    // Ẩn dòng chữ sau 3 giây
+    const labelTimer = setTimeout(() => setShowLabel(false), 3000);
+    return () => clearTimeout(labelTimer);
+  }, []);
 
   useEffect(() => {
     let storedUserId = localStorage.getItem("chatUserId");
@@ -178,9 +185,10 @@ const Chatbox = () => {
   };
 
   return (
-    <>
+    <div className="chatbox-wrapper">
+      {showLabel && <span className="chatbox-label">Chat với nhân viên!</span>}
       <button className="chatbox-button" onClick={toggleChatbox}>
-        <i className="bi bi-chat"></i> Chat
+        <i className="bi bi-chat"></i>
       </button>
 
       {isOpen && (
@@ -213,7 +221,7 @@ const Chatbox = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

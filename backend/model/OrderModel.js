@@ -26,7 +26,7 @@ const orderSchema = new mongoose.Schema(
         },
         paymentMethod: {
             type: String,
-            enum: ["COD", "VnPay"],
+            enum: ["COD", "VietQR", "MoMo"],
             required: true
         },
         // itemsPrice: { type: String, required: false },

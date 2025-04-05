@@ -10,7 +10,8 @@ const CartRoute = require('./CartRoute')
 const GoogleRoute = require('./GoogleRoute')
 const ForgotRoute = require('./ForgotRoute') 
 const ImagesRoute = require('./ImagesRoute') 
-
+const MomoRoute = require('./MomoRoute')
+const PayosRoute = require('./PayosRoute')
 
 const routers = (app) => {
     app.use('/api/staff', StaffRouter)
@@ -25,7 +26,8 @@ const routers = (app) => {
     app.use('/api/auth', GoogleRoute)
     app.use('/api/auth', ForgotRoute)
     app.use("/api/upload", ImagesRoute);
-
+    app.use("/api/momo", MomoRoute);
+    app.use("/api/payos", PayosRoute);
 }
 
 module.exports = routers;

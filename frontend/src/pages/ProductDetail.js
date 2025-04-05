@@ -56,7 +56,6 @@ const ProductDetail = () => {
         });
     };
 
-
     const addToCart = () => {
         if (user) {
             handleAddToCartForCustomer();
