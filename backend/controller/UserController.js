@@ -76,7 +76,7 @@ const updateUser = async (req, res) => {
             if (!allowedTypes.includes(req.file.mimetype)) {
                 return res.status(400).json({ message: 'Loại file không được hỗ trợ.' });
             }
-            data.image = `/upload/${req.file.filename}`; 
+            data.avatar = `/upload/${req.file.filename}`; 
         }
 
         const response = await UserService.updateUser(userId, data);

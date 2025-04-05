@@ -121,12 +121,11 @@ const CustomerInfo = ({
                                         <span>{info.address}, </span>
                                     </label>
                                 </div>
-                                <button className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteSavedInfo(index)}>Xóa</button>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <p className="text-danger">Thông tin chưa có, bạn chưa từng đặt hàng!</p>
+                    <p className="text-danger">Thông tin chưa có, bạn cần cập nhật địa chỉ mặt định ở Thông tin tài khoản!</p>
                 )}
             </div>
 

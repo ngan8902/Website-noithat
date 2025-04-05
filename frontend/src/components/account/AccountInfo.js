@@ -4,6 +4,8 @@ import axios from "axios";
 import { getCookie } from "../../utils/cookie.util";
 import { TOKEN_KEY } from "../../constants/authen.constant";
 
+const avatarDefautl = "http://localhost:8000/upload/guest.png"
+
 const AccountInfo = () => {
   const { user, auth, setUser } = useAuthStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
@@ -64,6 +66,7 @@ const AccountInfo = () => {
   };
 
   const updateAvatar = async (file) => {
+    console.log(file)
     if (!user?._id) return console.error("Không tìm thấy user");
     setLoading(true);
 
@@ -77,13 +80,14 @@ const AccountInfo = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            token: getCookie(TOKEN_KEY),
           },
         }
       );
 
-      setUser({ ...user, avatar: data.data.avatar });
-      setAvatar(data.data.avatar);
+      if (data?.data?.avatar) {
+        setUser({ ...user, avatar: data.data.avatar });
+        setAvatar(data.data.avatar);
+      }
       setErrorMessage("Cập nhật avatar thành công!");
       setTimeout(() => setErrorMessage(""), 3000);
     } catch (error) {
@@ -221,6 +225,20 @@ const AccountInfo = () => {
     }
   };
 
+  const getImageUrl = (avatar, avatarDefautl) => {
+    let src;
+  
+    if (avatar && avatar.startsWith('http://')) {
+      src = avatar;
+    } else if (avatar) {
+      src = `http://localhost:8000${avatar}`;
+    } else {
+      src = avatarDefautl;
+    }
+  
+    return src;
+  };
+
   return (
     <div className="col-md-4 mb-4">
       <h5 className="fw-bold mb-3">Thông Tin Của Bạn</h5>
@@ -230,7 +248,7 @@ const AccountInfo = () => {
           alt="Avatar"
           className="avatar mb-3 rounded-circle border"
           height="150"
-          src={avatar}
+          src={getImageUrl(avatar, avatarDefautl)}
           width="150"
           onClick={() => setShowModal(true)}
           style={{ cursor: "pointer" }}
@@ -384,7 +402,7 @@ const AccountInfo = () => {
               <i className="bi bi-x"></i>
             </span>
             <img
-              src={user.avatar || "/images/logo.png"}
+              src={getImageUrl(avatar, avatarDefautl)}
               alt="Avatar"
             />
           </div>
