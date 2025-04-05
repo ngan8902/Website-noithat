@@ -61,37 +61,32 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const userId = req.params.id
-        const data = req.body
+        const userId = req.params.id;
+        const data = req.body;
+
         if (!userId) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'ERR',
-                message: 'The userId is required'
-            })
+                message: 'The userId is required',
+            });
         }
-        console.log('userId', userId)
 
         if (req.file) {
-            const uploadsPath = path.join(__dirname, "..", "upload");
-
-            // Xóa avatar cũ nếu có
-            if (existingUser.avatar) {
-                const oldImagePath = path.join(uploadsPath, existingUser.avatar);
-                if (fs.existsSync(oldImagePath)) {
-                    fs.unlinkSync(oldImagePath); // Xóa ảnh cũ
-                }
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(req.file.mimetype)) {
+                return res.status(400).json({ message: 'Loại file không được hỗ trợ.' });
             }
-
-            data.avatar = req.file.filename;
+            data.image = `/upload/${req.file.filename}`; 
         }
-        const response = await UserService.updateUser(userId, data)
-        return res.status(200).json(response)
+
+        const response = await UserService.updateUser(userId, data);
+        return res.status(200).json(response);
     } catch (e) {
         return res.status(500).json({
-            message: e
-        })
+            message: e.message,
+        });
     }
-}
+};
 
 const updatePassword = async (req, res) => {
     try {

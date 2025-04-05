@@ -35,9 +35,12 @@ const getAddress = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
             const addresses = await ReceiverInfo.find({ user: userId });
+            console.log(addresses)
+
             if (!addresses.length) {
                 return { status: "ERR", message: "Không có địa chỉ nào!" };
             }
+
 
             resolve({
                 status: 'OK',

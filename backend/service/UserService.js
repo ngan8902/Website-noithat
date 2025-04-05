@@ -5,7 +5,7 @@ const { genneralAccessToken, genneralRefreshToken } = require("./JwtService")
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
         const { name, email, password, confirmPassword, phone } = newUser
-        try{
+        try {
             const checkUser = await User.findOne({
                 email: email
             })
@@ -17,19 +17,19 @@ const createUser = (newUser) => {
             }
             const hash = bcrypt.hashSync(password, 10)
             const createdUser = await User.create({
-                name, 
-                email, 
-                password: hash, 
+                name,
+                email,
+                password: hash,
                 phone
             })
-            if(createdUser) {
+            if (createdUser) {
                 resolve({
                     status: 'SUCCESS',
                     message: 'Sign up success',
                     data: createdUser
-                }) 
+                })
             }
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -37,8 +37,8 @@ const createUser = (newUser) => {
 
 const loginUser = (userLogin) => {
     return new Promise(async (resolve, reject) => {
-        const { email, password} = userLogin
-        try{
+        const { email, password } = userLogin
+        try {
             const checkUser = await User.findOne({
                 email: email
             })
@@ -50,8 +50,8 @@ const loginUser = (userLogin) => {
             }
             console.log("checkUser", checkUser)
             const comparePassword = bcrypt.compareSync(password, checkUser.password)
-           
-            if(!comparePassword){
+
+            if (!comparePassword) {
                 resolve({
                     status: 'OK',
                     message: 'The password or user is incorrect'
@@ -70,9 +70,9 @@ const loginUser = (userLogin) => {
                 message: 'SUCCESS',
                 access_token: access_token,
                 refresh_token: refresh_token
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -80,29 +80,37 @@ const loginUser = (userLogin) => {
 
 const updateUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const checkUser = await User.findOne({
-                _id: id
-            })
+                _id: id,
+            });
+
             if (checkUser === null) {
-                resolve({
+                return resolve({
                     status: 'OK',
-                    message: 'The user is not defined'
-                })
+                    message: 'The user is not defined',
+                });
             }
 
-            const updatedUser = await User.findByIdAndUpdate(id, data, {new: true})           
+            const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
+
+            if (!updatedUser) {
+                return resolve({
+                    status: 'ERR',
+                    message: 'Failed to update user',
+                });
+            }
+
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
-                data: updatedUser
-            }) 
-
-        }catch(e){
-            reject(e)
+                data: updatedUser,
+            });
+        } catch (e) {
+            reject(e);
         }
     })
-}
+};
 
 const updatePassword = (id, data) => {
     return new Promise(async (resolve, reject) => {
@@ -168,7 +176,7 @@ const updatePassword = (id, data) => {
 
 const deleteUser = (id) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const checkUser = await User.findOne({
                 _id: id
             })
@@ -179,13 +187,13 @@ const deleteUser = (id) => {
                 })
             }
 
-            await User.findByIdAndDelete(id)           
+            await User.findByIdAndDelete(id)
             resolve({
                 status: 'OK',
                 message: 'Delete user success',
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -193,14 +201,14 @@ const deleteUser = (id) => {
 
 const getAllUser = () => {
     return new Promise(async (resolve, reject) => {
-        try{
-            const allUser = await User.find()           
+        try {
+            const allUser = await User.find()
             resolve({
                 status: 'OK',
                 message: 'success',
                 data: allUser
-            }) 
-        }catch(e){
+            })
+        } catch (e) {
             reject(e)
         }
     })
@@ -208,7 +216,7 @@ const getAllUser = () => {
 
 const getDetailsUser = (id) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const user = await User.findOne({
                 _id: id
             })
@@ -223,9 +231,9 @@ const getDetailsUser = (id) => {
                 status: 'OK',
                 message: 'success',
                 data: user
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })

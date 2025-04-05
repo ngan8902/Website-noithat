@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const AddressSelector = ({ setNewAddress }) => {
+const AddressSelector = ({ setNewAddress, savedAddress }) => { 
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -99,14 +99,46 @@ const AddressSelector = ({ setNewAddress }) => {
 
     // Cập nhật địa chỉ hiển thị
     useEffect(() => {
-        const provinceName = provinces.find(p => p.code === selectedProvince)?.name || (typeof selectedProvince === "string" ? selectedProvince : "");
-        const districtName = districts.find(d => d.code === selectedDistrict)?.name || (typeof selectedDistrict === "string" ? selectedDistrict : "");
-        const wardName = wards.find(w => w.code === selectedWard)?.name || (typeof selectedWard === "string" ? selectedWard : "");
+        if (savedAddress) { // Sử dụng savedAddress nếu có
+            const parts = savedAddress.split(", ");
+            setHouseNumber(parts[0] || "");
+            setStreet(parts[1] || "");
 
-        const fullAddress = `${houseNumber ? houseNumber + ", " : ""}${street ? street + ", " : ""}${wardName ? wardName + ", " : ""}${districtName ? districtName + ", " : ""}${provinceName}`;
-        setSelectedAddressText(fullAddress);
-        setNewAddress(fullAddress);
-    }, [selectedProvince, selectedDistrict, selectedWard, street, houseNumber, provinces, districts, wards, setNewAddress]);
+            // Tìm và đặt tỉnh
+            const provinceName = parts[parts.length - 1]; 
+            const foundProvince = provinces.find(p => p.name === provinceName);
+            if (foundProvince) {
+                setProvinceInput(foundProvince.name);
+                setSelectedProvince(foundProvince.code);
+            }
+
+            // Tìm và đặt huyện
+            const districtName = parts[parts.length - 2];
+            const foundDistrict = districts.find(d => d.name === districtName);
+            if (foundDistrict) {
+                setDistrictInput(foundDistrict.name);
+                setSelectedDistrict(foundDistrict.code);
+            }
+
+            // Tìm và đặt xã
+            const wardName = parts[parts.length - 3]; 
+            const foundWard = wards.find(w => w.name === wardName);
+            if (foundWard) {
+                setWardInput(foundWard.name);
+                setSelectedWard(foundWard.code);
+            }
+            setSelectedAddressText(savedAddress);
+            setNewAddress(savedAddress);
+        } else {
+            const provinceName = provinces.find(p => p.code === selectedProvince)?.name || (typeof selectedProvince === "string" ? selectedProvince : "");
+            const districtName = districts.find(d => d.code === selectedDistrict)?.name || (typeof selectedDistrict === "string" ? selectedDistrict : "");
+            const wardName = wards.find(w => w.code === selectedWard)?.name || (typeof selectedWard === "string" ? selectedWard : "");
+
+            const fullAddress = `${houseNumber ? houseNumber + ", " : ""}${street ? street + ", " : ""}${wardName ? wardName + ", " : ""}${districtName ? districtName + ", " : ""}${provinceName}`;
+            setSelectedAddressText(fullAddress);
+            setNewAddress(fullAddress);
+        }
+    }, [selectedProvince, selectedDistrict, selectedWard, street, houseNumber, provinces, districts, wards, setNewAddress, savedAddress]);
 
     return (
         <div>

@@ -19,7 +19,7 @@ const createProduct = async (req, res) => {
 
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(req.file.mimetype)) {
-            return res.status(400).json({ message: "Loại file không được hỗ trợ. Chỉ hỗ trợ JPEG, PNG và GIF." });
+            return res.status(400).json({ message: "Loại file không được hỗ trợ." });
         }
 
         const imageUrl = `/upload/${req.file.filename}` || null;

@@ -3,8 +3,7 @@ const ReciverInfoService = require('../service/ReciverInfoService')
 
 const saveNewAddress = async (req, res) => {
     try {
-        const { fullname, phone, address, orderId } = req.body;
-        const { userId } = req.params || null
+        const { fullname, phone, address, orderId, userId } = req.body;
         if (!fullname || !phone || !address) {
             return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin" });
         }

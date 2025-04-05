@@ -20,11 +20,15 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
         if (item?.productId?.data?.image) {
             return `http://localhost:8000${item.productId.data.image}`;
         }
+        if (item?.product?.image) {
+            return item.product.image;
+        }
         if (product?.image) {
             return product.image;
         }
         return "https://via.placeholder.com/100";
     };
+
 
     return (
         <div className="col-md-6">
