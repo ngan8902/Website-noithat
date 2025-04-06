@@ -26,7 +26,7 @@ const FeaturedProducts = () => {
 
     useEffect(() => {
         if (totalProducts > itemsPerPage) {
-            const interval = setInterval(nextSlide, 5000);
+            const interval = setInterval(nextSlide, 4000);
             return () => clearInterval(interval);
         }
     }, [totalProducts, nextSlide]);

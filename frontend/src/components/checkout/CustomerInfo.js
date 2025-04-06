@@ -51,10 +51,10 @@ const CustomerInfo = ({
         }
     };
 
-    const handleDeleteSavedInfo = (index) => {
-        const updatedAddresses = displayAddresses.filter((_, i) => i !== index);
-        setDisplayAddresses(updatedAddresses);
-    };
+    // const handleDeleteSavedInfo = (index) => {
+    //     const updatedAddresses = displayAddresses.filter((_, i) => i !== index);
+    //     setDisplayAddresses(updatedAddresses);
+    // };
 
     const validateFullname = (name) => {
         return /^[A-Za-zÀ-ỹ\s]+$/.test(name.trim());
@@ -101,7 +101,7 @@ const CustomerInfo = ({
             </h6>
 
             <div className="alert alert-secondary">
-                <strong>Thông tin đã lưu:</strong>
+                <strong>Thông tin của bạn:</strong>
                 {displayAddresses.length > 0 ? (
                     <div className="mt-2">
                         {displayAddresses.map((info, index) => (
@@ -118,14 +118,15 @@ const CustomerInfo = ({
                                     <label className="form-check-label w-100 d-flex justify-content-between" htmlFor={`info-${index}`} style={{ color: "#000" }}>
                                         <span><strong>{info.fullname}, </strong></span>
                                         <span>{info.phone}, </span>
-                                        <span>{info.address}, </span>
+                                        <span>{info.address}. </span>
                                     </label>
                                 </div>
+                                {/* <button className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteSavedInfo(index)}>Xóa</button> */}
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <p className="text-danger">Thông tin chưa có, bạn cần cập nhật địa chỉ mặt định ở Thông tin tài khoản!</p>
+                    <p className="text-danger">Thông tin chưa có!</p>
                 )}
             </div>
 
