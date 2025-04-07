@@ -4,7 +4,7 @@ import axios from "axios";
 import useAuthAdminStore from "../../store/authAdminStore";
 import { SOCKET_URI, STAFF_EVENTS } from "../../constants/chat.constant";
 
-const avatarDefautl = "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg";
+const avatarDefautl = "http://localhost:8000/upload/guest.png";
 
 const ChatList = ({ onSelectCustomer }) => {
   const { setCustomers } = useChatStore();
@@ -30,26 +30,16 @@ const ChatList = ({ onSelectCustomer }) => {
 
         let allCustomers = await Promise.all(
           users.map(async (user) => {
-            const conversationId1 = `${user._id}-${staff?._id}`;
-            const conversationId2 = `${staff?._id}-${user._id}`;
+            const conversationId = `${user._id}`; // Use only userId as conversationId
             let allMessages = [];
 
             try {
-              const messagesResponse1 = await axios.get(
-                `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId1}`
+              const messagesResponse = await axios.get(
+                `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId}`
               );
-              allMessages = [...messagesResponse1.data];
+              allMessages = [...messagesResponse.data];
             } catch (error) {
-              console.error(`Lỗi khi lấy tin nhắn cho ${user.name} với ${conversationId1}:`, error);
-            }
-
-            try {
-              const messagesResponse2 = await axios.get(
-                `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId2}`
-              );
-              allMessages = [...allMessages, ...messagesResponse2.data];
-            } catch (error) {
-              console.error(`Lỗi khi lấy tin nhắn cho ${user.name} với ${conversationId2}:`, error);
+              console.error(`Lỗi khi lấy tin nhắn cho ${user.name} với ${conversationId}:`, error);
             }
 
             const sortedMessages = allMessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -66,54 +56,10 @@ const ChatList = ({ onSelectCustomer }) => {
               lastMessage: lastMessage,
               toRole,
               isRead,
-              conversationId: conversationId1,
+              conversationId: conversationId, // Store userId as conversationId
             };
           })
         );
-
-        let guestId = localStorage.getItem("chatUserId");
-        const expirationTime = localStorage.getItem("chatUserIdExpiration");
-
-        if (guestId && expirationTime && Date.now() < parseInt(expirationTime)) {
-          const guestConversationId = `${guestId}-${staff?._id}`;
-          let guestMessages = [];
-
-          try {
-            const guestMessagesResponse = await axios.get(
-              `${process.env.REACT_APP_URL_BACKEND}/chat/${guestConversationId}`
-            );
-            guestMessages = [...guestMessagesResponse.data];
-          } catch (error) {
-            console.error(
-              `Lỗi khi lấy tin nhắn cho khách ${guestId} với ${guestConversationId}:`,
-              error
-            );
-          }
-
-          const sortedGuestMessages = guestMessages.sort(
-            (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-          );
-          const lastGuestMessage = sortedGuestMessages?.[0]?.message || "";
-          const isGuestRead =
-            sortedGuestMessages?.[0]?.fromRole === "Staff"
-              ? true
-              : sortedGuestMessages?.[0]?.isRead;
-
-          let guestCounter = 1;
-          const guestName = `Khách hàng ${guestCounter++}`;
-
-          allCustomers = [
-            ...allCustomers,
-            {
-              id: guestId,
-              name: guestName,
-              avatar: avatarDefautl,
-              lastMessage: lastGuestMessage,
-              isRead: isGuestRead,
-              conversationId: guestConversationId,
-            },
-          ];
-        }
 
         setCustomersList(allCustomers);
         setCustomers(allCustomers);
@@ -128,7 +74,7 @@ const ChatList = ({ onSelectCustomer }) => {
     socketIO.current.on(STAFF_EVENTS.recieveMsg, (messageObj) => {
       setCustomersList((prevCustomers) => {
         return prevCustomers.map((c) => {
-          if (c.id === messageObj.guestId || c.id === messageObj.from) {
+          if (c.id === messageObj.from) { // Check if the message is for this user
             return { ...c, lastMessage: messageObj.message, isRead: false };
           }
           return c;
@@ -136,7 +82,7 @@ const ChatList = ({ onSelectCustomer }) => {
       });
       setHasNewMessage((prevStatus) => ({
         ...prevStatus,
-        [messageObj.guestId || messageObj.from]: true,
+        [messageObj.from]: true,
       }));
     });
 
@@ -170,6 +116,20 @@ const ChatList = ({ onSelectCustomer }) => {
     }
   };
 
+  const getImageUrl = (avatar, avatarDefautl) => {
+    let src;
+
+    if (avatar && avatar.startsWith("http://")) {
+      src = avatar;
+    } else if (avatar) {
+      src = `http://localhost:8000${avatar}`;
+    } else {
+      src = avatarDefautl;
+    }
+
+    return src;
+  };
+
   return (
     <div className="chat-list p-3">
       <h5 className="fw-bold mb-4">Khách Hàng</h5>
@@ -184,7 +144,7 @@ const ChatList = ({ onSelectCustomer }) => {
                 <img
                   className="rounded-circle border border-secondary shadow-sm"
                   height="50"
-                  src={customer.avatar || avatarDefautl}
+                  src={getImageUrl(customer.avatar, avatarDefautl)}
                   width="50"
                   alt={customer.name}
                 />

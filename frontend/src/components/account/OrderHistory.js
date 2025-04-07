@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
+import StarRating from "../StarRating";
+import axios from "axios";
 
-const OrderHistory = ({ orders = [] }) => {
+const OrderHistory = ({ orders = [], onReviewSubmit }) => {
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [reviewedOrders, setReviewedOrders] = useState([]);
+  const [ratingData, setRatingData] = useState([]);
+
+  const appElement = document.getElementById('root');
 
   useEffect(() => {
     if (orders.length > 0) {
@@ -25,6 +35,37 @@ const OrderHistory = ({ orders = [] }) => {
         return "Không xác định";
     }
   };
+
+  const handleReview = (order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+    setRating(order.rating);
+  };
+
+  const handleRatingChange = async (rating) => {
+    try {
+      if (!selectedOrder) {
+        console.error("Lỗi: orderId không hợp lệ.");
+        return;
+      }
+
+      const response = await axios.put(
+        `${process.env.REACT_APP_URL_BACKEND}/order/update-order-rating`,
+        {
+          orderId: selectedOrder._id,
+          rating: rating,
+        }
+      );
+
+      console.log("Cập nhật rating thành công:", response.data);
+      setIsModalOpen(false);
+      setReviewedOrders([...reviewedOrders, selectedOrder._id]);
+    } catch (error) {
+      console.error("Lỗi cập nhật rating:", error);
+    }
+  };
+
+
   return (
     <>
       <h5 className="fw-bold mb-3">Lịch Sử Mua Hàng</h5>
@@ -51,6 +92,7 @@ const OrderHistory = ({ orders = [] }) => {
                 <th>Ngày Giao</th>
                 <th>Tổng Tiền</th>
                 <th>Trạng Thái</th>
+                <th>Đánh Giá</th>
               </tr>
             </thead>
             <tbody>
@@ -99,12 +141,37 @@ const OrderHistory = ({ orders = [] }) => {
                       {getStatusLabel(order.status)}
                     </span>
                   </td>
+                  <td>
+                    {order.status === "delivered" && (
+                      <button className="btn btn-sm btn-outline-primary" onClick={() => handleReview(order)}>
+                        Đánh Giá
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        contentLabel="Đánh giá đơn hàng"
+        appElement={appElement}
+        className="custom-modal"
+      >
+        {selectedOrder && (
+          <div>
+            <h2>Đánh giá đơn hàng #{selectedOrder.orderCode}</h2>
+            <StarRating
+              orderItems={selectedOrder?.orderItems}
+              rating={rating} 
+              onOptionSelect={handleRatingChange}
+            />
+          </div>
+        )}
+      </Modal>
     </>
   );
 };

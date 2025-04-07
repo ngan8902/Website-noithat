@@ -90,7 +90,7 @@ async function uploadGoogleAvatar(googleAvatarUrl) {
 
         return `${baseUrl}/upload/${filename}`;
     } catch (error) {
-        console.error('Lỗi tải và lưu ảnh:', error);
+        // console.error('Lỗi tải và lưu ảnh:', error);
         throw new Error('Lỗi tải và lưu ảnh.');
     }
 }

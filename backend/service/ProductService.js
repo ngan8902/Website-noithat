@@ -52,6 +52,14 @@ const updateProduct = (id, data) => {
                 })
             }
 
+            if (data.rating !== undefined) {
+                checkProduct.rating = data.rating;
+            }
+
+            if (data.feedback !== undefined) {
+                checkProduct.feedback = data.feedback;
+            }
+
             const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true })
             resolve({
                 status: 'OK',
@@ -201,6 +209,25 @@ const getSuggestions = async (query) => {
     }
 };
 
+const getRating = (productId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const product = await Product.findById(productId);
+            if (!product) {
+                throw new Error('Product not found');
+            }
+            resolve({
+                status: 'OK',
+                message: 'success',
+                rating: product.rating,
+                feedback: product.feedback
+            })
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
 module.exports = {
     createProduct,
     updateProduct,
@@ -210,5 +237,6 @@ module.exports = {
     getAllType,
     getAllProductWithoutFilter,
     searchProduct,
-    getSuggestions
+    getSuggestions,
+    getRating
 }

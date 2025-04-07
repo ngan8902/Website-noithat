@@ -15,12 +15,6 @@ const ChatSchema = new mongoose.Schema({
       return !this.guestId;
     },
   },
-  guestId: {
-    type: String,
-    required: function () {
-      return !this.from;
-    },
-  },
   to: {
     type: mongoose.Schema.Types.Mixed,
     refPath: 'toRole',

@@ -69,7 +69,7 @@ const updateProduct = async (req, res) => {
             }
             data.image = `/upload/${req.file.filename}`;
         }
-        
+
         const response = await ProductService.updateProduct(productId, data)
         return res.status(200).json(response)
     } catch (e) {
@@ -195,6 +195,17 @@ const getSuggestions = async (req, res) => {
     }
 };
 
+const getRating = async (req, res) => {
+    try {
+        const productId = req.params.productId;
+        console.log(productId)
+        const rating = await ProductService.getRating(productId);
+        res.status(200).json(rating);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 module.exports = {
     createProduct,
     updateProduct,
@@ -204,5 +215,6 @@ module.exports = {
     getAllType,
     getProductByType,
     searchProduct,
-    getSuggestions
+    getSuggestions,
+    getRating
 };

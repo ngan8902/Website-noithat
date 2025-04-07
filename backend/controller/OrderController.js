@@ -3,7 +3,7 @@ const Product = require('../model/ProductModel')
 
 const createOrder = async (req, res) => {
     try {
-        const { userId, productId, amount, discount, receiver, status, paymentMethod, totalPrice, orderDate, delivered, shoppingFee, countInStock } = req.body;
+        const { userId, productId, amount, discount, receiver, status, paymentMethod, totalPrice, orderDate, delivered, shoppingFee, countInStock, rating } = req.body;
 
         if (!receiver || !receiver.fullname || !receiver.phone || !receiver.address) {
             return res.status(401).json({
@@ -22,7 +22,7 @@ const createOrder = async (req, res) => {
             });
         }
 
-        const response = await OrderService.createOrder(userId, productIds, discount, validAmount, receiver, status, shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock);
+        const response = await OrderService.createOrder(userId, productIds, discount, validAmount, receiver, status, shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock, rating);
         return res.status(200).json(response);
     } catch (e) {
         console.log(e);
@@ -144,6 +144,27 @@ const deleteOrderId = async (req, res) => {
     }
 };
 
+const updateOrderRating = async (req, res) => {
+    try {
+      const { orderId, rating, feedback } = req.body;
+  
+      if (!orderId || rating === undefined) {
+        return res.status(400).json({
+          status: "ERR",
+          message: "Missing orderId or rating",
+        });
+      }
+  
+      const response = await OrderService.updateOrderRating(orderId, rating, feedback);
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({
+        status: "ERR",
+        message: error.message,
+      });
+    }
+  };
+
 
 module.exports = {
     createOrder,
@@ -151,5 +172,6 @@ module.exports = {
     getOrderByCode,
     updateOrderStatus,
     getAllOrders,
-    deleteOrderId
+    deleteOrderId,
+    updateOrderRating
 }

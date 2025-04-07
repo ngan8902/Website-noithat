@@ -12,6 +12,7 @@ const orderSchema = new mongoose.Schema(
                 price: { type: Number, required: true },
                 discount: { type: Number, required: false },
                 countInStock: { type: Number, required: false },
+                rating: {type: Number},
                 product: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "Product",
@@ -19,6 +20,7 @@ const orderSchema = new mongoose.Schema(
                 },
             },
         ],
+        rating: { type: Number },
         receiver: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "ReceiverInfo",
