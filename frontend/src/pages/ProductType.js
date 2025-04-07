@@ -14,7 +14,7 @@ const ProductType = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, setFilters] = useState({ priceRange: "", rating: "" });
-    const [loading, setLoading] = useState(true);
+    const [, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {

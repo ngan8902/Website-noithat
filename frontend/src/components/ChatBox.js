@@ -113,25 +113,7 @@ const Chatbox = () => {
   const sendMessage = () => {
     if (!isAuthenticated) return;
 
-    //if (!input.trim() || !userId || !staff?._id || !socketIO.current) return;
-
-    let storedGuestId = localStorage.getItem("guestId");
-    let isGuest = userId.startsWith("guest_");
-    //let conversationId = `${userId}-${staff._id}`;
-    // Tạo lại guestId nếu cần
-    if (isGuest && !storedGuestId) {
-      storedGuestId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-      localStorage.setItem("guestId", storedGuestId);
-
-      const expireInMilliseconds = 1.5 * 24 * 60 * 60 * 1000;
-      localStorage.setItem("chatUserIdExpiration", (Date.now() + expireInMilliseconds).toString());
-
-      setTimeout(() => {
-        localStorage.removeItem("chatUserId");
-        localStorage.removeItem("chatUserIdExpiration");
-        localStorage.removeItem("guestId");
-      }, expireInMilliseconds);
-    }
+    if (!input.trim() || !userId ) return;
 
     const conversationId = userId;
     const messageObj = {
