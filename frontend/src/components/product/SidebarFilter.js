@@ -28,8 +28,8 @@ const SidebarFilter = ({onFilterApply}) => {
                     <select className="form-select" id="rateSelect" value={rating} onChange={(e) => setRating(e.target.value)}>
                         <option value="">Chọn đánh giá</option>
                         <option value="5">★★★★★</option>
-                        <option value="4">★★★★☆ - trở lên</option>
-                        <option value="3">★★★☆☆ - trở lên</option>
+                        <option value="4">★★★★☆</option>
+                        <option value="3">★★★☆☆</option>
                     </select>
                 </div>
 

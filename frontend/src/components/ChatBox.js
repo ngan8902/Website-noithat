@@ -67,8 +67,13 @@ const Chatbox = () => {
   }, [userId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    setTimeout(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, 0);
+}, [messages]);
+
 
   useEffect(() => {
     if (userId) {

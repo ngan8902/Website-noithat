@@ -6,10 +6,10 @@ const User = require("../model/UserModel");
 const generateOrderCode = () => {
     const prefix = "ORD"; // Tiền tố cố định
     const timestamp = Date.now().toString().slice(-6); // 6 chữ số cuối của timestamp
-    return `${prefix}${timestamp}`; 
+    return `${prefix}${timestamp}`;
 };
 
-const createOrder = async (userId, productIds, discount, validAmount, receiver, status,shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock) => {
+const createOrder = async (userId, productIds, discount, validAmount, receiver, status, shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock, rating) => {
     try {
         const products = await Product.find({ _id: { $in: productIds } });
 
@@ -56,13 +56,13 @@ const createOrder = async (userId, productIds, discount, validAmount, receiver, 
             if (!product) {
                 return res.status(404).json({ message: `Sản phẩm không tồn tại: ${item.name}` });
             }
-    
+
             if (product.countInStock < item.amount) {
                 return res.status(400).json({
                     message: `Sản phẩm ${item.name} chỉ còn ${product.countInStock} trong kho`,
                 });
             }
-    
+
             product.countInStock -= item.amount;
             await product.save();
         }
@@ -88,7 +88,8 @@ const createOrder = async (userId, productIds, discount, validAmount, receiver, 
             delivered,
             shoppingFee,
             status,
-            user: user ? user._id : null
+            user: user ? user._id : null,
+            rating
         };
 
         // Tạo đơn hàng trong database
@@ -112,8 +113,8 @@ const createOrder = async (userId, productIds, discount, validAmount, receiver, 
 const getOrdersByUser = async (userId) => {
     try {
         const orders = await Order.find({ user: userId })
-        .populate("orderItems.product")
-        .populate("receiver"); 
+            .populate("orderItems.product")
+            .populate("receiver");
 
         if (!orders || orders.length === 0) {
             return {
@@ -220,7 +221,49 @@ const deleteOrderId = async (orderId) => {
     }
 };
 
+const updateOrderRating = (orderId, rating, feedback) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const order = await Order.findById(orderId);
+            if (!order) {
+                resolve({
+                    status: "ERR",
+                    message: "Order not found",
+                });
+                return;
+            }
 
+            order.rating = rating;
+            order.feedback = feedback;
+            await order.save();
+
+            for (const item of order.orderItems) {
+                const productId = item.product;
+
+                const ordersWithProduct = await Order.find({
+                    "orderItems.product": productId,
+                    rating: { $exists: true },
+                });
+
+                if (ordersWithProduct.length > 0) {
+                    const totalRating = ordersWithProduct.reduce((sum, order) => sum + order.rating, 0);
+                    const averageRating = totalRating / ordersWithProduct.length;
+                    
+                    await Product.findByIdAndUpdate(productId, { rating: averageRating });
+                } else {
+                    await Product.findByIdAndUpdate(productId, { rating: rating });
+                }
+            }
+            resolve({
+                status: "OK",
+                message: "Order and product ratings updated successfully",
+                data: order,
+            });
+        } catch (error) {
+            reject(error);
+        }
+    })
+};
 
 module.exports = {
     createOrder,
@@ -228,5 +271,6 @@ module.exports = {
     getOrderByCode,
     updateOrderStatus,
     getAllOrders,
-    deleteOrderId
+    deleteOrderId,
+    updateOrderRating
 };

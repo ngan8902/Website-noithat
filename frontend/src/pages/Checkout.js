@@ -262,7 +262,7 @@ const Checkout = () => {
                     paymentMethod: formattedPaymentMethod,
                     status: "pending",
                     orderDate: orderDate,
-                    delivered: delivered
+                    delivered: delivered,
                 };
 
                 const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/payos/create-payment-link`, {
@@ -329,7 +329,7 @@ const Checkout = () => {
                             paymentMethod: formattedPaymentMethod,
                             status: "pending",
                             orderDate: orderDate,
-                            delivered: delivered
+                            delivered: delivered,
                         };
 
                         try {

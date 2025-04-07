@@ -99,6 +99,8 @@ const ProductDetail = () => {
         }
     }
 
+    console.log(product.rating)
+
     return (
         <section className="py-5">
             <div className="container">
@@ -152,7 +154,7 @@ const ProductDetail = () => {
                             )}
                         </div>
 
-                        <CustomerReviews reviews={product?.reviews} />
+                        <CustomerReviews reviews={product.rating} />
                     </div>
                     <ToastContainer />
                 </div>
