@@ -184,7 +184,7 @@ const Checkout = () => {
         if (!address) return 0;
         const lowerAddress = address.toLowerCase();
 
-        if (lowerAddress.includes("gò vấp")) return 20000;
+        if (lowerAddress.includes("gò vấp")) return 0;
         if (lowerAddress.includes("hồ chí minh")) return 50000;
 
         // Vùng I: Các tỉnh miền Nam từ Bình Định trở vào
@@ -268,7 +268,7 @@ const Checkout = () => {
                 const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/payos/create-payment-link`, {
                     amount: totalPrice,
                     description: paymentMethod,
-                    orderCode: Math.floor(Math.random() * 1_000_000_000),
+                    orderCode: Math.floor(Date.now() / 1000000),
                     tempOrderData: orderData
                 });
                 window.location.href = response.data?.checkoutUrl;

@@ -145,6 +145,8 @@ const Chatbox = () => {
   };
 
   const sendMessage = () => {
+    if (!isAuthenticated) return;
+
     if (!input.trim() || !userId || !staff?._id || !socketIO.current) return;
 
     let storedGuestId = localStorage.getItem("guestId");
@@ -201,23 +203,37 @@ const Chatbox = () => {
           </div>
 
           <div className="chatbox-body">
-            {messages.map((msg, index) => (
-              <div key={index} className={`message ${msg.sender}`}>
-                {msg.text}
+            {isAuthenticated ? (
+              <>
+                {messages.map((msg, index) => (
+                <div key={index} className={`message ${msg.sender}`}>
+                  {msg.text}
+                </div>
+                ))}
+              </>
+            ) : (
+              <div className="message bot">
+                Bạn cần đăng nhập để chat, chúng tôi sẽ hỗ trợ bạn tốt hơn.
               </div>
-            ))}
+            )}
             <div ref={messagesEndRef} />
           </div>
 
           <div className="chatbox-footer">
-            <input
-              type="text"
-              placeholder="Nhập tin nhắn..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            />
-            <button onClick={sendMessage}>Gửi</button>
+            {isAuthenticated ? (
+              <>
+                <input
+                  type="text"
+                  placeholder="Nhập tin nhắn..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                />
+                <button onClick={sendMessage}>Gửi</button>
+              </>
+            ) : (
+              null
+            )}
           </div>
         </div>
       )}

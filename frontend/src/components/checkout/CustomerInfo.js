@@ -126,7 +126,7 @@ const CustomerInfo = ({
                         ))}
                     </div>
                 ) : (
-                    <p className="text-danger">Thông tin chưa có!</p>
+                    <p className="text-danger">Thông tin địa chỉ của bạn chưa có! Vui lòng cập nhật địa chỉ trong Thông tin tài khoản.</p>
                 )}
             </div>
 

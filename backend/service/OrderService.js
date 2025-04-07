@@ -5,7 +5,7 @@ const User = require("../model/UserModel");
 
 const generateOrderCode = () => {
     const prefix = "ORD"; // Tiền tố cố định
-    const timestamp = Date.now().toString().slice(-6); // 6 chữ số cuối của timestamp
+    const timestamp = Math.floor(Date.now() / 1000000); // 6 chữ số cuối của timestamp
     return `${prefix}${timestamp}`; 
 };
 

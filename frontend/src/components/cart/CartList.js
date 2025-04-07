@@ -8,7 +8,7 @@ const CartList = ({ cart, updateQuantity, removeFromCart, selectedItems, setSele
     // Giả lập thời gian tải dữ liệu
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 5000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);

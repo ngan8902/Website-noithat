@@ -28,6 +28,15 @@ const AppRoutes = ({ products }) => {
 
   const isPublicRoute = !location.pathname.startsWith("/admin") && !location.pathname.startsWith("/forgot-password");
 
+  useEffect(() => {
+    const isPublicRoute = !location.pathname.startsWith("/admin") && !location.pathname.startsWith("/forgot-password");
+
+    const dfMessenger = document.querySelector("df-messenger");
+    if (dfMessenger) {
+      dfMessenger.style.display = isPublicRoute ? "block" : "none";
+    }
+  }, [location.pathname]);
+
   return (
     <div className="bg-gray-100 text-gray-900">
       <main>

@@ -6,6 +6,36 @@ import { TOKEN_KEY } from "../../constants/authen.constant";
 
 const avatarDefautl = "http://localhost:8000/upload/guest.png"
 
+const getProvinces = async () => {
+  try {
+    const response = await axios.get("https://provinces.open-api.vn/api/?depth=1");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching provinces:", error);
+    return [];
+  }
+};
+
+const getDistricts = async (province) => {
+  try {
+    const response = await axios.get(`https://provinces.open-api.vn/api/p/${province}?depth=2`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching districts:", error);
+    return [];
+  }
+};
+
+const getWards = async (district) => {
+  try {
+    const response = await axios.get(`https://provinces.open-api.vn/api/d/${district}?depth=2`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching wards:", error);
+    return [];
+  }
+};
+
 const AccountInfo = () => {
   const { user, auth, setUser } = useAuthStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
@@ -16,12 +46,18 @@ const AccountInfo = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     address: '',
+    province: '',
+    district: '',
+    ward: '',
+    street: '',
+    houseNumber: '',
     avatar: null
   });
 
@@ -50,8 +86,61 @@ const AccountInfo = () => {
     }
   }, [user]);
 
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
+
+  useEffect(() => {
+    auth();
+    const fetchProvinces = async () => {
+      const provinceData = await getProvinces();
+      setProvinces(provinceData);
+    };
+    fetchProvinces();
+  }, [auth]);
+
+  useEffect(() => {
+    if (selectedProvince) {
+      const fetchDistricts = async () => {
+        const districtData = await getDistricts(selectedProvince);
+        setDistricts(districtData.districts);
+      };
+      fetchDistricts();
+    }
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      const fetchWards = async () => {
+        const wardData = await getWards(selectedDistrict);
+        setWards(wardData.wards);
+      };
+      fetchWards();
+    }
+  }, [selectedDistrict]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "province") {
+      const selectedProvince = provinces.find(province => province.name === value);
+      setSelectedProvince(selectedProvince ? selectedProvince.code : value);
+    }
+
+    if (name === "district") {
+      const selectedDistrict = districts.find(district => district.name === value);
+      setSelectedDistrict(selectedDistrict ? selectedDistrict.code : value);
+    }
+
+    if (name === "ward") {
+      const selectedWard = wards.find(ward => ward.name === value);
+      setSelectedWard(selectedWard ? selectedWard.code : value);
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -90,6 +179,7 @@ const AccountInfo = () => {
       }
       setErrorMessage("Cập nhật avatar thành công!");
       setTimeout(() => setErrorMessage(""), 3000);
+      window.location.reload();
     } catch (error) {
       console.log("Lỗi cập nhật avatar:", error);
       setErrorMessage("Lỗi cập nhật avatar. Vui lòng thử lại!");
@@ -124,7 +214,7 @@ const AccountInfo = () => {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        address: formData.address,
+        address: `${formData.houseNumber}, ${formData.street}, ${formData.ward}, ${formData.district}, ${formData.province}`,
       };
 
       const response = await axios.put(
@@ -269,7 +359,7 @@ const AccountInfo = () => {
             <p><i className="bi bi-person-circle text-dark m-2"></i> <strong>Họ và Tên:</strong> {user?.name}</p>
             <p><i className="bi bi-envelope text-dark m-2"></i> <strong>Email:</strong> {user?.email}</p>
             <p><i className="bi bi-telephone text-dark m-2"></i> <strong>Số Điện Thoại:</strong> {user?.phone}</p>
-            <p><i className="bi bi-telephone text-dark m-2"></i> <strong>Địa Chỉ:</strong> {user?.address}</p>
+            <p><i className="bi bi-geo-alt-fill text-dark m-2"></i> <strong>Địa Chỉ:</strong> {user?.address}</p>
           </div>
 
           <button className="btn btn-primary w-100" onClick={() => setIsEditing(true)}>
@@ -291,8 +381,45 @@ const AccountInfo = () => {
             <input className="form-control" name="phone" type="tel" value={formData.phone} onChange={handleChange} />
           </div>
           <div className="mb-3">
-            <label className="form-label">Địa Chỉ</label>
-            <input className="form-control" name="address" type="text" value={formData.address} onChange={handleChange} />
+            <label className="form-label">Tỉnh/Thành Phố</label>
+            <select className="form-control" name="province" value={formData.province} onChange={handleChange}>
+              <option value="">Chọn Tỉnh/Thành Phố</option>
+              {provinces.map((province) => (
+                <option key={province.code} value={province.name}>
+                  {province.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Quận/Huyện</label>
+            <select className="form-control" name="district" value={formData.district} onChange={handleChange}>
+              <option value="">Chọn Quận/Huyện</option>
+              {districts.map((district) => (
+                <option key={district.code} value={district.name}>
+                  {district.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Phường/Xã</label>
+            <select className="form-control" name="ward" value={formData.ward} onChange={handleChange}>
+              <option value="">Chọn Phường/Xã</option>
+              {wards.map((ward) => (
+                <option key={ward.code} value={ward.name}>
+                  {ward.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Tên Đường</label>
+            <input className="form-control" name="street" type="text" value={formData.street} onChange={handleChange} />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Số Nhà</label>
+            <input className="form-control" name="houseNumber" type="text" value={formData.houseNumber} onChange={handleChange} />
           </div>
 
           {/* Đổi mật khẩu */}
