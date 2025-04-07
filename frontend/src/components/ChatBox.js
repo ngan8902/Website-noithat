@@ -1,74 +1,36 @@
 import React, { useState, useRef, useEffect } from "react";
 import useAuthStore from "../store/authStore";
-import useAuthAdminStore from "../store/authAdminStore";
 import { SOCKET_URI, USER_EVENTS } from "../constants/chat.constant";
 import axios from "axios";
 
 const Chatbox = () => {
   const { isAuthenticated, user } = useAuthStore();
-  const { auth, staff } = useAuthAdminStore();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [userId, setUserId] = useState(null);
   const messagesEndRef = useRef(null);
   const socketIO = useRef(null);
-  const staffFetched = useRef(false);
   const [showLabel, setShowLabel] = useState(true);
 
   useEffect(() => {
-    // Ẩn dòng chữ sau 3 giây
     const labelTimer = setTimeout(() => setShowLabel(false), 3000);
     return () => clearTimeout(labelTimer);
   }, []);
 
   useEffect(() => {
-    let storedUserId = localStorage.getItem("chatUserId");
-    let storedGuestId = localStorage.getItem("guestId");
-
+    let storedUserId = null;
     if (isAuthenticated && user?._id) {
       storedUserId = user._id;
-      localStorage.removeItem("chatUserId");
-      localStorage.removeItem("chatUserIdExpiration");
-      localStorage.removeItem("guestId");
-    } else if (!storedUserId) {
-      storedUserId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-      localStorage.setItem("chatUserId", storedUserId);
-
-      if (!storedGuestId) {
-        storedGuestId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-        localStorage.setItem("guestId", storedGuestId);
-      }
-
-      const expireInMilliseconds = 1.5 * 24 * 60 * 60 * 1000;
-      localStorage.setItem("chatUserIdExpiration", (Date.now() + expireInMilliseconds).toString());
-
-      setTimeout(() => {
-        localStorage.removeItem("chatUserId");
-        localStorage.removeItem("chatUserIdExpiration");
-        localStorage.removeItem("guestId");
-      }, expireInMilliseconds);
     }
-
     setUserId(storedUserId);
   }, [isAuthenticated, user]);
 
-  const fetchStaffInfo = async () => {
-    try {
-      if (!staffFetched.current) {
-        await auth();
-        staffFetched.current = true;
-      }
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin nhân viên:", error);
-    }
-  };
-
   useEffect(() => {
     const fetchMessages = async () => {
-      if (userId && staff?._id) {
-        const conversationId1 = `${userId}-${staff._id}`;
-        const conversationId2 = `${staff._id}-${userId}`;
+      if (userId) {
+        const conversationId1 = userId;
+        const conversationId2 = userId;
         let allMessages = [];
 
         try {
@@ -86,7 +48,10 @@ const Chatbox = () => {
         }
 
         const sortedMessages = allMessages.sort((a, b) => a.timestamp - b.timestamp);
-        let formattedMessages = sortedMessages.map(msg => ({ text: msg.message, sender: msg.fromRole === "User" || msg.fromRole === "Guest" ? "user" : "bot" }));
+        let formattedMessages = sortedMessages.map((msg) => ({
+          text: msg.message,
+          sender: msg.fromRole === "User" || msg.fromRole === "Guest" ? "user" : "bot",
+        }));
 
         if (formattedMessages.length === 0) {
           formattedMessages = [{ text: "Tôi có thể giúp gì cho bạn?", sender: "bot" }];
@@ -99,25 +64,22 @@ const Chatbox = () => {
     };
 
     fetchMessages();
-  }, [userId, staff]);
+  }, [userId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
-    if (userId && staff?._id) {
+    if (userId) {
       socketIO.current = window?.io(SOCKET_URI);
 
       socketIO.current.on(USER_EVENTS.recieveMsg, (messageObj) => {
-        const conversationId1 = `${userId}-${staff?._id}`;
-        const conversationId2 = `${staff?._id}-${userId}`;
+        const conversationId1 = `${userId}`;
+        const conversationId2 = `${userId}`;
 
         if (messageObj.conversationId === conversationId1 || messageObj.conversationId === conversationId2) {
-          setMessages((prev) => [
-            ...prev,
-            { sender: "bot", text: messageObj.message }
-          ]);
+          setMessages((prev) => [...prev, { sender: "bot", text: messageObj.message }]);
         }
       });
 
@@ -137,47 +99,25 @@ const Chatbox = () => {
         }
       };
     }
-  }, [userId, staff]);
+  }, [userId]);
 
   const toggleChatbox = () => {
     setIsOpen(!isOpen);
-    if (!isOpen) fetchStaffInfo();
   };
 
   const sendMessage = () => {
-    if (!input.trim() || !userId || !staff?._id || !socketIO.current) return;
+    if (!input.trim() || !userId) return;
 
-    let storedGuestId = localStorage.getItem("guestId");
-    let isGuest = userId.startsWith("guest_");
-    let conversationId = `${userId}-${staff._id}`;
-    // Tạo lại guestId nếu cần
-    if (isGuest && !storedGuestId) {
-      storedGuestId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-      localStorage.setItem("guestId", storedGuestId);
-
-      const expireInMilliseconds = 1.5 * 24 * 60 * 60 * 1000;
-      localStorage.setItem("chatUserIdExpiration", (Date.now() + expireInMilliseconds).toString());
-
-      setTimeout(() => {
-        localStorage.removeItem("chatUserId");
-        localStorage.removeItem("chatUserIdExpiration");
-        localStorage.removeItem("guestId");
-      }, expireInMilliseconds);
-    }
-
+    const conversationId = userId;
     const messageObj = {
-      from: isGuest ? null : userId,
-      fromRole: isGuest ? "Guest" : "User",
-      guestId: isGuest ? storedGuestId : null,
-      to: staff._id,
+      from: userId,
+      fromRole: "User",
+      to: "system",
       toRole: "Staff",
       message: input,
       timestamp: new Date().getTime(),
       conversationId: conversationId,
     };
-
-    console.log(messageObj)
-
 
     setMessages([...messages, { sender: "user", text: input }]);
     socketIO.current.emit(USER_EVENTS.sendMsg, messageObj);
@@ -194,10 +134,10 @@ const Chatbox = () => {
       {isOpen && (
         <div className="chatbox-container">
           <div className="chatbox-header">
-            <h4>
-              {isAuthenticated ? `Chào ${user?.name}` : "Hỗ trợ khách hàng"}
-            </h4>
-            <button onClick={toggleChatbox}><i className="bi bi-x-octagon-fill"></i></button>
+            <h4>{isAuthenticated ? `Chào ${user?.name}` : "Hỗ trợ khách hàng"}</h4>
+            <button onClick={toggleChatbox}>
+              <i className="bi bi-x-octagon-fill"></i>
+            </button>
           </div>
 
           <div className="chatbox-body">

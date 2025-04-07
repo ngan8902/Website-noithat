@@ -5,7 +5,7 @@ import useAuthAdminStore from "../../store/authAdminStore";
 import axios from "axios";
 import moment from "moment";
 
-const avatarDefautl = "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg";
+const avatarDefautl = "http://localhost:8000/upload/guest.png";
 
 const ChatMessages = ({ customer }) => {
   const [messages, setMessages] = useState([]);
@@ -41,7 +41,7 @@ const ChatMessages = ({ customer }) => {
         if (customer.id.startsWith("guest_")) {
           conversationId = `${customer.id}-${staff._id}`;
         } else {
-          conversationId = `${customer.id}-${staff._id}`;
+          conversationId = `${customer.id}`; // Use only customer.id for non-guest users
         }
 
         try {
@@ -93,7 +93,7 @@ const ChatMessages = ({ customer }) => {
   const sendMessage = useCallback(() => {
     if (!newMessage.trim() || !userId || !staff?._id || !socketIO.current || !customer?.id) return;
 
-    let conversationId = `${customer?.id}-${staff?._id}`;
+    let conversationId = customer.id.startsWith('guest_') ? `${customer?.id}-${staff?._id}` : customer?.id;
     const guestId = localStorage.getItem("chatUserId");
     const messageObj = {
       from: staff._id,
@@ -128,10 +128,24 @@ const ChatMessages = ({ customer }) => {
     return moment(timestamp).format("HH:mm DD/MM/YYYY");
   };
 
+  const getImageUrl = (avatar, avatarDefautl) => {
+    let src;
+
+    if (avatar && avatar.startsWith("http://")) {
+      src = avatar;
+    } else if (avatar) {
+      src = `http://localhost:8000${avatar}`;
+    } else {
+      src = avatarDefautl;
+    }
+
+    return src;
+  };
+
   return (
     <div className="chat-messages d-flex flex-column p-3">
       <div className="chat-header d-flex align-items-center pb-3 border-bottom">
-        <img src={customer.avatar || avatarDefautl} alt={customer.name} className="rounded-circle me-3" width="45" height="45" />
+        <img src={getImageUrl(customer.avatar, avatarDefautl)} alt={customer.name} className="rounded-circle me-3" width="45" height="45" />
         {customer.name}
       </div>
       <div className="messages flex-grow-1 overflow-auto p-2">

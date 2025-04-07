@@ -17,31 +17,19 @@ const getMessagesByReceiver = async (receiverId, receiverRole) => {
 // Tạo tin nhắn mới
 const createMessage = async (messageData) => {
     try {
-        const { from, to, message, timestamp, guestId, conversationId, fromRole, toRole } = messageData;
+        const { from, to, message, timestamp, conversationId, fromRole, toRole } = messageData;
         let chatMessage = null;
 
-        if (guestId) {
-            chatMessage = new Chat({
-                from: from,
-                fromRole: fromRole,
-                to: to,
-                toRole: null,
-                message: message,
-                timestamp: timestamp,
-                conversationId: conversationId,
-                guestId: guestId,
-            });
-        } else {
-            chatMessage = new Chat({
-                from: from,
-                fromRole: fromRole,
-                to: to,
-                toRole: toRole,
-                message: message,
-                timestamp: timestamp,
-                conversationId: conversationId,
-            });
-        }
+        chatMessage = new Chat({
+            from: from,
+            fromRole: fromRole,
+            to: to,
+            toRole: toRole,
+            message: message,
+            timestamp: timestamp,
+            conversationId: conversationId,
+        });
+
 
         return chatMessage.save();
     } catch (error) {
