@@ -14,9 +14,9 @@ const useAuthStore = create((set) => ({
                 `${process.env.REACT_APP_URL_BACKEND}/user/getme`, 
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}` // Chỉnh lại format
+                        'Authorization': `Bearer ${token}` 
                     },
-                    withCredentials: true, // Đảm bảo gửi cookie nếu cần
+                    withCredentials: true, 
                 }
             );
 

@@ -28,3 +28,16 @@ export const notifyOfCheckout = () => {
       className: "my-toast"
     });
 }
+export const notifyOfComment = () => {
+  toast.info("Vui lòng đăng nhập để bình luận.", {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+      className: "my-toast"
+    });
+}

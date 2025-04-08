@@ -1,0 +1,85 @@
+import React, { useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import useAuthStore from "../../store/authStore";
+
+const AddComment = ({ onSubmitSuccess }) => {
+    const [comment, setComment] = useState("");
+    const [mediaFiles, setMediaFiles] = useState(null);
+    const [err, setErr] = useState("");
+    const { id: productId } = useParams();
+    const { user } = useAuthStore();
+
+
+    const handlePostComment = async () => {
+        if (!comment.trim()) {
+            setErr("Vui lòng nhập bình luận");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("content", comment);
+        if (user._id) {
+            formData.append("userId", user._id);
+        }
+
+        if (mediaFiles) {
+            for (let i = 0; i < mediaFiles.length; i++) {
+                formData.append("mediaFile", mediaFiles[i]);
+            }
+        }
+        try {
+            const response = await axios.post(
+                `${process.env.REACT_APP_URL_BACKEND}/comments/${productId}/comments`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+            console.log("Phản hồi bình luận:", response);
+            setComment("");
+            setMediaFiles(null);
+            if (onSubmitSuccess) {
+                onSubmitSuccess();
+            }
+        } catch (error) {
+            console.error("Lỗi khi gửi bình luận và tệp đính kèm:", error);
+            setErr("Đã có lỗi xảy ra khi gửi bình luận và tệp đính kèm. Vui lòng thử lại sau.");
+        }
+    };
+
+    return (
+        <div className="mb-3 mt-3 border p-3">
+            <h5 className="fw-bold mb-3">Thêm Bình Luận Của Bạn</h5>
+            <div className="mb-3">
+                <label className="form-label">Bình luận:</label>
+                <textarea
+                    className="form-control"
+                    rows="3"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Viết bình luận của bạn..."
+                ></textarea>
+            </div>
+            {err && <div className="alert alert-danger">{err}</div>}
+            <div className="mb-3">
+                <label className="form-label">Tải ảnh hoặc video (tùy chọn):</label>
+                <input
+                    type="file"
+                    className="form-control"
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={(e) => setMediaFiles(e.target.files)}
+                />
+            </div>
+
+            <button className="btn btn-primary" onClick={handlePostComment}>
+                Gửi Bình Luận
+            </button>
+        </div>
+    );
+};
+
+export default AddComment;

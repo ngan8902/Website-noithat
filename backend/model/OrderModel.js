@@ -20,6 +20,7 @@ const orderSchema = new mongoose.Schema(
                 },
             },
         ],
+        feedback: {type: String},
         rating: { type: Number },
         receiver: {
             type: mongoose.Schema.Types.ObjectId,
@@ -31,7 +32,6 @@ const orderSchema = new mongoose.Schema(
             enum: ["COD", "VietQR", "MoMo"],
             required: true
         },
-        // itemsPrice: { type: String, required: false },
         totalPrice: { type: String, required: true },
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
         isPaid: { type: Boolean, default: false },

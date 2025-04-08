@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controller/ProductController')
-const { authenticateStaff, authenticateUser } = require('../middleware/authMiddleware')
 const { upload } = require('../service/ImagesService')
 
 router.post('/create-product', upload.single("image"), productController.createProduct)
