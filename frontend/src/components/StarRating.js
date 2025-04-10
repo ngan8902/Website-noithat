@@ -1,7 +1,7 @@
 import React from "react";
 import { FaStar } from "react-icons/fa";
 
-const StarRating = ({ rating, onOptionSelect, orderItems }) => {
+const StarRating = ({ rating, onOptionSelect, onRatingChange }) => {
     const options = [
         { value: 5, label: "Rất thích" },
         { value: 4, label: "Thích" },
@@ -15,7 +15,10 @@ const StarRating = ({ rating, onOptionSelect, orderItems }) => {
             {options.map((option) => (
                 <div
                     key={option.value}
-                    onClick={() => onOptionSelect(option.value)}
+                    onClick={() => {
+                        onOptionSelect(option.value); // Cập nhật state rating trong OrderHistory
+                        onRatingChange(option.value); // Gọi hàm gửi đánh giá
+                    }}
                     style={{
                         cursor: "pointer",
                         marginBottom: "10px",

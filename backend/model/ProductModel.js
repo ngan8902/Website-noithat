@@ -17,7 +17,7 @@ const productSchema = new mongoose.Schema(
         isBestSeller: { type: Boolean},
         productCode: { type: String, unique: true },
         rating: {type: Number},
-        feedback: { type: String}
+        feedback: { type: String},
     },
     {
         timestamps: true

@@ -9,9 +9,7 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [rating, setRating] = useState(0);
   const [reviewedOrders, setReviewedOrders] = useState([]);
-  //const [ratingData, setRatingData] = useState([]);
-  const [comment, setComment] = useState("");
-  const [mediaFiles, setMediaFiles] = useState([]);
+ 
 
   const appElement = document.getElementById('root');
 
@@ -62,6 +60,7 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
       console.log("Cập nhật rating thành công:", response.data);
       setIsModalOpen(false);
       setReviewedOrders([...reviewedOrders, selectedOrder._id]);
+      
     } catch (error) {
       console.error("Lỗi cập nhật rating:", error);
     }
@@ -145,14 +144,10 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
                   </td>
                   <td>
                     {order.status === "delivered" && (
-                      // order.rating > 0 || reviewedOrders.includes(order._id) ? (
-                      //   <button className="btn btn-sm btn-success" disabled>Đã đánh giá</button>
-                      // ) : (
-                        <button className="btn btn-sm btn-outline-primary" onClick={() => handleReview(order)}>
-                          Đánh Giá
-                        </button>
-                      )
-                    //)
+                      <button className="btn btn-sm btn-outline-primary" onClick={() => handleReview(order)}>
+                        Đánh Giá
+                      </button>
+                    )
                     }
                   </td>
                 </tr>
@@ -173,36 +168,10 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
             <h2>Đánh giá đơn hàng #{selectedOrder.orderCode}</h2>
             <StarRating
               orderItems={selectedOrder?.orderItems}
-              rating={rating} 
+              rating={rating}
               onOptionSelect={setRating}
+              onRatingChange={handleRatingChange}
             />
-
-            <div className="mb-3 mt-3">
-              <label className="form-label">Bình luận:</label>
-              <textarea
-                className="form-control"
-                rows="3"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Viết bình luận của bạn..."
-              ></textarea>
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label">Tải ảnh hoặc video (tùy chọn):</label>
-              <input
-                type="file"
-                className="form-control"
-                accept="image/*,video/*"
-                multiple
-                onChange={(e) => setMediaFiles(e.target.files)}
-              />
-            </div>
-
-            <div className="d-flex justify-content-end">
-              <button className="btn btn-secondary me-2" onClick={() => setIsModalOpen(false)}>Hủy</button>
-              <button className="btn btn-primary" onClick={() => handleRatingChange(rating)}>Gửi đánh giá</button>
-            </div>
           </div>
         )}
       </Modal>

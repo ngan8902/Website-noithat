@@ -1,58 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
 
 const CustomerReviews = ({ reviews }) => {
     if (typeof reviews === "number") {
         return (
             <div>
-                <h5 className="fw-bold mb-3">Đánh Giá Trung Bình</h5>
-                <div className="rating">
-                    {[...Array(5)].map((_, starIndex) => {
-                        if (starIndex < Math.floor(reviews)) {
-                            return (
-                                <i
-                                    key={starIndex}
-                                    className="bi bi-star-fill text-warning"
-                                ></i>
-                            );
-                        } else if (starIndex < reviews) {
-                            return (
-                                <i
-                                    key={starIndex}
-                                    className="bi bi-star-half text-warning"
-                                ></i>
-                            );
-                        } else {
-                            return (
-                                <i
-                                    key={starIndex}
-                                    className="bi bi-star text-secondary"
-                                ></i>
-                            );
-                        }
-                    })}
+                <div>
+                    <h5 className="fw-bold mb-0">Đánh Giá Trung Bình</h5>
+                    <div className="rating">
+                        {[...Array(5)].map((_, starIndex) => {
+                            if (starIndex < Math.floor(reviews)) {
+                                return (
+                                    <i
+                                        key={starIndex}
+                                        className="bi bi-star-fill text-warning"
+                                    ></i>
+                                );
+                            } else if (starIndex < reviews) {
+                                return (
+                                    <i
+                                        key={starIndex}
+                                        className="bi bi-star-half text-warning"
+                                    ></i>
+                                );
+                            } else {
+                                return (
+                                    <i
+                                        key={starIndex}
+                                        className="bi bi-star text-secondary"
+                                    ></i>
+                                );
+                            }
+                        })}
+                    </div>
                 </div>
             </div>
         );
-    } else if (Array.isArray(reviews) && reviews.length > 0) {
+    } else {
         return (
             <div>
-                <h5 className="fw-bold mb-3">Đánh Giá Khách Hàng</h5>
-                {reviews.map((review, index) => (
-                    <div className="mb-3" key={index}>
-                        <div className="rating">
-                            {[...Array(5)].map((_, starIndex) => (
-                                <i
-                                    key={starIndex}
-                                    className={`bi ${starIndex < review.rating ? "bi-star-fill text-warning" : "bi-star text-secondary"}`}
-                                ></i>
-                            ))}
-                        </div>
-                    </div>
-                ))}
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                    <p className="text-muted mb-0">Chưa có đánh giá nào.</p>
+                </div>
             </div>
         );
-    } else {
-        return <p className="text-muted">Chưa có đánh giá nào.</p>;
     }
 };
 

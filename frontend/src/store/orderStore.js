@@ -13,35 +13,6 @@ const useOrderStore = create((set, get) => ({
             const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/order/get-all-orders`);
             let orders = response.data.data || [];
 
-            // Lọc danh sách receiver ID cần lấy
-            // const receiverIds = [...new Set(orders
-            //     .filter(order => typeof order.receiver === "string")
-            //     .map(order => order.receiver))];
-
-            // if (receiverIds.length > 0) {
-            //     try {
-            //         // Gửi 1 request để lấy tất cả receivers
-            //         const receiverRes = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/get-multiple-receivers`, {
-            //             receiverIds
-            //         });
-
-            //         const receiverMap = receiverRes.data.reduce((acc, receiver) => {
-            //             acc[receiver._id] = receiver;
-            //             return acc;
-            //         }, {});
-
-            //         set({ receivers: receiverMap });
-
-            //         // Gán thông tin receiver vào orders
-            //         orders = orders.map(order => ({
-            //             ...order,
-            //             receiver: receiverMap[order.receiver] || order.receiver
-            //         }));
-            //     } catch (error) {
-            //         console.error("Lỗi lấy danh sách receiver:", error);
-            //     }
-            // }
-
             set({ orders });
 
         } catch (error) {

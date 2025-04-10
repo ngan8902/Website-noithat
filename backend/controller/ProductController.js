@@ -1,6 +1,8 @@
 const ProductService = require('../service/ProductService')
 const { toSlug } = require('../common/utils/slug')
 const { paginateArray } = require('../common/utils/pagination')
+const path = require('path')
+const fs = require('fs')
 
 const createProduct = async (req, res) => {
     try {
