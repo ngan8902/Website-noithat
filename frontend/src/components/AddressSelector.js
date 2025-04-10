@@ -99,7 +99,7 @@ const AddressSelector = ({ setNewAddress, savedAddress }) => {
 
     // Cập nhật địa chỉ hiển thị
     useEffect(() => {
-        if (savedAddress) { // Sử dụng savedAddress nếu có
+        if (savedAddress) { 
             const parts = savedAddress.split(", ");
             setHouseNumber(parts[0] || "");
             setStreet(parts[1] || "");

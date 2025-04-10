@@ -165,7 +165,7 @@ const ProductDetail = () => {
 
         return (
             <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
-                {comments.map((comment) => (
+                {[...comments].reverse().map((comment) => (
                     <div key={comment._id} className="mb-3 border p-3 d-flex align-items-start">
                         <img
                             src={getImageUrl(comment.userId?.avatar, avatarDefautl)}
@@ -186,6 +186,7 @@ const ProductDetail = () => {
             </div>
         );
     };
+
 
     return (
         <section className="py-5">
@@ -253,7 +254,7 @@ const ProductDetail = () => {
                                     }}
                                     style={{ lineHeight: "1" }}
                                     title="Đăng nhập để bình luận"
-                                    
+
                                 >
                                     <i className="bi bi-plus"></i>
                                 </button>

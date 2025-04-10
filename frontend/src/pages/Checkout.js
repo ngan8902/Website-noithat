@@ -56,7 +56,7 @@ const Checkout = () => {
     }, [selectedProducts, cartItems]);
 
     const savedAddresses = [{ id: 1, address: "" }];
-    const [, setSavedAddresses] = useState([]);
+    // const [, setSavedAddresses] = useState([]);
     const hasAddress = savedAddresses.length > 0;
 
     const [selectedAddress, setSelectedAddress] = useState(hasAddress ? savedAddresses[0].address : "");
@@ -98,25 +98,25 @@ const Checkout = () => {
         setTotalPrice(calculateTotalPrice());
     }, [cartData, shippingFee]);
 
-    useEffect(() => {
-        const saveAddress = async () => {
-            if (user && newAddress) {
-                try {
-                    const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
-                        userId: user._id,
-                        address: newAddress,
-                        fullname: receiver.fullname,
-                        phone: receiver.phone,
-                    });
+    // useEffect(() => {
+    //     const saveAddress = async () => {
+    //         if (user && newAddress) {
+    //             try {
+    //                 const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
+    //                     userId: user._id,
+    //                     address: newAddress,
+    //                     fullname: receiver.fullname,
+    //                     phone: receiver.phone,
+    //                 });
 
-                    console.log("Địa chỉ đã được lưu thành công.", response);
-                } catch (error) {
-                    console.error("Lỗi khi lưu địa chỉ:", error);
-                }
-            }
-        };
-        saveAddress();
-    }, [newAddress, user, receiver.fullname, receiver.phone]);
+    //                 console.log("Địa chỉ đã được lưu thành công.", response);
+    //             } catch (error) {
+    //                 console.error("Lỗi khi lưu địa chỉ:", error);
+    //             }
+    //         }
+    //     };
+    //     saveAddress();
+    // }, [newAddress, user, receiver.fullname, receiver.phone]);
 
     useEffect(() => {
         const fetchAddress = async () => {
@@ -337,6 +337,20 @@ const Checkout = () => {
                             await createOrder(orderData, { headers });
                             notifyOfCheckout()
 
+                            if (user && newAddress) {
+                                try {
+                                    await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
+                                        userId: user._id,
+                                        address: newAddress,
+                                        fullname: receiver.fullname,
+                                        phone: receiver.phone,
+                                    });
+                                    console.log("Đã lưu địa chỉ sau khi đặt hàng thành công!");
+                                } catch (error) {
+                                    console.error("Lỗi khi lưu địa chỉ:", error);
+                                }
+                            }
+
                             const purchasedItems = cartData?.map((item) => item._id) || [];
 
                             if (purchasedItems.length > 0) {
@@ -412,6 +426,20 @@ const Checkout = () => {
             await createOrder(orderData, { headers });
             notifyOfCheckout()
 
+            if (user && newAddress) {
+                try {
+                    await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
+                        userId: user._id,
+                        address: newAddress,
+                        fullname: receiver.fullname,
+                        phone: receiver.phone,
+                    });
+                    console.log("Đã lưu địa chỉ sau khi đặt hàng thành công!");
+                } catch (error) {
+                    console.error("Lỗi khi lưu địa chỉ:", error);
+                }
+            }
+
             const purchasedItems = cartData?.map((item) => item._id) || [];
 
             if (purchasedItems.length > 0) {
@@ -423,11 +451,11 @@ const Checkout = () => {
 
             setTimeout(async () => {
                 await fetchCart();
-                if (user) {
-                    window.location.replace("/account");
-                } else {
-                    navigate("/home");
-                }
+                // if (user) {
+                //     window.location.replace("/account");
+                // } else {
+                //     navigate("/home");
+                // }
             }, 2000);
         } catch (error) {
             console.log(error)

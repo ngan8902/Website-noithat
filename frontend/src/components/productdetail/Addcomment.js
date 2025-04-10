@@ -5,7 +5,6 @@ import useAuthStore from "../../store/authStore";
 
 const AddComment = ({ onSubmitSuccess }) => {
     const [comment, setComment] = useState("");
-    const [mediaFiles, setMediaFiles] = useState(null);
     const [err, setErr] = useState("");
     const { id: productId } = useParams();
     const { user } = useAuthStore();
@@ -23,11 +22,6 @@ const AddComment = ({ onSubmitSuccess }) => {
             formData.append("userId", user._id);
         }
 
-        if (mediaFiles) {
-            for (let i = 0; i < mediaFiles.length; i++) {
-                formData.append("mediaFile", mediaFiles[i]);
-            }
-        }
         try {
             const response = await axios.post(
                 `${process.env.REACT_APP_URL_BACKEND}/comments/${productId}/comments`,
@@ -40,7 +34,6 @@ const AddComment = ({ onSubmitSuccess }) => {
             );
             console.log("Phản hồi bình luận:", response);
             setComment("");
-            setMediaFiles(null);
             if (onSubmitSuccess) {
                 onSubmitSuccess();
             }
@@ -64,16 +57,6 @@ const AddComment = ({ onSubmitSuccess }) => {
                 ></textarea>
             </div>
             {err && <div className="alert alert-danger">{err}</div>}
-            <div className="mb-3">
-                <label className="form-label">Tải ảnh hoặc video (tùy chọn):</label>
-                <input
-                    type="file"
-                    className="form-control"
-                    accept="image/*,video/*"
-                    multiple
-                    onChange={(e) => setMediaFiles(e.target.files)}
-                />
-            </div>
 
             <button className="btn btn-primary" onClick={handlePostComment}>
                 Gửi Bình Luận

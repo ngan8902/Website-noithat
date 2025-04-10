@@ -13,7 +13,7 @@ const TemporaryOrderSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-        expires: 1800 // tự xóa sau 30 phút
+        expires: 1800 
     }
 });
 

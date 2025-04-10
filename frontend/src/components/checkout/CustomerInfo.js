@@ -51,11 +51,6 @@ const CustomerInfo = ({
         }
     };
 
-    // const handleDeleteSavedInfo = (index) => {
-    //     const updatedAddresses = displayAddresses.filter((_, i) => i !== index);
-    //     setDisplayAddresses(updatedAddresses);
-    // };
-
     const validateFullname = (name) => {
         return /^[A-Za-zÀ-ỹ\s]+$/.test(name.trim());
     };
@@ -109,11 +104,12 @@ const CustomerInfo = ({
                                 <div className="d-flex align-items-center w-100">
                                     <input
                                         className="form-check-input me-2"
-                                        type="radio"
+                                        type="checkbox"
                                         name="savedInfo"
                                         id={`info-${index}`}
                                         checked={selectedIndex === index}
                                         onChange={() => handleSelectSavedInfo(index)}
+                                         
                                     />
                                     <label className="form-check-label w-100 d-flex justify-content-between" htmlFor={`info-${index}`} style={{ color: "#000" }}>
                                         <span><strong>{info.fullname}, </strong></span>
@@ -121,7 +117,6 @@ const CustomerInfo = ({
                                         <span>{info.address}. </span>
                                     </label>
                                 </div>
-                                {/* <button className="btn btn-sm btn-outline-danger ms-2" onClick={() => handleDeleteSavedInfo(index)}>Xóa</button> */}
                             </div>
                         ))}
                     </div>

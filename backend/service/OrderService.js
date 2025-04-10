@@ -4,9 +4,10 @@ const ReceiverInfo = require("../model/ReceiverInfoModel")
 const User = require("../model/UserModel");
 
 const generateOrderCode = () => {
-    const prefix = "ORD"; // Tiền tố cố định
-    const timestamp = Math.floor(Date.now() / 1000000); // 6 chữ số cuối của timestamp
-    return `${prefix}${timestamp}`; 
+    const prefix = "ORD";
+    const timestamp = Date.now().toString().slice(-3);
+    const randomPart = Math.floor(1000 + Math.random() * 9000);
+    return `${prefix}${timestamp}${randomPart}`;
 };
 
 const createOrder = async (userId, productIds, discount, validAmount, receiver, status, shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock, rating) => {
@@ -248,7 +249,7 @@ const updateOrderRating = (orderId, rating, feedback) => {
                 if (ordersWithProduct.length > 0) {
                     const totalRating = ordersWithProduct.reduce((sum, order) => sum + order.rating, 0);
                     const averageRating = totalRating / ordersWithProduct.length;
-                    
+
                     await Product.findByIdAndUpdate(productId, { rating: averageRating });
                 } else {
                     await Product.findByIdAndUpdate(productId, { rating: rating });
