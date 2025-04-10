@@ -5,6 +5,7 @@ import Default from "./components/Default";
 import AdminLayout from "./components/layout/AdminLayout";
 import useProductStore from "./store/productStore";
 import Chatbox from "./components/ChatBox";
+import Zalo from "./components/Zalo";
 
 function App() {
   const { products, getProducts, isSearching } = useProductStore();
@@ -59,6 +60,7 @@ const AppRoutes = ({ products }) => {
       </main>
 
       {isPublicRoute && <Chatbox />}
+      {isPublicRoute && <Zalo />}
     </div>
   );
 };
