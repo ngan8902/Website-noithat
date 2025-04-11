@@ -38,7 +38,6 @@ const ZaloChatButton = () => {
         bottom: "20px",
         right: "5px",
         marginBottom: "8.5%",
-        zIndex: 9999,
         display: "flex",
         alignItems: "center",
         textDecoration: "none",

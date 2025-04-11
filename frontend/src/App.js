@@ -16,7 +16,6 @@ function App() {
     }
   }, [getProducts, isSearching]);
 
-
   return (
     <Router>
       <AppRoutes products={products} />
