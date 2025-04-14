@@ -28,8 +28,8 @@ app.use(cookieParser());
 // Cấu hình CORS
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000", // URL của frontend
-    credentials: true, // Cho phép gửi cookie và token
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true, 
     allowedHeaders: ["Content-Type", "Authorization", "token", "staff-token"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     exposedHeaders: ["Set-Cookie"],

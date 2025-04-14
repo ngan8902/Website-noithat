@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import useAuthStore from "../../store/authStore";
+import useAuthStore from "../store/authStore";
 
-const AddComment = ({ onSubmitSuccess }) => {
+const Comments = ({ productId, onSubmitSuccess }) => {
     const [comment, setComment] = useState("");
     const [err, setErr] = useState("");
-    const { id: productId } = useParams();
-    const { user } = useAuthStore();
+    const [successMessage, setSuccessMessage] = useState(""); const { user } = useAuthStore();
 
 
     const handlePostComment = async () => {
@@ -23,7 +21,7 @@ const AddComment = ({ onSubmitSuccess }) => {
         }
 
         try {
-            const response = await axios.post(
+            await axios.post(
                 `${process.env.REACT_APP_URL_BACKEND}/comments/${productId}/comments`,
                 formData,
                 {
@@ -32,8 +30,8 @@ const AddComment = ({ onSubmitSuccess }) => {
                     },
                 }
             );
-            console.log("Phản hồi bình luận:", response);
             setComment("");
+            setSuccessMessage("Gửi bình luận thành công!");
             if (onSubmitSuccess) {
                 onSubmitSuccess();
             }
@@ -57,6 +55,7 @@ const AddComment = ({ onSubmitSuccess }) => {
                 ></textarea>
             </div>
             {err && <div className="alert alert-danger">{err}</div>}
+            {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
             <button className="btn btn-primary" onClick={handlePostComment}>
                 Gửi Bình Luận
@@ -65,4 +64,4 @@ const AddComment = ({ onSubmitSuccess }) => {
     );
 };
 
-export default AddComment;
+export default Comments;

@@ -451,11 +451,11 @@ const Checkout = () => {
 
             setTimeout(async () => {
                 await fetchCart();
-                // if (user) {
-                //     window.location.replace("/account");
-                // } else {
-                //     navigate("/home");
-                // }
+                if (user) {
+                    window.location.replace("/account");
+                } else {
+                    navigate("/home");
+                }
             }, 2000);
         } catch (error) {
             console.log(error)

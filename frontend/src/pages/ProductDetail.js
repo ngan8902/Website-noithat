@@ -9,7 +9,7 @@ import { notifyOfCart, notifyOfComment } from "../constants/notify.constant";
 import ProductImage from "../components/productdetail/ProductImage";
 import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
-import AddComment from "../components/productdetail/Addcomment";
+import Comments from "../components/Comments";
 
 const avatarDefautl = "http://localhost:8000/upload/guest.png"
 
@@ -102,8 +102,7 @@ const ProductDetail = () => {
     };
 
     const addToCart = () => (user ? handleAddToCartForCustomer() : handleAddToCartForGuest());
-    const toggleCommentForm = () => setShowCommentForm((prev) => !prev);
-
+    
     const formatDate = (dateString) =>
         new Date(dateString).toLocaleDateString("vi-VN", {
             year: "numeric",
@@ -259,20 +258,11 @@ const ProductDetail = () => {
                                     <i className="bi bi-plus"></i>
                                 </button>
                             )}
-                            {user && (
-                                <button
-                                    className="btn btn-outline-primary p-1 rounded-circle"
-                                    onClick={toggleCommentForm}
-                                    style={{ lineHeight: "1" }}
-                                >
-                                    <i className="bi bi-plus"></i>
-                                </button>
-                            )}
                         </div>
                     </div>
                     {showCommentForm && (
                         <div className="mt-3">
-                            <AddComment onSubmitSuccess={handleCommentSubmitSuccess} />
+                            <Comments onSubmitSuccess={handleCommentSubmitSuccess} />
                         </div>
                     )}
                     <div className="col-12 mt-4">

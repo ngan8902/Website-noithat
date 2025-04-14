@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import StarRating from "../StarRating";
+import Comments from "../Comments";
 import axios from "axios";
 
 const OrderHistory = ({ orders = [], onReviewSubmit }) => {
@@ -9,7 +10,6 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [rating, setRating] = useState(0);
   const [reviewedOrders, setReviewedOrders] = useState([]);
- 
 
   const appElement = document.getElementById('root');
 
@@ -49,7 +49,7 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
         return;
       }
 
-      const response = await axios.put(
+      await axios.put(
         `${process.env.REACT_APP_URL_BACKEND}/order/update-order-rating`,
         {
           orderId: selectedOrder._id,
@@ -57,15 +57,15 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
         }
       );
 
-      console.log("Cập nhật rating thành công:", response.data);
-      setIsModalOpen(false);
       setReviewedOrders([...reviewedOrders, selectedOrder._id]);
-      
     } catch (error) {
       console.error("Lỗi cập nhật rating:", error);
     }
   };
 
+  const handleCommentSubmitSuccess = () => {
+    console.log("Comment submitted successfully!");
+  };
 
   return (
     <>
@@ -172,6 +172,20 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
               onOptionSelect={setRating}
               onRatingChange={handleRatingChange}
             />
+            <h3 className="mt-3">Để lại nhận xét cho sản phẩm</h3>
+            {selectedOrder.orderItems && selectedOrder.orderItems.map(item => (
+              <div key={item?.productId} className="mb-3">
+                <h5>{item.name}</h5>
+                <Comments
+                  productId={item.product._id}
+                  onSubmitSuccess={handleCommentSubmitSuccess}
+                  orderId={selectedOrder._id}
+                />
+              </div>
+            ))}
+            <button className="btn btn-secondary mt-3 ms-2" onClick={() => setIsModalOpen(false)}>
+              Đóng
+            </button>
           </div>
         )}
       </Modal>
