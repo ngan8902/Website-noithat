@@ -10,7 +10,7 @@ const Comments = ({ productId, onSubmitSuccess }) => {
 
     const handlePostComment = async () => {
         if (!comment.trim()) {
-            setErr("Vui lòng nhập bình luận");
+            setErr("Vui lòng nhập nhận xét");
             return;
         }
 
@@ -31,34 +31,34 @@ const Comments = ({ productId, onSubmitSuccess }) => {
                 }
             );
             setComment("");
-            setSuccessMessage("Gửi bình luận thành công!");
+            setSuccessMessage("Gửi nhận xét thành công!");
             if (onSubmitSuccess) {
                 onSubmitSuccess();
             }
         } catch (error) {
-            console.error("Lỗi khi gửi bình luận và tệp đính kèm:", error);
-            setErr("Đã có lỗi xảy ra khi gửi bình luận và tệp đính kèm. Vui lòng thử lại sau.");
+            console.error("Lỗi khi gửi nhận xét và tệp đính kèm:", error);
+            setErr("Đã có lỗi xảy ra khi gửi nhận xét và tệp đính kèm. Vui lòng thử lại sau.");
         }
     };
 
     return (
         <div className="mb-3 mt-3 border p-3">
-            <h5 className="fw-bold mb-3">Thêm Bình Luận Của Bạn</h5>
+            <h5 className="fw-bold mb-3">Thêm Nhận Xét Của Bạn</h5>
             <div className="mb-3">
-                <label className="form-label">Bình luận:</label>
+                <label className="form-label">Nhận Xét:</label>
                 <textarea
                     className="form-control"
                     rows="3"
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    placeholder="Viết bình luận của bạn..."
+                    placeholder="Viết nhận xét của bạn..."
                 ></textarea>
             </div>
             {err && <div className="alert alert-danger">{err}</div>}
             {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
             <button className="btn btn-primary" onClick={handlePostComment}>
-                Gửi Bình Luận
+                Gửi Nhận Xét
             </button>
         </div>
     );
