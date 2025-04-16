@@ -207,7 +207,7 @@
     }, [capturedImage, faceData, staffId]);
 
     return (
-      <div className="app-container">
+      <div className="app-containerface">
         <header className="app-header">
           <div className="webcam-container">
             <Webcam

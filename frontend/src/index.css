@@ -630,3 +630,191 @@ section {
   transform: translate(-50%, -50%);
   border: 2px solid #2a2828;
 }
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+ .App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.app-containerface {
+  font-family: 'Roboto', sans-serif; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #242222; 
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.webcam-container {
+  position: relative;
+  width: 640px;
+  height: 480px;
+  border: 1px solid #ccc; 
+  border-radius: 5px;
+  overflow: hidden; 
+}
+
+.webcam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.overlay-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10; 
+}
+
+.capture-button {
+  padding: 12px 24px;
+  background-color: #007bff; 
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.capture-button:hover:enabled {
+  background-color: #0056b3;
+}
+
+.capture-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.captured-image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.captured-image-title {
+  font-size: 20px;
+  color: #edecec;
+}
+
+.captured-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.controls-container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.retake-button {
+  padding: 10px 20px;
+  background-color: #6c757d; 
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.retake-button:hover {
+  background-color: #545b62;
+}
+
+.staff-id-input {
+  display: flex;
+  flex-direction: column;
+}
+
+.staff-id-label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #ece3e3;
+}
+
+.staff-id-field {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.save-button:hover:enabled {
+  background-color: #1e7e34;
+}
+
+.save-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.status-message {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.status-message.success {
+  color: green;
+}
+
+.status-message.error {
+  color: red;
+}
+
+.status-message.loading {
+  color: orange;
+} 
