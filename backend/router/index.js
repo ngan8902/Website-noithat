@@ -13,6 +13,7 @@ const ImagesRoute = require('./ImagesRoute')
 const MomoRoute = require('./MomoRoute')
 const PayosRoute = require('./PayosRoute')
 const CommentsRoute = require('./CommentsRoute')
+const AttendanceRoute = require('./AttendanceRoute')
 
 
 const routers = (app) => {
@@ -27,10 +28,11 @@ const routers = (app) => {
     app.use('/api/cart', CartRoute)
     app.use('/api/auth', GoogleRoute)
     app.use('/api/auth', ForgotRoute)
-    app.use("/api/upload", ImagesRoute);
-    app.use("/api/momo", MomoRoute);
-    app.use("/api/payos", PayosRoute);
-    app.use("/api/comments", CommentsRoute);
+    app.use("/api/upload", ImagesRoute)
+    app.use("/api/momo", MomoRoute)
+    app.use("/api/payos", PayosRoute)
+    app.use("/api/comments", CommentsRoute)
+    app.use("/api/attendance", AttendanceRoute)
 }
 
 module.exports = routers;

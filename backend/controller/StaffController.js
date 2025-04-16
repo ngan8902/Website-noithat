@@ -119,6 +119,34 @@ const getMe = async (req, res) => {
     }
 }
 
+const registerFace = async (req, res) => {
+    const { staffId } = req.params;
+    const { faceEmbedding, imageData } = req.body; 
+
+    if (!staffId) {
+        return res.status(400).json({ message: 'Vui lòng cung cấp Staff ID.' });
+    }
+    if (!faceEmbedding || faceEmbedding.length === 0) {
+        return res.status(400).json({ message: 'Không có dữ liệu khuôn mặt được cung cấp.' });
+    }
+
+    try {
+        const updatedStaff = await StaffService.updateStaff(
+            { _id: staffId },
+            { $push: { faceFeatures: faceEmbedding } } 
+        );
+
+        if (!updatedStaff) {
+            return res.status(401).json({ message: 'Không tìm thấy nhân viên.' });
+        }
+
+        res.status(200).json({ message: 'Đã đăng ký/cập nhật thông tin khuôn mặt thành công.', staff: updatedStaff });
+
+    } catch (error) {
+        console.error('Lỗi khi đăng ký/cập nhật khuôn mặt:', error);
+        res.status(500).json({ message: 'Đã xảy ra lỗi khi đăng ký/cập nhật khuôn mặt.' });
+    }
+}
 
 
 module.exports = {
@@ -127,5 +155,6 @@ module.exports = {
     updateStaff,
     deleteStaff,
     getAllStaff,
-    getMe
+    getMe,
+    registerFace
 }
