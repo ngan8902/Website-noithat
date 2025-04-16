@@ -18,6 +18,10 @@ import ProductType from "../pages/ProductType";
 import Chat from "../pages/Chat";
 import SearchResults from "../pages/SearchResults";
 import ForgotPassword from "../pages/ForgotPassword";
+import FaceDetect from "../pages/Face-detect";
+import FaceRegistrationPage from "../pages/FaceRegistrationPage";
+
+
 
 export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
@@ -43,6 +47,8 @@ export const privateRoute = [
   { path: "/admin/employee", element: <Employee />, isShow: false },
   { path: "/admin/resource", element: <Resource />, isShow: false },
   { path: "/admin/chat", element: <Chat />, isShow: false},
+  { path: "/admin/face-detect", element: <FaceDetect />, isShow: false},
+  { path: "/admin/faceregistration", element: <FaceRegistrationPage />, isShow: false},
 ]
 
 export const route = [
