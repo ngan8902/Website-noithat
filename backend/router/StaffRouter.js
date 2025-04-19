@@ -13,6 +13,7 @@ router.get('/all-staff' , staffController.getAllStaff)
 router.put('/update-staff/:id' , staffController.updateStaff)
 router.delete('/delete-staff/:id' , staffController.deleteStaff)
 router.post('/:staffId/upload-face' , staffController.registerFace)
+router.get('/all-staff-face' , staffController.getAllStaffFaceEmbedding)
 
 
 

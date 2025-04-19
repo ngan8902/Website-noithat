@@ -5,8 +5,8 @@ const { ADMIN_ROLE_ID } = require('../common/constant/staff.constant')
 
 const createStaff = (newStaff) => {
     return new Promise(async (resolve, reject) => {
-        const { username, password, phone,  address, name, dob, gender, avatar, position, email, role_id, staffcode } = newStaff
-        try{
+        const { username, password, phone, address, name, dob, gender, avatar, position, email, role_id, staffcode } = newStaff
+        try {
             const checkStaff = await Staff.findOne({
                 username: username
             })
@@ -33,8 +33,8 @@ const createStaff = (newStaff) => {
 
 
             const createdStaff = await Staff.create({
-                username, 
-                password: hash, 
+                username,
+                password: hash,
                 phone,
                 address,
                 name,
@@ -46,14 +46,14 @@ const createStaff = (newStaff) => {
                 role_id: newRoleId,
                 staffcode: newCode
             })
-            if(createdStaff) {
+            if (createdStaff) {
                 resolve({
                     status: 'SUCCESS',
                     message: 'Sign up success',
                     data: createdStaff
-                }) 
+                })
             }
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -61,8 +61,8 @@ const createStaff = (newStaff) => {
 
 const loginStaff = (staffLogin) => {
     return new Promise(async (resolve, reject) => {
-        const { username, password} = staffLogin
-        try{
+        const { username, password } = staffLogin
+        try {
             const checkStaff = await Staff.findOne({
                 username: username
             })
@@ -72,7 +72,7 @@ const loginStaff = (staffLogin) => {
                     message: 'The staff is not defined'
                 })
             }
-            if(!password){
+            if (!password) {
                 resolve({
                     status: 'OK',
                     message: 'The password or user is incorrect'
@@ -89,9 +89,9 @@ const loginStaff = (staffLogin) => {
                 message: 'SUCCESS',
                 access_token: access_token,
                 refresh_token: refresh_token
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -99,7 +99,7 @@ const loginStaff = (staffLogin) => {
 
 const updateStaff = (id, data) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const checkStaff = await Staff.findOne({
                 _id: id
             })
@@ -109,7 +109,7 @@ const updateStaff = (id, data) => {
                     message: 'The staff is not defined'
                 })
             }
-            
+
             if (data.currentPassword && data.newPassword) {
                 const isMatch = await bcrypt.compare(data.currentPassword, checkUser.password);
                 if (!isMatch) {
@@ -126,14 +126,14 @@ const updateStaff = (id, data) => {
                 delete data.newPassword;
             }
 
-            const updatedStaff = await Staff.findByIdAndUpdate(id, data, {new: true})           
+            const updatedStaff = await Staff.findByIdAndUpdate(id, data, { new: true })
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
                 data: updatedStaff
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -141,7 +141,7 @@ const updateStaff = (id, data) => {
 
 const deleteStaff = (id) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const checkStaff = await Staff.findOne({
                 _id: id
             })
@@ -152,13 +152,13 @@ const deleteStaff = (id) => {
                 })
             }
 
-            await Staff.findByIdAndDelete(id)           
+            await Staff.findByIdAndDelete(id)
             resolve({
                 status: 'OK',
                 message: 'Delete staff success',
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
@@ -166,18 +166,18 @@ const deleteStaff = (id) => {
 
 const getAllStaff = () => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const allStaff = await Staff.find({
                 role_id: {
                     $ne: ADMIN_ROLE_ID
                 }
-            })           
+            })
             resolve({
                 status: 'OK',
                 message: 'success',
                 data: allStaff
-            }) 
-        }catch(e){
+            })
+        } catch (e) {
             reject(e)
         }
     })
@@ -185,7 +185,7 @@ const getAllStaff = () => {
 
 const getDetailById = (id) => {
     return new Promise(async (resolve, reject) => {
-        try{
+        try {
             const user = await Staff.findOne({
                 _id: id
             })
@@ -200,15 +200,29 @@ const getDetailById = (id) => {
                 status: 'OK',
                 message: 'success',
                 data: user
-            }) 
+            })
 
-        }catch(e){
+        } catch (e) {
             reject(e)
         }
     })
 }
 
-
+const getAllStaffFaceEmbedding = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const allStaff = await Staff.find({
+            })
+            resolve({
+                status: 'OK',
+                message: 'success',
+                data: allStaff
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 
 module.exports = {
     createStaff,
@@ -216,5 +230,6 @@ module.exports = {
     updateStaff,
     deleteStaff,
     getAllStaff,
-    getDetailById
+    getDetailById,
+    getAllStaffFaceEmbedding
 }

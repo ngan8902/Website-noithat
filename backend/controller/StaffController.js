@@ -148,6 +148,18 @@ const registerFace = async (req, res) => {
     }
 }
 
+const getAllStaffFaceEmbedding = async (req, res) => {
+    try{
+        const response = await StaffService.getAllStaffFaceEmbedding()
+        return res.status(200).json(response) 
+    }catch(e){
+        console.log(e)
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
+
 
 module.exports = {
     createStaff,
@@ -156,5 +168,6 @@ module.exports = {
     deleteStaff,
     getAllStaff,
     getMe,
-    registerFace
+    registerFace,
+    getAllStaffFaceEmbedding
 }

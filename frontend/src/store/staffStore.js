@@ -3,6 +3,8 @@ import axios from 'axios';
 
 const useStaffStore = create((set) => ({
     staffList: [],
+    faceList: [],
+
     getAllStaff: () => {
         return axios.get(`${process.env.REACT_APP_URL_BACKEND}/staff/all-staff`, {
         }).then(response => {
@@ -12,6 +14,21 @@ const useStaffStore = create((set) => ({
                 const staffList = data.data;
                 set({
                     staffList: staffList 
+                })
+                return true;
+            }
+            return false;
+        }
+        );
+    },
+    getAllStaffFaceEmbedding: () => {
+        return axios.get(`${process.env.REACT_APP_URL_BACKEND}/staff/all-staff-face`, {
+        }).then(response => {
+            const { data } = response;
+            if (data && data.data) {
+                const faceList = data.data;
+                set({
+                    faceList: faceList 
                 })
                 return true;
             }
