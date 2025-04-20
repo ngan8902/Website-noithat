@@ -1,12 +1,14 @@
 const mongoose = require("mongoose")
 const { Schema } = mongoose;
 
-
 const attendanceSchema = new Schema({
     staffId: {
         type: Schema.Types.ObjectId,
         ref: 'Staff',
         required: true,
+    },
+    staffcode: {
+        type: String,
     },
     checkInTime: {
         type: Date,
@@ -32,7 +34,7 @@ const attendanceSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['present', 'absent', 'late', 'early'],
+        enum: ['present', 'late'],
         default: 'present',
     },
 });

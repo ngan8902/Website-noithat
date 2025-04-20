@@ -1,7 +1,7 @@
 const calculateCosineSimilarity = (embedding1, embedding2) => {
     if (!embedding1 || !embedding2 || !Array.isArray(embedding1) || !Array.isArray(embedding2) || embedding1.length !== embedding2.length) {
         console.error("Lỗi: Embedding không hợp lệ.");
-        return -1; // Hoặc một giá trị mặc định khác
+        return -1; 
     }
 
     let dotProduct = 0;

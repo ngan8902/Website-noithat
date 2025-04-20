@@ -1,4 +1,4 @@
-export const THRESHOLD = 500;
+export const THRESHOLD = 600;
 
 //  Triangulation sets of three
 export const TRIANGULATION = [

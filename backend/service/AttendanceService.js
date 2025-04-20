@@ -17,53 +17,16 @@ const saveFaceEmbedding = async (staffcode, faceEmbedding) => {
   }
 };
 
-// Xác minh embedding khuôn mặt đầu vào với các embedding đã lưu
-const verifyFace = async (inputEmbedding) => {
+const createCheckIn = async (staffId, checkInTime, notes, status) => {
   try {
-      let processedEmbedding = inputEmbedding;
-
-      if (typeof inputEmbedding === 'string') {
-          try {
-              processedEmbedding = JSON.parse(inputEmbedding);
-          } catch (error) {
-              console.error("Lỗi khi parse embedding từ chuỗi:", error);
-              return null;
-          }
-      }
-
-      const staffs = await Staff.find({ faceEmbedding: { $ne: [] } });
-      let bestMatch = null;
-      let maxSimilarity = -1; 
-
-      for (const staff of staffs) {
-          const storedEmbedding = staff.faceEmbedding;
-          if (Array.isArray(storedEmbedding) && Array.isArray(processedEmbedding) && storedEmbedding.length > 0 && processedEmbedding.length > 0 && storedEmbedding.length === processedEmbedding.length) {
-              const similarity = faceRecognitionService.calculateCosineSimilarity(processedEmbedding, storedEmbedding);
-              if (similarity > maxSimilarity) { 
-                  maxSimilarity = similarity;
-                  bestMatch = staff.staffcode;
-              }
-          }
-      }
-
-      const THRESHOLD_SIMILARITY = 0.8; // Điều chỉnh ngưỡng cho độ tương đồng
-      if (bestMatch && maxSimilarity >= THRESHOLD_SIMILARITY) {
-          return bestMatch;
-      }
-      return null;
-  } catch (error) {
-      throw new Error(`Lỗi khi xác minh khuôn mặt: ${error.message}`);
-  }
-};
-
-const createCheckIn = async (staffId, checkInTime, location, notes) => {
-  try {
+    const staff = await Staff.findById(staffId).select('staffcode');
     const attendance = new Attendance({
-      staffId,
+      staffId: staff.id,
+      staffcode: staff.staffcode,
       checkInTime,
-      location,
       notes,
-    });
+      status
+    })
     return await attendance.save();
   } catch (error) {
     throw new Error(`Lỗi khi tạo check-in: ${error.message}`);
@@ -134,7 +97,6 @@ const getAttendanceById = async (attendanceId) => {
 
 module.exports = {
   saveFaceEmbedding,
-  verifyFace,
   createCheckIn,
   updateCheckOut,
   getAttendanceByStaffId,

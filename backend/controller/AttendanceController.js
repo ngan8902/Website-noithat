@@ -20,25 +20,10 @@ const saveFace = async (req, res) => {
     }
 };
 
-const verifyFace = async (req, res) => {
-    const { faceEmbedding } = req.body;
-    try {
-        const staffcode = await attendanceService.verifyFace(faceEmbedding);
-        console.log(staffcode)
-        if (staffcode) {
-            res.status(200).json({ staffcode });
-        } else {
-            res.status(400).json({ message: 'Không nhận diện được khuôn mặt' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
 const checkIn = async (req, res) => {
     try {
-        const { staffId, checkInTime, location, notes } = req.body;
-        const attendance = await attendanceService.createCheckIn(staffId, checkInTime, location, notes);
+        const { staffId, checkInTime, notes, status } = req.body;
+        const attendance = await attendanceService.createCheckIn(staffId, checkInTime, notes, status);
         res.status(201).json({ message: 'Check-in thành công!', data: attendance });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -92,7 +77,6 @@ const getAttendanceDetails = async (req, res) => {
 
 module.exports = {
     saveFace,
-    verifyFace,
     checkIn,
     checkOut,
     getAttendanceHistoryByStaff,

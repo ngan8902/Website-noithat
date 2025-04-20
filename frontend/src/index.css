@@ -631,32 +631,6 @@ section {
   border: 2px solid #2a2828;
 }
 
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
- .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
 .App-link {
   color: #61dafb;
 }
@@ -665,18 +639,19 @@ section {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 .app-containerface {
-  font-family: 'Roboto', sans-serif; 
+  font-family: 'Roboto', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  background-color: #242222; 
+  background-color: #242222;
 }
 
 .app-header {
@@ -690,9 +665,9 @@ section {
   position: relative;
   width: 640px;
   height: 480px;
-  border: 1px solid #ccc; 
+  border: 1px solid #ccc;
   border-radius: 5px;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .webcam {
@@ -710,12 +685,12 @@ section {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 10; 
+  z-index: 10;
 }
 
 .capture-button {
   padding: 12px 24px;
-  background-color: #007bff; 
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 8px;
@@ -761,7 +736,7 @@ section {
 
 .retake-button {
   padding: 10px 20px;
-  background-color: #6c757d; 
+  background-color: #6c757d;
   color: white;
   border: none;
   border-radius: 8px;
@@ -817,4 +792,91 @@ section {
 
 .status-message.loading {
   color: orange;
-} 
+}
+
+/*Face-detect*/
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  position: relative;
+  height: 480px;
+  max-width: 100%;
+  max-height: auto;
+  margin-bottom: 20px;
+}
+
+
+.checkin-button {
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2% 5%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+
+.checkin-button:hover {
+  background-color: #0056b3;
+}
+
+.checkin-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.searching-text {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  color: #555;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .App-header {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 640 / 480;
+  }
+
+  .searching-text {
+    bottom: 10%;
+    font-size: 0.9rem;
+  }
+}
+
+/* @media (max-height: 400px) {
+  .checkin-button {
+    bottom: 8%;
+    padding: 2% 6%;
+    font-size: 0.9rem;
+  }
+
+  .searching-text {
+    bottom: 12%;
+    font-size: 0.8rem;
+  }
+} */

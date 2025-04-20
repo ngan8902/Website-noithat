@@ -5,7 +5,6 @@ const { upload } = require('../service/ImagesService')
 
 
 router.post('/save-face', upload.single('faceImage'), attendanceController.saveFace);
-router.post('/verify-face', attendanceController.verifyFace);
 
 router.post('/check-in', attendanceController.checkIn);
 router.patch('/check-out', attendanceController.checkOut); 
