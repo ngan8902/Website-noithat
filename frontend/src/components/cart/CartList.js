@@ -5,13 +5,10 @@ const CartList = ({ cart, updateQuantity, removeFromCart, selectedItems, setSele
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Giả lập thời gian tải dữ liệu
-    const timer = setTimeout(() => {
+    if (cart && cart.length >= 0) {
       setLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
+    }
+  }, [cart]);
 
   return (
     <div className="card">

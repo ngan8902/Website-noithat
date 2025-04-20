@@ -7,7 +7,6 @@ const key = "BGSJ6545DHHHFGS";
 const AddProductModal = ({ closeModal }) => {
   const [error, setError] = useState("");
   const { addProducts, products } = useProductStore((state) => state);
-  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [product, setProduct] = useState({

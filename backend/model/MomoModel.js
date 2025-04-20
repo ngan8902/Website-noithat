@@ -8,12 +8,12 @@ const MOMO_PARTNER_CODE = 'MOMO';
 const MOMO_REDIRECT_URL = 'http://localhost:3000/account';
 const MOMO_IPN_URL = 'https://a4f9-2001-ee0-4f03-6390-9463-bf01-4b5b-53c0.ngrok-free.app/api/momo/webhook';
 
-const createMomoPayment = async (amount, orderInfo) => {
+const createMomoPayment = async (amount, orderInfo, items, deliveryInfo, userInfo) => {
     return new Promise((resolve, reject) => {
-        const orderId = MOMO_PARTNER_CODE + new Date().getTime();
+        const orderId = parseInt(Date.now().toString().slice(-3) + Math.floor(1000 + Math.random() * 9000));
         const requestId = orderId;
         const extraData = "";
-        const requestType = "payWithMethod";
+        const requestType = "payWithMethod"; //captureWallet
         const autoCapture = true;
         const lang = "vi";
 
@@ -27,7 +27,7 @@ const createMomoPayment = async (amount, orderInfo) => {
         const requestBody = JSON.stringify({
             partnerCode: MOMO_PARTNER_CODE,
             partnerName: "Test",
-            storeId: "MomoTestStore",
+            storeId: "MoMoFurniture",
             requestId: requestId,
             amount: amount,
             orderId: orderId,
@@ -38,6 +38,9 @@ const createMomoPayment = async (amount, orderInfo) => {
             requestType: requestType,
             autoCapture: autoCapture,
             extraData: extraData,
+            items: items,
+            deliveryInfo: deliveryInfo,
+            userInfo: userInfo,
             signature: signature
         });
 

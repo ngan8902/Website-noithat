@@ -1,15 +1,25 @@
 const { createMomoPayment, transactionStatus } = require("../model/MomoModel");
+const OrderService = require('../service/OrderService');
+const TemporaryOrder = require('../model/TemporaryModel');
 
 const initiateMomoPayment = async (req, res) => {
     try {
-        const { amount, orderInfo } = req.body;
+        const { amount, orderInfo, items, deliveryInfo, userInfo, tempOrderData } = req.body;
+        console.log("Dữ liệu thanh toán MoMo:", req.body);
 
         if (!amount || !orderInfo) {
             return res.status(400).json({ message: "Thiếu thông tin thanh toán!" });
         }
 
         // Tạo giao dịch MoMo
-        const momoResponse = await createMomoPayment(amount, orderInfo);
+        const momoResponse = await createMomoPayment(amount, orderInfo, items, deliveryInfo, userInfo);
+
+        await TemporaryOrder.create({
+            orderCode: momoResponse.orderId,
+            paymentLinkId: momoResponse.orderId,
+            data: tempOrderData
+        });
+
         if (momoResponse.resultCode !== 0) {
             return res.status(400).json({ message: "Lỗi khi tạo giao dịch!", momoResponse });
         }
@@ -21,24 +31,35 @@ const initiateMomoPayment = async (req, res) => {
             resultCode: momoResponse.resultCode 
         });
     } catch (error) {
-        return res.status(500).json({ message: "Lỗi server!", error });
+        console.error("Lỗi khi xử lý momo/pay:", error);
+        res.status(500).json({ message: "Lỗi server MoMo" });
     }
 };
 
 const verifyPaymentStatus = async (req, res) => {
     try {
-        const { orderId } = req.body;
+        const { orderId } = req.params;
 
         if (!orderId) {
             return res.status(400).json({ message: "Thiếu orderId!" });
         }
 
         const momoStatus = await transactionStatus(orderId);
+        console.log("Trạng thái giao dịch MoMo:", momoStatus);
 
-        if (momoStatus.resultCode === 0 && momoStatus.transStatus === "0") {
+        if (momoStatus.resultCode === 0) {
+            const tempOrder = await TemporaryOrder.findOne({ orderCode: orderId });
+
+            if (!tempOrder) {
+                return res.status(404).json({ message: "Không tìm thấy đơn tạm!" });
+            }
+
+            await TemporaryOrder.deleteOne({ orderCode: orderId });
+
             return res.json({
                 message: "Transaction success",
-                momoStatus
+                momoStatus,
+                orderData: tempOrder.data,
             });
         } else {
             return res.status(400).json({

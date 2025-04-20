@@ -96,7 +96,11 @@ const ProductType = () => {
                                                 : product.price;
 
                                             return (
-                                                <div className="col-md-4" key={product._id || product.id}>
+                                                <div 
+                                                    className="col-md-4" key={product._id || product.id}
+                                                    onClick={() => window.location.href = `/${encodeURIComponent(product.name)}/${product._id}`}
+                                                    style={{ cursor: "pointer" }}
+                                                >
                                                     <div className="card h-100 text-center">
                                                         <img src={`http://localhost:8000/upload/${product.image.split("/").pop()}` || defaultImage} className="card-img-top" alt={product.name} />
                                                         <div className="card-body d-flex flex-column">

@@ -15,13 +15,10 @@ const AboutSection = () => {
           </div>
           <div className="col-md-6">
             <p className="text-muted mb-4">
-              <strong>FNT</strong> là một thương hiệu hàng đầu trong lĩnh vực cung cấp các sản phẩm nội thất cao cấp. Chúng tôi cam kết mang đến cho khách hàng những sản phẩm chất lượng nhất, với thiết kế tinh tế và sang trọng.
+              <strong>KLTN 2024 - 2025</strong> Sự phát triển mạnh mẽ của khoa học và công nghệ, đặc biệt trong thời đại công nghiệp 4.0, đã tạo ra nhiều cơ hội mới cho doanh nghiệp trong việc nâng cao hiệu quả quản lý. Trong đó, quản lý nhân sự là một lĩnh vực quan trọng, tuy nhiên các phương pháp truyền thống còn nhiều hạn chế như gian lận, mất thẻ hay chi phí cao. Việc ứng dụng công nghệ nhận diện khuôn mặt được xem là giải pháp tối ưu, giúp đảm bảo tính chính xác, minh bạch và hiệu quả.
             </p>
             <p className="text-muted mb-4">
-              Với đội ngũ thiết kế chuyên nghiệp và tận tâm, chúng tôi luôn nỗ lực để tạo ra những sản phẩm không chỉ đẹp mắt mà còn tiện dụng và bền bỉ. Chúng tôi tin rằng, mỗi sản phẩm của chúng tôi sẽ góp phần nâng tầm không gian sống của bạn.
-            </p>
-            <p className="text-muted mb-4">
-              Chúng tôi luôn đặt khách hàng lên hàng đầu và cam kết mang đến dịch vụ tốt nhất. Hãy đến với Nội Thất Sang Trọng để trải nghiệm sự khác biệt.
+              Từ nhận thức đó, em chọn đề tài <strong>"Tích hợp công nghệ nhận diện khuôn mặt trong quản lý nhân sự cho công ty nội thất"</strong>" nhằm xây dựng một hệ thống quản lý nhân sự tự động kết hợp với nền tảng bán hàng trực tuyến. Mục tiêu là hỗ trợ quá trình hiện đại hóa, chuyển đổi số doanh nghiệp, tiết kiệm chi phí, cải thiện môi trường làm việc và góp phần phát triển bền vững.
             </p>
           </div>
         </div>

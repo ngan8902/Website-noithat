@@ -33,6 +33,9 @@ const Sidebar = () => {
 
       {!collapsed && (
         <div className="text-white p-3">
+          <a href="/admin/view" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+            <i className="bi bi-layers me-2"></i>Thống Kê
+          </a>
           <a href="/admin/staff-info" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-person-circle me-2"></i>Thông Tin Nhân Viên
           </a>

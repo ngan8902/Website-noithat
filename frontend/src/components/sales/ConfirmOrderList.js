@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import useOrderStore from "../../store/orderStore";
+import { useSearchStore } from '../../store/searchStore';
 
 const ConfirmOrderList = ({ onShip, onCancel }) => {
-  const [searchTerm, setSearchTerm] = useState("");
   const { orders, fetchOrders } = useOrderStore();
+  const keyword = useSearchStore((state) => state.keyword.toLowerCase());
 
   useEffect(() => {
     fetchOrders()
   }, [])
-
 
   const filteredOrders = orders
     .filter(order => order.status === "processing")
@@ -17,16 +17,15 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
       const receiverPhone = order.receiver?.phone || "";
       const orderCodeFilter = order?.orderCode?.toLowerCase() || "";
 
-
       // Kiểm tra nếu bất kỳ sản phẩm nào trong orderItems khớp với searchTerm
       const productMatch = order.orderItems.some(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        item.name.toLowerCase().includes(keyword)
       );
 
       return (
-        receiverName.includes(searchTerm.toLowerCase()) ||
-        receiverPhone.includes(searchTerm) ||
-        orderCodeFilter.includes(searchTerm.toLowerCase()) ||
+        receiverName.includes(keyword) ||
+        receiverPhone.includes(keyword) ||
+        orderCodeFilter.includes(keyword) ||
         productMatch
       );
     });
@@ -34,19 +33,6 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
   return (
     <div id="confirmed-orders" className="mt-4">
       <h5 className="fw-bold">Danh Sách Đơn Hàng Đã Xác Nhận</h5>
-
-      <div className="input-group mt-2">
-        <span className="input-group-text">
-          <button className="btn"><i className="bi bi-search"></i></button>
-        </span>
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Tìm kiếm theo khách hàng, sản phẩm, số điện thoại..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
 
       <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "hidden" }}>
         <table className="table table-bordered mt-3"  >
@@ -135,9 +121,7 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
           </table>
         </div>
       </div>
-
     </div>
-
   );
 };
 

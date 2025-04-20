@@ -8,7 +8,6 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     if (orders.length > 0) {
       setLoading(false);
@@ -89,7 +88,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                 <th>Tên Sản Phẩm</th>
                 <th>Số Lượng</th>
                 <th>Tổng Tiền</th>
-                <th>Phương Thức Thanh Toán</th>
+                <th>Thanh Toán</th>
                 <th>Trạng Thái</th>
                 <th>Hành Động</th>
               </tr>
@@ -128,8 +127,9 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                   </td>
                   <td className="text-success fw-bold">{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
                   <td>
-                    {order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" :
-                      order?.paymentMethod === "VnPay" ? "Thanh toán qua VnPay" : order?.paymentMethod}
+                    { order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" :
+                      order?.paymentMethod === "VietQR" ? "Đã thanh toán qua ngân hàng" :
+                      order?.paymentMethod === "MoMo" ? "Đã thanh toán qua ví MoMo" : order?.paymentMethod }
                   </td>
                   <td>
                     <span className={`badge ${order?.status === "pending" ? "bg-primary" :

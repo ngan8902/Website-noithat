@@ -5,6 +5,7 @@ import OrderList from "../components/sales/OrderList";
 import ConfirmOrderList from "../components/sales/ConfirmOrderList";
 import CompleteOrderList from "../components/sales/CompleteOrderList";
 import useOrderStore from "../store/orderStore";
+import SearchBar from "../components/sales/searchBar";
 
 const SalesManagement = () => {
   const { fetchOrders, updateOrderStatus } = useOrderStore();
@@ -46,14 +47,13 @@ const SalesManagement = () => {
     await updateOrderStatus(orderId, "cancelled_confirmed");
   };
 
-
-
   return (
     <div className="d-flex app-container">
       <Sidebar />
       <div className="content p-4 main-content">
         <h2 className="text-center fw-bold mb-4">Quản Lý Bán Hàng</h2>
         <ProductList />
+        <SearchBar />
         <OrderList onConfirm={handleConfirmOrder} onCancel={handleCancelOrder} />
         <ConfirmOrderList onShip={handleShipOrder} onCancel={handleCancelOrder} />
         <CompleteOrderList onComplete={handleCompleteOrder} onReturn={handleReturnOrder} onConfirmCancel={onConfirmCancel} />

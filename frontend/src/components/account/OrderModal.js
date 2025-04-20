@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import axios from "axios";
 import useOrderStore from "../../store/orderStore";
 
 
@@ -31,8 +30,12 @@ const getOrderLabel = (paymentMethod) => {
   switch (paymentMethod) {
     case "COD":
       return "Thanh toán khi nhận hàng";
+    case "VietQR":
+      return "Thanh toán qua ngân hàng";
+    case "MoMo":
+      return "Thanh toán qua ví MoMo";
     default:
-      return "VNPay";
+      return "Không xác định";
   }
 };
 

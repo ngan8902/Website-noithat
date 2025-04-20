@@ -6,6 +6,10 @@ const TemporaryOrderSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    paymentLinkId: { 
+        type: String, 
+        required: true, 
+    },
     data: {
         type: Object,
         required: true,

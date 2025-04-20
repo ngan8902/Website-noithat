@@ -13,7 +13,6 @@ import AddComment from "../components/productdetail/Addcomment";
 
 const avatarDefautl = "http://localhost:8000/upload/guest.png"
 
-
 const ProductDetail = () => {
     const { id } = useParams();
     const { products } = useProductStore();
@@ -186,7 +185,6 @@ const ProductDetail = () => {
             </div>
         );
     };
-
 
     return (
         <section className="py-5">

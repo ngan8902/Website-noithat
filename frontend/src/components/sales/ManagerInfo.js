@@ -54,7 +54,7 @@ const ManagerInfo = ({ staff }) => {
         <div className="avatar-modal">
           <div className="avatar-modal-content">
             <span className="close" onClick={() => setShowModal(false)}>
-              <i className="bi bi-x"></i>
+              <i className="bi bi-x-circle-fill"></i>
             </span>
             <img
               src={staff?.avatar || "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"}

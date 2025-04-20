@@ -84,8 +84,10 @@ const FeaturedProducts = () => {
                                     key={index}
                                     style={{
                                         minWidth: `calc(100% / ${itemsPerPage})`,
-                                        padding: "0 10px"
+                                        padding: "0 10px",
+                                        cursor: "pointer"
                                     }}
+                                    onClick={() => navigate(`/product/${product._id}`)} 
                                 >
                                     <div className="card h-100 shadow-sm">
                                         <img
@@ -137,7 +139,6 @@ const FeaturedProducts = () => {
                                 <i className="bi bi-chevron-compact-right" style={{ fontSize: "24px" }}></i>
                             </button>
                         )}
-
                     </div>
                 </div>
             </div>

@@ -6,9 +6,11 @@ import OrderHistory from "../components/account/OrderHistory";
 import OrderStatus from "../components/account/OrderStatus";
 import useOrderStore from "../store/orderStore";
 import OrderCancelled from "../components/account/OrderCancelled";
+import axios from "axios";
+import { TOKEN_KEY } from "../constants/authen.constant";
 
 const Account = () => {
-  const { getOrderByUser, orders, setOrders } = useOrderStore();
+  const { createOrder, getOrderByUser, orders, setOrders } = useOrderStore();
   const { user, auth } = useAuthStore();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -51,6 +53,60 @@ const Account = () => {
     fetchUser();
   }, [auth, navigate]);
 
+  useEffect(() => {
+    const checkStatuses = async () => {
+      const paymentLinkId = localStorage.getItem("paymentLinkId");
+      console.log("paymentLinkId", paymentLinkId);
+      const orderId = localStorage.getItem("orderId");
+      console.log("orderId", orderId);
+
+      if (paymentLinkId) {
+        try {
+          const res = await axios.get(
+            `${process.env.REACT_APP_URL_BACKEND}/payos/check-status/${paymentLinkId}`
+          );
+
+          const data = res.data;
+          console.log("Trạng thái thanh toán PayOS:", data);
+          if (data.message.includes("Thanh toán thành công")) {
+            console.log("Dữ liệu đơn hàng PayOS:", data.orderData);
+            const orderData = data.orderData;
+            const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
+            await createOrder(orderData, { headers });
+          }
+
+          localStorage.removeItem("paymentLinkId");
+          fetchOrders();
+        } catch (err) {
+          console.error("Lỗi khi kiểm tra trạng thái thanh toán PayOS:", err);
+        }
+      }
+
+      if (orderId) {
+        try {
+          const res = await axios.post(
+            `${process.env.REACT_APP_URL_BACKEND}/momo/payment-status/${orderId}`
+          );
+
+          const data = res.data;
+          console.log("Trạng thái thanh toán MoMo:", data);
+          if (data.message.includes("Transaction success")) {
+            console.log("Dữ liệu đơn hàng MoMo:", data.orderData);
+            const orderData = data.orderData;
+            const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
+            await createOrder(orderData, { headers });
+          }
+
+          localStorage.removeItem("orderId");
+          fetchOrders();
+        } catch (err) {
+          console.error("Lỗi khi kiểm tra trạng thái thanh toán MoMo:", err);
+        }
+      }
+     };
+
+    checkStatuses();
+  }, []);
 
   return (
     <section className="py-5">
@@ -66,7 +122,7 @@ const Account = () => {
             <AccountInfo />
           ) : (
             <div className="text-center">
-              <p className="text-danger">Không tìm thấy thông tin người dùng.</p>
+              <p className="text-danger fw-bold">Không tìm thấy thông tin người dùng. Vui lòng Đăng Nhập hoặc Đăng Ký tài khoản!</p>
             </div>
           )}
           <div className="col-md-8">

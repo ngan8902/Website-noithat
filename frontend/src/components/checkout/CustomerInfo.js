@@ -91,9 +91,6 @@ const CustomerInfo = ({
     return (
         <div className="col-md-6">
             <h5 className="fw-bold">Thông Tin Người Nhận Hàng</h5>
-            <h6 className="text-danger">
-                <i> Bạn cần nhập đầy đủ thông tin và chọn phương thức thanh toán trước khi mua hàng! </i>
-            </h6>
 
             <div className="alert alert-secondary">
                 <strong>Thông tin của bạn:</strong>
@@ -121,7 +118,7 @@ const CustomerInfo = ({
                         ))}
                     </div>
                 ) : (
-                    <p className="text-danger">Thông tin địa chỉ của bạn chưa có! Vui lòng cập nhật địa chỉ trong Thông tin tài khoản.</p>
+                    <p className="text-danger">Thông tin địa chỉ của bạn chưa có! Bạn nên cập nhật đầy đủ thông tin trong Thông tin tài khoản.</p>
                 )}
             </div>
 

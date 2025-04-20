@@ -13,9 +13,9 @@ const About = () => {
             />
           </div>
           <div className="col-md-6">
-            <h2 className="fw-bold mb-4">Giới Thiệu Về Chúng Tôi</h2>
+            <h2 className="fw-bold mb-4">Giới Thiệu</h2>
             <p className="text-muted mb-4">
-              Chúng tôi chuyên cung cấp các sản phẩm nội thất cao cấp, mang đến sự sang trọng và đẳng cấp cho không gian sống của bạn.
+              Khóa luận tốt nghiệp HKII 2024 - 2025.
             </p>
             <button className="btn btn-border btn-dark" onClick={() => window.location.href='/about'}>Tiềm Hiểu Thêm</button>
           </div>

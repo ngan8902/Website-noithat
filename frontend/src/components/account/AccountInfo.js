@@ -76,12 +76,20 @@ const AccountInfo = () => {
 
   useEffect(() => {
     if (user && user._id) {
+      const [houseNumber = '', street = '', ward = '', district = '', province = ''] = user.address?.split(',').map(part => part.trim());
+
       setFormData({
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
-        address: user.address || ''
+        address: user.address || '',
+        houseNumber,
+        street,
+        ward,
+        district,
+        province
       });
+
       setAvatar(user.avatar || '');
     }
   }, [user]);
@@ -89,6 +97,21 @@ const AccountInfo = () => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+
+  useEffect(() => {
+    if (formData.province && provinces.length > 0) {
+      const selectedProvince = provinces.find(p => p.name === formData.province);
+      if (selectedProvince) setSelectedProvince(selectedProvince.code);
+    }
+    if (formData.district && districts.length > 0) {
+      const selectedDistrict = districts.find(d => d.name === formData.district);
+      if (selectedDistrict) setSelectedDistrict(selectedDistrict.code);
+    }
+    if (formData.ward && wards.length > 0) {
+      const selectedWard = wards.find(w => w.name === formData.ward);
+      if (selectedWard) setSelectedWard(selectedWard.code);
+    }
+  }, [formData.province, formData.district, formData.ward, provinces, districts, wards]);
 
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");

@@ -5,9 +5,8 @@ const User = require("../model/UserModel");
 
 const generateOrderCode = () => {
     const prefix = "ORD";
-    const timestamp = Date.now().toString().slice(-3);
-    const randomPart = Math.floor(1000 + Math.random() * 9000);
-    return `${prefix}${timestamp}${randomPart}`;
+    const randomPart = parseInt(Date.now().toString().slice(-3) + Math.floor(1000 + Math.random() * 9000));
+    return `${prefix}${randomPart}`;
 };
 
 const createOrder = async (userId, productIds, discount, validAmount, receiver, status, shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock, rating) => {

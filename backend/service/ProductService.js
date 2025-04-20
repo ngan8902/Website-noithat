@@ -201,13 +201,18 @@ const getSuggestions = async (query) => {
         const formattedQuery = removeAccents(query).trim();
         const regex = new RegExp(`^${formattedQuery}`, "i");
 
-        return await Product.find({ name: { $regex: regex } })
-            .limit(5)
-            .lean();
+        const products = await Product.find().limit(50).lean();
+
+        const filteredProducts = products.filter(product =>
+            removeAccents(product.name).match(regex)
+        );
+
+        return filteredProducts.slice(0, 5);
     } catch (error) {
         throw new Error(error.message);
     }
 };
+
 
 const getRating = (productId) => {
     return new Promise(async (resolve, reject) => {

@@ -18,6 +18,7 @@ import ProductType from "../pages/ProductType";
 import Chat from "../pages/Chat";
 import SearchResults from "../pages/SearchResults";
 import ForgotPassword from "../pages/ForgotPassword";
+import Dashboard from "../pages/DashBoard";
 
 export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
@@ -38,6 +39,7 @@ export const publicRoute = [
 export const privateRoute = [
   { path: "/admin/login", element: <LoginAdmin />, isShow: false, layout: React.Fragment },
   { path: "/admin/dashboard", element: <SalesManagement />, isShow: false },
+  { path: "/admin/view", element: <Dashboard />, isShow: false },
   { path: "/admin/staff-info", element: <StaffInfo />, isShow: false },
   { path: "/admin/staff-attendance-history", element: <StaffAttendanceHistory />, isShow: false },
   { path: "/admin/employee", element: <Employee />, isShow: false },
