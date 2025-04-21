@@ -5,7 +5,6 @@ const ReceiverInfo = require("../model/ReceiverInfoModel");
 exports.getBestSellers = async (req, res) => {
   try {
     const bestSellers = await Order.aggregate([
-      //Lọc đơn hàng đã được khách nhận
       { $match: { status: "delivered" } },
 
       { $unwind: "$orderItems" },
@@ -61,17 +60,16 @@ exports.getBestSellers = async (req, res) => {
 exports.getTopSpendingCustomers = async (req, res) => {
   try {
     const topCustomers = await Order.aggregate([
-      // 1. Chỉ lấy đơn hàng đã nhận
       { $match: { status: "delivered" } },
 
-      // 2. Ép kiểu totalPrice thành số
+      // Ép kiểu totalPrice thành số
       {
         $addFields: {
           totalPriceNumber: { $toDouble: "$totalPrice" }
         }
       },
 
-      // 3. Join để lấy thông tin receiver
+      // Join để lấy thông tin receiver
       {
         $lookup: {
           from: "receiverinfos",
@@ -82,7 +80,7 @@ exports.getTopSpendingCustomers = async (req, res) => {
       },
       { $unwind: "$receiverInfo" },
 
-      // 4. Gom nhóm theo fullname + phone (tránh trùng người)
+      // Gom nhóm theo fullname + phone (tránh trùng người)
       {
         $group: {
           _id: {
@@ -95,7 +93,7 @@ exports.getTopSpendingCustomers = async (req, res) => {
         }
       },
 
-      // 5. Định dạng lại kết quả
+      // Định dạng lại kết quả
       {
         $project: {
           _id: 0,
@@ -107,10 +105,10 @@ exports.getTopSpendingCustomers = async (req, res) => {
         }
       },
 
-      // 6. Sắp xếp theo tổng chi tiêu
+      // Sắp xếp theo tổng chi tiêu
       { $sort: { totalSpent: -1 } },
 
-      // 7. Giới hạn top 5
+      // Giới hạn top 5
       { $limit: 5 }
     ]);
 
@@ -125,14 +123,14 @@ const moment = require("moment");
 
 exports.getDailyRevenue = async (req, res) => {
   try {
-    const { date } = req.query;
+    const { start, end } = req.query;
 
     const match = { status: "delivered" };
 
-    if (date) {
-      const startOfDay = new Date(moment(date).startOf("day").toISOString());
-      const endOfDay = new Date(moment(date).endOf("day").toISOString());
-      match.createdAt = { $gte: startOfDay, $lte: endOfDay };
+    if (start && end) {
+      const startDate = new Date(new Date(start).setHours(0, 0, 0, 0));
+      const endDate = new Date(new Date(end).setHours(23, 59, 59, 999));
+      match.createdAt = { $gte: startDate, $lte: endDate };
     }
 
     const dailyRevenue = await Order.aggregate([
@@ -178,7 +176,7 @@ exports.getDailyRevenue = async (req, res) => {
 
     res.status(200).json(dailyRevenue);
   } catch (err) {
-    console.error("Lỗi lấy doanh thu theo ngày:", err);
+    console.error("Lỗi lấy doanh thu theo khoảng ngày:", err);
     res.status(500).json({ message: "Lỗi server" });
   }
 };
@@ -189,7 +187,6 @@ exports.getMonthlyRevenue = async (req, res) => {
 
     const matchConditions = { status: "delivered" };
 
-    // Nếu có năm được chọn thì thêm điều kiện lọc theo năm
     if (year) {
       const start = new Date(`${year}-01-01`);
       const end = new Date(`${+year + 1}-01-01`);

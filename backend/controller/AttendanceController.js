@@ -74,6 +74,22 @@ const getAttendanceDetails = async (req, res) => {
     }
 };
 
+const getTodayCheckins = async (req, res) => {
+    try {
+        const { date } = req.query;
+
+        if (!date) {
+            return res.status(400).json({ message: "Missing date parameter (YYYY-MM-DD)" });
+        }
+
+        const checkins = await attendanceService.getCheckinsByDate(date);
+
+        return res.status(200).json(checkins);
+    } catch (error) {
+        console.error("Error fetching today's check-ins:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
 
 module.exports = {
     saveFace,
@@ -82,4 +98,5 @@ module.exports = {
     getAttendanceHistoryByStaff,
     getAllAttendanceHistory,
     getAttendanceDetails,
+    getTodayCheckins
 };

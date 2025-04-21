@@ -5,7 +5,6 @@ import useAuthAdminStore from "../../store/authAdminStore";
 import useChatStore from "../../store/chatStore";
 import { ROLE } from "../../constants/staff.constant";
 
-
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isOrderDropdownOpen, setIsOrderDropdownOpen] = useState(false);
@@ -85,18 +84,20 @@ const Sidebar = () => {
             <i className="bi bi-file-earmark-person me-2"></i>Quản Lý Chấm Công
           </a>}
           {permissions([ROLE.ADMIN]) && <a href="/admin/faceregistration" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
-            <i className="bi bi-webcam me-2"></i>Đăng ký gương mặt 
+            <i className="bi bi-webcam me-2"></i>Đăng ký khuôn mặt 
           </a>}
         </div>
       )}
 
-      <button
-        className="btn btn-danger mt-3 logout-btn"
-        style={{ bottom: "50px", top: "auto", right: "90px" }}
-        onClick={handleLogout}
-      >
-        Đăng Xuất
-      </button>
+      {!collapsed && (
+        <button
+          className="btn btn-danger mt-3 logout-btn"
+          style={{ top: "auto", left: "50%", transform: "translateX(-50%)" }}
+          onClick={handleLogout}
+        >
+          Đăng Xuất
+        </button>
+      )}
     </div>
   );
 };

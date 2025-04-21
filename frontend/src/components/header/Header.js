@@ -125,6 +125,7 @@ const Header = () => {
             <input
               type="text"
               className="form-control text-black border-0"
+              style={{ width: "250px" }}
               placeholder="Tìm kiếm..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

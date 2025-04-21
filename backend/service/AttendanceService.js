@@ -1,6 +1,5 @@
 const Staff = require('../model/StaffModel');
 const Attendance = require('../model/AttendanceModel');
-const faceRecognitionService = require('../service/FaceRecognitionService');
 
 // Lưu embedding khuôn mặt cho nhân viên
 const saveFaceEmbedding = async (staffcode, faceEmbedding) => {
@@ -95,6 +94,20 @@ const getAttendanceById = async (attendanceId) => {
   }
 };
 
+const getCheckinsByDate = async (date) => {
+  const startOfDay = new Date(`${date}T00:00:00.000Z`);
+  const endOfDay = new Date(`${date}T23:59:59.999Z`);
+
+  const checkins = await Attendance.find({
+    checkInTime: {
+      $gte: startOfDay,
+      $lte: endOfDay,
+    }
+  });
+
+  return checkins;
+};
+
 module.exports = {
   saveFaceEmbedding,
   createCheckIn,
@@ -102,4 +115,5 @@ module.exports = {
   getAttendanceByStaffId,
   getAllAttendance,
   getAttendanceById,
+  getCheckinsByDate
 };

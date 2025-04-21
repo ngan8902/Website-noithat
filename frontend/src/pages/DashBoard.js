@@ -44,12 +44,18 @@ export default function Dashboard() {
   }, []);
 
   const [dailyRevenue, setDailyRevenue] = useState([]);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   useEffect(() => {
     const fetchDailyRevenue = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/dashboard/daily-revenue${selectedDate ? `?date=${selectedDate}` : ""}`);
+        let query = "";
+        if (startDate && endDate) {
+          query = `?start=${startDate}&end=${endDate}`;
+        }
+
+        const res = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/dashboard/daily-revenue${query}`);
         const formattedData = res.data.map(item => {
           const formattedDate = `${item.weekday} (${item._id})`;
           return {
@@ -65,7 +71,7 @@ export default function Dashboard() {
     };
 
     fetchDailyRevenue();
-  }, [selectedDate]);
+  }, [startDate, endDate]);
 
   const [barData, setBarData] = useState([]);
   const currentYear = new Date().getFullYear();
@@ -164,19 +170,30 @@ export default function Dashboard() {
               </h2>
               <div 
                 className="flex items-center gap-3 mb-4"
-                style={{marginLeft: "60%"}}
-            >
-                <label className="text-sm font-medium">Chọn ngày: </label>
+                style={{marginLeft: "45%"}}
+              >
+                <label className="text-sm font-medium">Từ ngày: </label>
                 <input
                   type="date"
                   className="border px-3 py-1 rounded"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
                 />
+
+                <label className="text-sm font-medium ml-3">Đến ngày: </label>
+                <input
+                  type="date"
+                  className="border px-3 py-1 rounded"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+
                 <button
-                  className="btn btn-primary text-sm text-blue-500 hover:underline"
-                  style={{ marginLeft: "5%" }}
-                  onClick={() => setSelectedDate("")}
+                  className="btn btn-primary text-sm text-blue-500 hover:underline ml-4"
+                  onClick={() => {
+                    setStartDate("");
+                    setEndDate("");
+                  }}
                 >
                   Trong 7 ngày
                 </button>
@@ -226,7 +243,7 @@ export default function Dashboard() {
                   <div className="card shadow-sm border-0">
                     <div className="card-body">
                       <h5 className="card-title text-danger fw-bold mb-3">
-                        🔥 Sản phẩm bán chạy
+                        🔥 Top sản phẩm bán chạy
                       </h5>
                       <ul className="list-group list-group-flush">
                         {bestSellers.map((item, idx) => (
@@ -256,7 +273,7 @@ export default function Dashboard() {
                   <div className="card shadow-sm border-0">
                     <div className="card-body">
                       <h5 className="card-title text-primary fw-bold mb-3">
-                        👑 Khách hàng chi tiêu nhiều
+                        👑 Top khách hàng chi tiêu
                       </h5>
                       <ul className="list-group list-group-flush">
                       {topCustomers.map((customer, idx) => (
