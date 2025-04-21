@@ -39,6 +39,7 @@ const updateCheckOut = async (attendanceId, checkOutTime) => {
       { checkOutTime },
       { new: true }
     );
+
     if (!attendance) {
       throw new Error('Không tìm thấy bản ghi điểm danh để cập nhật check-out.');
     }

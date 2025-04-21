@@ -44,7 +44,7 @@ const FaceRegistrationPage = () => {
       if (detection) {
         setFaceDescriptor(detection.descriptor);
         drawFace(detection);
-        setNotification("✅ Khuôn mặt đã được ghi nhận.");
+        setNotification("Khuôn mặt đã được ghi nhận.");
       } else {
         setNotification("⚠️ Không phát hiện khuôn mặt.");
       }
@@ -93,10 +93,10 @@ const FaceRegistrationPage = () => {
         formData
       );
 
-      setNotification("✅ " + res.data.message);
+      setNotification(res.data.message);
     } catch (err) {
       console.error("Save face failed:", err);
-      setNotification("❌ Lỗi khi lưu khuôn mặt");
+      setNotification("Lỗi khi lưu khuôn mặt");
     }
   };
 
@@ -113,7 +113,7 @@ const FaceRegistrationPage = () => {
                 marginTop: 30,
                 marginBottom: 20,
                 padding: 5,
-                backgroundColor: notification.includes("✅")
+                backgroundColor: notification.includes("thành công") || notification.includes("đã được ghi nhận")
                   ? "#28a745"
                   : "#dc3545",
                 color: "#fff",

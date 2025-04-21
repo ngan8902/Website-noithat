@@ -165,7 +165,7 @@ const Header = () => {
           {!!user ? (
             <div className="dropdown">
               <button className="nav-link text-white dropdown-toggle fw-bold m-1" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                Chào, <span className="text-info text-uppercase">{user.name}</span>
+                Chào, <span className="text-warning text-uppercase">{user.name}</span>
               </button>
               <ul className="dropdown-menu">
                 <li><a href="/account" className="dropdown-item fw-medium">Thông tin tài khoản</a></li>
