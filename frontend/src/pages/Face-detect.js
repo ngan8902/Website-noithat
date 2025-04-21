@@ -192,37 +192,45 @@ function FaceDetect() {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <Webcam
-          ref={webcamRef}
+    <div className="App" style={{ backgroundColor: "#f7f7f7", minHeight: "100vh", paddingTop: "40px" }}>
+      <header 
+        className="App-header"
           style={{
-            position: "absolute",
-            marginLeft: "auto",
-            marginRight: "auto",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            zIndex: 9,
-            width: 640,
-            height: 480,
-            marginTop: '5%'
-          }}
-        />
-        <canvas
-          ref={canvasRef}
-          style={{
-            position: "absolute",
-            marginLeft: "auto",
-            marginRight: "auto",
-            left: 0,
-            right: 0,
-            textAlign: "center",
-            zIndex: 9,
-            width: 640,
-            height: 480,
-          }}
-        />
+          maxWidth: "800px",
+          margin: "0 auto",
+          backgroundColor: "#ffffff",
+          borderRadius: "16px",
+          boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <div style={{ position: "relative", width: 640, height: 480, margin: "0 auto" }}>
+          <Webcam
+            ref={webcamRef}
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: "12px",
+              objectFit: "cover",
+              zIndex: 2,
+            }}
+          />
+        </div>
+        
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              zIndex: 3,
+              pointerEvents: "none",
+            }}
+          />
+
         <div
           className="checkin-button"
         >
@@ -230,13 +238,14 @@ function FaceDetect() {
             onClick={() => detectAndProcess("check-in")}
             disabled={loading}
             style={{
-              padding: "10px 20px",
+              padding: "12px 24px",
               backgroundColor: "#28a745",
               color: "white",
               border: "none",
-              borderRadius: "5px",
-              cursor: loading ? "not-allowed" : "pointer",
+              borderRadius: "8px",
               fontSize: "16px",
+              cursor: loading ? "not-allowed" : "pointer",
+              transition: "background-color 0.3s ease",
             }}
           >
             {loading ? "Đang xử lý..." : "Đi vào (check-in)"}
@@ -245,13 +254,14 @@ function FaceDetect() {
             onClick={() => detectAndProcess("check-out")}
             disabled={loading}
             style={{
-              padding: "10px 20px",
+              padding: "12px 24px",
               backgroundColor: "#ffc107",
-              color: "white",
+              color: "#000",
               border: "none",
-              borderRadius: "5px",
-              cursor: loading ? "not-allowed" : "pointer",
+              borderRadius: "8px",
               fontSize: "16px",
+              cursor: loading ? "not-allowed" : "pointer",
+              transition: "background-color 0.3s ease",
             }}
           >
             {loading ? "Đang xử lý..." : "Đi ra (check-out)"}
@@ -260,20 +270,19 @@ function FaceDetect() {
         {notification && (
           <div
             style={{
-              position: "relative",
-              top: "auto",
-              color: "#fff",
+              marginTop: "30px",
               backgroundColor:
                 notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không")
                   ? "#dc3545"
                   : "#28a745",
-              padding: "10px 20px",
+              color: "#fff",
+              padding: "12px 20px",
               borderRadius: "8px",
-              fontSize: "18px",
-              textAlign: "center",
-              margin: "20px auto",
+              fontSize: "16px",
+              boxShadow: "0 0 10px rgba(0,0,0,0.2)",
               maxWidth: 640,
-              boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+              marginLeft: "auto",
+              marginRight: "auto",
             }}
           >
             {notification}

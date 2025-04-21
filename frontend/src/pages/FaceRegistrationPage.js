@@ -103,16 +103,25 @@ const FaceRegistrationPage = () => {
   return (
     <div className="d-flex app-container">
       <Sidebar />
-      <div className="content p-4 main-content">
-        <div style={{ textAlign: "center", padding: 20 }}>
-          <h2>Đăng ký khuôn mặt cho nhân viên</h2>
+      <div className="content p-4 main-content  d-flex justify-content-center align-items-center">
+        <div 
+          style={{
+            backgroundColor: "#fff",
+            padding: 30,
+            borderRadius: 12,
+            boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+            maxWidth: 800,
+            width: "100%",
+          }}
+        >
+          <h2 className="text-center mb-4">Đăng ký khuôn mặt cho nhân viên</h2>
 
           {notification && (
             <div
               style={{
-                marginTop: 30,
-                marginBottom: 20,
-                padding: 5,
+                marginBottom: 10,
+                padding: 10,
+                textAlign: "center",
                 backgroundColor: notification.includes("thành công") || notification.includes("đã được ghi nhận")
                   ? "#28a745"
                   : "#dc3545",
@@ -121,7 +130,7 @@ const FaceRegistrationPage = () => {
                 maxWidth: 300,
                 marginLeft: "auto",
                 marginRight: "auto",
-                fontSize: 16,
+                fontSize: 18,
                 boxShadow: "0 0 8px rgba(0,0,0,0.2)",
               }}
             >
@@ -129,29 +138,41 @@ const FaceRegistrationPage = () => {
             </div>
           )}
 
-          <input
-            type="text"
-            placeholder="Nhập mã của nhân viên"
-            value={staffcode}
-            onChange={(e) => setStaffcode(e.target.value)}
-            style={{
-              padding: 10,
-              width: 300,
-              fontSize: 16,
-              borderRadius: 8,
-              border: "1px solid #ccc",
-              marginBottom: 20,
-            }}
-          />
+          <div className="text-center mb-3">
+            <input
+              type="text"
+              placeholder="Nhập mã của nhân viên"
+              value={staffcode}
+              onChange={(e) => setStaffcode(e.target.value)}
+              style={{
+                padding: "12px 16px",
+                width: "80%",
+                maxWidth: 400,
+                fontSize: 16,
+                borderRadius: 10,
+                border: "1px solid #ccc",
+              }}
+            />
+          </div>
 
-          <div style={{ position: "relative", width: 640, height: 480, margin: "auto" }}>
+          <div 
+            style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 640,
+              height: 480,
+              margin: "auto",
+              borderRadius: 12,
+              overflow: "hidden",
+            }}
+          >
             <Webcam
               ref={webcamRef}
               audio={false}
               screenshotFormat="image/jpeg"
               width={640}
               height={480}
-              style={{ borderRadius: 12 }}
+              style={{ width: "100%", height: "100%" }}
             />
             <canvas
               ref={canvasRef}
@@ -159,25 +180,22 @@ const FaceRegistrationPage = () => {
                 position: "absolute",
                 top: 0,
                 left: 0,
-                width: 640,
-                height: 480,
+                width: "100%",
+                height: "100%",
                 pointerEvents: "none",
               }}
             />
           </div>
 
-          <div style={{ marginTop: 30 }}>
+          <div className="d-flex justify-content-center gap-3 mt-4" style={{ marginTop: 30 }}>
             <button
               onClick={captureFace}
               style={{
-                padding: "10px 20px",
-                fontSize: 16,
-                borderRadius: 8,
                 backgroundColor: "#007bff",
                 color: "#fff",
-                border: "none",
-                marginRight: 10,
-                cursor: "pointer",
+                padding: "10px 20px",
+                borderRadius: 8,
+                fontSize: 16,
               }}
             >
               📸 Chụp khuôn mặt
@@ -187,13 +205,11 @@ const FaceRegistrationPage = () => {
               <button
                 onClick={handleSave}
                 style={{
+                  backgroundColor: "#ffc107",
+                  color: "#000",
                   padding: "10px 20px",
-                  fontSize: 16,
                   borderRadius: 8,
-                  backgroundColor: "#28a745",
-                  color: "#fff",
-                  border: "none",
-                  cursor: "pointer",
+                  fontSize: 16,
                 }}
               >
                 💾 Lưu khuôn mặt
