@@ -42,7 +42,7 @@ const checkOut = async (req, res) => {
 
 const getAttendanceHistoryByStaff = async (req, res) => {
     try {
-        const staffId = req.params.staffId;
+        const staffId = req.payload.id;;
         const { startDate, endDate } = req.query;
         const history = await attendanceService.getAttendanceByStaffId(staffId, startDate, endDate);
         res.status(200).json({ data: history });
