@@ -13,7 +13,7 @@ const createMomoPayment = async (amount, orderInfo, items, deliveryInfo, userInf
         const orderId = parseInt(Date.now().toString().slice(-3) + Math.floor(1000 + Math.random() * 9000));
         const requestId = orderId;
         const extraData = "";
-        const requestType = "payWithMethod"; //captureWallet
+        const requestType = "captureWallet"; //payWithMethodi
         const autoCapture = true;
         const lang = "vi";
 

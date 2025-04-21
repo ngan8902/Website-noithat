@@ -12,13 +12,18 @@ const Cart = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const storedSelectedItems = JSON.parse(localStorage.getItem('selectedItems')) || [];
+    setSelectedItems(storedSelectedItems);
+  }, []);
+  
+  useEffect(() => {
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];
     if (localCart.length > 0) {
         setCartWithProducts(localCart);
     } else {
         fetchCart();
     }
-}, [fetchCart]);
+  }, [fetchCart]);
 
   useEffect(() => {
     if (!Array.isArray(cartItems)) {

@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
-import useAuthStore from "../../store/authStore";
+import useAuthStore from "../store/authStore";
 
-const AddComment = ({ onSubmitSuccess }) => {
+const Comments = ({ productId, onSubmitSuccess }) => {
     const [comment, setComment] = useState("");
     const [err, setErr] = useState("");
-    const { id: productId } = useParams();
-    const { user } = useAuthStore();
+    const [successMessage, setSuccessMessage] = useState(""); const { user } = useAuthStore();
 
 
     const handlePostComment = async () => {
         if (!comment.trim()) {
-            setErr("Vui lòng nhập bình luận");
+            setErr("Vui lòng nhập nhận xét");
             return;
         }
 
@@ -23,7 +21,7 @@ const AddComment = ({ onSubmitSuccess }) => {
         }
 
         try {
-            const response = await axios.post(
+            await axios.post(
                 `${process.env.REACT_APP_URL_BACKEND}/comments/${productId}/comments`,
                 formData,
                 {
@@ -32,37 +30,38 @@ const AddComment = ({ onSubmitSuccess }) => {
                     },
                 }
             );
-            console.log("Phản hồi bình luận:", response);
             setComment("");
+            setSuccessMessage("Gửi nhận xét thành công!");
             if (onSubmitSuccess) {
                 onSubmitSuccess();
             }
         } catch (error) {
-            console.error("Lỗi khi gửi bình luận và tệp đính kèm:", error);
-            setErr("Đã có lỗi xảy ra khi gửi bình luận và tệp đính kèm. Vui lòng thử lại sau.");
+            console.error("Lỗi khi gửi nhận xét và tệp đính kèm:", error);
+            setErr("Đã có lỗi xảy ra khi gửi nhận xét và tệp đính kèm. Vui lòng thử lại sau.");
         }
     };
 
     return (
         <div className="mb-3 mt-3 border p-3">
-            <h5 className="fw-bold mb-3">Thêm Bình Luận Của Bạn</h5>
+            <h5 className="fw-bold mb-3">Thêm Nhận Xét Của Bạn</h5>
             <div className="mb-3">
-                <label className="form-label">Bình luận:</label>
+                <label className="form-label">Nhận Xét:</label>
                 <textarea
                     className="form-control"
                     rows="3"
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    placeholder="Viết bình luận của bạn..."
+                    placeholder="Viết nhận xét của bạn..."
                 ></textarea>
             </div>
             {err && <div className="alert alert-danger">{err}</div>}
+            {successMessage && <div className="alert alert-success">{successMessage}</div>}
 
             <button className="btn btn-primary" onClick={handlePostComment}>
-                Gửi Bình Luận
+                Gửi Nhận Xét
             </button>
         </div>
     );
 };
 
-export default AddComment;
+export default Comments;

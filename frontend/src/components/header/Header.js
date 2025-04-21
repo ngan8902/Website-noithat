@@ -25,10 +25,10 @@ const Header = () => {
     }
   }, [searchTerm, getSuggestions]);
 
-  const handleSearch = () => {
-    if (searchTerm.trim() !== "") {
-      searchProducts(searchTerm);
-      window.location.href = `/search?query=${searchTerm}`;
+  const handleSearch = (term = searchTerm) => {
+    if (term.trim() !== "") {
+      searchProducts(term);
+      window.location.href = `/search?query=${term}`;
     }
   };
 
@@ -137,7 +137,14 @@ const Header = () => {
             {suggestions && suggestions.length > 0 && (
               <ul className="suggestions-list">
                 {suggestions.map((product) => (
-                  <li key={product._id} onClick={() => setSearchTerm(product.name)}>
+                  <li 
+                    key={product._id} 
+                    onClick={() => {
+                      setSearchTerm(product.name);
+                      getSuggestions([]);
+                      handleSearch(product.name);
+                    }}
+                  >
                     {product.name}
                   </li>
                 ))}
@@ -156,8 +163,8 @@ const Header = () => {
 
           {!!user ? (
             <div className="dropdown">
-              <button className="nav-link text-white dropdown-toggle fw-bold m-3" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                Chào, {user.name}
+              <button className="nav-link text-white dropdown-toggle fw-bold m-1" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Chào, <span className="text-info text-uppercase">{user.name}</span>
               </button>
               <ul className="dropdown-menu">
                 <li><a href="/account" className="dropdown-item fw-medium">Thông tin tài khoản</a></li>

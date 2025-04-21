@@ -16,8 +16,8 @@ const StarRating = ({ rating, onOptionSelect, onRatingChange }) => {
                 <div
                     key={option.value}
                     onClick={() => {
-                        onOptionSelect(option.value); // Cập nhật state rating trong OrderHistory
-                        onRatingChange(option.value); // Gọi hàm gửi đánh giá
+                        onOptionSelect(option.value); 
+                        onRatingChange(option.value); 
                     }}
                     style={{
                         cursor: "pointer",

@@ -5,11 +5,11 @@ import axios from "axios";
 import useProductStore from "../store/productStore";
 import useAuthStore from "../store/authStore";
 import useCartStore from "../store/cartStore";
-import { notifyOfCart, notifyOfComment } from "../constants/notify.constant";
+import { notifyOfCart } from "../constants/notify.constant";
 import ProductImage from "../components/productdetail/ProductImage";
 import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
-import AddComment from "../components/productdetail/Addcomment";
+import Comments from "../components/Comments";
 
 const avatarDefautl = "http://localhost:8000/upload/guest.png"
 
@@ -101,7 +101,6 @@ const ProductDetail = () => {
     };
 
     const addToCart = () => (user ? handleAddToCartForCustomer() : handleAddToCartForGuest());
-    const toggleCommentForm = () => setShowCommentForm((prev) => !prev);
 
     const formatDate = (dateString) =>
         new Date(dateString).toLocaleDateString("vi-VN", {
@@ -244,33 +243,11 @@ const ProductDetail = () => {
                         </div>
                         <div className="d-flex align-items-center justify-content-between mb-2">
                             <CustomerReviews reviews={product.rating} />
-                            {!user && (
-                                <button
-                                    className="btn btn-outline-primary p-1 rounded-circle"
-                                    onClick={() => {
-                                        notifyOfComment()
-                                    }}
-                                    style={{ lineHeight: "1" }}
-                                    title="Đăng nhập để bình luận"
-
-                                >
-                                    <i className="bi bi-plus"></i>
-                                </button>
-                            )}
-                            {user && (
-                                <button
-                                    className="btn btn-outline-primary p-1 rounded-circle"
-                                    onClick={toggleCommentForm}
-                                    style={{ lineHeight: "1" }}
-                                >
-                                    <i className="bi bi-plus"></i>
-                                </button>
-                            )}
                         </div>
                     </div>
                     {showCommentForm && (
                         <div className="mt-3">
-                            <AddComment onSubmitSuccess={handleCommentSubmitSuccess} />
+                            <Comments onSubmitSuccess={handleCommentSubmitSuccess} />
                         </div>
                     )}
                     <div className="col-12 mt-4">

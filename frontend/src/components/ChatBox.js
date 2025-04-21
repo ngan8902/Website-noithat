@@ -30,7 +30,6 @@ const Chatbox = () => {
     const fetchMessages = async () => {
       if (userId) {
         const conversationId1 = userId;
-        const conversationId2 = userId;
         let allMessages = [];
 
         try {
@@ -38,13 +37,6 @@ const Chatbox = () => {
           allMessages = [...response1.data];
         } catch (error) {
           console.error(`Lỗi khi lấy tin nhắn cho ${conversationId1}:`, error);
-        }
-
-        try {
-          const response2 = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId2}`);
-          allMessages = [...allMessages, ...response2.data];
-        } catch (error) {
-          console.error(`Lỗi khi lấy tin nhắn cho ${conversationId2}:`, error);
         }
 
         const sortedMessages = allMessages.sort((a, b) => a.timestamp - b.timestamp);

@@ -84,6 +84,9 @@ const Sidebar = () => {
           {permissions([ROLE.ADMIN]) && <a href="/admin/resource" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-file-earmark-person me-2"></i>Quản Lý Chấm Công
           </a>}
+          {permissions([ROLE.ADMIN]) && <a href="/admin/faceregistration" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+            <i className="bi bi-webcam me-2"></i>Đăng ký gương mặt 
+          </a>}
         </div>
       )}
 

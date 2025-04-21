@@ -16,20 +16,7 @@ export const notifyOfCart = () => {
 }
 
 export const notifyOfCheckout = () => {
-  toast.success("🛍️ Thanh toán thành công!", {
-      position: "top-right",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-      className: "my-toast"
-    });
-}
-export const notifyOfComment = () => {
-  toast.info("Vui lòng đăng nhập để bình luận.", {
+  toast.success("🛍️ Đặt hàng thành công!", {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
