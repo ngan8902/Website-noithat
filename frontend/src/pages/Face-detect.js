@@ -1,153 +1,152 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import * as facemesh from "@tensorflow-models/face-landmarks-detection";
+import * as faceapi from "face-api.js";
 import Webcam from "react-webcam";
 import { getFeatureVector, euclideanDistance } from "../utils/draw-mesh.util";
-import { THRESHOLD } from '../constants/face-mesh.constant';
+import { THRESHOLD } from "../constants/face-mesh.constant";
 import useStaffStore from "../store/staffStore";
 import axios from "axios";
-import { model } from "mongoose";
-// import * as tf from '@tensorflow/tfjs';
+
+const URL_MODEL = "/models";
 
 function FaceDetect() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const staffFaces = useRef([]);
-  const [facemeshModel, setFacemeshModel] = useState(null);
+  const [notification, setNotification] = useState("");
+  const [modelsLoaded, setModelsLoaded] = useState(false);
   const { faceList, getAllStaffFaceEmbedding } = useStaffStore((state) => state);
-  const [hasCheckedInToday, setHasCheckedInToday] = useState(false);
-  const [checkInTimeoutId, setCheckInTimeoutId] = useState(null);
-  const [isCheckingIn, setIsCheckingIn] = useState(false);
-  const [isFaceDetected, setIsFaceDetected] = useState(false);
+  const [checkedInStaffIds, setCheckedInStaffIds] = useState([]);
+  
 
-  staffFaces.current = faceList;
+  useEffect(() => {
+    staffFaces.current = faceList;
+  }, [faceList]);
 
-  const runFacemesh = useCallback(async () => {
+
+  const loadModels = async () => {
     try {
-      const model = await facemesh.createDetector(facemesh.SupportedModels.MediaPipeFaceMesh, {
-        runtime: 'tfjs',
-        solutionPath: `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@latest`,
-        refineLandmarks: true,
-      });
-      setFacemeshModel(model);
-      console.log("Facemesh model loaded.", model);
-
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(URL_MODEL);
+      await faceapi.nets.faceLandmark68Net.loadFromUri(URL_MODEL);
+      await faceapi.nets.faceRecognitionNet.loadFromUri(URL_MODEL);
+      setModelsLoaded(true);
+      console.log("Face-api models loaded.");
     } catch (error) {
-      console.error("Failed to load facemesh model:", error);
+      console.error("Failed to load models:", error);
     }
-  }, []);
+  };
 
-  const detect = useCallback(async (model) => {
+  const detectAndCheckIn = useCallback(async () => {
     if (
-      model &&
-      typeof webcamRef.current !== "undefined" &&
-      webcamRef.current !== null &&
-      webcamRef.current.video.readyState === 4
+      webcamRef.current &&
+      webcamRef.current.video &&
+      webcamRef.current.video.readyState === 4 &&
+      modelsLoaded
     ) {
       const video = webcamRef.current.video;
-      const videoWidth = webcamRef.current.video.videoWidth;
-      const videoHeight = webcamRef.current.video.videoHeight;
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
 
       webcamRef.current.video.width = videoWidth;
       webcamRef.current.video.height = videoHeight;
       canvasRef.current.width = videoWidth;
       canvasRef.current.height = videoHeight;
 
-      try {
-        const faces = await model.estimateFaces(video);
-        if (faces && faces.length > 0) {
-          setIsFaceDetected(true);
-          const ctx = canvasRef.current.getContext("2d");
-          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-          const faceDetected = faces[0];
-          const faceDetectVector = getFeatureVector(faceDetected.keypoints);
+      const displaySize = { width: videoWidth, height: videoHeight };
+      faceapi.matchDimensions(canvasRef.current, displaySize);
 
-          staffFaces.current.forEach(async (staff) => {
-            if (staff && staff.faceEmbedding && staff.faceEmbedding.length > 0) {
+      try {
+        const detections = await faceapi
+          .detectAllFaces(video)
+          .withFaceLandmarks()
+          .withFaceDescriptors();
+
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        const context = canvasRef.current.getContext("2d");
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
+        faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
+        faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetections);
+
+        if (resizedDetections.length > 0) {
+          const faceDetected = resizedDetections[0];
+          const faceDetectVector = faceDetected.descriptor;
+
+          for (const staff of staffFaces.current) {
+            if (staff?.faceEmbedding?.length > 0) {
               const distance = euclideanDistance(faceDetectVector, staff.faceEmbedding);
-              if (distance < THRESHOLD && !hasCheckedInToday && isCheckingIn) {
+              if (distance < THRESHOLD) {
+                if (checkedInStaffIds.includes(staff._id)) {
+                  setNotification(`Nhân viên ${staff.staffcode} - ${staff.name} đã check-in hôm nay.`);
+                  return;
+                }
+
                 try {
                   const now = new Date();
-                  const expectedCheckInHour = 8;
-                  const checkInHour = now.getHours();
-                  let status = 'present';
-                  if (checkInHour > expectedCheckInHour) {
-                    status = 'late';
-                  }
+                  const status = now.getHours() > 8 ? "late" : "present";
 
                   const checkInData = {
                     staffId: staff._id,
                     staffcode: staff.staffcode,
                     checkInTime: now.toISOString(),
-                    notes: "Chấm công bằng nhận diện khuôn mặt",
-                    status: status
+                    notes: "Check-in bằng nhận diện khuôn mặt",
+                    status,
                   };
-                  const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/attendance/check-in`, checkInData);
-                  console.log("Chấm công thành công:", response.data);
-                  setIsCheckingIn(false);
-                  setHasCheckedInToday(true);
 
-                  const timeoutId = setTimeout(() => {
-                    setHasCheckedInToday(false);
-                    console.log("Đã qua 5 tiếng. Bây giờ có thể check-out.");
-                  }, 5 * 60 * 60 * 1000);
+                  const response = await axios.post(
+                    `${process.env.REACT_APP_URL_BACKEND}/attendance/check-in`,
+                    checkInData
+                  );
 
-                  setCheckInTimeoutId(timeoutId);
+                  console.log("Check-in successful:", response.data);
+                  setCheckedInStaffIds((prev) => [...prev, staff._id]);
 
+                  const statusText = status === "present" ? "Đúng giờ" : "Trễ";
+                  setNotification(`Nhân viên ${staff.staffcode} - ${staff.name} check-in thành công (${statusText})`);
+                  return;
                 } catch (error) {
-                  console.error("Lỗi trong quá trình chấm công:", error);
-                  setIsCheckingIn(false);
+                  console.error("Error during check-in:", error);
+                  setNotification("Lỗi khi thực hiện check-in.");
                 }
-              } else if (distance >= THRESHOLD && isCheckingIn) {
-                console.log("Khuôn mặt không khớp.");
-              } else if (hasCheckedInToday && isCheckingIn) {
-                console.log("Đã chấm công hôm nay.");
-                setIsCheckingIn(false);
               }
             }
-          });
+          }
+
+          setNotification("⚠️ Khuôn mặt không trùng khớp với bất kỳ nhân viên nào.");
         } else {
-          setIsFaceDetected(false);
-          const ctx = canvasRef.current.getContext("2d");
-          ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          setNotification("Không nhận diện được khuôn mặt.");
         }
       } catch (error) {
-        console.error("Lỗi khi nhận diện khuôn mặt:", error);
+        console.error("Error detecting faces:", error);
       }
     }
-  }, [model, isCheckingIn, hasCheckedInToday]);
+  }, [checkedInStaffIds, modelsLoaded]);
 
-  const handleCheckInButtonClick = () => {
-    setIsCheckingIn(true);
-    console.log("Nút chấm công đã được nhấn.");
-  };
+  useEffect(() => {
+    const fetchCheckedInStaff = async () => {
+      try {
+        const today = new Date().toISOString().split("T")[0];
+        const res = await axios.get(
+          `${process.env.REACT_APP_URL_BACKEND}/attendance/today-checkins?date=${today}`
+        );
+        const checkedIds = res.data.map((record) => record.staffId);
+        setCheckedInStaffIds(checkedIds);
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách check-in hôm nay:", error);
+      }
+    };
+
+    loadModels();
+    getAllStaffFaceEmbedding();
+    fetchCheckedInStaff();
+  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (facemeshModel) {
-        detect(facemeshModel);
-      }
-    }, 1000);
+      if (modelsLoaded) detectAndCheckIn();
+    }, 1200);
+
     return () => clearInterval(intervalId);
-  }, [detect, facemeshModel]);
-
-  useEffect(() => {
-    const resetCheckInStatus = () => {
-      const now = new Date();
-      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-      const timeUntilMidnight = midnight.getTime() + 24 * 60 * 60 * 1000 - now.getTime();
-
-      const timeoutId = setTimeout(() => {
-        setHasCheckedInToday(false);
-        console.log("Trạng thái chấm công đã được reset cho ngày mới.");
-      }, timeUntilMidnight);
-
-      return () => clearTimeout(timeoutId);
-    };
-
-    resetCheckInStatus();
-    getAllStaffFaceEmbedding();
-    runFacemesh();
-  }, []);
+  }, [detectAndCheckIn, modelsLoaded]);
 
   return (
     <div className="App">
@@ -161,7 +160,7 @@ function FaceDetect() {
             left: 0,
             right: 0,
             textAlign: "center",
-            zindex: 9,
+            zIndex: 9,
             width: 640,
             height: 480,
           }}
@@ -175,20 +174,37 @@ function FaceDetect() {
             left: 0,
             right: 0,
             textAlign: "center",
-            zindex: 10, // Đảm bảo canvas có z-index cao hơn nút nếu cần
+            zIndex: 9,
             width: 640,
             height: 480,
           }}
         />
-        {isFaceDetected && (
-          <button onClick={handleCheckInButtonClick} disabled={hasCheckedInToday} className="checkin-button">
-            {hasCheckedInToday ? "Đã Chấm Công" : "Chấm Công"}
-          </button>
+        {notification && (
+          <div
+            style={{
+              position: "relative",
+              top: 500,
+              color: "#fff",
+              backgroundColor:
+                notification.includes("không trùng khớp") || notification.includes("Lỗi")
+                  ? "#dc3545"
+                  : "#28a745",
+              padding: "10px 20px",
+              borderRadius: "8px",
+              fontSize: "18px",
+              textAlign: "center",
+              margin: "20px auto",
+              maxWidth: 640,
+              boxShadow: "0 0 10px rgba(0,0,0,0.3)",
+              transition: "all 0.3s ease-in-out",
+            }}
+          >
+            {notification}
+          </div>
         )}
-        {!isFaceDetected && <p className="searching-text">Đang tìm kiếm khuôn mặt...</p>}
       </header>
     </div>
-  )
+  );
 }
 
 export default FaceDetect;

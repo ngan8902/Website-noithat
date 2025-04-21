@@ -11,6 +11,7 @@ router.patch('/check-out', attendanceController.checkOut);
 
 router.get('/staff/:staffId', attendanceController.getAttendanceHistoryByStaff);
 router.get('/', attendanceController.getAllAttendanceHistory);
+router.get('/today-checkins', attendanceController.getTodayCheckins);
 
 // API để lấy chi tiết một bản ghi điểm danh theo ID
 router.get('/:attendanceId', attendanceController.getAttendanceDetails);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,13 +14,16 @@
         body {
             font-family: 'Playfair Display', serif;
         }
+
         .dropdown:hover .dropdown-menu {
             display: block;
         }
     </style>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script defer src="/dist/face-api.min.js"></script>
 </head>
+
 <body>
     <div id="root"></div> <!-- React sẽ render nội dung vào đây -->
     <!-- <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
@@ -38,4 +42,5 @@
     </div>
     <script src="https://sp.zalo.me/plugins/sdk.js"></script>  -->
 </body>
+
 </html>

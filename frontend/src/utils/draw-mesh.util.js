@@ -49,16 +49,27 @@ export const drawMesh = (predictions, ctx) => {
 };
 
 // Convert keypoints to vector
-export const getFeatureVector = (keypoints) => {
-  return keypoints.flatMap(({ x, y, z }) => [x, y, z]);
-}
+// export const getFeatureVector = (keypoints) => {
+//   return keypoints.flatMap(({ x, y, z }) => [x, y, z]);
+// }
 
 // Euclidean Distance
-export const euclideanDistance = (v1, v2) => {
-  if (v1.length !== v2.length) return Infinity;
-  let sum = 0;
-  for (let i = 0; i < v1.length; i++) {
-    sum += Math.pow(v1[i] - v2[i], 2);
-  }
-  return Math.sqrt(sum);
-}
+// export const euclideanDistance = (v1, v2) => {
+//   if (v1.length !== v2.length) return Infinity;
+//   let sum = 0;
+//   for (let i = 0; i < v1.length; i++) {
+//     sum += Math.pow(v1[i] - v2[i], 2);
+//   }
+//   return Math.sqrt(sum);
+// }
+
+export const euclideanDistance = (vec1, vec2) => {
+  const distance = Math.sqrt(vec1.reduce((acc, val, index) => acc + Math.pow(val - vec2[index], 2), 0));
+  return distance;
+};
+
+export const getFeatureVector = (landmarks) => {
+  const positions = landmarks.map((point) => [point.x, point.y, point.z]);
+  return positions.flat();
+};
+
