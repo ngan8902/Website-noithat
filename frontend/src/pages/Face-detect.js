@@ -96,6 +96,7 @@ function FaceDetect() {
       if (resizedDetections.length === 0) {
         setNotification("🚫 Không nhận diện được khuôn mặt.");
         setLoading(false);
+        setTimeout(() => setNotification(""), 4000);
         return;
       }
 
@@ -113,6 +114,7 @@ function FaceDetect() {
           if (type === "check-in") {
             if (matchedStaff) {
               setNotification(`⚠️ Nhân viên ${staff.staffcode} đã check-in hôm nay.`);
+              setTimeout(() => setNotification(""), 4000);
               break;
             }
 
@@ -125,25 +127,33 @@ function FaceDetect() {
               status,
             };
 
-            const res = await axios.post(
+            const response = await axios.post(
               `${process.env.REACT_APP_URL_BACKEND}/attendance/check-in`,
               checkInData
             );
 
+            const attendance = response.data.data;
+
             setCheckedInStaffIds((prev) => [...prev, staff._id]);
             setCheckedInStaff((prev) => [
               ...prev,
-              { staffId: staff._id, checkInTime: now.toISOString(), attendanceId: res.data._id }
+              {
+                staffId: staff._id,
+                checkInTime: now.toISOString(),
+                attendanceId: attendance._id,
+              },
             ]);
 
             const statusText = status === "present" ? "Đúng giờ" : "Trễ";
             setNotification(`✅ Nhân viên ${staff.staffcode} check-in thành công (${statusText})`);
+            setTimeout(() => setNotification(""), 4000);
             break;
           }
 
           if (type === "check-out") {
             if (!matchedStaff) {
               setNotification(`⚠️ Nhân viên ${staff.staffcode} chưa check-in hôm nay.`);
+              setTimeout(() => setNotification(""), 4000);
               break;
             }
 
@@ -152,15 +162,17 @@ function FaceDetect() {
 
             if (diffTime < 5) {
               setNotification(`⏳ Chưa đủ 5 giờ để check-out. Còn lại ${(5 - diffTime).toFixed(2)} giờ.`);
+              setTimeout(() => setNotification(""), 4000);
               break;
             }
 
             await axios.patch(`${process.env.REACT_APP_URL_BACKEND}/attendance/check-out`, {
-              attendanceId: matchedStaff.attendanceId,
+              attendanceId: matchedStaff._id,
               checkOutTime: now.toISOString(),
             });
 
             setNotification(`✅ Nhân viên ${staff.staffcode} đã check-out thành công.`);
+            setTimeout(() => setNotification(""), 4000);
             break;
           }
         }
@@ -168,10 +180,12 @@ function FaceDetect() {
 
       if (!notification) {
         setNotification("⚠️ Khuôn mặt không trùng khớp với bất kỳ nhân viên nào.");
+        setTimeout(() => setNotification(""), 4000);
       }
     } catch (error) {
-      console.error("❌ Lỗi khi nhận diện:", error);
+      console.error("Lỗi khi nhận diện:", error);
       setNotification("❌ Lỗi khi nhận diện khuôn mặt.");
+      setTimeout(() => setNotification(""), 4000);
     } finally {
       setLoading(false);
     }
