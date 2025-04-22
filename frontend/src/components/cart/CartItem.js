@@ -12,7 +12,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
   const handleDecrease = () => {
     if (item.quantity > 1 && itemId) {
       updateQuantity(itemId, item.quantity - 1);
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
@@ -20,7 +20,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
     const maxStock = product?.countInStock || item?.countInStock || 1;
     if (item.quantity < maxStock && itemId) {
       updateQuantity(itemId, item.quantity + 1);
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
