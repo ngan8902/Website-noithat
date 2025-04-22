@@ -40,35 +40,11 @@ const checkOut = async (req, res) => {
     }
 };
 
-const getAttendanceHistoryByStaff = async (req, res) => {
-    try {
-        const staffId = req.payload.id;;
-        const { startDate, endDate } = req.query;
-        const history = await attendanceService.getAttendanceByStaffId(staffId, startDate, endDate);
-        res.status(200).json({ data: history });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
 const getAllAttendanceHistory = async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
         const history = await attendanceService.getAllAttendance(startDate, endDate);
         res.status(200).json({ data: history });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-const getAttendanceDetails = async (req, res) => {
-    try {
-        const attendanceId = req.params.attendanceId;
-        const attendance = await attendanceService.getAttendanceById(attendanceId);
-        if (!attendance) {
-            return res.status(404).json({ message: 'Không tìm thấy bản ghi điểm danh.' });
-        }
-        res.status(200).json({ data: attendance });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -90,6 +66,32 @@ const getTodayCheckins = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 }
+
+const getAttendanceHistoryByStaff = async (req, res) => {
+    try {
+        const staffId = req.payload.id;;
+        const { startDate, endDate } = req.query;
+        const history = await attendanceService.getAttendanceByStaffId(staffId, startDate, endDate);
+        res.status(200).json({ data: history });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getAttendanceDetails = async (req, res) => {
+    try {
+        const attendanceId = req.params.attendanceId;
+        const attendance = await attendanceService.getAttendanceById(attendanceId);
+        if (!attendance) {
+            return res.status(404).json({ message: 'Không tìm thấy bản ghi điểm danh.' });
+        }
+        res.status(200).json({ data: attendance });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
 
 module.exports = {
     saveFace,

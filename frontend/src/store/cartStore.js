@@ -74,6 +74,7 @@ const useCartStore = create((set, get) => ({
         const token = getCookie(TOKEN_KEY);
         try {
             if (token) {
+                // Logged in user
                 set((state) => {
                     const updatedCart = state.cartItems.map(item =>
                         item.productId === productId ? { ...item, quantity } : item
@@ -85,13 +86,17 @@ const useCartStore = create((set, get) => ({
                     { quantity },
                     { headers: { "token": token } }
                 );
-                console.log(response)
                 set({ cartItems: response.data.items || [] });
+
             } else {
                 set((state) => {
-                    const updatedCart = state.cartItems.map(item =>
-                        item.productId === productId ? { ...item, quantity } : item
-                    );
+                    const updatedCart = state.cartItems.map(item => {
+                        const itemId = item._id || item.productId || (typeof item.productId === 'object' && item.productId._id);
+                        if (itemId === productId) {
+                            return { ...item, quantity };
+                        }
+                        return item;
+                    });
                     localStorage.setItem("cart", JSON.stringify(updatedCart));
                     return { cartItems: updatedCart };
                 });
@@ -100,6 +105,7 @@ const useCartStore = create((set, get) => ({
             console.error("Lỗi cập nhật giỏ hàng:", error);
         }
     },
+
 
     removeFromCart: async (itemId) => {
         if (!itemId) return;
@@ -152,7 +158,7 @@ const useCartStore = create((set, get) => ({
                 try {
                     const response = await axios.post(
                         `${process.env.REACT_APP_URL_BACKEND}/cart/clear-purchased`,
-                        { purchasedItems }, 
+                        { purchasedItems },
                         { headers: { "token": token } }
                     );
 

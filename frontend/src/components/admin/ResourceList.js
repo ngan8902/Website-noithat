@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EditResourceModal from "./EditResourceModal";
+import { getCookie } from "../../utils/cookie.util";
+import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
+
 
 const ResourceList = ({ setAttendanceRecords }) => {
   const [attendanceRecords, setAttendance] = useState([]);
@@ -8,9 +11,14 @@ const ResourceList = ({ setAttendanceRecords }) => {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  const token = getCookie(STAFF_TOKEN_KEY);
+
+
   const fetchAttendanceRecords = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/attendance/all-attendance`);
+      const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/attendance/all-attendance`,);
+
+      console.log(response)
       setAttendance(response.data.data);
     } catch (error) {
       console.error("Error fetching attendance records:", error);
@@ -20,6 +28,8 @@ const ResourceList = ({ setAttendanceRecords }) => {
   useEffect(() => {
     fetchAttendanceRecords();
   }, []);
+
+
 
   const closeModal = () => {
     setSelectedRecord(null);
@@ -98,10 +108,10 @@ const ResourceList = ({ setAttendanceRecords }) => {
                 <td className="fw-bold fs-5">
                   <span
                     className={`badge ${record.status === "Đúng giờ"
-                        ? "text-success"
-                        : record.status === "Muộn"
-                          ? "text-danger"
-                          : "text-danger"
+                      ? "text-success"
+                      : record.status === "Muộn"
+                        ? "text-danger"
+                        : "text-danger"
                       }`}
                   >
                     {record.status === "Đúng giờ" ? "Đúng giờ" : "Muộn"}

@@ -157,15 +157,6 @@ function FaceDetect() {
               break;
             }
 
-            const checkInTime = new Date(matchedStaff.checkInTime);
-            const diffTime = (now - checkInTime) / (1000 * 60 * 60);
-
-            if (diffTime < 5) {
-              setNotification(`Chưa đủ 5 giờ để check-out. Còn lại ${(5 - diffTime).toFixed(2)} giờ.`);
-              setTimeout(() => setNotification(""), 4000);
-              break;
-            }
-
             await axios.patch(`${process.env.REACT_APP_URL_BACKEND}/attendance/check-out`, {
               attendanceId: matchedStaff._id,
               checkOutTime: now.toISOString(),

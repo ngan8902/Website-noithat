@@ -2,9 +2,14 @@ import React, { useEffect } from "react";
 
 const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSelectedItems }) => {
   const product = item.product || item.productId?.data;
-  const itemId = item._id || item.productId?._id || item.productId;
+  const itemId =
+  item._id ||
+  (typeof item.productId === "object" ? item.productId._id : item.productId) ||
+  `${item.name}-${item.price}`; 
+  
   const isSelected = selectedItems.includes(itemId);
 
+  console.log(item)
   useEffect(() => {
     localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
   }, [selectedItems]);
@@ -18,8 +23,8 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
 
   const handleIncrease = () => {
     const maxStock = product?.countInStock || item?.countInStock || 1;
-    if (item.quantity < maxStock && itemId) {
-      updateQuantity(itemId, item.quantity + 1);
+    if (item?.quantity < maxStock && itemId) {
+      updateQuantity(itemId, item?.quantity + 1);
       // window.location.reload();
     }
   };
@@ -92,7 +97,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
             <button
               className="btn btn-outline-dark btn-sm"
               onClick={handleDecrease}
-              disabled={item.quantity <= 1}
+              disabled={item?.quantity <= 1}
             >
               -
             </button>
@@ -100,7 +105,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
             <button
               className="btn btn-outline-dark btn-sm"
               onClick={handleIncrease}
-              disabled={item.quantity >= (product?.countInStock || item?.countInStock || 1)}
+              disabled={item?.quantity >= (product?.countInStock || item?.countInStock || 1)}
             >
               +
             </button>
