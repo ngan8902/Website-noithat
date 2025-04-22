@@ -17,7 +17,8 @@ function FaceDetect() {
   const { faceList, getAllStaffFaceEmbedding } = useStaffStore((state) => state);
   const [checkedInStaffIds, setCheckedInStaffIds] = useState([]);
   const [checkedInStaff, setCheckedInStaff] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [checkInLoading, setCheckInLoading] = useState(false);
+  const [checkOutLoading, setCheckOutLoading] = useState(false);
 
   useEffect(() => {
     staffFaces.current = faceList;
@@ -62,10 +63,12 @@ function FaceDetect() {
       !webcamRef.current?.video ||
       webcamRef.current.video.readyState !== 4 ||
       !modelsLoaded ||
-      loading
+      checkInLoading ||
+      checkOutLoading
     ) return;
 
-    setLoading(true);
+    if (type === "check-in") setCheckInLoading(true);
+    if (type === "check-out") setCheckOutLoading(true);
     setNotification("");
 
     const video = webcamRef.current.video;
@@ -95,7 +98,8 @@ function FaceDetect() {
 
       if (resizedDetections.length === 0) {
         setNotification("Không nhận diện được khuôn mặt!");
-        setLoading(false);
+        setCheckInLoading(false);
+        setCheckOutLoading(false);
         setTimeout(() => setNotification(""), 4000);
         return;
       }
@@ -158,7 +162,8 @@ function FaceDetect() {
             }
 
             const checkInTime = new Date(matchedStaff.checkInTime);
-            const diffTime = (now - checkInTime) / (1000 * 60 * 60);
+            const diffTime = (now - checkInTime) / 1000;
+            // / (1000 * 60 * 60);
 
             if (diffTime < 5) {
               setNotification(`Chưa đủ 5 giờ để check-out. Còn lại ${(5 - diffTime).toFixed(2)} giờ.`);
@@ -187,7 +192,8 @@ function FaceDetect() {
       setNotification("Lỗi khi nhận diện khuôn mặt.");
       setTimeout(() => setNotification(""), 4000);
     } finally {
-      setLoading(false);
+      if (type === "check-in") setCheckInLoading(false);
+      if (type === "check-out") setCheckOutLoading(false);
     }
   };
 
@@ -236,7 +242,7 @@ function FaceDetect() {
         >
           <button
             onClick={() => detectAndProcess("check-in")}
-            disabled={loading}
+            disabled={checkInLoading || checkOutLoading}
             style={{
               padding: "12px 24px",
               backgroundColor: "#28a745",
@@ -244,15 +250,15 @@ function FaceDetect() {
               border: "none",
               borderRadius: "8px",
               fontSize: "16px",
-              cursor: loading ? "not-allowed" : "pointer",
+              cursor: checkInLoading ? "not-allowed" : "pointer",
               transition: "background-color 0.3s ease",
             }}
           >
-            {loading ? "Đang xử lý..." : "Đi vào (check-in)"}
+            {checkInLoading ? "Đang xử lý..." : "Đi vào (check-in)"}
           </button>
           <button
             onClick={() => detectAndProcess("check-out")}
-            disabled={loading}
+            disabled={checkInLoading || checkOutLoading}
             style={{
               padding: "12px 24px",
               backgroundColor: "#ffc107",
@@ -260,11 +266,11 @@ function FaceDetect() {
               border: "none",
               borderRadius: "8px",
               fontSize: "16px",
-              cursor: loading ? "not-allowed" : "pointer",
+              cursor: checkOutLoading ? "not-allowed" : "pointer",
               transition: "background-color 0.3s ease",
             }}
           >
-            {loading ? "Đang xử lý..." : "Đi ra (check-out)"}
+            {checkOutLoading ? "Đang xử lý..." : "Đi ra (check-out)"}
           </button>
         </div>
         {notification && (
