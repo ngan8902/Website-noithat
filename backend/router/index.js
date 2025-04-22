@@ -15,6 +15,7 @@ const PayosRoute = require('./PayosRoute')
 const CommentsRoute = require('./CommentsRoute')
 const DashboardRoute = require('./DashBoardRoute')
 const AttendanceRoute = require('./AttendanceRoute')
+const Send = require('./EmailRoute')
 
 const routers = (app) => {
     app.use('/api/staff', StaffRouter)
@@ -34,6 +35,7 @@ const routers = (app) => {
     app.use("/api/comments", CommentsRoute);
     app.use("/api/dashboard", DashboardRoute);
     app.use("/api/attendance", AttendanceRoute)
+    app.use('/api/send', Send)
 }
 
 module.exports = routers;

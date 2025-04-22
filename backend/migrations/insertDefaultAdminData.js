@@ -4,8 +4,8 @@ const bcrypt = require("bcrypt");
 const adminData = {
     name: "Admin",
     username: "admin",
-    email: "admin@example.com",
-    password: "admin123",
+    email: "admin@gmail.com",
+    password: "admin",
     role_id: 1, 
     phone: "0812345678",
     address: "19 ĐHT",

@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useOrderStore from "../../store/orderStore";
 import { useSearchStore } from '../../store/searchStore';
 
 const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   const { orders, fetchOrders } = useOrderStore();
+  const [filterByStatus, setFilterByStatus] = useState(null);
   const keyword = useSearchStore((state) => state.keyword.toLowerCase());
 
   const statusMap = {
@@ -26,7 +27,11 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   }, [])
 
   const filteredOrders = (Array.isArray(orders) ? orders : [])
-    .filter(order => order.status !== "cancelled_confirmed" && order.status !== "pending" && order.status !== "processing")
+    .filter(order => 
+      order.status !== "cancelled" && order.status !== "cancelled_confirmed" && 
+      order.status !== "pending" && order.status !== "processing" &&
+      (filterByStatus ? order.status === filterByStatus : true)
+    )
     .filter(order => {
       const receiverName = order.receiver?.fullname?.toLowerCase() || "";
       const receiverPhone = order.receiver?.phone || "";
@@ -49,8 +54,8 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   const statusOrder = [
     "received",
     "return_requested",
-    "cancelled",
-    "cancelled_confirmed",
+    // "cancelled",
+    // "cancelled_confirmed",
     "shipped",
   ];
 
@@ -59,126 +64,168 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
       (statusOrder.indexOf(b.status) !== -1 ? statusOrder.indexOf(b.status) : Infinity);
   });
 
+  const returnRequestedCount = filteredOrders.filter(order => order.status === "return_requested").length;
+  const shippingCount = filteredOrders.filter(order => order.status === "shipped").length;
 
   return (
     <div id="completed-orders" className="mt-4">
-      <h5 className="fw-bold">Danh Sách Đơn Hàng Chờ Hoàn Thành</h5>
+      <h5 className="fw-bold d-flex justify-content-between align-items-center">
+        Danh Sách Đơn Hàng Chờ Hoàn Thành
+        <small className="text-muted fs-6">
+          <span
+            className={`me-3 order-status-hover ${filterByStatus === "return_requested" ? "text-primary fw-bold" : "text-muted"} cursor-pointer`}
+            onClick={() => setFilterByStatus(prev => prev === "return_requested" ? null : "return_requested")}
+            style={{ cursor: "pointer" }}
+          >
+            🛠 Yêu cầu trả hàng: <strong>{returnRequestedCount}</strong>
+          </span>
+          <span
+            className={`order-status-hover ${filterByStatus === "shipped" ? "text-primary fw-bold" : "text-muted"} cursor-pointer`}
+            onClick={() => setFilterByStatus(prev => prev === "shipped" ? null : "shipped")}
+            style={{ cursor: "pointer" }}
+          >
+            🚚 Đang giao hàng: <strong>{shippingCount}</strong>
+          </span>
+        </small>
 
-      <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "hidden" }}>
-        <table className="table table-bordered mt-3"  >
+        {filterByStatus && (
+          <div className="text-end">
+            <button
+              className="btn btn-sm btn-outline-secondary mt-2"
+              onClick={() => setFilterByStatus(null)}
+            >
+              Xóa lọc
+            </button>
+          </div>
+        )}
+      </h5>
+
+      <div className="d-flex justify-content-between align-items-center mb-3"></div>
+        <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "auto", overflowX: "auto" }}>
+          <table className="table table-bordered mt-3">
           <thead
             className="table-dark"
             style={{
               textAlign: "center",
-              verticalAlign: "middle"
+              verticalAlign: "middle",
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
             }}
           >
             <tr>
-              <th style={{ width: "9%" }}>Mã Đơn Hàng</th>
-              <th style={{ width: "10%" }}>Khách Hàng</th>
-              <th style={{ width: "8%" }}>Số Điện Thoại</th>
+              <th style={{ width: "10%" }}>Mã Đơn Hàng</th>
+              <th style={{ width: "12%" }}>Khách Hàng</th>
+              <th style={{ width: "10%" }}>SĐT</th>
               <th style={{ width: "15%" }}>Địa Chỉ</th>
-              <th style={{ width: "10%" }}>Sản Phẩm</th>
-              <th style={{ width: "5%" }}>Số lượng</th>
+              <th style={{ width: "15%" }}>Sản Phẩm</th>
+              <th style={{ width: "8%" }}>SL</th>
               <th style={{ width: "10%" }}>Tổng Tiền</th>
-              <th style={{ width: "10%" }}>Phương Thức Thanh Toán</th>
-              <th style={{ width: "8%" }}>Trạng Thái</th>
-              <th style={{ width: "13%" }}>Hành Động</th>
+              <th style={{ width: "12%" }}>Thanh Toán</th>
+              <th style={{ width: "10%" }}>Trạng Thái</th>
+              <th style={{ width: "10%" }}>Hành Động</th>
             </tr>
           </thead>
-        </table>
-
-        <div
-          style={{
-            maxHeight: "330px",
-            overflowY: "auto",
-            overflowX: "none",
-            scrollbarWidth: "none",
-          }}
-          className="hide-scrollbar"
-        >
-          <table className="table table-bordered">
-            <tbody>
-              {sortedOrders.length > 0 ? (
-                sortedOrders.map((order) => (
-                  <tr key={order._id}>
-                    <th style={{ width: "9%" }}>#{order?.orderCode}</th>
-                    <td style={{ width: "10%" }}>{order?.receiver?.fullname || "N/A"}</td>
-                    <td style={{ width: "8%" }}>{order?.receiver?.phone || "N/A"}</td>
-                    <td style={{ width: "15%" }}>{order?.receiver?.address || "N/A"}</td>
-                    <td style={{ width: "10%" }}>
-                      {order.orderItems?.map((item, index) => (
-                        <div key={index}>
-                          {item.name}
-                          {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #555  " }} />}
-                        </div>
-                      )) || "Không có dữ liệu"}
-                    </td>
-                    <td style={{ width: "5%", textAlign: "center", verticalAlign: "middle" }}>
-                      {order.orderItems?.map((item, index) => (
-                        <div key={index}>
-                          {item.amount}
-                          {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #555  " }} />}
-                        </div>
-                      )) || "Không có dữ liệu"}
-                    </td>
-                    <td style={{ width: "10%" }}>{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
-                    <td style={{ width: "10%" }}>{order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" : order?.paymentMethod}</td>
-                    <td style={{ width: "8%", textAlign: "center", verticalAlign: "middle" }}>
-                      <span className={`badge ${order.status === "return_requested" ? "bg-warning text-dark" : order.status === "received" ? "bg-info text-dark" : order.status === "shipped" ? "bg-primary" : order.status === "delivered" ? "bg-success" :
-                        order.status === "return" ? "bg-danger" : order.status === "cancelled" ? "bg-danger" :
-                          "bg-danger"
-                        }`}>
-                        {order.status === "return_requested" ? "Yêu cầu trả hàng" : order.status === "received" ? "Đã nhận hàng" : order.status === "shipped" ? "Đã giao hàng" : order.status === "delivered" ? "Đã hoàn thành" :
-                          order.status === "return" ? "Đã trả hàng" : order.status === "cancelled" ? "Đã hủy" :
-                            ""}
-                      </span>
-                    </td>
-                    <td style={{ width: "12%", textAlign: "center", verticalAlign: "middle" }}>
-                      {["received", "return_requested"].includes(order.status) && (
-                        <>
-                          {order.status !== "return_requested" && (
-                            <button
-                              className="btn btn-success btn-sm me-2"
-                              style={{ marginBottom: "5px" }}
-                              onClick={() => onComplete(order._id)}
-                            >
-                              Xác nhận
-                            </button>
-                          )}
-
-                          {order.status !== "received" && (
-                            <button
-                              className="btn btn-danger btn-sm"
-                              style={{ marginRight: "6px" }}
-                              onClick={() => onReturn(order._id)}
-                            >
-                              Trả hàng
-                            </button>
-                          )}
-                        </>
-                      )}
-
-                      {order.status === "cancelled" && (
-                        <button
-                          className="btn btn-warning btn-sm"
-                          style={{ marginBottom: "5px" }}
-                          onClick={() => onConfirmCancel(order._id)}
-                        >
-                          Xác nhận hủy
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="9" className="text-center text-muted">Không tìm thấy đơn hàng nào!</td>
+          <tbody>
+            {sortedOrders.length > 0 ? (
+              sortedOrders.map((order) => (
+                <tr key={order._id}>
+                  <td>#{order?.orderCode}</td>
+                  <td>{order?.receiver?.fullname || "N/A"}</td>
+                  <td>{order?.receiver?.phone || "N/A"}</td>
+                  <td>{order?.receiver?.address || "N/A"}</td>
+                  <td>
+                    {order.orderItems?.map((item, index) => (
+                      <div key={index}>
+                        {item.name}
+                        {index < order.orderItems.length - 1 && (
+                          <hr style={{ margin: "5px 0", borderTop: "1px solid #555" }} />
+                        )}
+                      </div>
+                    )) || "Không có dữ liệu"}
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {order.orderItems?.map((item, index) => (
+                      <div key={index}>
+                        {item.amount}
+                        {index < order.orderItems.length - 1 && (
+                          <hr style={{ margin: "5px 0", borderTop: "1px solid #555" }} />
+                        )}
+                      </div>
+                    )) || "Không có dữ liệu"}
+                  </td>
+                  <td>{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
+                  <td>
+                    {order?.paymentMethod === "COD"
+                      ? "Thanh toán khi nhận hàng"
+                      : order?.paymentMethod === "VietQR"
+                      ? "Chuyển khoản"
+                      : order?.paymentMethod}
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    <span
+                      className={`badge ${
+                        order.status === "return_requested"
+                          ? "bg-warning text-dark"
+                          : order.status === "received"
+                          ? "bg-info text-dark"
+                          : order.status === "shipped"
+                          ? "bg-primary"
+                          : order.status === "delivered"
+                          ? "bg-success"
+                          : order.status === "return" || order.status === "cancelled"
+                          ? "bg-danger"
+                          : "bg-secondary"
+                      }`}
+                    >
+                      {order.status === "return_requested"
+                        ? "Yêu cầu trả hàng"
+                        : order.status === "received"
+                        ? "Đã nhận hàng"
+                        : order.status === "shipped"
+                        ? "Đang giao"
+                        : order.status === "delivered"
+                        ? "Hoàn thành"
+                        : order.status === "return"
+                        ? "Đã trả"
+                        : order.status === "cancelled"
+                        ? "Đã hủy"
+                        : ""}
+                    </span>
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {["received", "return_requested"].includes(order.status) && (
+                      <>
+                        {order.status !== "return_requested" && (
+                          <button
+                            className="btn btn-success btn-sm me-2 mb-1"
+                            onClick={() => onComplete(order._id)}
+                          >
+                            Xác nhận
+                          </button>
+                        )}
+                        {order.status !== "received" && (
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => onReturn(order._id)}
+                          >
+                            Trả hàng
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="10" className="text-center text-muted">
+                  Không tìm thấy đơn hàng nào!
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

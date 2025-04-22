@@ -6,6 +6,7 @@ import ConfirmOrderList from "../components/sales/ConfirmOrderList";
 import CompleteOrderList from "../components/sales/CompleteOrderList";
 import useOrderStore from "../store/orderStore";
 import SearchBar from "../components/sales/searchBar";
+import axios from "axios";
 
 const SalesManagement = () => {
   const { fetchOrders, updateOrderStatus } = useOrderStore();
@@ -24,9 +25,16 @@ const SalesManagement = () => {
     updateOrderStatus(orderId, "processing");
   };
 
-  const handleShipOrder = (orderId) => {
-    updateOrderStatus(orderId, "shipped");
-
+  const handleShipOrder = async (orderId) => {
+    try {
+      // Gửi request API để cập nhật trạng thái đơn hàng
+      await axios.put(`${process.env.REACT_APP_URL_BACKEND}/send/ship/${orderId}`);
+      // Cập nhật trạng thái trên frontend sau khi API thành công
+      updateOrderStatus(orderId, "shipped");
+      fetchOrders();
+    } catch (error) {
+      console.error("Lỗi khi giao hàng:", error);
+    }
   };
 
   const handleCompleteOrder = async (orderId) => {

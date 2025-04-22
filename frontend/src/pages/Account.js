@@ -57,8 +57,8 @@ const Account = () => {
     const checkStatuses = async () => {
       const paymentLinkId = localStorage.getItem("paymentLinkId");
       console.log("paymentLinkId", paymentLinkId);
-      const orderId = localStorage.getItem("orderId");
-      console.log("orderId", orderId);
+      const orderCode = localStorage.getItem("orderCode");
+      console.log("orderCode", orderCode);
 
       if (paymentLinkId) {
         try {
@@ -82,10 +82,10 @@ const Account = () => {
         }
       }
 
-      if (orderId) {
+      if (orderCode) {
         try {
           const res = await axios.post(
-            `${process.env.REACT_APP_URL_BACKEND}/momo/payment-status/${orderId}`
+            `${process.env.REACT_APP_URL_BACKEND}/momo/payment-status/${orderCode}`
           );
 
           const data = res.data;
@@ -97,7 +97,7 @@ const Account = () => {
             await createOrder(orderData, { headers });
           }
 
-          localStorage.removeItem("orderId");
+          localStorage.removeItem("orderCode");
           fetchOrders();
         } catch (err) {
           console.error("Lỗi khi kiểm tra trạng thái thanh toán MoMo:", err);

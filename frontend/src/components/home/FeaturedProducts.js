@@ -5,7 +5,7 @@ import useProductStore from "../../store/productStore";
 const FeaturedProducts = () => {
     const navigate = useNavigate();
     const { products, getProducts } = useProductStore();
-    console.log(products);
+
     useEffect(() => {
         getProducts();
     }, [getProducts]);

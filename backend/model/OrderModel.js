@@ -45,6 +45,10 @@ const orderSchema = new mongoose.Schema(
             enum: ["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested","cancelled_confirmed"],
             default: "pending",
         },
+        isReminderSent: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

@@ -2,16 +2,16 @@ import React from "react";
 
 const CartSummary = ({ cart, selectedItems, handleCheckout }) => {
 
-  if (!selectedItems || selectedItems.length === 0) {
-    return (
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title fw-bold">🧾 Tóm Tắt Đơn Hàng</h5>
-          <p className="text-center text-danger">Vui lòng chọn sản phẩm để thanh toán.</p>
-        </div>
-      </div>
-    );
-  }
+  // if (!selectedItems || selectedItems.length === 0) {
+  //   return (
+  //     <div className="card">
+  //       <div className="card-body">
+  //         <h5 className="card-title fw-bold">🧾 Tóm Tắt Đơn Hàng</h5>
+  //         <p className="text-center text-danger">Vui lòng chọn sản phẩm để thanh toán.</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   const selectedProducts = cart.filter((item) => {
     const itemId = item._id ?? (typeof item.productId === "string" ? item.productId : null);
@@ -67,7 +67,7 @@ const CartSummary = ({ cart, selectedItems, handleCheckout }) => {
         <button
           className="btn btn-primary w-100 mt-3"
           onClick={handleCheckout}
-          disabled={selectedItems.length === 0}
+          disabled={selectedItems.length === 0 || totalQuantity === 0 || totalPrice === 0}
         >
           Thanh Toán
         </button>

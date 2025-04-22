@@ -65,8 +65,8 @@ const createMomoPayment = async (amount, orderInfo, items, deliveryInfo, userInf
     });
 };
 
-const transactionStatus = async (orderId) => {
-    const rawSignature = `accessKey=${MOMO_ACCESS_KEY}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`;
+const transactionStatus = async (orderCode) => {
+    const rawSignature = `accessKey=${MOMO_ACCESS_KEY}&orderId=${orderCode}&partnerCode=MOMO&requestId=${orderCode}`;
 
     const signature = crypto
         .createHmac("sha256", MOMO_SECRET_KEY)
@@ -75,8 +75,8 @@ const transactionStatus = async (orderId) => {
 
     const requestBody = JSON.stringify({
         partnerCode: "MOMO",
-        requestId: orderId,
-        orderId,
+        requestId: orderCode,
+        orderId: orderCode,
         signature,
         lang: "vi",
     });

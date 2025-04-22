@@ -374,7 +374,15 @@ const AccountInfo = () => {
         </div>
       </div>
 
-      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
+      {errorMessage && (
+        <div
+          className={`alert ${
+            errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
+          }`}
+        >
+          {errorMessage}
+        </div>
+      )}
 
       {!isEditing ? (
         <div>

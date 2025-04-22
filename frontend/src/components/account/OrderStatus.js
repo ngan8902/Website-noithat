@@ -29,7 +29,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
     shipped: "Đang giao hàng",
     delivered: "Đã giao hàng",
     received: "Đã nhận hàng",
-    return_requested: "Yêu cầu trả hàng",
+    return_requested: "Đang yêu cầu trả hàng",
     return: "Đã trả hàng",
     cancelled: "Đã hủy",
     cancelled_confirmed: "Đã hủy"
@@ -75,8 +75,9 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
         <div
           className="table-responsive"
           style={{
-            maxHeight: activeOrders.length > 5 ? "400px" : "auto",
-            overflowY: activeOrders.length > 5 ? "auto" : "visible",
+            maxHeight: activeOrders.length > 3 ? "400px" : "auto",
+            overflowY: activeOrders.length > 3 ? "auto" : "visible",
+            overflowX: "auto",
             border: "1px solid #ddd"
           }}
         >

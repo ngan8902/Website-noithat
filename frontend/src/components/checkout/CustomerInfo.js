@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddressSelector from "../AddressSelector";
+import useAuthStore from '../../store/authStore';
 
 const CustomerInfo = ({
     info,
@@ -88,10 +89,13 @@ const CustomerInfo = ({
         }
     };
 
+    const { user } = useAuthStore();
+
     return (
         <div className="col-md-6">
             <h5 className="fw-bold">Thông Tin Người Nhận Hàng</h5>
 
+            {user && (
             <div className="alert alert-secondary">
                 <strong>Thông tin của bạn:</strong>
                 {displayAddresses.length > 0 ? (
@@ -121,6 +125,7 @@ const CustomerInfo = ({
                     <p className="text-danger">Thông tin địa chỉ của bạn chưa có! Bạn nên cập nhật đầy đủ thông tin trong Thông tin tài khoản.</p>
                 )}
             </div>
+            )}
 
             <form>
                 <div className="mb-3">

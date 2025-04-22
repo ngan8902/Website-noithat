@@ -27,7 +27,7 @@ const initiateMomoPayment = async (req, res) => {
         return res.json({ 
             message: "Tạo giao dịch thành công!", 
             payUrl: momoResponse.payUrl, 
-            orderId: momoResponse.orderId, 
+            orderCode: momoResponse.orderId, 
             resultCode: momoResponse.resultCode 
         });
     } catch (error) {
@@ -38,23 +38,23 @@ const initiateMomoPayment = async (req, res) => {
 
 const verifyPaymentStatus = async (req, res) => {
     try {
-        const { orderId } = req.params;
+        const { orderCode } = req.params;
 
-        if (!orderId) {
+        if (!orderCode) {
             return res.status(400).json({ message: "Thiếu orderId!" });
         }
 
-        const momoStatus = await transactionStatus(orderId);
+        const momoStatus = await transactionStatus(orderCode);
         console.log("Trạng thái giao dịch MoMo:", momoStatus);
 
         if (momoStatus.resultCode === 0) {
-            const tempOrder = await TemporaryOrder.findOne({ orderCode: orderId });
+            const tempOrder = await TemporaryOrder.findOne({ orderCode: orderCode });
 
             if (!tempOrder) {
                 return res.status(404).json({ message: "Không tìm thấy đơn tạm!" });
             }
 
-            await TemporaryOrder.deleteOne({ orderCode: orderId });
+            await TemporaryOrder.deleteOne({ orderCode: orderCode });
 
             return res.json({
                 message: "Transaction success",

@@ -16,6 +16,22 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
   useEffect(() => {
     if (orders.length > 0) {
       setLoading(false);
+
+      const unreviewedDeliveredOrders = orders.filter(
+        (order) => order.status === "delivered" && (!order.rating || order.rating === 0)
+      );
+
+      unreviewedDeliveredOrders.forEach((order) => {
+        if (order.isReminderSent === true) return;
+        axios.post(`${process.env.REACT_APP_URL_BACKEND}/send/send-review`, {
+          orderCode: order.orderCode
+        }).then(() => {
+          console.log(`Đã gửi mail nhắc đánh giá cho đơn hàng #${order.orderCode}`);
+        }).catch((err) => {
+          console.error("Lỗi gửi mail nhắc đánh giá:", err);
+        });
+      });
+
     } if (orders.length === 0) {
       setLoading(false);
     }
@@ -81,7 +97,7 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
       ) : Purchased.length === 0 ? (
         <p className="text-center text-muted">Bạn chưa có đơn hàng nào hoàn thành.</p>
       ) : (
-        <div className="table-responsive" style={{ maxHeight: "400px", overflowY: "auto", border: "1px solid #ddd" }}>
+        <div className="table-responsive" style={{ maxHeight: "400px", overflowY: "auto", overflowX: "auto", border: "1px solid #ddd" }}>
           <table className="table table-striped table-hover text-center align-middle">
             <thead className="table-dark">
               <tr>
@@ -144,11 +160,14 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
                   </td>
                   <td>
                     {order.status === "delivered" && (
-                      <button className="btn btn-sm btn-outline-primary" onClick={() => handleReview(order)}>
-                        Đánh Giá
-                      </button>
-                    )
-                    }
+                      order.rating && order.rating > 0 ? (
+                        <span className="text-success">Đã đánh giá</span>
+                      ) : (
+                        <button className="btn btn-sm btn-outline-primary" onClick={() => handleReview(order)}>
+                          Đánh Giá
+                        </button>
+                      )
+                    )}
                   </td>
                 </tr>
               ))}
@@ -183,9 +202,14 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
                 />
               </div>
             ))}
-            <button className="btn btn-secondary mt-3 ms-2" onClick={() => setIsModalOpen(false)}>
-              Đóng
-            </button>
+            <div className="d-flex justify-content-end mt-3">
+              <button 
+                className="btn btn-secondary" 
+                onClick={() => setIsModalOpen(false)}
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         )}
       </Modal>

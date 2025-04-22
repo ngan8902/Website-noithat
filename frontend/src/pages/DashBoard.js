@@ -139,11 +139,12 @@ export default function Dashboard() {
                   <Tooltip
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
-                        const value = payload[0].value;
+                        const { orders, totalRevenue } = payload[0].payload;
                         return (
                           <div className="bg-white p-2 rounded shadow text-sm border border-gray-200">
                             <p className="font-semibold">{label}</p>
-                            <p>💰 Tổng tiền: {(value / 1_000_000).toLocaleString("vi-VN")} triệu</p>
+                            <p>🛒 {orders} đơn hàng</p>
+                            <p>💰 Tổng tiền: {(totalRevenue / 1_000_000).toLocaleString("vi-VN")} triệu</p>
                           </div>
                         );
                       }

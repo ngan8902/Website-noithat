@@ -56,7 +56,6 @@ const Checkout = () => {
     }, [selectedProducts, cartItems]);
 
     const savedAddresses = [{ id: 1, address: "" }];
-    // const [, setSavedAddresses] = useState([]);
     const hasAddress = savedAddresses.length > 0;
 
     const [selectedAddress, setSelectedAddress] = useState(hasAddress ? savedAddresses[0].address : "");
@@ -97,26 +96,6 @@ const Checkout = () => {
         setFinalPrice(calculateFinalPrice());
         setTotalPrice(calculateTotalPrice());
     }, [cartData, shippingFee]);
-
-    // useEffect(() => {
-    //     const saveAddress = async () => {
-    //         if (user && newAddress) {
-    //             try {
-    //                 const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
-    //                     userId: user._id,
-    //                     address: newAddress,
-    //                     fullname: receiver.fullname,
-    //                     phone: receiver.phone,
-    //                 });
-
-    //                 console.log("Địa chỉ đã được lưu thành công.", response);
-    //             } catch (error) {
-    //                 console.error("Lỗi khi lưu địa chỉ:", error);
-    //             }
-    //         }
-    //     };
-    //     saveAddress();
-    // }, [newAddress, user, receiver.fullname, receiver.phone]);
 
     useEffect(() => {
         const fetchAddress = async () => {
@@ -203,9 +182,24 @@ const Checkout = () => {
         return <p className="text-center mt-5">Không có sản phẩm để thanh toán!</p>;
     }
 
-    const orderDate = new Date().toLocaleDateString("vi-VN")
+    const orderDate = new Date().toLocaleDateString("vi-VN");
 
-    const delivered = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("vi-VN")
+    const calculateDeliveredDate = (address) => {
+        const now = new Date();
+        const lowerAddress = (address || "").toLowerCase();
+
+        // Khu vực nội thành TP.HCM hoặc các tỉnh miền Nam gần
+        const innerCityKeywords = ["hồ chí minh", "gò vấp", "bình dương", "đồng nai", "cần thơ", "vũng tàu", "long an", "bình định"];
+        const isInnerCity = innerCityKeywords.some(keyword => lowerAddress.includes(keyword));
+
+        // Giao hàng sau 3-5 ngày cho nội thành, 5-7 ngày cho tỉnh xa
+        const daysToAdd = isInnerCity ? 4 : 6;
+
+        const deliveredDate = new Date(now.setDate(now.getDate() + daysToAdd));
+        return deliveredDate.toLocaleDateString("vi-VN");
+    };
+
+    const delivered = calculateDeliveredDate(selectedAddress || newAddress);
 
     const handleCheckout = async () => {
         setShowConfirmModal(false);
@@ -378,8 +372,31 @@ const Checkout = () => {
                     },
                     tempOrderData: orderData
                 });
-                if (response.data?.orderId) {
-                    localStorage.setItem('orderId', response.data.orderId);
+                if (response.data?.orderCode) {
+                    localStorage.setItem('orderCode', response.data.orderCode);
+
+                    if (user && newAddress) {
+                        try {
+                            await axios.post(`${process.env.REACT_APP_URL_BACKEND}/address/save-new-address`, {
+                                userId: user._id,
+                                address: newAddress,
+                                fullname: receiver.fullname,
+                                phone: receiver.phone,
+                            });
+                            console.log("Đã lưu địa chỉ sau khi đặt hàng thành công!");
+                        } catch (error) {
+                            console.error("Lỗi khi lưu địa chỉ:", error);
+                        }
+                    }
+
+                    const purchasedItems = cartData?.map((item) => item._id) || [];
+                    if (purchasedItems.length > 0) {
+                        clearPurchasedItems(purchasedItems);
+                        localStorage.removeItem("selectedProducts");
+                    } else {
+                        console.log("Không có sản phẩm nào để xóa.");
+                    }
+
                     window.location.href = response.data.payUrl;
                 } else {
                     console.error("Không có orderId từ MoMo:", response.data);
@@ -484,7 +501,6 @@ const Checkout = () => {
         return "https://via.placeholder.com/100";
     };
 
-
     return (
         <div className="container py-5">
             <h2 className="text-center fw-bold mb-5">Thông Tin Đơn Hàng</h2>
@@ -518,7 +534,7 @@ const Checkout = () => {
 
                     {!user && (
                         <>
-                            <p>Bạn muốn nhận thông báo về các ưu đãi? Hãy 
+                            <p>Chúng tôi muốn hỗ trợ bạn tốt hơn. Hãy 
                                 <button
                                     className="btn btn-outline-primary text-dark text-decoration-none fw-bold"
                                     onClick={() => setShowRegister(true)}
