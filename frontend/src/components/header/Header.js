@@ -26,7 +26,7 @@ const Header = () => {
   }, [searchTerm, getSuggestions]);
 
   const handleSearch = (term = searchTerm) => {
-    if (term.trim() !== "") {
+    if (typeof term === "string" && term.trim() !== "") {
       searchProducts(term);
       window.location.href = `/search?query=${term}`;
     }
@@ -131,8 +131,11 @@ const Header = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             />
-            <button className="btn bg-primary text-white" onClick={handleSearch}>
-              <i className="bi bi-search"></i>
+            <button
+              className="btn bg-primary text-white"
+              onClick={() => handleSearch(searchTerm)}
+            >
+              <i className="bi bi-search" style={{ pointerEvents: "none" }}></i>
             </button>
 
             {suggestions && suggestions.length > 0 && (
@@ -141,8 +144,6 @@ const Header = () => {
                   <li 
                     key={product._id} 
                     onClick={() => {
-                      setSearchTerm(product.name);
-                      getSuggestions([]);
                       handleSearch(product.name);
                     }}
                   >

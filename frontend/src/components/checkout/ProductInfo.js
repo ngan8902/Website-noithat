@@ -35,12 +35,13 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
             <h5 className="fw-bold">Thông Tin Sản Phẩm</h5>
             {displayProducts.map((item, index) => {
                 const productName = item.productId?.data?.name || item.name || item.product?.name;
-                const productPrice = item.productId?.data?.price || item.price || item.product?.price;
+                let productPrice = item.productId?.data?.price || item.price || item.product?.price;
                 const discount = item.productId?.data?.discount || item.discount || item.product?.discount;
                 const hasDiscount = discount > 0;
-                const discountedPrice = hasDiscount
-                    ? (productPrice - (productPrice * discount) / 100) * item.quantity
-                    : productPrice * item.quantity;
+                if (hasDiscount) {
+                    productPrice = productPrice - (productPrice * discount) / 100;
+                }
+                const discountedPrice = productPrice * item.quantity
 
                 return (
                     <div key={index} className="border p-2 mb-2">
@@ -56,15 +57,15 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
                         </p>
                         {hasDiscount ? (
                             <p>
-                                Giá:
+                                Đơn giá:
                                 <span style={{ textDecoration: "line-through", color: "red" }}>
                                     {productPrice.toLocaleString()} VND
                                 </span>
+                                {" "}(đã giảm {discount}%)
                                 {" "}➝{" "}
                                 <span style={{ fontWeight: "bold" }}>
                                     {discountedPrice.toLocaleString()} VND
                                 </span>
-                                {" "}(đã giảm {discount}%)
                             </p>
                         ) : (
                             <p>

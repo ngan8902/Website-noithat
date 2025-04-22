@@ -833,7 +833,6 @@ section {
   border-radius: 5px;
 }
 
-
 .checkin-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
@@ -881,4 +880,19 @@ section {
 .order-status-hover:hover {
   color: #0d6efd !important;
   font-weight: 600;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

@@ -49,25 +49,6 @@ const updateCheckOut = async (attendanceId, checkOutTime) => {
   }
 };
 
-const getAttendanceByStaffId = async (staffId, startDate, endDate) => {
-  try {
-    const query = { staffId };
-    if (startDate && endDate) {
-      query.checkInTime = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      };
-    } else if (startDate) {
-      query.checkInTime = { $gte: new Date(startDate) };
-    } else if (endDate) {
-      query.checkInTime = { $lte: new Date(endDate) };
-    }
-    return await Attendance.find(query).populate('staffId', 'name staffcode');
-  } catch (error) {
-    throw new Error(`Lỗi khi lấy lịch sử điểm danh: ${error.message}`);
-  }
-};
-
 const getAllAttendance = async (startDate, endDate) => {
   try {
     const query = {};
@@ -87,14 +68,6 @@ const getAllAttendance = async (startDate, endDate) => {
   }
 };
 
-const getAttendanceById = async (attendanceId) => {
-  try {
-    return await Attendance.findById(attendanceId).populate('staffId', 'name staffcode');
-  } catch (error) {
-    throw new Error(`Lỗi khi lấy bản ghi điểm danh theo ID: ${error.message}`);
-  }
-};
-
 const getCheckinsByDate = async (date) => {
   const startOfDay = new Date(`${date}T00:00:00.000Z`);
   const endOfDay = new Date(`${date}T23:59:59.999Z`);
@@ -108,6 +81,36 @@ const getCheckinsByDate = async (date) => {
 
   return checkins;
 };
+
+
+const getAttendanceByStaffId = async (staffId, startDate, endDate) => {
+  try {
+    const query = { staffId };
+    if (startDate && endDate) {
+      query.checkInTime = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    } else if (startDate) {
+      query.checkInTime = { $gte: new Date(startDate) };
+    } else if (endDate) {
+      query.checkInTime = { $lte: new Date(endDate) };
+    }
+    return await Attendance.find(query).populate('staffId', 'name staffcode');
+  } catch (error) {
+    throw new Error(`Lỗi khi lấy lịch sử điểm danh: ${error.message}`);
+  }
+};
+
+
+const getAttendanceById = async (attendanceId) => {
+  try {
+    return await Attendance.findById(attendanceId).populate('staffId', 'name staffcode');
+  } catch (error) {
+    throw new Error(`Lỗi khi lấy bản ghi điểm danh theo ID: ${error.message}`);
+  }
+};
+
 
 module.exports = {
   saveFaceEmbedding,

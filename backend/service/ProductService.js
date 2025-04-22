@@ -180,7 +180,8 @@ const searchProduct = async (query) => {
         }
 
         const formattedQuery = removeAccents(query).trim();
-        const regex = new RegExp(`^${formattedQuery}`, 'i');
+
+        const regex = new RegExp(`${formattedQuery}`, 'i');
 
         const products = await Product.find().lean();
 
@@ -199,7 +200,8 @@ const getSuggestions = async (query) => {
         if (!query) return [];
 
         const formattedQuery = removeAccents(query).trim();
-        const regex = new RegExp(`^${formattedQuery}`, "i");
+
+        const regex = new RegExp(`${formattedQuery}`, "i");
 
         const products = await Product.find().limit(50).lean();
 
@@ -212,7 +214,6 @@ const getSuggestions = async (query) => {
         throw new Error(error.message);
     }
 };
-
 
 const getRating = (productId) => {
     return new Promise(async (resolve, reject) => {

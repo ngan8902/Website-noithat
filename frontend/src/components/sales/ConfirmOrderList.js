@@ -4,7 +4,17 @@ import { useSearchStore } from '../../store/searchStore';
 
 const ConfirmOrderList = ({ onShip, onCancel }) => {
   const { orders, fetchOrders } = useOrderStore();
-  const keyword = useSearchStore((state) => state.keyword.toLowerCase());
+
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+  };
+
+  const keyword = removeVietnameseTones(useSearchStore((state) => state.keyword || ""));
 
   useEffect(() => {
     fetchOrders()
@@ -13,13 +23,12 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
   const filteredOrders = orders
     .filter(order => order.status === "processing")
     .filter(order => {
-      const receiverName = order.receiver?.fullname?.toLowerCase() || "";
-      const receiverPhone = order.receiver?.phone || "";
-      const orderCodeFilter = order?.orderCode?.toLowerCase() || "";
+      const receiverName = removeVietnameseTones(order.receiver?.fullname || "");
+      const receiverPhone = (order.receiver?.phone || "").toLowerCase();
+      const orderCodeFilter = removeVietnameseTones(order?.orderCode || "");
 
-      // Kiểm tra nếu bất kỳ sản phẩm nào trong orderItems khớp với searchTerm
       const productMatch = order.orderItems.some(item =>
-        item.name.toLowerCase().includes(keyword)
+        removeVietnameseTones(item.name).includes(keyword)
       );
 
       return (

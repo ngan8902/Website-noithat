@@ -71,130 +71,122 @@ function FaceDetect() {
     if (type === "check-out") setCheckOutLoading(true);
     setNotification("");
 
-    const video = webcamRef.current.video;
-    const videoWidth = video.videoWidth;
-    const videoHeight = video.videoHeight;
+    setTimeout(async () => {
+      const video = webcamRef.current.video;
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
 
-    webcamRef.current.video.width = videoWidth;
-    webcamRef.current.video.height = videoHeight;
-    canvasRef.current.width = videoWidth;
-    canvasRef.current.height = videoHeight;
+      webcamRef.current.video.width = videoWidth;
+      webcamRef.current.video.height = videoHeight;
+      canvasRef.current.width = videoWidth;
+      canvasRef.current.height = videoHeight;
 
-    const displaySize = { width: videoWidth, height: videoHeight };
-    faceapi.matchDimensions(canvasRef.current, displaySize);
+      const displaySize = { width: videoWidth, height: videoHeight };
+      faceapi.matchDimensions(canvasRef.current, displaySize);
 
-    try {
-      const detections = await faceapi
-        .detectAllFaces(video)
-        .withFaceLandmarks()
-        .withFaceDescriptors();
+      try {
+        const detections = await faceapi
+          .detectAllFaces(video)
+          .withFaceLandmarks()
+          .withFaceDescriptors();
 
-      const resizedDetections = faceapi.resizeResults(detections, displaySize);
-      const context = canvasRef.current.getContext("2d");
-      context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        const resizedDetections = faceapi.resizeResults(detections, displaySize);
+        const context = canvasRef.current.getContext("2d");
+        context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
-      faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
-      faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetections);
+        faceapi.draw.drawDetections(canvasRef.current, resizedDetections);
+        faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetections);
 
-      if (resizedDetections.length === 0) {
-        setNotification("Không nhận diện được khuôn mặt!");
-        setCheckInLoading(false);
-        setCheckOutLoading(false);
-        setTimeout(() => setNotification(""), 4000);
-        return;
-      }
+        if (resizedDetections.length === 0) {
+          setNotification("⚠️ Không nhận diện được khuôn mặt!");
+          setCheckInLoading(false);
+          setCheckOutLoading(false);
+          setTimeout(() => setNotification(""), 4000);
+          return;
+        }
 
-      const faceDetected = resizedDetections[0];
-      const faceVector = faceDetected.descriptor;
-      const now = new Date();
+        const faceDetected = resizedDetections[0];
+        const faceVector = faceDetected.descriptor;
+        const now = new Date();
 
-      for (const staff of staffFaces.current) {
-        if (!staff?.faceEmbedding?.length) continue;
+        for (const staff of staffFaces.current) {
+          if (!staff?.faceEmbedding?.length) continue;
 
-        const distance = euclideanDistance(faceVector, staff.faceEmbedding);
-        if (distance < THRESHOLD) {
-          const matchedStaff = checkedInStaff.find((item) => item.staffId === staff._id);
+          const distance = euclideanDistance(faceVector, staff.faceEmbedding);
+          if (distance < THRESHOLD) {
+            const matchedStaff = checkedInStaff.find((item) => item.staffId === staff._id);
 
-          if (type === "check-in") {
-            if (matchedStaff) {
-              setNotification(`Nhân viên ${staff.staffcode} đã check-in hôm nay.`);
-              setTimeout(() => setNotification(""), 4000);
-              break;
-            }
+            if (type === "check-in") {
+              if (matchedStaff) {
+                setNotification(`⚠️ Nhân viên ${staff.staffcode} đã check-in hôm nay.`);
+                setTimeout(() => setNotification(""), 4000);
+                break;
+              }
 
-            const status = now.getHours() > 8 ? "late" : "present";
-            const checkInData = {
-              staffId: staff._id,
-              staffcode: staff.staffcode,
-              checkInTime: now.toISOString(),
-              notes: "Check-in bằng nhận diện khuôn mặt",
-              status,
-            };
-
-            const response = await axios.post(
-              `${process.env.REACT_APP_URL_BACKEND}/attendance/check-in`,
-              checkInData
-            );
-
-            const attendance = response.data.data;
-
-            setCheckedInStaffIds((prev) => [...prev, staff._id]);
-            setCheckedInStaff((prev) => [
-              ...prev,
-              {
+              const status = now.getHours() > 8 ? "late" : "present";
+              const checkInData = {
                 staffId: staff._id,
+                staffcode: staff.staffcode,
                 checkInTime: now.toISOString(),
-                attendanceId: attendance._id,
-              },
-            ]);
+                notes: "Check-in bằng nhận diện khuôn mặt",
+                status,
+              };
 
-            const statusText = status === "present" ? "Đúng giờ" : "Trễ";
-            setNotification(`Nhân viên ${staff.staffcode} check-in thành công (${statusText})`);
-            setTimeout(() => setNotification(""), 4000);
-            break;
-          }
+              const response = await axios.post(
+                `${process.env.REACT_APP_URL_BACKEND}/attendance/check-in`,
+                checkInData
+              );
 
-          if (type === "check-out") {
-            if (!matchedStaff) {
-              setNotification(`⚠️ Nhân viên ${staff.staffcode} chưa check-in hôm nay.`);
+              const attendance = response.data.data;
+
+              setCheckedInStaffIds((prev) => [...prev, staff._id]);
+              setCheckedInStaff((prev) => [
+                ...prev,
+                {
+                  staffId: staff._id,
+                  checkInTime: now.toISOString(),
+                  attendanceId: attendance._id,
+                },
+              ]);
+
+              const statusText = status === "present" ? "Đúng giờ" : "Trễ";
+              setNotification(`✅ Nhân viên ${staff.staffcode} check-in thành công (${statusText})`);
               setTimeout(() => setNotification(""), 4000);
               break;
             }
 
-            const checkInTime = new Date(matchedStaff.checkInTime);
-            const diffTime = (now - checkInTime) / 1000;
-            // / (1000 * 60 * 60);
+            if (type === "check-out") {
+              if (!matchedStaff) {
+                setNotification(`⚠️ Nhân viên ${staff.staffcode} chưa check-in hôm nay.`);
+                setTimeout(() => setNotification(""), 4000);
+                break;
+              }
 
-            if (diffTime < 5) {
-              setNotification(`Chưa đủ 5 giờ để check-out. Còn lại ${(5 - diffTime).toFixed(2)} giờ.`);
+              await axios.patch(`${process.env.REACT_APP_URL_BACKEND}/attendance/check-out`, {
+                attendanceId: matchedStaff._id,
+                checkOutTime: now.toISOString(),
+              });
+
+              setNotification(`✅ Nhân viên ${staff.staffcode} đã check-out thành công.`);
               setTimeout(() => setNotification(""), 4000);
               break;
             }
-
-            await axios.patch(`${process.env.REACT_APP_URL_BACKEND}/attendance/check-out`, {
-              attendanceId: matchedStaff._id,
-              checkOutTime: now.toISOString(),
-            });
-
-            setNotification(`Nhân viên ${staff.staffcode} đã check-out thành công.`);
-            setTimeout(() => setNotification(""), 4000);
-            break;
           }
         }
-      }
 
-      if (!notification) {
-        setNotification("⚠️ Khuôn mặt không trùng khớp với bất kỳ nhân viên nào.");
+        if (!notification) {
+          setNotification("⚠️ Khuôn mặt không trùng khớp với bất kỳ nhân viên nào.");
+          setTimeout(() => setNotification(""), 4000);
+        }
+      } catch (error) {
+        console.error("Lỗi khi nhận diện:", error);
+        setNotification("Lỗi khi nhận diện khuôn mặt.");
         setTimeout(() => setNotification(""), 4000);
+      } finally {
+        if (type === "check-in") setCheckInLoading(false);
+        if (type === "check-out") setCheckOutLoading(false);
       }
-    } catch (error) {
-      console.error("Lỗi khi nhận diện:", error);
-      setNotification("Lỗi khi nhận diện khuôn mặt.");
-      setTimeout(() => setNotification(""), 4000);
-    } finally {
-      if (type === "check-in") setCheckInLoading(false);
-      if (type === "check-out") setCheckOutLoading(false);
-    }
+    }, 0);
   };
 
   return (
@@ -254,7 +246,10 @@ function FaceDetect() {
               transition: "background-color 0.3s ease",
             }}
           >
-            {checkInLoading ? "Đang xử lý..." : "Đi vào (check-in)"}
+            {checkInLoading ? 
+              <>
+                <span className="spinner" /> Đang xử lý...
+              </> : "Đi vào (check-in)"}
           </button>
           <button
             onClick={() => detectAndProcess("check-out")}
@@ -270,7 +265,10 @@ function FaceDetect() {
               transition: "background-color 0.3s ease",
             }}
           >
-            {checkOutLoading ? "Đang xử lý..." : "Đi ra (check-out)"}
+            {checkOutLoading ?
+              <>
+                <span className="spinner" /> Đang xử lý...
+              </> : "Đi ra (check-out)"}
           </button>
         </div>
         {notification && (
@@ -278,7 +276,7 @@ function FaceDetect() {
             style={{
               marginTop: "30px",
               backgroundColor:
-                notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không")
+                notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không") || notification.includes("đã check-in")
                   ? "#dc3545"
                   : "#28a745",
               color: "#fff",

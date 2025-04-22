@@ -5,7 +5,7 @@ import SidebarFilter from "../components/product/SidebarFilter";
 import Pagination from "../components/product/Pagination";
 
 const defaultImage = "https://via.placeholder.com/300";
-const PAGE = 9; // Số sản phẩm trên mỗi trang
+const PAGE = 9;
 
 const SearchResults = () => {
     const { products, searchProducts } = useProductStore();
@@ -15,8 +15,6 @@ const SearchResults = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, setFilters] = useState({ priceRange: "", rating: "" });
     const [, setLoading] = useState(true);
-
-    console.log(products)
 
     useEffect(() => {
         if (query) {
@@ -97,6 +95,14 @@ const SearchResults = () => {
 
                                             return (
                                                 <div className="col-md-4" key={product._id || product.id}>
+                                                <Link
+                                                    to={`/${encodeURIComponent(product.name)}/${product._id}`}
+                                                    style={{
+                                                        textDecoration: 'none',
+                                                        color: 'inherit',
+                                                        display: 'block',
+                                                    }}
+                                                >
                                                     <div className="card h-100 text-center">
                                                         <img
                                                             src={`http://localhost:8000${product.image}` || defaultImage}
@@ -128,13 +134,10 @@ const SearchResults = () => {
                                                                     ></i>
                                                                 ))}
                                                             </div>
-
-                                                            <Link to={`/${encodeURIComponent(product.name)}/${product._id}`} className="btn btn-dark w-100 mt-auto">
-                                                                Xem Chi Tiết
-                                                            </Link>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </Link>
+                                            </div>
                                             );
                                         })
                                     ) : (

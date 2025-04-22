@@ -9,6 +9,15 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalType, setModalType] = useState(null);
 
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+  };
+
   useEffect(() => {
     getProducts();
 
@@ -35,10 +44,12 @@ const ProductList = () => {
     setSelectedProduct(null);
   };
 
-  const filteredProducts = products.filter(product =>
-    product?.name?.toLowerCase().includes(search.toLowerCase()) ||
-    product?.productCode?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredProducts = products.filter((product) => {
+    const searchText = removeVietnameseTones(search);
+    const productName = removeVietnameseTones(product?.name || "");
+    const productCode = removeVietnameseTones(product?.productCode || "");
+    return productName.includes(searchText) || productCode.includes(searchText);
+  });
 
   return (
     <div id="products" className="mt-4">
@@ -58,9 +69,19 @@ const ProductList = () => {
         />
       </div>
 
-      {products.length <= 0 ? <span className="dots"></span> : (
-        <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "hidden" }}>
-          <table className="table table-bordered mt-3">
+      {products.length <= 0 ? (
+        <span className="dots"></span>
+      ) : (
+        <div
+          style={{
+            border: "1px solid #ddd",
+            maxHeight: "450px",
+            overflowY: "auto",
+            overflowX: "auto",
+          }}
+          className="hide-scrollbar"
+        >
+          <table className="table table-bordered mt-3" style={{ minWidth: "1000px" }}>
             <thead className="table-dark" style={{ textAlign: "center", verticalAlign: "middle" }}>
               <tr>
                 <th style={{ width: "10%" }}>ID</th>
@@ -72,43 +93,29 @@ const ProductList = () => {
                 <th style={{ width: "15%" }}>Hành Động</th>
               </tr>
             </thead>
+            <tbody>
+              {filteredProducts.map((product) => (
+                <tr key={product._id}>
+                  <td>{product.productCode || ""}</td>
+                  <td>
+                    <img
+                      src={`http://localhost:8000/upload/${product.image.split("/").pop()}` || "https://via.placeholder.com/100"}
+                      alt={product.name}
+                      style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                    />
+                  </td>
+                  <td>{product.name}</td>
+                  <td>{product.price} VND</td>
+                  <td>{product.countInStock}</td>
+                  <td>{product.discount} %</td>
+                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                    <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
+                    <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
-
-          <div
-            style={{
-              maxHeight: "350px",
-              overflowY: "auto",
-              overflowX: "none",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none"
-            }}
-            className="hide-scrollbar"
-          >
-            <table className="table table-bordered">
-              <tbody>
-                {filteredProducts.map((product) => (
-                  <tr key={product._id}>
-                    <td style={{ width: "10%" }}>{product.productCode || ""}</td>
-                    <td style={{ width: "8%" }}>
-                      <img
-                        src={`http://localhost:8000/upload/${product.image.split("/").pop()}` || "https://via.placeholder.com/100"}
-                        alt={product.name}
-                        style={{ width: "100px", height: "100px", objectFit: "cover" }}
-                      />
-                    </td>
-                    <td style={{ width: "30%" }}>{product.name}</td>
-                    <td style={{ width: "10%" }}>{product.price} VND</td>
-                    <td style={{ width: "10%" }}>{product.countInStock}</td>
-                    <td style={{ width: "10%" }}>{product.discount} %</td>
-                    <td style={{ width: "15%", textAlign: "center", verticalAlign: "middle" }}>
-                      <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
-                      <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       )}
 

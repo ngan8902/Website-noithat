@@ -11,10 +11,10 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedSelectedItems = JSON.parse(localStorage.getItem('selectedItems')) || [];
-    setSelectedItems(storedSelectedItems);
-  }, []);
+  // useEffect(() => {
+  //   const storedSelectedItems = JSON.parse(localStorage.getItem('selectedItems')) || [];
+  //   setSelectedItems(storedSelectedItems);
+  // }, []);
   
   useEffect(() => {
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];

@@ -13,6 +13,7 @@ const FaceRegistrationPage = () => {
   const [faceDescriptor, setFaceDescriptor] = useState(null);
   const [staffcode, setStaffcode] = useState("");
   const [notification, setNotification] = useState("");
+  const [capturing, setCapturing] = useState(false);
 
   useEffect(() => {
     const loadModels = async () => {
@@ -34,20 +35,32 @@ const FaceRegistrationPage = () => {
       webcamRef.current.video.readyState === 4 &&
       modelsLoaded
     ) {
-      const video = webcamRef.current.video;
+      setCapturing(true);
+      setNotification("");
 
-      const detection = await faceapi
-        .detectSingleFace(video)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
+      setTimeout(async () => {
+        const video = webcamRef.current.video;
 
-      if (detection) {
-        setFaceDescriptor(detection.descriptor);
-        drawFace(detection);
-        setNotification("Khuôn mặt đã được ghi nhận.");
-      } else {
-        setNotification("⚠️ Không phát hiện khuôn mặt.");
-      }
+        try {
+          const detection = await faceapi
+            .detectSingleFace(video)
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+
+          if (detection) {
+            setFaceDescriptor(detection.descriptor);
+            drawFace(detection);
+            setNotification("✅ Khuôn mặt đã được ghi nhận.");
+          } else {
+            setNotification("⚠️ Không phát hiện khuôn mặt.");
+          }
+        } catch (err) {
+          console.error("Lỗi khi nhận diện khuôn mặt:", err);
+          setNotification("Lỗi nhận diện khuôn mặt.");
+        } finally {
+          setCapturing(false);
+        }
+      }, 0);
     }
   };
 
@@ -190,15 +203,25 @@ const FaceRegistrationPage = () => {
           <div className="d-flex justify-content-center gap-3 mt-4" style={{ marginTop: 30 }}>
             <button
               onClick={captureFace}
+              disabled={capturing}
               style={{
-                backgroundColor: "#007bff",
+                backgroundColor: capturing ? "#6c757d" : "#007bff",
                 color: "#fff",
                 padding: "10px 20px",
                 borderRadius: 8,
                 fontSize: 16,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
               }}
             >
-              📸 Chụp khuôn mặt
+              {capturing ? (
+                <>
+                  <span className="spinner" /> Đang xử lý...
+                </>
+              ) : (
+                "📸 Chụp khuôn mặt"
+              )}
             </button>
 
             {faceDescriptor && (

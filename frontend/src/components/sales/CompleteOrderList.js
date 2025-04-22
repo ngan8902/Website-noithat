@@ -5,7 +5,17 @@ import { useSearchStore } from '../../store/searchStore';
 const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   const { orders, fetchOrders } = useOrderStore();
   const [filterByStatus, setFilterByStatus] = useState(null);
-  const keyword = useSearchStore((state) => state.keyword.toLowerCase());
+
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+  };
+
+  const keyword = removeVietnameseTones(useSearchStore((state) => state.keyword || ""));
 
   const statusMap = {
     "delivered": "Đã hoàn thành",
@@ -33,19 +43,17 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
       (filterByStatus ? order.status === filterByStatus : true)
     )
     .filter(order => {
-      const receiverName = order.receiver?.fullname?.toLowerCase() || "";
-      const receiverPhone = order.receiver?.phone || "";
-      const statusFilter = statusMap[order?.status]?.toLowerCase() || "";
-      const orderCodeFilter = order?.orderCode?.toLowerCase() || "";
+      const receiverName = removeVietnameseTones(order.receiver?.fullname || "");
+      const receiverPhone = (order.receiver?.phone || "").toLowerCase();
+      const orderCodeFilter = removeVietnameseTones(order?.orderCode || "");
 
       const productMatch = order.orderItems.some(item =>
-        item.name.toLowerCase().includes(keyword)
+        removeVietnameseTones(item.name).includes(keyword)
       );
 
       return (
         receiverName.includes(keyword) ||
         receiverPhone.includes(keyword) ||
-        statusFilter.includes(keyword) ||
         orderCodeFilter.includes(keyword) ||
         productMatch
       );

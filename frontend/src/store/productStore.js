@@ -129,18 +129,18 @@ const useProductStore = create((set, get) => ({
 
     suggestions: [], // Đảm bảo có giá trị mặc định
     getSuggestions: async (query) => {
-    if (!query) return set({ suggestions: [] });
+        if (!query) return set({ suggestions: [] });
 
-    try {
-        const apiUrl = `${process.env.REACT_APP_URL_BACKEND}/product/suggestions?query=${query}`;
+        try {
+            const apiUrl = `${process.env.REACT_APP_URL_BACKEND}/product/suggestions?query=${query}`;
 
-        const response = await axios.get(apiUrl);
-        set({ suggestions: response.data.data || [] });
-    } catch (error) {
-        console.error("Lỗi khi lấy gợi ý:", error.response?.status, error.message);
-        set({ suggestions: [] });
+            const response = await axios.get(apiUrl);
+            set({ suggestions: response.data.data || [] });
+        } catch (error) {
+            console.error("Lỗi khi lấy gợi ý:", error.response?.status, error.message);
+            set({ suggestions: [] });
+        }
     }
-}
 
 }));
 
