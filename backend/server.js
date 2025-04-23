@@ -11,16 +11,15 @@ const routers = require("./router");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { initializeChatSocket } = require("./chat/chat.socket");
-const ImagesRoute = require("./router/ImagesRoute")
 
 dotenv.config();
 
 // Tắt các chính sách bảo mật ngăn chặn tải tài nguyên chéo
-app.use((req, res, next) => {
-  res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
-  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
+//   res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+//   next();
+// });
 
 // Cấu hình cookie-parser trước CORS
 app.use(cookieParser());
@@ -28,13 +27,14 @@ app.use(cookieParser());
 // Cấu hình CORS
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: ['http://localhost:3000', 'http://192.168.0.104:3000'], 
     credentials: true, 
-    allowedHeaders: ["Content-Type", "Authorization", "token", "staff-token"],
-    methods: ["GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"],
-    exposedHeaders: ["Set-Cookie"],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'token', 'staff-token'],
+    exposedHeaders: ['Set-Cookie'],
   })
 );
+
 
 // Hỗ trợ preflight requests
 app.options("*", cors());
@@ -60,6 +60,6 @@ mongoose.connect(`${process.env.MONGO_DB}`)
 
 initializeChatSocket(server);
 
-server.listen(port, function () {
+server.listen(port, '0.0.0.0', function () {
   console.log(`Example app listening on port ${port}!`);
 });
