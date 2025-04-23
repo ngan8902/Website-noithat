@@ -48,6 +48,15 @@ const AttendanceHistory = ({ staffId }) => {
     return `${hours}:${minutes}`;
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = String(date.getFullYear()).slice(-2); 
+    return `${day}/${month}/${year}`;
+  };
+
+
   const calculateWorkingHours = (checkInTime, checkOutTime) => {
     if (checkInTime && checkOutTime) {
       const checkIn = new Date(checkInTime);
@@ -81,7 +90,7 @@ const AttendanceHistory = ({ staffId }) => {
             records.map((record, index) => (
               <tr key={index}>
                 <td>{record.staffId.name}</td>
-                <td>{new Date(record.checkInTime).toLocaleDateString()}</td>
+                <td>{formatDate(record.checkInTime)}</td>
                 <td>{formatTime(record.checkInTime)}</td>
                 <td>{formatTime(record.checkOutTime)}</td>
                 <td>

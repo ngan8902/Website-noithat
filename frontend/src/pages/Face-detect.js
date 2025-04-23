@@ -142,7 +142,9 @@ function FaceDetect() {
                 return;
               }
 
-              const status = now.getHours() > 8 ? "late" : "present";
+              const isLate = now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() > 0);
+              const status = isLate ? "late" : "present";
+
               const checkInData = {
                 staffId: staff._id,
                 staffcode: staff.staffcode,

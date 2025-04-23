@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EditResourceModal from "./EditResourceModal";
-import { getCookie } from "../../utils/cookie.util";
-import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
 
+function removeVietnameseTones(str) {
+  return str.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+}
 
-const ResourceList = ({ setAttendanceRecords }) => {
+const ResourceList = () => {
   const [attendanceRecords, setAttendance] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const token = getCookie(STAFF_TOKEN_KEY);
-
 
   const fetchAttendanceRecords = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/attendance/all-attendance`,);
-
       console.log(response)
       setAttendance(response.data.data);
     } catch (error) {
@@ -36,10 +38,13 @@ const ResourceList = ({ setAttendanceRecords }) => {
     setModalOpen(false);
   };
 
-  const filteredRecords = attendanceRecords?.filter((record) =>
-    record.staffcode.toString().includes(search) ||
-    record?.name?.toLowerCase().includes(search?.toLowerCase())
-  );
+  const filteredRecords = attendanceRecords?.filter((record) => {
+    const searchNormalized = removeVietnameseTones(search || "");
+    const staffcode = removeVietnameseTones(record.staffcode?.toString() || "");
+    const staffName = removeVietnameseTones(record.staffId?.name || "");
+
+    return staffcode.includes(searchNormalized) || staffName.includes(searchNormalized);
+  });
 
   const formatTime = (time) => {
     if (!time) return 'Chưa ra';
@@ -48,6 +53,15 @@ const ResourceList = ({ setAttendanceRecords }) => {
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
   };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = String(date.getFullYear()).slice(-2);
+    return `${day}/${month}/${year}`;
+  };
+
 
   const calculateWorkingHours = (checkInTime, checkOutTime) => {
     if (checkInTime && checkOutTime) {
@@ -98,7 +112,7 @@ const ResourceList = ({ setAttendanceRecords }) => {
               <tr key={record._id}>
                 <td>{record.staffcode}</td>
                 <td>{record.staffId.name}</td>
-                <td>{new Date(record.checkInTime).toLocaleDateString()}</td>
+                <td>{formatDate(record.checkInTime)}</td>
                 <td>{formatTime(record.checkInTime)}</td>
                 <td>{formatTime(record.checkOutTime)}</td>
                 <td>
