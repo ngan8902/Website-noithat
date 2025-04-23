@@ -42,8 +42,26 @@ function FaceDetect() {
       const res = await axios.get(
         `${process.env.REACT_APP_URL_BACKEND}/attendance/today-checkins?date=${today}`
       );
-      setCheckedInStaffIds(res.data.map((r) => r.staffId));
-      setCheckedInStaff(res.data);
+
+      // Lấy bản ghi chưa check-out (checkOutTime === null)
+      const activeCheckIns = res.data.filter(r => r.checkOutTime === null);
+
+      // Gộp bản ghi theo staffId (chỉ giữ 1 bản ghi cho mỗi staff)
+      const uniqueCheckIns = Object.values(
+        activeCheckIns.reduce((acc, item) => {
+          if (!acc[item.staffId]) {
+            acc[item.staffId] = {
+              staffId: item.staffId,
+              attendanceId: item._id,
+              checkInTime: item.checkInTime,
+            };
+          }
+          return acc;
+        }, {})
+      );
+
+      setCheckedInStaffIds(uniqueCheckIns.map((r) => r.staffId));
+      setCheckedInStaff(uniqueCheckIns);
     } catch (error) {
       console.error("Lỗi khi tải danh sách check-in hôm nay:", error);
     }
@@ -113,6 +131,7 @@ function FaceDetect() {
           if (!staff?.faceEmbedding?.length) continue;
 
           const distance = euclideanDistance(faceVector, staff.faceEmbedding);
+
           if (distance < THRESHOLD) {
             const matchedStaff = checkedInStaff.find((item) => item.staffId === staff._id);
 
@@ -120,7 +139,7 @@ function FaceDetect() {
               if (matchedStaff) {
                 setNotification(`⚠️ Nhân viên ${staff.staffcode} đã check-in hôm nay.`);
                 setTimeout(() => setNotification(""), 4000);
-                break;
+                return;
               }
 
               const status = now.getHours() > 8 ? "late" : "present";
@@ -151,7 +170,7 @@ function FaceDetect() {
 
               const statusText = status === "present" ? "Đúng giờ" : "Trễ";
               setNotification(`✅ Nhân viên ${staff.staffcode} check-in thành công (${statusText})`);
-              setTimeout(() => setNotification(""), 4000);
+              setTimeout(() => setNotification(""), 5000);
               break;
             }
 
@@ -163,7 +182,7 @@ function FaceDetect() {
               }
 
               await axios.patch(`${process.env.REACT_APP_URL_BACKEND}/attendance/check-out`, {
-                attendanceId: matchedStaff._id,
+                attendanceId: matchedStaff.attendanceId,
                 checkOutTime: now.toISOString(),
               });
 
@@ -174,10 +193,10 @@ function FaceDetect() {
           }
         }
 
-        if (!notification) {
-          setNotification("⚠️ Khuôn mặt không trùng khớp với bất kỳ nhân viên nào.");
-          setTimeout(() => setNotification(""), 4000);
-        }
+        // if (!notification) {
+        //   setNotification("⚠️ Khuôn mặt không trùng khớp với bất kỳ nhân viên nào.");
+        //   setTimeout(() => setNotification(""), 4000);
+        // }
       } catch (error) {
         console.error("Lỗi khi nhận diện:", error);
         setNotification("Lỗi khi nhận diện khuôn mặt.");
@@ -191,9 +210,9 @@ function FaceDetect() {
 
   return (
     <div className="App" style={{ backgroundColor: "#f7f7f7", minHeight: "100vh", paddingTop: "40px" }}>
-      <header 
+      <header
         className="App-header"
-          style={{
+        style={{
           maxWidth: "800px",
           margin: "0 auto",
           backgroundColor: "#ffffff",
@@ -215,19 +234,19 @@ function FaceDetect() {
             }}
           />
         </div>
-        
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              zIndex: 3,
-              pointerEvents: "none",
-            }}
-          />
+
+        <canvas
+          ref={canvasRef}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: 3,
+            pointerEvents: "none",
+          }}
+        />
 
         <div
           className="checkin-button"
@@ -246,7 +265,7 @@ function FaceDetect() {
               transition: "background-color 0.3s ease",
             }}
           >
-            {checkInLoading ? 
+            {checkInLoading ?
               <>
                 <span className="spinner" /> Đang xử lý...
               </> : "Đi vào (check-in)"}
