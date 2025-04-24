@@ -38,13 +38,6 @@ const ResourceList = () => {
     setModalOpen(false);
   };
 
-  const filteredRecords = attendanceRecords?.filter((record) => {
-    const searchNormalized = removeVietnameseTones(search || "");
-    const staffcode = removeVietnameseTones(record.staffcode?.toString() || "");
-    const staffName = removeVietnameseTones(record.staffId?.name || "");
-
-    return staffcode.includes(searchNormalized) || staffName.includes(searchNormalized);
-  });
 
   const formatTime = (time) => {
     if (!time) return 'Chưa ra';
@@ -74,6 +67,15 @@ const ResourceList = () => {
     }
     return 0;
   };
+
+  const filteredRecords = attendanceRecords?.filter((record) => {
+    const searchNormalized = removeVietnameseTones(search || "");
+    const staffcode = removeVietnameseTones(record.staffcode?.toString() || "");
+    const staffName = removeVietnameseTones(record.staffId?.name || "");
+    const staffDate = formatDate(record.checkInTime || "");
+
+    return staffcode.includes(searchNormalized) || staffName.includes(searchNormalized) || staffDate.includes(searchNormalized);
+  });
 
   return (
     <div id="attendance" className="mt-4">
