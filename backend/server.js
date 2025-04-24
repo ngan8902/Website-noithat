@@ -60,6 +60,6 @@ mongoose.connect(`${process.env.MONGO_DB}`)
 
 initializeChatSocket(server);
 
-server.listen(port, '0.0.0.0', function () {
+server.listen(port, function () {
   console.log(`Example app listening on port ${port}!`);
 });
