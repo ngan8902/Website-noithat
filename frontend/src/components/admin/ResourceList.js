@@ -90,7 +90,7 @@ const ResourceList = () => {
         <input
           type="text"
           className="form-control"
-          placeholder="Tìm kiếm theo ID, tên nhân viên..."
+          placeholder="Tìm kiếm theo ID, tên nhân viên, ngày chấm công..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

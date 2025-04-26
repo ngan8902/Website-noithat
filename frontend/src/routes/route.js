@@ -1,5 +1,6 @@
 import React from "react";
 import Home from "../pages/Home";
+import Homed from "../pages/Homed";
 import AboutDetail from "../pages/AboutDetail";
 import Contact from "../pages/Contact";
 import ProductDetail from "../pages/ProductDetail";
@@ -21,10 +22,11 @@ import ForgotPassword from "../pages/ForgotPassword";
 import Dashboard from "../pages/DashBoard";
 import FaceDetect from "../pages/Face-detect";
 import FaceRegistrationPage from "../pages/FaceRegistrationPage";
+import GuestOrderStatus from "../pages/GuestOrderStatus";
 
 export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
-  { path: "/home", element: <Home />, isShow: true },
+  { path: "/home", element: <Homed />, isShow: true },
   { path: "/about", element: <AboutDetail />, isShow: true },
   { path: "/contact", element: <Contact />, isShow: true },
   { path: "/:name/:id", element: <ProductDetail />, isShow: true },
@@ -35,7 +37,8 @@ export const publicRoute = [
   { path: "/account", element: <Account />, isShow: true },
   { path: "/product-type/:id", element: <ProductType />, isShow: true },
   { path: "/search", element: <SearchResults />, isShow: true},
-  { path: "/forgot-password", element: <ForgotPassword /> }
+  { path: "/forgot-password", element: <ForgotPassword /> },
+  { path: "/guest-order", element: <GuestOrderStatus />, isShow: true },
 ]
 
 export const privateRoute = [

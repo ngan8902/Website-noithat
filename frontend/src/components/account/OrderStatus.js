@@ -9,16 +9,14 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (orders.length > 0) {
-      setLoading(false);
-    } if (orders.length === 0) {
+    if (orders.length >= 0) {
       setLoading(false);
     }
   }, [orders]);
 
   // Tạo danh sách đơn hàng hợp lệ
   const activeOrders = useMemo(() =>
-    orders.filter(order => !["cancelled", "return", "cancelled_confirmed", "delivered"].includes(order?.status)),
+    Array.isArray(orders) ? orders.filter(order => !["cancelled", "return", "cancelled_confirmed", "delivered"].includes(order?.status)) : [],
     [orders]
   );
 
@@ -56,7 +54,6 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
       console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error);
     }
   };
-
 
   return (
     <>
@@ -147,7 +144,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                         Chi Tiết
                       </button>
                       {order?.status === "pending" ? (
-                        <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order?._id, "cancelled")}>
+                        <button className="btn btn-outline-danger btn-sm" onClick={() => handleUpdateOrder(order?._id, "cancelled")}>
                           Hủy Đơn
                         </button>
                       ) : order?.status === "shipped" ? (
@@ -155,7 +152,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                           <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order?._id, "received")}>
                             Đã Nhận Hàng
                           </button>
-                          <button className="btn btn-warning btn-sm" onClick={() => handleUpdateOrder(order?._id, "return_requested")}>
+                          <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order?._id, "return_requested")}>
                             Trả Hàng
                           </button>
                         </>

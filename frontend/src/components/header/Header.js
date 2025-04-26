@@ -88,13 +88,13 @@ const Header = () => {
   return (
     <header className="bg-dark text-white">
       <div className="container d-flex justify-content-between align-items-center">
-        <Link to="/home" className="d-flex align-items-center">
+        <Link to="/" className="d-flex align-items-center">
           <img src="/images/logo.png" alt="Logo Nội Thất" height="80" width="80" />
         </Link>
 
         <nav className="d-flex align-items-center">
           <ul className="nav">
-            <li className="nav-item"><a href="/home" className="nav-link text-white fs-6">Trang Chủ</a></li>
+            <li className="nav-item"><a href="/" className="nav-link text-white fs-6">Trang Chủ</a></li>
             <li className="nav-item dropdown">
               <button className="nav-link text-white dropdown-toggle fs-6" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Sản Phẩm

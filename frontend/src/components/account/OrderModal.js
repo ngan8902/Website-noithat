@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import useOrderStore from "../../store/orderStore";
 
-
 const getStatusLabel = (status) => {
   switch (status) {
     case "pending":

@@ -121,7 +121,7 @@ const ConfirmOrderList = ({ onShip, onCancel }) => {
                       <>
                         <button
                           className="btn btn-success btn-sm me-2"
-                          onClick={() => onShip(order._id)}
+                          onClick={() => onShip(order._id, order.orderCode)}
                         >
                           Giao hàng
                         </button>

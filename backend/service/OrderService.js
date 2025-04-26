@@ -109,7 +109,6 @@ const createOrder = async (userId, productIds, discount, validAmount, receiver, 
     }
 };
 
-
 const getOrdersByUser = async (userId) => {
     try {
         const orders = await Order.find({ user: userId })
@@ -162,6 +161,29 @@ const getOrderByCode = async (id) => {
             reject(e)
         }
     })
+};
+
+const getOrderByGuestCode = async (code) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const order = await Order.findOne({ orderCode: code });
+
+      if (!order) {
+        return resolve({
+          status: 'ERR',
+          message: 'Không tìm thấy đơn hàng với mã đã cung cấp',
+        });
+      }
+
+      resolve({
+        status: 'OK',
+        message: 'success',
+        data: order,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
 };
 
 const updateOrderStatus = async (orderId, newStatus) => {
@@ -269,6 +291,7 @@ module.exports = {
     createOrder,
     getOrdersByUser,
     getOrderByCode,
+    getOrderByGuestCode,
     updateOrderStatus,
     getAllOrders,
     deleteOrderId,

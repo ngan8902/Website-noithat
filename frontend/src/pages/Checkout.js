@@ -448,7 +448,18 @@ const Checkout = () => {
 
         try {
             const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
-            await createOrder(orderData, { headers });
+            const response = await createOrder(orderData, { headers });
+
+            if (!user && response?.data?.data?.orderCode) {
+                const orderCode = response.data.data.orderCode;
+                const existingCodes = JSON.parse(localStorage.getItem("guestOrderCodes")) || [];
+
+                if (!existingCodes.includes(orderCode)) {
+                    existingCodes.push(orderCode);
+                    localStorage.setItem("guestOrderCodes", JSON.stringify(existingCodes));
+                }
+            }
+
             notifyOfCheckout()
 
             if (user && newAddress) {

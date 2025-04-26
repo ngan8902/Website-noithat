@@ -42,16 +42,17 @@ const useOrderStore = create((set, get) => ({
     },
 
     createOrder: async (newOrder) => {
-        axios.post(`${process.env.REACT_APP_URL_BACKEND}/order/create-order`,
-            newOrder
-        ).then(response => {
+        try {
+            const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/order/create-order`, newOrder);
             set((state) => ({
                 order: response.data.data,
                 orders: [...state.orders, response.data.data],
             }));
-        }).catch(error => {
+            return response;
+        } catch (error) {
             console.error('Add Product Error:', error);
-        })
+            throw error;
+        }
     },
 
     getOrderByUser: async (userId) => {
@@ -91,7 +92,6 @@ const useOrderStore = create((set, get) => ({
             console.error("Lỗi khi lấy đơn hàng của người dùng:", error);
         }
     },
-
 
     updateOrderStatus: async (orderId, newStatus) => {
         if (!["pending", "processing", "shipped", "delivered", "cancelled", "return", "received", "return_requested", "cancelled_confirmed"].includes(newStatus)) {

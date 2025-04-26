@@ -14,7 +14,8 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
   const appElement = document.getElementById('root');
 
   useEffect(() => {
-    if (orders.length > 0) {
+    if (Array.isArray(orders) && orders.length > 0) {
+      setLoading(false);
       setLoading(false);
 
       const unreviewedDeliveredOrders = orders.filter(

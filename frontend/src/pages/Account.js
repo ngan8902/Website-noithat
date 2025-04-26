@@ -28,7 +28,7 @@ const Account = () => {
     }
   }, [user, getOrderByUser]);
 
-   useEffect(() => {
+  useEffect(() => {
     getOrderByUser();
   
       const interval = setInterval(() => {

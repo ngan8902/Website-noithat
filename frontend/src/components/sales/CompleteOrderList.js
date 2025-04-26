@@ -17,11 +17,6 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
 
   const keyword = removeVietnameseTones(useSearchStore((state) => state.keyword || ""));
 
-  const statusMap = {
-    "delivered": "Đã hoàn thành",
-    "return": "Đã trả hàng"
-  };
-
   useEffect(() => {
     fetchOrders();
 
@@ -38,7 +33,8 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
 
   const filteredOrders = (Array.isArray(orders) ? orders : [])
     .filter(order => 
-      order.status !== "cancelled" && order.status !== "cancelled_confirmed" && 
+      // order.status !== "cancelled" && 
+      order.status !== "cancelled_confirmed" && 
       order.status !== "pending" && order.status !== "processing" &&
       (filterByStatus ? order.status === filterByStatus : true)
     )
@@ -62,8 +58,8 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   const statusOrder = [
     "received",
     "return_requested",
-    // "cancelled",
-    // "cancelled_confirmed",
+    "cancelled",
+    "cancelled_confirmed",
     "shipped",
   ];
 
@@ -73,7 +69,8 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   });
 
   const returnRequestedCount = filteredOrders.filter(order => order.status === "return_requested").length;
-  const shippingCount = filteredOrders.filter(order => order.status === "shipped").length;
+  const shippingCount = filteredOrders.filter(order => order.status === "received").length;
+  const cancelledCount = filteredOrders.filter(order => order.status === "cancelled").length;
 
   return (
     <div id="completed-orders" className="mt-4">
@@ -85,14 +82,21 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
             onClick={() => setFilterByStatus(prev => prev === "return_requested" ? null : "return_requested")}
             style={{ cursor: "pointer" }}
           >
-            🛠 Yêu cầu trả hàng: <strong>{returnRequestedCount}</strong>
+            🔄 Yêu cầu trả hàng: <strong>{returnRequestedCount}</strong>
           </span>
           <span
-            className={`order-status-hover ${filterByStatus === "shipped" ? "text-primary fw-bold" : "text-muted"} cursor-pointer`}
-            onClick={() => setFilterByStatus(prev => prev === "shipped" ? null : "shipped")}
+            className={`m-3 order-status-hover ${filterByStatus === "received" ? "text-primary fw-bold" : "text-muted"} cursor-pointer`}
+            onClick={() => setFilterByStatus(prev => prev === "received" ? null : "received")}
             style={{ cursor: "pointer" }}
           >
-            🚚 Đang giao hàng: <strong>{shippingCount}</strong>
+            🚚 Đơn đã giao: <strong>{shippingCount}</strong>
+          </span>
+          <span
+            className={`order-status-hover ${filterByStatus === "cancelled" ? "text-primary fw-bold" : "text-muted"} cursor-pointer`}
+            onClick={() => setFilterByStatus(prev => prev === "cancelled" ? null : "cancelled")}
+            style={{ cursor: "pointer" }}
+          >
+            ⏳ Đang chờ hủy: <strong>{cancelledCount}</strong>
           </span>
         </small>
 
@@ -197,7 +201,7 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
                         : order.status === "return"
                         ? "Đã trả"
                         : order.status === "cancelled"
-                        ? "Đã hủy"
+                        ? "Yêu cầu hủy"
                         : ""}
                     </span>
                   </td>
@@ -221,6 +225,14 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
                           </button>
                         )}
                       </>
+                    )}
+                    {order.status === "cancelled" && (
+                      <button
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => onConfirmCancel(order._id, order.orderCode)}
+                      >
+                        Xác nhận hủy
+                      </button>
                     )}
                   </td>
                 </tr>

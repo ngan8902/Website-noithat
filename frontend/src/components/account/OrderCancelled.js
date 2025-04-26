@@ -2,21 +2,23 @@ import React, { useState, useEffect } from "react";
 import useOrderStore from "../../store/orderStore";
 
 const OrderCancelled = ({ orders = [], setOrders }) => {
-  const { deleteOrderById } = useOrderStore();
-
+  const { updateOrderStatus, deleteOrderById } = useOrderStore();
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-     if (orders.length > 0) {
-       setLoading(false);
-     }if (orders.length === 0) {
+  useEffect(() => {
+    if (orders.length >= 0) {
       setLoading(false);
     }
-   }, [orders]);
+  }, [orders]);
 
   const cancelledOrders = Array.isArray(orders)
-  ? orders.filter((order) => order?.status === "cancelled" || order?.status === "return" || order?.status === "cancelled_confirmed")
-  : [];
+    ? orders.filter(
+        (order) =>
+          order?.status === "cancelled" ||
+          order?.status === "return" ||
+          order?.status === "cancelled_confirmed"
+      )
+    : [];
 
   const handleDeleteOrder = async (orderId) => {
     try {
@@ -26,9 +28,30 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
     }
   };
 
+  const handleRecallOrder = async (orderId) => {
+    try {
+      await updateOrderStatus(orderId, "pending");
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === orderId ? { ...order, status: "pending" } : order
+        )
+      );
+    } catch (error) {
+      console.error("Lỗi khi thu hồi đơn hàng:", error);
+    }
+  };
+
+  const statusLabels = {
+    cancelled: "Đang chờ hủy",
+    cancelled_confirmed: "Đã hủy"
+  };
+
+  if (cancelledOrders.length === 0) return null;
+
   return (
     <>
-      <h5 className="fw-bold mb-3">Đơn hàng đã hủy</h5>
+      <h5 className="fw-bold mb-3">Đơn hàng chờ hủy</h5>
 
       {loading ? (
         <div className="text-center">
@@ -38,7 +61,7 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
           <p className="text-muted mt-2">Đang tải dữ liệu...</p>
         </div>
       ) : cancelledOrders.length === 0 ? (
-        <p className="text-center text-muted">Bạn chưa có đơn hàng nào đã hủy.</p>
+        <p className="text-center text-muted">Bạn chưa có đơn hàng nào.</p>
       ) : (
         <div
           className="table-responsive"
@@ -57,6 +80,7 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
                 <th>Sản Phẩm</th>
                 <th>Số Lượng</th>
                 <th>Tổng Tiền</th>
+                <th>Trạng Thái</th>
                 <th>Hành Động</th>
               </tr>
             </thead>
@@ -73,7 +97,9 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
                           alt={item.name}
                           style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
                         />
-                        {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                        {index < order.orderItems.length - 1 && (
+                          <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />
+                        )}
                       </div>
                     ))}
                   </td>
@@ -81,31 +107,43 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
                     {order.orderItems?.map((item, index) => (
                       <div key={index}>
                         {item.name}
-                        {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                        {index < order.orderItems.length - 1 && (
+                          <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />
+                        )}
                       </div>
-                    )) || "Không có dữ liệu"}</td>
+                    )) || "Không có dữ liệu"}
+                  </td>
                   <td>
                     {order.orderItems?.map((item, index) => (
                       <div key={index}>
                         {item.amount}
-                        {index < order.orderItems.length - 1 && <hr style={{ borderTop: "1px solid #aaa" }} />}
+                        {index < order.orderItems.length - 1 && (
+                          <hr style={{ borderTop: "1px solid #aaa" }} />
+                        )}
                       </div>
-                    )) || 1}</td>
+                    )) || 1}
+                  </td>
                   <td className="text-danger fw-bold">
                     {Number(order.totalPrice || 0).toLocaleString()} VND
                   </td>
-                  {/* <td>
-                    <span
-                      className={`badge ${order.status === "pending" ? "bg-primary" :
-                        order.status === "cancelled" ? "bg-danger" : order.status === "return" ? "bg-danger" :
-                          "bg-light text-dark"
-                        }`}
-                    >
-                      {getStatusLabel(order.status)}
+                  <td rowSpan={order.orderItems.length}>
+                    <span className={`badge ${order.status === "pending" ? "bg-primary" :
+                      order.status === "return_requested" ? "bg-danger" :
+                        "bg-light text-dark"}`}>
+                        {statusLabels[order.status] || "Không xác định"}
                     </span>
-                  </td> */}
-                  <td>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDeleteOrder(order._id)}>
+                  </td>
+                  <td className="d-flex flex-column gap-2">
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => handleRecallOrder(order._id)}
+                    >
+                      Thu hồi yêu cầu
+                    </button>
+                    <button
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() => handleDeleteOrder(order._id)}
+                    >
                       Xóa
                     </button>
                   </td>

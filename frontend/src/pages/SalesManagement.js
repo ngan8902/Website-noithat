@@ -25,12 +25,22 @@ const SalesManagement = () => {
     updateOrderStatus(orderId, "processing");
   };
 
-  const handleShipOrder = async (orderId) => {
+  const handleShipOrder = async (orderId, orderCode) => {
     try {
-      // Gửi request API để cập nhật trạng thái đơn hàng
-      await axios.put(`${process.env.REACT_APP_URL_BACKEND}/send/ship/${orderId}`);
-      // Cập nhật trạng thái trên frontend sau khi API thành công
-      updateOrderStatus(orderId, "shipped");
+      const guestOrderCodes = JSON.parse(localStorage.getItem("guestOrderCodes")) || [];
+      const isGuestOrder = guestOrderCodes.includes(orderCode);
+
+      if (isGuestOrder) {
+        // Nếu là đơn của khách (orderCode nằm trong localStorage)
+        console.log("Đơn hàng khách, chỉ cập nhật frontend.");
+        await updateOrderStatus(orderId, "shipped");
+      } else {
+        // Nếu là đơn bình thường, gửi API cập nhật backend
+        console.log("Đơn hàng nội bộ, gửi API cập nhật backend.");
+        await axios.put(`${process.env.REACT_APP_URL_BACKEND}/send/ship/${orderId}`);
+        await updateOrderStatus(orderId, "shipped");
+      }
+
       fetchOrders();
     } catch (error) {
       console.error("Lỗi khi giao hàng:", error);
@@ -51,8 +61,17 @@ const SalesManagement = () => {
     updateOrderStatus(orderId, "cancelled");
   };
 
-  const onConfirmCancel = async (orderId) => {
+  const onConfirmCancel = async (orderId, orderCode) => {
+    console.log("Xác nhận hủy đơn hàng:", orderId, orderCode);
     await updateOrderStatus(orderId, "cancelled_confirmed");
+
+    const guestOrderCodes = JSON.parse(localStorage.getItem("guestOrderCodes")) || [];
+
+    const updatedGuestOrderCodes = guestOrderCodes.filter(code => code !== orderCode);
+
+    localStorage.setItem("guestOrderCodes", JSON.stringify(updatedGuestOrderCodes));
+
+    console.log(`Đã xóa ${orderCode} khỏi guestOrderCodes`);
   };
 
   return (

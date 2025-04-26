@@ -23,7 +23,10 @@ const createOrder = async (req, res) => {
         }
 
         const response = await OrderService.createOrder(userId, productIds, discount, validAmount, receiver, status, shoppingFee, paymentMethod, totalPrice, orderDate, delivered, countInStock, rating);
-        return res.status(200).json(response);
+        return res.status(200).json({
+            ...response,
+            orderCode: response?.data?.orderCode
+        });
     } catch (e) {
         console.log(e);
         return res.status(500).json({
@@ -74,6 +77,36 @@ const getOrderByCode = async (req, res) => {
     }
 }
 
+const getOrderByGuestCode = async (req, res) => {
+  try {
+    const orderCode = req.params.code;
+
+    if (!orderCode) {
+      return res.status(400).json({
+        status: 'ERR',
+        message: 'Mã đơn hàng là bắt buộc',
+      });
+    }
+
+    const response = await OrderService.getOrderByGuestCode(orderCode);
+
+    if (!response || !response.data) {
+      return res.status(404).json({
+        status: 'ERR',
+        message: 'Không tìm thấy đơn hàng với mã đã nhập',
+      });
+    }
+
+    return res.status(200).json(response);
+  } catch (error) {
+    console.error('Lỗi khi truy vấn đơn hàng guest:', error);
+    return res.status(500).json({
+      status: 'ERR',
+      message: 'Lỗi server',
+    });
+  }
+};
+
 const updateOrderStatus = async (req, res) => {
     try {
         const { status } = req.body;
@@ -110,13 +143,17 @@ const updateOrderStatus = async (req, res) => {
             await Promise.all(updateStockPromises);
         }
 
+        if (status === "cancelled_confirmed") {
+            await OrderService.deleteOrderId(orderId);
+            return res.status(200).json({ message: "Đơn hàng đã được xác nhận hủy và xóa thành công." });
+        }
+
         return res.status(200).json(updatedOrder);
     } catch (e) {
         console.error("Lỗi cập nhật trạng thái đơn hàng:", e);
         return res.status(500).json({ message: "Lỗi server" });
     }
 };
-
 
 const getAllOrders = async (req, res) => {
     try {
@@ -165,11 +202,11 @@ const updateOrderRating = async (req, res) => {
     }
   };
 
-
 module.exports = {
     createOrder,
     getOrdersByUser,
     getOrderByCode,
+    getOrderByGuestCode,
     updateOrderStatus,
     getAllOrders,
     deleteOrderId,
