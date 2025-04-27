@@ -1,12 +1,10 @@
 import React, { useEffect } from "react";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
 const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSelectedItems }) => {
   const product = item.product || item.productId?.data;
-  const itemId =
-  item._id ||
-  (typeof item.productId === "object" ? item.productId._id : item.productId) ||
-  `${item.name}-${item.price}`; 
-  
+  const itemId = item._id || item.productId;
+
   const isSelected = selectedItems.includes(itemId);
 
   console.log(item)
@@ -17,7 +15,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
 
   const handleDecrease = () => {
     if (item.quantity > 1 && itemId) {
-      updateQuantity(itemId, item.quantity - 1);
+      updateQuantity(item.productId || itemId, item.quantity - 1);
       // window.location.reload();
     }
   };
@@ -25,7 +23,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
   const handleIncrease = () => {
     const maxStock = product?.countInStock || item?.countInStock || 1;
     if (item?.quantity < maxStock && itemId) {
-      updateQuantity(itemId, item?.quantity + 1);
+      updateQuantity(item.productId || itemId, item?.quantity + 1);
       // window.location.reload();
     }
   };
@@ -54,10 +52,10 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
 
   const getImageUrl = (item, product) => {
     if (item?.image) {
-      return `http://localhost:8000${item.image}`;
+      return `${UPLOAD_URL}${item.image}`;
     }
     if (product?.image) {
-      return `http://localhost:8000/upload/${product.image.split("/").pop()}`;
+      return `${UPLOAD_URL}/upload/${product.image.split("/").pop()}`;
     }
     return "https://via.placeholder.com/80";
   };

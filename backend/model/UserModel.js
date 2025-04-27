@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema(
         otpExpires: { type: Date },
     },
     {
-        timestamps: true, //Thời gian tạo và update
+        timestamps: true,
     }
 );
 const User = mongoose.model("User", userSchema);

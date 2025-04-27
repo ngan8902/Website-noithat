@@ -4,8 +4,9 @@ import useAuthStore from "../../store/authStore";
 import useAuthAdminStore from "../../store/authAdminStore";
 import axios from "axios";
 import moment from "moment";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = "http://localhost:8000/upload/guest.png";
+const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`;
 
 const ChatMessages = ({ customer }) => {
   const [messages, setMessages] = useState([]);
@@ -134,7 +135,7 @@ const ChatMessages = ({ customer }) => {
     if (avatar && avatar.startsWith("http://")) {
       src = avatar;
     } else if (avatar) {
-      src = `http://localhost:8000${avatar}`;
+      src = `${UPLOAD_URL}${avatar}`;
     } else {
       src = avatarDefautl;
     }

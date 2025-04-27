@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import StarRating from "../StarRating";
 import Comments from "../Comments";
 import axios from "axios";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
 const OrderHistory = ({ orders = [], onReviewSubmit }) => {
   const [loading, setLoading] = useState(true);
@@ -120,7 +121,7 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
                   <td>
                     <div className="d-flex align-items-center gap-2">
                       <img
-                        src={`http://localhost:8000${order.orderItems[0]?.image}` || "/default-image.jpg"}
+                        src={`${UPLOAD_URL}${order.orderItems[0]?.image}` || "/default-image.jpg"}
                         alt={order.orderItems[0]?.name || "Sản phẩm"}
                         style={{
                           width: "60px",

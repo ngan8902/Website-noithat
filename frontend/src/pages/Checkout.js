@@ -15,6 +15,7 @@ import axios from "axios";
 import { TOKEN_KEY } from "../constants/authen.constant";
 import { Modal, Button } from "react-bootstrap";
 import { getCookie } from "../utils/cookie.util";
+import { UPLOAD_URL } from '../constants/url.constant';
 
 const Checkout = () => {
     const location = useLocation();
@@ -206,7 +207,7 @@ const Checkout = () => {
 
         const formattedPaymentMethod = paymentMethod === "Thanh Toán Khi Nhận Hàng" ? "COD" :
             paymentMethod === "Chuyển Khoản Ngân Hàng" ? "VietQR" :
-            paymentMethod === "MoMo" ? "MoMo" : null;
+                paymentMethod === "MoMo" ? "MoMo" : null;
 
         if (!formattedPaymentMethod) {
             setErrorMessage("Phương thức thanh toán không hợp lệ!");
@@ -235,7 +236,7 @@ const Checkout = () => {
                         ? [{
                             product: product.productId?.data?._id || product._id,
                             name: product.productId?.data?.name || product.name,
-                            image: `http://localhost:8000${product.image}` || product.image,
+                            image: `${UPLOAD_URL}${product.image}` || product.image,
                             amount: product.quantity || quantity,
                             price: product.productId?.data?.price || product.price,
                             discount: product.productId?.data?.discount || product.discount
@@ -243,7 +244,7 @@ const Checkout = () => {
                         : cartData.map(item => ({
                             product: item.productId?.data?._id || item._id,
                             name: item.productId?.data?.name || item.name,
-                            image: `http://localhost:8000${item.image}` || item.image,
+                            image: `${UPLOAD_URL}${item.image}` || item.image,
                             amount: item.quantity,
                             price: item.productId?.data?.price || item.price,
                             discount: item.productId?.data?.discount || item.discount
@@ -310,7 +311,7 @@ const Checkout = () => {
             }
             return;
         }
-        
+
         if (paymentMethod === "MoMo") {
             try {
                 const discount = displayProducts[0].productId?.data?.discount || displayProducts[0].discount || 0;
@@ -325,7 +326,7 @@ const Checkout = () => {
                         ? [{
                             product: product.productId?.data?._id || product._id,
                             name: product.productId?.data?.name || product.name,
-                            image: `http://localhost:8000${product.image}` || product.image,
+                            image: `${UPLOAD_URL}${product.image}` || product.image,
                             amount: product.quantity || quantity,
                             price: product.productId?.data?.price || product.price,
                             discount: product.productId?.data?.discount || product.discount
@@ -333,7 +334,7 @@ const Checkout = () => {
                         : cartData.map(item => ({
                             product: item.productId?.data?._id || item._id,
                             name: item.productId?.data?.name || item.name,
-                            image: `http://localhost:8000${item.image}` || item.image,
+                            image: `${UPLOAD_URL}${item.image}` || item.image,
                             amount: item.quantity,
                             price: item.productId?.data?.price || item.price,
                             discount: item.productId?.data?.discount || item.discount
@@ -420,7 +421,7 @@ const Checkout = () => {
                 ? [{
                     product: product.productId?.data?._id || product._id,
                     name: product.productId?.data?.name || product.name,
-                    image: `http://localhost:8000${product.image}` || product.image,
+                    image: `${UPLOAD_URL}${product.image}` || product.image,
                     amount: product.quantity || quantity,
                     price: product.productId?.data?.price || product.price,
                     discount: product.productId?.data?.discount || product.discount
@@ -428,7 +429,7 @@ const Checkout = () => {
                 : cartData.map(item => ({
                     product: item.productId?.data?._id || item._id,
                     name: item.productId?.data?.name || item.name,
-                    image: `http://localhost:8000${item.image}` || item.image,
+                    image: `${UPLOAD_URL}${item.image}` || item.image,
                     amount: item.quantity,
                     price: item.productId?.data?.price || item.price,
                     discount: item.productId?.data?.discount || item.discount
@@ -499,15 +500,19 @@ const Checkout = () => {
         }
     };
 
+
     const getImageUrl = (item, product) => {
-        if (item?.image) {
+        if (item?.image && item.image.startsWith('http')) {
             return item.image;
         }
         if (item?.productId?.data?.image) {
-            return `http://localhost:8000${item.productId.data.image}`;
+            return `${UPLOAD_URL}${item.productId.data.image}`;
+        }
+        if (item?.product?.image) {
+            return `${UPLOAD_URL}${item.product.image}`;;
         }
         if (product?.image) {
-            return product.image;
+            return `${UPLOAD_URL}${product.image}`;;
         }
         return "https://via.placeholder.com/100";
     };
@@ -545,7 +550,7 @@ const Checkout = () => {
 
                     {!user && (
                         <>
-                            <p>Chúng tôi muốn hỗ trợ bạn tốt hơn. Hãy 
+                            <p>Chúng tôi muốn hỗ trợ bạn tốt hơn. Hãy
                                 <button
                                     className="btn btn-outline-primary text-dark text-decoration-none fw-bold"
                                     onClick={() => setShowRegister(true)}

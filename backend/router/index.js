@@ -16,6 +16,7 @@ const CommentsRoute = require('./CommentsRoute')
 const DashboardRoute = require('./DashBoardRoute')
 const AttendanceRoute = require('./AttendanceRoute')
 const Send = require('./EmailRoute')
+const HealthCheck = require('./HealthCheckRoute')
 
 const routers = (app) => {
     app.use('/api/staff', StaffRouter)
@@ -36,6 +37,7 @@ const routers = (app) => {
     app.use("/api/dashboard", DashboardRoute);
     app.use("/api/attendance", AttendanceRoute)
     app.use('/api/send', Send)
+    app.use('/api/health-check', HealthCheck)
 }
 
 module.exports = routers;

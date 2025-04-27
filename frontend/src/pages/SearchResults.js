@@ -3,6 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import useProductStore from "../store/productStore";
 import SidebarFilter from "../components/product/SidebarFilter";
 import Pagination from "../components/product/Pagination";
+import { UPLOAD_URL } from '../constants/url.constant';
 
 const defaultImage = "https://via.placeholder.com/300";
 const PAGE = 9;
@@ -105,7 +106,7 @@ const SearchResults = () => {
                                                 >
                                                     <div className="card h-100 text-center">
                                                         <img
-                                                            src={`http://localhost:8000${product.image}` || defaultImage}
+                                                            src={`${UPLOAD_URL}${product.image}` || defaultImage}
                                                             className="card-img-top"
                                                             alt={product.name}
                                                         />

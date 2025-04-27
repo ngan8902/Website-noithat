@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import useOrderStore from "../../store/orderStore";
 import OrderDetailModal from "./OrderModal";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
 const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) => {
   const { updateOrderStatus } = useOrderStore();
@@ -99,7 +100,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                     {order?.orderItems?.map((item, index) => (
                       <div key={index} className="mb-2">
                         <img
-                          src={`http://localhost:8000${item.image}` || "/default-image.jpg"}
+                          src={`${UPLOAD_URL}${item.image}` || "/default-image.jpg"}
                           alt={item.name}
                           style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
                         />

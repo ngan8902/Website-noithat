@@ -10,8 +10,9 @@ import ProductImage from "../components/productdetail/ProductImage";
 import QuantitySelector from "../components/productdetail/QuantitySelector";
 import CustomerReviews from "../components/productdetail/CustomerReviews";
 import Comments from "../components/Comments";
+import { UPLOAD_URL } from '../constants/url.constant';
 
-const avatarDefautl = "http://localhost:8000/upload/guest.png"
+const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -64,7 +65,7 @@ const ProductDetail = () => {
 
     const handleBuyNow = () => {
         navigate("/checkout", {
-            state: { product: { ...product, image: `http://localhost:8000${product.image}` }, quantity },
+            state: { product: { ...product, image: `${UPLOAD_URL}${product.image}` }, quantity },
         });
     };
 
@@ -127,7 +128,7 @@ const ProductDetail = () => {
                     return (
                         <img
                             key={index}
-                            src={`http://localhost:8000${file}`}
+                            src={`${UPLOAD_URL}${file}`}
                             alt={`Bình luận ảnh ${index + 1}`}
                             className="img-fluid rounded me-2"
                             style={{ maxWidth: "100px", maxHeight: "100px" }}
@@ -138,7 +139,7 @@ const ProductDetail = () => {
                     return (
                         <video
                             key={index}
-                            src={`http://localhost:8000${file}`}
+                            src={`${UPLOAD_URL}${file}`}
                             controls
                             className="rounded me-2"
                             style={{ maxWidth: "200px", maxHeight: "150px" }}
@@ -156,7 +157,7 @@ const ProductDetail = () => {
         if (avatar && avatar.startsWith('http://')) {
             src = avatar;
         } else if (avatar) {
-            src = `http://localhost:8000${avatar}`;
+            src = `${UPLOAD_URL}${avatar}`;
         } else {
             src = avatarDefault;
         }
@@ -197,7 +198,7 @@ const ProductDetail = () => {
         <section className="py-5">
             <div className="container">
                 <div className="row">
-                    <ProductImage image={`http://localhost:8000/upload/${product.image.split("/").pop()}`} name={product?.name} />
+                    <ProductImage image={`${UPLOAD_URL}/upload/${product.image.split("/").pop()}`} name={product?.name} />
                     <div className="col-md-6">
                         <h3 className="fw-bold mb-3">{product?.name}</h3>
                         <p className="text-muted mb-4">{product?.descriptionDetail}</p>

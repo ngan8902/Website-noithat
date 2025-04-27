@@ -1,4 +1,6 @@
-export const SOCKET_URI = "ws://localhost:8000";
+import { SOCKET_URI as SOCKET_URL } from './url.constant';
+
+export const SOCKET_URI = `ws://${SOCKET_URL}`;
 
 export const USER_EVENTS = {
     sendMsg: "user-send-msg",

@@ -67,7 +67,7 @@ const useCartStore = create((set, get) => ({
         }
 
         if (quantity < 1) {
-            get().removeFromCart(productId);
+            get().removeFromCart(productId.data._id);
             return;
         }
 
@@ -82,25 +82,25 @@ const useCartStore = create((set, get) => ({
                     return { cartItems: updatedCart };
                 });
 
-                const response = await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId}`,
+                const response = await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId.data._id}`,
                     { quantity },
                     { headers: { "token": token } }
                 );
                 set({ cartItems: response.data.items || [] });
 
-            } else {
-                set((state) => {
-                    const updatedCart = state.cartItems.map(item => {
-                        const itemId = item._id || item.productId || (typeof item.productId === 'object' && item.productId._id);
-                        if (itemId === productId) {
-                            return { ...item, quantity };
-                        }
-                        return item;
-                    });
-                    localStorage.setItem("cart", JSON.stringify(updatedCart));
-                    return { cartItems: updatedCart };
-                });
-            }
+            } 
+            // else {
+            //     set((state) => {
+            //         const updatedCart = state.cartItems.map(item => {
+            //             if (item._id) {
+            //                 return { ...item, quantity };
+            //             }
+            //             return item;
+            //         });
+            //         localStorage.setItem("cart", JSON.stringify(updatedCart));
+            //         return { cartItems: updatedCart };
+            //     });
+            // }
         } catch (error) {
             console.error("Lỗi cập nhật giỏ hàng:", error);
         }
@@ -139,14 +139,15 @@ const useCartStore = create((set, get) => ({
                     cartItems: [...state.cartItems, { _id: itemId }],
                 }));
             }
-        } else {
-            set((state) => {
-                const updatedCart = state.cartItems.filter((item) => item._id !== itemId);
-                localStorage.setItem("cart", JSON.stringify(updatedCart));
-                return { cartItems: updatedCart };
-            });
-            window.location.reload()
-        }
+        } 
+        // else {
+        //     set((state) => {
+        //         const updatedCart = state.cartItems.filter((item) => item._id !== itemId);
+        //         localStorage.setItem("cart", JSON.stringify(updatedCart));
+        //         return { cartItems: updatedCart };
+        //     });
+        //     window.location.reload()
+        // }
     },
 
     clearPurchasedItems: async (purchasedItems) => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import useOrderStore from "../store/orderStore";
 import OrderDetailModal from '../components/account/OrderModal';
+import { UPLOAD_URL } from '../constants/url.constant';
 
 const GuestOrderStatus = () => {
   const [orders, setOrders] = useState([]);
@@ -63,7 +64,14 @@ const GuestOrderStatus = () => {
     };
 
     fetchOrders();
+
+    const interval = setInterval(() => {
+      fetchOrders();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [createOrder]);
+
 
   const handleUpdateOrder = async (orderId, status) => {
     try {
@@ -106,85 +114,70 @@ const GuestOrderStatus = () => {
     <div>
       <h3 className="fw-bold mb-3 text-center">Đơn Hàng Của Bạn</h3>
       <div className="container my-4">
-      <div className="table-responsive">
-        <table className="table table-hover table-bordered text-center align-middle">
-          <thead className="table-dark">
-            <tr>
-              <th>Mã Đơn Hàng</th>
-              <th>Hình Ảnh</th>
-              <th>Tên Sản Phẩm</th>
-              <th>Số Lượng</th>
-              <th>Tổng Tiền</th>
-              <th>Thanh Toán</th>
-              <th>Trạng Thái</th>
-              <th>Hành Động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order, orderIndex) =>
-              order.orderItems.map((item, itemIndex) => (
-                <tr key={`${order._id}-${itemIndex}`}>
-                  {itemIndex === 0 && (
-                    <td className="fw-bold" rowSpan={order.orderItems.length}>#{order.orderCode}</td>
-                  )}
-                  <td>
-                    <img
-                      src={`http://localhost:8000${item.image}` || "/default-image.jpg"}
-                      alt={item.name}
-                      style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
-                    />
-                  </td>
-                  <td>{item.name}</td>
-                  <td>{item.amount}</td>
-                  {itemIndex === 0 && (
-                    <>
-                      <td className="text-success fw-bold" rowSpan={order.orderItems.length}>
-                        {Number(order.totalPrice).toLocaleString()} VND
-                      </td>
-                      <td rowSpan={order.orderItems.length}>
-                        {order.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" :
-                          order.paymentMethod === "VietQR" ? "Đã thanh toán qua ngân hàng" :
-                            order.paymentMethod === "MoMo" ? "Đã thanh toán qua ví MoMo" : order.paymentMethod}
-                      </td>
-                      <td rowSpan={order.orderItems.length}>
-                        <span className={`badge ${order.status === "pending" ? "bg-primary" :
-                          order.status === "processing" ? "bg-info text-dark" :
-                            order.status === "shipped" ? "bg-warning text-dark" :
-                              order.status === "return_requested" ? "bg-danger" :
-                                "bg-light text-dark"}`}>
-                          {statusLabels[order.status] || "Không xác định"}
-                        </span>
-                      </td>
-                      <td rowSpan={order.orderItems.length}>
-                        <div className="d-flex justify-content-center gap-2 flex-wrap">
-                          <button className="btn btn-info btn-sm" onClick={() => { setSelectedOrder(order); setShowModal(true); }}>
-                            Chi Tiết
-                          </button>
-
-                          {order.status === "pending" ? (
-                            <button className="btn btn-outline-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}>
-                              Hủy Đơn
+        <div className="table-responsive">
+          <table className="table table-hover table-bordered text-center align-middle">
+            <thead className="table-dark">
+              <tr>
+                <th>Mã Đơn Hàng</th>
+                <th>Hình Ảnh</th>
+                <th>Tên Sản Phẩm</th>
+                <th>Số Lượng</th>
+                <th>Tổng Tiền</th>
+                <th>Thanh Toán</th>
+                <th>Trạng Thái</th>
+                <th>Hành Động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order, orderIndex) =>
+                order.orderItems.map((item, itemIndex) => (
+                  <tr key={`${order._id}-${itemIndex}`}>
+                    {itemIndex === 0 && (
+                      <td className="fw-bold" rowSpan={order.orderItems.length}>#{order.orderCode}</td>
+                    )}
+                    <td>
+                      <img
+                        src={`${UPLOAD_URL}${item.image}` || "/default-image.jpg"}
+                        alt={item.name}
+                        style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
+                      />
+                    </td>
+                    <td>{item.name}</td>
+                    <td>{item.amount}</td>
+                    {itemIndex === 0 && (
+                      <>
+                        <td className="text-success fw-bold" rowSpan={order.orderItems.length}>
+                          {Number(order.totalPrice).toLocaleString()} VND
+                        </td>
+                        <td rowSpan={order.orderItems.length}>
+                          {order.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" :
+                            order.paymentMethod === "VietQR" ? "Đã thanh toán qua ngân hàng" :
+                              order.paymentMethod === "MoMo" ? "Đã thanh toán qua ví MoMo" : order.paymentMethod}
+                        </td>
+                        <td rowSpan={order.orderItems.length}>
+                          <span className={`badge ${order.status === "pending" ? "bg-primary" :
+                            order.status === "processing" ? "bg-info text-dark" :
+                              order.status === "shipped" ? "bg-warning text-dark" :
+                                order.status === "return_requested" ? "bg-danger" :
+                                  "bg-light text-dark"}`}>
+                            {statusLabels[order.status] || "Không xác định"}
+                          </span>
+                        </td>
+                        <td rowSpan={order.orderItems.length}>
+                          <div className="d-flex justify-content-center gap-2 flex-wrap">
+                            <button className="btn btn-info btn-sm" onClick={() => { setSelectedOrder(order); setShowModal(true); }}>
+                              Chi Tiết
                             </button>
-                          ) : order.status === "cancelled" ? (
-                            <button className="btn btn-secondary btn-sm" onClick={() => handleUpdateOrder(order._id, "pending")}>
-                              Thu Hồi
-                            </button>
-                          ) : null}
 
-                          {order.status === "shipped" ? (
-                            <>
-                              <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order._id, "received")}>
-                                Đã Nhận Hàng
+                            {order.status === "pending" ? (
+                              <button className="btn btn-outline-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}>
+                                Hủy Đơn
                               </button>
-                              <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "return_requested")}>
-                                Trả Hàng
+                            ) : order.status === "cancelled" ? (
+                              <button className="btn btn-secondary btn-sm" onClick={() => handleUpdateOrder(order._id, "pending")}>
+                                Thu Hồi
                               </button>
-                            </>
-                          // ) : order.status === "return_requested" ? (
-                          //   <button className="btn btn-secondary btn-sm" onClick={() => handleUpdateOrder(order._id, "shipped")}>
-                          //     Thu Hồi
-                          //   </button>
-                          ) : null}
+                            ) : null}
 
                           {order.status === "return" && (
                             <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteOrder(order.orderCode)}>

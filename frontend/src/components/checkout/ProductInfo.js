@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
 const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selectedProducts }) => {
     const [cartData, setCartData] = useState(cart || []);
@@ -13,18 +14,20 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
         ? selectedProducts
         : (product ? [{ ...product, quantity }] : cartData);
 
+    console.log(product)
+
     const getImageUrl = (item, product) => {
-        if (item?.image) {
-            return `http://localhost:8000${item.image}`;
+        if (item?.image && item.image.startsWith('http')) {
+            return item.image;
         }
         if (item?.productId?.data?.image) {
-            return `http://localhost:8000${item.productId.data.image}`;
+            return `${UPLOAD_URL}${item.productId.data.image}`;
         }
         if (item?.product?.image) {
-            return `http://localhost:8000${item.product.image}`;;
+            return `${UPLOAD_URL}${item.product.image}`;;
         }
         if (product?.image) {
-            return `http://localhost:8000${product.image}`;;
+            return `${UPLOAD_URL}${product.image}`;;
         }
         return "https://via.placeholder.com/100";
     };

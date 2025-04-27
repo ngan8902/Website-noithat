@@ -10,10 +10,18 @@ exports.sendReviewReminder = async (req, res) => {
 
     console.log("order", order);
 
-    if (!order || order.status !== "delivered" || order.rating > 0 || order.isReminderSent || !order.user?.email) {
+    if (!order || order.status !== "delivered" || order.rating > 0 || order.isReminderSent) {
       return res.status(400).json({ message: "Không hợp lệ để gửi nhắc đánh giá." });
     }
 
+    // Kiểm tra email người nhận (Khách vãng lai không có email)
+    const userEmail = order.user?.email;
+    if (!userEmail) {
+      console.log("Khách vãng lai, bỏ qua gửi email nhắc đánh giá");
+      return res.status(200).json({ message: "Không có email để gửi nhắc nhở đánh giá." }); 
+    }
+
+    // Tiến hành gửi email nếu có email người nhận
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -24,7 +32,7 @@ exports.sendReviewReminder = async (req, res) => {
 
     const mailOptions = {
       from: `"Furniture" <${process.env.EMAIL_USER}>`,
-      to: order.user?.email,
+      to: userEmail,
       subject: `Đánh giá đơn hàng từ Furniture`,
       html: `
         <p>Chào ${order.user?.name},</p>
@@ -68,10 +76,11 @@ exports.shipOrder = async (req, res) => {
     let estimatedDeliveryDate = new Date();
     estimatedDeliveryDate.setDate(estimatedDeliveryDate.getDate() + (isInSouthernRegion ? 2 : 4));
 
-    // Kiểm tra email người nhận
+    // Kiểm tra email người nhận (Khách vãng lai không có email)
     const recipientEmail = order.user?.email;
     if (!recipientEmail) {
-      return res.status(400).json({ message: "Không tìm thấy email người nhận" });
+      console.log("Khách vãng lai, bỏ qua gửi email thông báo giao hàng");
+      return res.status(200).json({ message: "Không có email để gửi thông báo giao hàng." }); 
     }
 
     // Cấu hình gửi email
@@ -120,3 +129,4 @@ exports.shipOrder = async (req, res) => {
     }
   }
 };
+
