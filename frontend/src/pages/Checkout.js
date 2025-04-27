@@ -500,6 +500,7 @@ const Checkout = () => {
         }
     };
 
+
     const getImageUrl = (item, product) => {
         if (item?.image) {
             return `${UPLOAD_URL}${item.image}`;
@@ -511,7 +512,7 @@ const Checkout = () => {
             return `${UPLOAD_URL}${item.product.image}`;;
         }
         if (product?.image) {
-            return `${UPLOAD_URL}${product.image}`;;
+            return `${product.image}`;;
         }
         return "https://via.placeholder.com/100";
     };
