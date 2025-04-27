@@ -277,13 +277,12 @@ function FaceDetect() {
             disabled={checkInLoading || checkOutLoading}
             style={{
               padding: "10px 20px",
-              backgroundColor: "#28a745",
+              backgroundColor: "#ffc107",
               color: "white",
               border: "none",
               borderRadius: "8px",
               fontSize: "16px",
               cursor: checkInLoading ? "not-allowed" : "pointer",
-              width: "100%",
               maxWidth: "300px",
               margin: "0 auto",
             }}

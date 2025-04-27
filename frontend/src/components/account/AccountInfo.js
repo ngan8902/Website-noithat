@@ -75,6 +75,8 @@ const AccountInfo = () => {
     auth();
   }, [auth]);
 
+  console.log(auth)
+
   useEffect(() => {
     if (user && user._id) {
       const [houseNumber = '', street = '', ward = '', district = '', province = ''] = user.address?.split(',').map(part => part.trim());
