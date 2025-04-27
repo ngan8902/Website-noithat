@@ -37,18 +37,6 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
     return regex.test(email);
   };
 
-  // Hàm kiểm tra mật khẩu khớp nhau
-  const handleConfirmPasswordChange = (e) => {
-    const confirmPassword = e.target.value;
-    setUser({ ...user, confirmPassword });
-
-    if (user.password !== confirmPassword) {
-      setPasswordError("Mật khẩu không khớp!");
-    } else {
-      setPasswordError("");
-    }
-  };
-
   const handleSignup = (e) => {
     e.preventDefault(); 
 
@@ -91,11 +79,11 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
           setShowLogin(true);
         } else {
           setPasswordError(data.message || "Có lỗi xảy ra, vui lòng thử lại!");
-          console.error('lỗi:',setPasswordError)
+          console.error('Lỗi từ server:', data.message || "Không xác định");
         }
       })
       .catch((err) => {
-        console.error("Lỗi đăng ký:", err);
+        console.error("Lỗi đăng ký:", err.response ? err.response.data : err);
         setPasswordError("Không thể kết nối với server. Vui lòng thử lại!");
       });
   };
@@ -204,14 +192,8 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                     pattern="(?=.*[A-Z]).{8,}"
                     title="Nhập lại mật khẩu"
                     value={user.confirmPassword}
-                    onChange={(e) => setUser(
-                      {
-                        ...user,
-                        confirmPassword: e.target.value,
-                        handleConfirmPasswordChange
-                      }
-                    )}
-                    />
+                    onChange={(e) => setUser({ ...user, confirmPassword: e.target.value })}
+                  />
                   <span
                     className="toggle-password"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}

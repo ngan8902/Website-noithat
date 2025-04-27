@@ -46,7 +46,7 @@ const AccountInfo = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -76,7 +76,8 @@ const AccountInfo = () => {
 
   useEffect(() => {
     if (user && user._id) {
-      const [houseNumber = '', street = '', ward = '', district = '', province = ''] = user.address?.split(',').map(part => part.trim());
+      const addressParts = user.address ? user.address.split(',').map(part => part.trim()) : [];
+      const [houseNumber = '', street = '', ward = '', district = '', province = ''] = addressParts;
 
       setFormData({
         name: user.name || '',
@@ -329,16 +330,16 @@ const AccountInfo = () => {
       setNewPassword("");
       setConfirmPassword("");
       setErrorMessage("Cập nhật thông tin thành công!");
-      setTimeout(() => setErrorMessage(""), 3000);
+      setTimeout(() => setErrorMessage(""), 2000);
     } catch (error) {
       console.error("Lỗi tạo mật khẩu:", error);
       const message = error?.response?.data?.message || "Có lỗi xảy ra!";
       setErrorMessage(message);
-      setTimeout(() => setErrorMessage(""), 3000);
+      setTimeout(() => setErrorMessage(""), 2000);
     }
   };
 
-  const getImageUrl = (avatar, avatarDefautl) => {
+  const getImageUrl = (avatar, avatarDefault) => {
     let src;
   
     if (avatar && avatar.startsWith('http://')) {
@@ -346,7 +347,7 @@ const AccountInfo = () => {
     } else if (avatar) {
       src = `http://localhost:8000${avatar}`;
     } else {
-      src = avatarDefautl;
+      src = avatarDefault;
     }
   
     return src;
@@ -361,7 +362,7 @@ const AccountInfo = () => {
           alt="Avatar"
           className="avatar mb-3 rounded-circle border"
           height="150"
-          src={getImageUrl(avatar, avatarDefautl)}
+          src={getImageUrl(avatar, '/images/guest.png')}
           width="150"
           onClick={() => setShowModal(true)}
           style={{ cursor: "pointer" }}
@@ -453,6 +454,16 @@ const AccountInfo = () => {
             <input className="form-control" name="houseNumber" type="text" value={formData.houseNumber} onChange={handleChange} />
           </div>
 
+          {errorMessage && (
+            <div
+              className={`alert ${
+                errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
+              }`}
+            >
+              {errorMessage}
+            </div>
+          )}
+
           {/* Đổi mật khẩu */}
           {!isChangingPassword ? (
             <button
@@ -526,6 +537,16 @@ const AccountInfo = () => {
                       {showConfirmPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
                     </span>
                   </div>
+                </div>
+              )}
+
+              {errorMessage && (
+                <div
+                  className={`alert ${
+                    errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
+                  }`}
+                >
+                  {errorMessage}
                 </div>
               )}
 

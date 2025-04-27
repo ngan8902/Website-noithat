@@ -15,7 +15,7 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
     ? orders.filter(
         (order) =>
           order?.status === "cancelled" ||
-          order?.status === "return" ||
+          // order?.status === "return" ||
           order?.status === "cancelled_confirmed"
       )
     : [];

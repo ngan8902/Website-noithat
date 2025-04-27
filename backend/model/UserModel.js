@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
         address:{type: String},
         access_token: { type: String},
         refresh_token: { type: String},
-        googleId: { type: String, unique: true},
+        googleId: { type: String, unique: true, sparse: true},
         resetPasswordOTP: { type: String },
         otpExpires: { type: Date },
     },

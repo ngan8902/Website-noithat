@@ -15,6 +15,11 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
       .toLowerCase();
   };
 
+  const statusTextMap = {
+    delivered: "Hoàn thành",
+    return: "Trả hàng",
+  };
+
   const keyword = removeVietnameseTones(useSearchStore((state) => state.keyword || ""));
 
   useEffect(() => {
@@ -47,11 +52,14 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
         removeVietnameseTones(item.name).includes(keyword)
       );
 
+      const orderStatusText = removeVietnameseTones(statusTextMap[order.status] || "");
+
       return (
         receiverName.includes(keyword) ||
         receiverPhone.includes(keyword) ||
         orderCodeFilter.includes(keyword) ||
-        productMatch
+        productMatch ||
+        orderStatusText.includes(keyword)
       );
     });
 
@@ -199,7 +207,7 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
                         : order.status === "delivered"
                         ? "Hoàn thành"
                         : order.status === "return"
-                        ? "Đã trả"
+                        ? "Trả hàng"
                         : order.status === "cancelled"
                         ? "Yêu cầu hủy"
                         : ""}

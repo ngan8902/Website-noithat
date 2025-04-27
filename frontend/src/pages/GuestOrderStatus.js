@@ -186,6 +186,12 @@ const GuestOrderStatus = () => {
                           //   </button>
                           ) : null}
 
+                          {order.status === "return" && (
+                            <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteOrder(order.orderCode)}>
+                              Xóa Đơn
+                            </button>
+                          )}
+
                           {order.status === "delivered" && (
                             <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteOrder(order.orderCode)}>
                               Xóa Đơn
