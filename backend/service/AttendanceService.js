@@ -19,10 +19,13 @@ const saveFaceEmbedding = async (staffcode, faceEmbedding) => {
 const createCheckIn = async (staffId, checkInTime, notes, status) => {
   try {
     const staff = await Staff.findById(staffId).select('staffcode');
+
+    const vietnamTime = moment.tz(checkInTime, "Asia/Ho_Chi_Minh").format();
+
     const attendance = new Attendance({
       staffId: staff.id,
       staffcode: staff.staffcode,
-      checkInTime,
+      checkInTime: vietnamTime,
       notes,
       status
     })
@@ -34,9 +37,11 @@ const createCheckIn = async (staffId, checkInTime, notes, status) => {
 
 const updateCheckOut = async (attendanceId, checkOutTime) => {
   try {
+    const vietnamTime = moment.tz(checkOutTime, "Asia/Ho_Chi_Minh").format();
+
     const attendance = await Attendance.findByIdAndUpdate(
       attendanceId,
-      { checkOutTime },
+      { checkOutTime: vietnamTime },
       { new: true }
     );
 
