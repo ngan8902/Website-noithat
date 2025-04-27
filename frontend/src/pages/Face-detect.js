@@ -284,7 +284,6 @@ function FaceDetect() {
               fontSize: "16px",
               cursor: checkInLoading ? "not-allowed" : "pointer",
               maxWidth: "300px",
-              margin: "0 auto",
             }}
           >
             {checkOutLoading ?
