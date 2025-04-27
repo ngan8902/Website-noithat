@@ -206,7 +206,7 @@ const Checkout = () => {
 
         const formattedPaymentMethod = paymentMethod === "Thanh Toán Khi Nhận Hàng" ? "COD" :
             paymentMethod === "Chuyển Khoản Ngân Hàng" ? "VietQR" :
-            paymentMethod === "MoMo" ? "MoMo" : null;
+                paymentMethod === "MoMo" ? "MoMo" : null;
 
         if (!formattedPaymentMethod) {
             setErrorMessage("Phương thức thanh toán không hợp lệ!");
@@ -310,7 +310,7 @@ const Checkout = () => {
             }
             return;
         }
-        
+
         if (paymentMethod === "MoMo") {
             try {
                 const discount = displayProducts[0].productId?.data?.discount || displayProducts[0].discount || 0;
@@ -501,13 +501,16 @@ const Checkout = () => {
 
     const getImageUrl = (item, product) => {
         if (item?.image) {
-            return item.image;
+            return `http://localhost:8000${item.image}`;
         }
         if (item?.productId?.data?.image) {
             return `http://localhost:8000${item.productId.data.image}`;
         }
+        if (item?.product?.image) {
+            return `http://localhost:8000${item.product.image}`;;
+        }
         if (product?.image) {
-            return product.image;
+            return `http://localhost:8000${product.image}`;;
         }
         return "https://via.placeholder.com/100";
     };
@@ -545,7 +548,7 @@ const Checkout = () => {
 
                     {!user && (
                         <>
-                            <p>Chúng tôi muốn hỗ trợ bạn tốt hơn. Hãy 
+                            <p>Chúng tôi muốn hỗ trợ bạn tốt hơn. Hãy
                                 <button
                                     className="btn btn-outline-primary text-dark text-decoration-none fw-bold"
                                     onClick={() => setShowRegister(true)}
