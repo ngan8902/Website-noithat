@@ -3,11 +3,8 @@ import { UPLOAD_URL } from '../../constants/url.constant';
 
 const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSelectedItems }) => {
   const product = item.product || item.productId?.data;
-  const itemId =
-  item._id ||
-  (typeof item.productId === "object" ? item.productId._id : item.productId) ||
-  `${item.name}-${item.price}`; 
-  
+  const itemId = item._id || item.productId;
+
   const isSelected = selectedItems.includes(itemId);
 
   console.log(item)
@@ -18,7 +15,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
 
   const handleDecrease = () => {
     if (item.quantity > 1 && itemId) {
-      updateQuantity(itemId, item.quantity - 1);
+      updateQuantity(item.productId || itemId, item.quantity - 1);
       // window.location.reload();
     }
   };
@@ -26,7 +23,7 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
   const handleIncrease = () => {
     const maxStock = product?.countInStock || item?.countInStock || 1;
     if (item?.quantity < maxStock && itemId) {
-      updateQuantity(itemId, item?.quantity + 1);
+      updateQuantity(item.productId || itemId, item?.quantity + 1);
       // window.location.reload();
     }
   };

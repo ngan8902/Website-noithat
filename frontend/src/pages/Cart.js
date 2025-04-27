@@ -59,30 +59,6 @@ const Cart = () => {
     fetchProductDetails();
   }, [cartItems]);
 
-  const handleUpdateQuantity = (productId, quantity) => {
-    if (isGuest) {
-      const updatedCart = cartWithProducts.map(item => {
-        if (item.productId === productId) {
-          return { ...item, quantity };
-        }
-        return item;
-      });
-      setCartWithProducts(updatedCart);
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-    } else {
-      updateQuantity(productId, quantity);
-    }
-  };
-
-  const handleRemoveFromCart = (productId) => {
-    if (isGuest) {
-      const updatedCart = cartWithProducts.filter(item => item.productId !== productId);
-      setCartWithProducts(updatedCart);
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-    } else {
-      removeFromCart(productId);
-    }
-  };
 
   const handleCheckout = () => {
     const selectedProducts = cartWithProducts.filter(item => selectedItems.includes(item._id));
@@ -105,8 +81,8 @@ const Cart = () => {
           <div className="col-md-8 mb-4">
             <CartList
               cart={cartWithProducts}
-              updateQuantity={handleUpdateQuantity}
-              removeFromCart={handleRemoveFromCart}
+              updateQuantity={updateQuantity}
+              removeFromCart={removeFromCart}
               selectedItems={selectedItems}
               setSelectedItems={setSelectedItems}
             />
