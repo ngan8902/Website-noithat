@@ -11,17 +11,20 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
 
+  const [isGuest, setIsGuest] = useState(false);
+
   // useEffect(() => {
   //   const storedSelectedItems = JSON.parse(localStorage.getItem('selectedItems')) || [];
   //   setSelectedItems(storedSelectedItems);
   // }, []);
-  
+
   useEffect(() => {
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];
     if (localCart.length > 0) {
-        setCartWithProducts(localCart);
+      setCartWithProducts(localCart);
+      setIsGuest(true);
     } else {
-        fetchCart();
+      fetchCart();
     }
   }, [fetchCart]);
 
@@ -56,6 +59,31 @@ const Cart = () => {
     fetchProductDetails();
   }, [cartItems]);
 
+  const handleUpdateQuantity = (productId, quantity) => {
+    if (isGuest) {
+      const updatedCart = cartWithProducts.map(item => {
+        if (item.productId === productId) {
+          return { ...item, quantity };
+        }
+        return item;
+      });
+      setCartWithProducts(updatedCart);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+    } else {
+      updateQuantity(productId, quantity);
+    }
+  };
+
+  const handleRemoveFromCart = (productId) => {
+    if (isGuest) {
+      const updatedCart = cartWithProducts.filter(item => item.productId !== productId);
+      setCartWithProducts(updatedCart);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+    } else {
+      removeFromCart(productId);
+    }
+  };
+
   const handleCheckout = () => {
     const selectedProducts = cartWithProducts.filter(item => selectedItems.includes(item._id));
     console.log(selectedProducts)
@@ -75,11 +103,21 @@ const Cart = () => {
         <h2 className="text-center fw-bold mb-5">Giỏ Hàng</h2>
         <div className="row">
           <div className="col-md-8 mb-4">
-            <CartList cart={cartWithProducts} updateQuantity={updateQuantity} removeFromCart={removeFromCart} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
+            <CartList
+              cart={cartWithProducts}
+              updateQuantity={handleUpdateQuantity}
+              removeFromCart={handleRemoveFromCart}
+              selectedItems={selectedItems}
+              setSelectedItems={setSelectedItems}
+            />
           </div>
 
           <div className="col-md-4 mb-4">
-            <CartSummary cart={cartWithProducts} selectedItems={selectedItems} handleCheckout={handleCheckout} />
+            <CartSummary
+              cart={cartWithProducts}
+              selectedItems={selectedItems}
+              handleCheckout={handleCheckout}
+            />
           </div>
         </div>
       </div>
