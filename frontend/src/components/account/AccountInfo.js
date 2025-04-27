@@ -3,8 +3,9 @@ import useAuthStore from "../../store/authStore";
 import axios from "axios";
 import { getCookie } from "../../utils/cookie.util";
 import { TOKEN_KEY } from "../../constants/authen.constant";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = "http://localhost:8000/upload/guest.png"
+const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`
 
 const getProvinces = async () => {
   try {
@@ -344,7 +345,7 @@ const AccountInfo = () => {
     if (avatar && avatar.startsWith('http://')) {
       src = avatar;
     } else if (avatar) {
-      src = `http://localhost:8000${avatar}`;
+      src = `${UPLOAD_URL}${avatar}`;
     } else {
       src = avatarDefautl;
     }

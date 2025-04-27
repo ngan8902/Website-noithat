@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import useProductStore from "../../store/productStore";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
 const FeaturedProducts = () => {
     const navigate = useNavigate();
@@ -78,7 +79,7 @@ const FeaturedProducts = () => {
                         }}
                     >
                         {visibleProducts.map((product, index) =>
-                            product && `http://localhost:8000${product.image}` ? (
+                            product && `${UPLOAD_URL}${product.image}` ? (
                                 <div
                                     className="col-md-4 flex-shrink-0"
                                     key={index}
@@ -91,7 +92,7 @@ const FeaturedProducts = () => {
                                 >
                                     <div className="card h-100 shadow-sm">
                                         <img
-                                            src={`http://localhost:8000${product.image}`}
+                                            src={`${UPLOAD_URL}${product.image}`}
                                             className="card-img-top"
                                             alt={product.name || "Sản phẩm"}
                                             style={{

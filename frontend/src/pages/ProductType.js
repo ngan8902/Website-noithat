@@ -4,6 +4,7 @@ import SidebarFilter from "../components/product/SidebarFilter";
 import { Link, useParams } from "react-router-dom";
 import useProductStore from "../store/productStore";
 import Pagination from "../components/product/Pagination";
+import { UPLOAD_URL } from '../constants/url.constant';
 
 const defaultImage = "https://via.placeholder.com/300";
 const PAGE = 6;
@@ -102,7 +103,7 @@ const ProductType = () => {
                                                     style={{ cursor: "pointer" }}
                                                 >
                                                     <div className="card h-100 text-center">
-                                                        <img src={`http://localhost:8000/upload/${product.image.split("/").pop()}` || defaultImage} className="card-img-top" alt={product.name} />
+                                                        <img src={`${UPLOAD_URL}/upload/${product.image.split("/").pop()}` || defaultImage} className="card-img-top" alt={product.name} />
                                                         <div className="card-body d-flex flex-column">
                                                             <h5 className="card-title">{product.name}</h5>
                                                             <p className="card-text">{product.description}</p>

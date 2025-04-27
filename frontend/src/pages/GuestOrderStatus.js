@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import useOrderStore from "../store/orderStore";
 import OrderDetailModal from '../components/account/OrderModal';
+import { UPLOAD_URL } from '../constants/url.constant';
 
 const GuestOrderStatus = () => {
   const [orders, setOrders] = useState([]);
@@ -136,7 +137,7 @@ const GuestOrderStatus = () => {
                     )}
                     <td>
                       <img
-                        src={`http://localhost:8000${item.image}` || "/default-image.jpg"}
+                        src={`${UPLOAD_URL}${item.image}` || "/default-image.jpg"}
                         alt={item.name}
                         style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
                       />

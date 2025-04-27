@@ -3,8 +3,9 @@ import useChatStore from "../../store/chatStore";
 import axios from "axios";
 import useAuthAdminStore from "../../store/authAdminStore";
 import { SOCKET_URI, STAFF_EVENTS } from "../../constants/chat.constant";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = "http://localhost:8000/upload/guest.png";
+const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`;
 
 const ChatList = ({ onSelectCustomer }) => {
   const { setCustomers } = useChatStore();
@@ -122,7 +123,7 @@ const ChatList = ({ onSelectCustomer }) => {
     if (avatar && avatar.startsWith("http://")) {
       src = avatar;
     } else if (avatar) {
-      src = `http://localhost:8000${avatar}`;
+      src = `${UPLOAD_URL}${avatar}`;
     } else {
       src = avatarDefautl;
     }

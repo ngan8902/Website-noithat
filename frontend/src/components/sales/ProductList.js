@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AddProductModal from "./AddProductModal";
 import EditProductModal from "./EditProductModal";
 import useProductStore from "../../store/productStore";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
 const ProductList = () => {
   const { getProducts, products, removeProduct } = useProductStore((state) => state);
@@ -99,7 +100,7 @@ const ProductList = () => {
                   <td>{product.productCode || ""}</td>
                   <td>
                     <img
-                      src={`http://localhost:8000/upload/${product.image.split("/").pop()}` || "https://via.placeholder.com/100"}
+                      src={`${UPLOAD_URL}${product.image}` || "https://via.placeholder.com/100"}
                       alt={product.name}
                       style={{ width: "100px", height: "100px", objectFit: "cover" }}
                     />
