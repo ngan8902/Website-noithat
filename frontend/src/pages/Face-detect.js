@@ -43,25 +43,23 @@ function FaceDetect() {
         `${process.env.REACT_APP_URL_BACKEND}/attendance/today-checkins?date=${today}`
       );
 
-      // Lấy bản ghi chưa check-out (checkOutTime === null)
-      const activeCheckIns = res.data.filter(r => r.checkOutTime === null);
-
-      // Gộp bản ghi theo staffId (chỉ giữ 1 bản ghi cho mỗi staff)
-      const uniqueCheckIns = Object.values(
-        activeCheckIns.reduce((acc, item) => {
-          if (!acc[item.staffId]) {
+      // Gộp bản ghi theo staffId, lấy bản ghi mới nhất
+      const groupedByStaff = Object.values(
+        res.data.reduce((acc, item) => {
+          if (!acc[item.staffId] || new Date(item.checkInTime) > new Date(acc[item.staffId].checkInTime)) {
             acc[item.staffId] = {
               staffId: item.staffId,
               attendanceId: item._id,
               checkInTime: item.checkInTime,
+              checkOutTime: item.checkOutTime,
             };
           }
           return acc;
         }, {})
       );
 
-      setCheckedInStaffIds(uniqueCheckIns.map((r) => r.staffId));
-      setCheckedInStaff(uniqueCheckIns);
+      setCheckedInStaffIds(groupedByStaff.map((r) => r.staffId));
+      setCheckedInStaff(groupedByStaff);
     } catch (error) {
       console.error("Lỗi khi tải danh sách check-in hôm nay:", error);
     }
@@ -136,7 +134,7 @@ function FaceDetect() {
             const matchedStaff = checkedInStaff.find((item) => item.staffId === staff._id);
 
             if (type === "check-in") {
-              if (matchedStaff) {
+              if (matchedStaff && matchedStaff.checkInTime) {
                 setNotification(`⚠️ Nhân viên ${staff.staffcode} đã check-in hôm nay.`);
                 setTimeout(() => setNotification(""), 4000);
                 return;
@@ -153,22 +151,12 @@ function FaceDetect() {
                 status,
               };
 
-              const response = await axios.post(
+              await axios.post(
                 `${process.env.REACT_APP_URL_BACKEND}/attendance/check-in`,
                 checkInData
               );
 
-              const attendance = response.data.data;
-
-              setCheckedInStaffIds((prev) => [...prev, staff._id]);
-              setCheckedInStaff((prev) => [
-                ...prev,
-                {
-                  staffId: staff._id,
-                  checkInTime: now.toISOString(),
-                  attendanceId: attendance._id,
-                },
-              ]);
+              await fetchCheckedInStaff(); // Refresh lại danh sách
 
               const statusText = status === "present" ? "Đúng giờ" : "Trễ";
               setNotification(`✅ Nhân viên ${staff.staffcode} check-in thành công (${statusText})`);
@@ -177,16 +165,18 @@ function FaceDetect() {
             }
 
             if (type === "check-out") {
-              if (!matchedStaff) {
-                setNotification(`⚠️ Nhân viên ${staff.staffcode} chưa check-in hôm nay.`);
+              if (!matchedStaff || matchedStaff.checkOutTime) {
+                setNotification(`⚠️ Nhân viên ${staff.staffcode} chưa check-in hoặc đã check-out.`);
                 setTimeout(() => setNotification(""), 4000);
-                break;
+                return;
               }
 
               await axios.patch(`${process.env.REACT_APP_URL_BACKEND}/attendance/check-out`, {
                 attendanceId: matchedStaff.attendanceId,
                 checkOutTime: now.toISOString(),
               });
+
+              await fetchCheckedInStaff(); // Refresh lại danh sách
 
               setNotification(`✅ Nhân viên ${staff.staffcode} đã check-out thành công.`);
               setTimeout(() => setNotification(""), 4000);
@@ -195,10 +185,6 @@ function FaceDetect() {
           }
         }
 
-        // if (!notification) {
-        //   setNotification("⚠️ Khuôn mặt không trùng khớp với bất kỳ nhân viên nào.");
-        //   setTimeout(() => setNotification(""), 4000);
-        // }
       } catch (error) {
         console.error("Lỗi khi nhận diện:", error);
         setNotification("Lỗi khi nhận diện khuôn mặt.");
@@ -250,9 +236,7 @@ function FaceDetect() {
           }}
         />
 
-        <div
-          className="checkin-button"
-        >
+        <div className="checkin-button">
           <button
             onClick={() => detectAndProcess("check-in")}
             disabled={checkInLoading || checkOutLoading}
@@ -267,10 +251,7 @@ function FaceDetect() {
               transition: "background-color 0.3s ease",
             }}
           >
-            {checkInLoading ?
-              <>
-                <span className="spinner" /> Đang xử lý...
-              </> : "Đi vào (check-in)"}
+            {checkInLoading ? <><span className="spinner" /> Đang xử lý...</> : "Đi vào (check-in)"}
           </button>
           <button
             onClick={() => detectAndProcess("check-out")}
@@ -282,16 +263,14 @@ function FaceDetect() {
               border: "none",
               borderRadius: "8px",
               fontSize: "16px",
-              cursor: checkInLoading ? "not-allowed" : "pointer",
+              cursor: checkOutLoading ? "not-allowed" : "pointer",
               maxWidth: "300px",
             }}
           >
-            {checkOutLoading ?
-              <>
-                <span className="spinner" /> Đang xử lý...
-              </> : "Đi ra (check-out)"}
+            {checkOutLoading ? <><span className="spinner" /> Đang xử lý...</> : "Đi ra (check-out)"}
           </button>
         </div>
+
         {notification && (
           <div
             style={{
