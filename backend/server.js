@@ -27,7 +27,12 @@ app.use(cookieParser());
 // Cấu hình CORS
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'http://192.168.0.104:3000'], 
+    origin: [
+      'http://localhost:3000', 
+      'http://192.168.0.104:3000', 
+      'https://website-noithat-amber.vercel.app', 
+      'https://furniture-9gw0hdlww-ngans-projects.vercel.app'
+    ], 
     credentials: true, 
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'token', 'staff-token'],
