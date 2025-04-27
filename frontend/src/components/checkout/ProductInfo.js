@@ -14,9 +14,11 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
         ? selectedProducts
         : (product ? [{ ...product, quantity }] : cartData);
 
+    console.log(product)
+
     const getImageUrl = (item, product) => {
-        if (item?.image) {
-            return `${UPLOAD_URL}${item.image}`;
+        if (item?.image && item.image.startsWith('http')) {
+            return item.image;
         }
         if (item?.productId?.data?.image) {
             return `${UPLOAD_URL}${item.productId.data.image}`;
