@@ -276,14 +276,16 @@ function FaceDetect() {
             onClick={() => detectAndProcess("check-out")}
             disabled={checkInLoading || checkOutLoading}
             style={{
-              padding: "12px 24px",
-              backgroundColor: "#ffc107",
-              color: "#000",
+              padding: "10px 20px",
+              backgroundColor: "#28a745",
+              color: "white",
               border: "none",
               borderRadius: "8px",
               fontSize: "16px",
-              cursor: checkOutLoading ? "not-allowed" : "pointer",
-              transition: "background-color 0.3s ease",
+              cursor: checkInLoading ? "not-allowed" : "pointer",
+              width: "100%",
+              maxWidth: "300px",
+              margin: "0 auto",
             }}
           >
             {checkOutLoading ?
@@ -295,19 +297,19 @@ function FaceDetect() {
         {notification && (
           <div
             style={{
-              marginTop: "30px",
+              marginTop: "20px",
               backgroundColor:
                 notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không") || notification.includes("đã check-in")
                   ? "#dc3545"
                   : "#28a745",
               color: "#fff",
-              padding: "12px 20px",
+              padding: "10px 15px",
               borderRadius: "8px",
-              fontSize: "16px",
-              boxShadow: "0 0 10px rgba(0,0,0,0.2)",
-              maxWidth: 640,
+              fontSize: "14px",
+              maxWidth: "90%",
               marginLeft: "auto",
               marginRight: "auto",
+              wordBreak: "break-word",
             }}
           >
             {notification}
