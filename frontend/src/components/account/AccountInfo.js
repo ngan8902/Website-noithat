@@ -75,8 +75,6 @@ const AccountInfo = () => {
     auth();
   }, [auth]);
 
-  console.log(auth)
-
   useEffect(() => {
     if (user && user._id) {
       const addressParts = user.address ? user.address.split(',').map(part => part.trim()) : [];

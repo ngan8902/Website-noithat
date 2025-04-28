@@ -1,7 +1,6 @@
 const { Server } = require("socket.io");
 const { STAFF_EVENTS, USER_EVENTS } = require("../common/constant/chat.event.constant");
 const ChatService = require("../service/ChatService");
-const mongoose = require("mongoose");
 const { validateTimestamp } = require('../common/utils/date');
 
 function initializeChatSocket(server) {

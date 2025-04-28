@@ -1,12 +1,11 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import useAuthStore from '../../store/authStore';
-import { removeCookie } from '../../utils/cookie.util';
-import { TOKEN_KEY } from '../../constants/authen.constant';
 import useProductStore from '../../store/productStore';
 import useCartStore from '../../store/cartStore';
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -15,7 +14,7 @@ const Header = () => {
   const { type, getType, suggestions = [], getSuggestions, searchProducts } = useProductStore((state) => state);
   const [cartCount, setCartCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const hasFetchedCart = useRef(false); 
+  const hasFetchedCart = useRef(false);
 
   useEffect(() => {
     if (searchTerm.length > 0) {
@@ -34,11 +33,18 @@ const Header = () => {
 
   const { fetchCart, cartItems } = useCartStore();
 
-  const logout = () => {
-    removeCookie(TOKEN_KEY);
-    window.location.replace("/home");
+  const logout = async () => {
+    try {
+      await axios.post(`${process.env.REACT_APP_URL_BACKEND}/user/logout`, {}, {
+        withCredentials: true,
+      });
+      localStorage.removeItem('user');
+      window.location.href = '/home';
+    } catch (error) {
+      console.error("Đã xảy ra lỗi khi đăng xuất", error);
+    }
   };
-  
+
   useEffect(() => {
     getType()
   }, [])
@@ -46,7 +52,7 @@ const Header = () => {
   useEffect(() => {
     const updateCartCount = () => {
       let totalItems = 0;
-  
+
       if (user) {
         if (Array.isArray(cartItems)) {
           totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
@@ -55,23 +61,23 @@ const Header = () => {
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
         totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
       }
-  
+
       setCartCount(totalItems);
     };
-  
+
     if (user && cartItems.length === 0 && !hasFetchedCart.current) {
-      hasFetchedCart.current = true; 
+      hasFetchedCart.current = true;
       fetchCart();
     }
     updateCartCount();
-  
+
     window.addEventListener("cartUpdated", updateCartCount);
     return () => {
       window.removeEventListener("cartUpdated", updateCartCount);
     };
-  
+
   }, [cartItems, user]);
-  
+
   const toSlug = (str) => {
     return str
       .toLowerCase()
@@ -141,8 +147,8 @@ const Header = () => {
             {suggestions && suggestions.length > 0 && (
               <ul className="suggestions-list">
                 {suggestions.map((product) => (
-                  <li 
-                    key={product._id} 
+                  <li
+                    key={product._id}
                     onClick={() => {
                       handleSearch(product.name);
                     }}
