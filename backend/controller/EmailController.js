@@ -39,7 +39,7 @@ exports.sendReviewReminder = async (req, res) => {
         <p>Bạn đã nhận đơn hàng với mã <strong>${orderCode}</strong>. Bạn cảm thấy sản phẩm thế nào?</p>
         <p>Bỏ qua email này nếu như bạn đã Đánh giá sản phẩm rồi!</p>
         <p>Nếu chưa đánh giá! Vui lòng truy cập vào trang lịch sử mua hàng để đánh giá sản phẩm giúp chúng tôi phục vụ bạn tốt hơn!</p>
-        <a href="https://furniture.com/account" style="background: #4CAF50; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">Đánh giá ngay</a>
+        <a href="https://website-noithat-amber.vercel.app/account" style="background: #4CAF50; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">Đánh giá ngay</a>
         <p>Trân trọng, <br/>Furniture</p>
       `,
     };

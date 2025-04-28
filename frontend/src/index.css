@@ -796,10 +796,10 @@ section {
 
 .App {
   text-align: center;
-  min-height: "100vh";
-  padding-top: "20px";
-  padding-left: "10px";
-  padding-right: "10px"
+  min-height: 100vh;
+  padding-top: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .App-logo {
@@ -816,16 +816,13 @@ section {
 .App-header {
   position: relative;
   height: 480px;
-  max-width: "640px";
-  max-height: auto;
-  margin-bottom: 20px;
-  width: "100%";
-  margin: "0 auto";
-  border-radius: "16px";
-  box-shadow: "0 8px 24px rgba(0,0,0,0.1)";
-  text-align: "center";
-  position: "relative";
-  padding: "20px"
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  text-align: center;
+  padding: 20px;
 }
 
 .checkin-button {
@@ -834,14 +831,51 @@ section {
   left: 0;
   right: 0;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
   padding: 12px 16px;
   font-size: 1.2rem;
-  cursor: pointer;
   z-index: 10;
   color: white;
   border-radius: 5px;
+}
+
+.checkin-button button {
+  min-width: 150px;
+}
+
+.notification-message {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  max-width: 90%;
+  margin: 20px auto 0;
+  word-break: break-word;
+  z-index: 15;
+  position: relative;
+  top: -120px;
+}
+
+.notification-message.error {
+  background-color: #dc3545;
+}
+
+@media (max-width: 576px) {
+  .checkin-button button {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .notification-message {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    margin-top: 10px;
+    top: 0px;
+    max-width: 95%;
+  }
 }
 
 .checkin-button:disabled {
