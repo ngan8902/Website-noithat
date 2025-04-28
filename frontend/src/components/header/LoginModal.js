@@ -11,12 +11,14 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
   const [pass, setPass] = useState("");
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+
   const getLogin = (email, password) => {
-    return axios.post(`${process.env.REACT_APP_URL_BACKEND}/user/sign-in`, {
-      email: email,
-      password: password
-    })
-  }
+    return axios.post(
+      `${process.env.REACT_APP_URL_BACKEND}/user/sign-in`,
+      { email, password },
+      { withCredentials: true }
+    );
+  };
 
   const handelLogin = (e) => {
     e?.preventDefault();
@@ -29,33 +31,33 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
     setErrorMessage("");
 
     getLogin(email, pass)
-    .then((response) => {
-      let data = response.data;
-      if (data && !data.error) {
-        if (data.access_token) {
-          setCookie(TOKEN_KEY, data.access_token, 2)
-          localStorage.setItem("user", JSON.stringify(data.user));
-          window.location.replace("/account");
-        } 
-        else {
-          setErrorMessage("Email hoặc mật khẩu không chính xác");
+      .then((response) => {
+        let data = response.data;
+        if (data && !data.error) {
+          if (data.access_token) {
+            setCookie(TOKEN_KEY, data.access_token, 2)
+            localStorage.setItem("user", JSON.stringify(data.user));
+            window.location.replace("/account");
+          }
+          else {
+            setErrorMessage("Email hoặc mật khẩu không chính xác");
+          }
         }
-      }
-    })
-    .catch((error) => {
-      if (error.response?.status === 401) {
-        setErrorMessage("Email hoặc mật khẩu không chính xác");
-      } else {
-        setErrorMessage("Không thể kết nối đến máy chủ, vui lòng kiểm tra lại mạng!");
-      }
-      setErrorMessage("");
-    })
+      })
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          setErrorMessage("Email hoặc mật khẩu không chính xác");
+        } else {
+          setErrorMessage("Không thể kết nối đến máy chủ, vui lòng kiểm tra lại mạng!");
+        }
+        setErrorMessage("");
+      })
   }
 
   if (!show) return null;
 
   const handleLoginSuccess = () => {
-      setShow(false);
+    setShow(false);
   };
 
   return (
@@ -67,69 +69,69 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
             <button type="button" className="btn-close" onClick={() => setShow(false)}></button>
           </div>
           <div className="modal-body">
-          <form>
-            <div>
-              {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
+            <form>
+              <div>
+                {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
 
-              <div className="mb-3">
-                <label htmlFor="loginEmail" className="form-label text-dark">Email</label>
-                <input 
-                  type="email" 
-                  className="form-control" 
-                  id="loginEmail"  
-                  autoFocus
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="loginPassword" className="form-label text-dark">Mật Khẩu</label>
-                <div className="password-container">
+                <div className="mb-3">
+                  <label htmlFor="loginEmail" className="form-label text-dark">Email</label>
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type="email"
                     className="form-control"
-                    id="loginPassword"
-                    value={pass}
-                    onChange={(e) => setPass(e.target.value)}
+                    id="loginEmail"
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
-                  <span
-                    className="toggle-password"
-                    onClick={() => setShowPassword(!showPassword)}
+                </div>
+                <div className="mb-3">
+                  <label htmlFor="loginPassword" className="form-label text-dark">Mật Khẩu</label>
+                  <div className="password-container">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="form-control"
+                      id="loginPassword"
+                      value={pass}
+                      onChange={(e) => setPass(e.target.value)}
+                    />
+                    <span
+                      className="toggle-password"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                    </span>
+                  </div>
+                </div>
+
+                <button className="btn btn-dark w-100" type="submit" onClick={handelLogin} onKeyDown={(e) => e.key === "Enter" && handelLogin()}>Đăng Nhập</button>
+
+                <div className="text-center mt-2">
+                  <button
+                    type="button"
+                    className="btn btn-link text-primary text-decoration-none"
+                    onClick={() => navigate("/forgot-password")}
                   >
-                    {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
-                  </span>
+                    Quên mật khẩu?
+                  </button>
+                </div>
+
+                <p className="text-center text-dark mt-3">
+                  Hoặc đăng nhập bằng
+                </p>
+                <button className="btn" style={{ marginLeft: "25%" }}>
+                  <GoogleLoginComponent onSuccess={handleLoginSuccess} />
+                </button>
+
+                <div className="text-center mt-3">
+                  <p className="text-dark">
+                    Chưa có tài khoản?
+                    <button type="button" className="btn btn-link text-primary text-decoration-none" onClick={() => { setShow(false); setShowRegister(true); }}>
+                      Tạo tài khoản
+                    </button>
+                  </p>
                 </div>
               </div>
-
-              <button className="btn btn-dark w-100" type="submit" onClick={handelLogin} onKeyDown={(e) => e.key === "Enter" && handelLogin()}>Đăng Nhập</button>
-
-              <div className="text-center mt-2">
-                <button 
-                  type="button" 
-                  className="btn btn-link text-primary text-decoration-none"
-                  onClick={() => navigate("/forgot-password")}
-                >
-                  Quên mật khẩu?
-                </button>
-              </div>
-              
-              <p className="text-center text-dark mt-3">
-                Hoặc đăng nhập bằng
-              </p>
-              <button className="btn" style={{marginLeft: "25%"}}>
-                <GoogleLoginComponent onSuccess={handleLoginSuccess}/>
-              </button>
-
-              <div className="text-center mt-3">
-                <p className="text-dark">
-                  Chưa có tài khoản?
-                  <button type="button" className="btn btn-link text-primary text-decoration-none" onClick={() => { setShow(false); setShowRegister(true); }}>
-                    Tạo tài khoản
-                  </button>
-                </p>
-              </div>
-            </div>
-          </form>
+            </form>
           </div>
         </div>
       </div>
