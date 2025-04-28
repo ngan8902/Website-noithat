@@ -2,11 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import useAuthStore from '../../store/authStore';
-import { removeCookie } from '../../utils/cookie.util';
-import { TOKEN_KEY } from '../../constants/authen.constant';
 import useProductStore from '../../store/productStore';
 import useCartStore from '../../store/cartStore';
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
