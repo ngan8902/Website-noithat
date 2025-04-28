@@ -37,9 +37,9 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   }, [])
 
   const filteredOrders = (Array.isArray(orders) ? orders : [])
-    .filter(order => 
+    .filter(order =>
       // order.status !== "cancelled" && 
-      order.status !== "cancelled_confirmed" && 
+      order.status !== "cancelled_confirmed" &&
       order.status !== "pending" && order.status !== "processing" &&
       (filterByStatus ? order.status === filterByStatus : true)
     )
@@ -121,8 +121,8 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
       </h5>
 
       <div className="d-flex justify-content-between align-items-center mb-3"></div>
-        <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "auto", overflowX: "auto" }}>
-          <table className="table table-bordered mt-3">
+      <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "auto", overflowX: "auto" }}>
+        <table className="table table-bordered mt-3">
           <thead
             className="table-dark"
             style={{
@@ -179,42 +179,41 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
                     {order?.paymentMethod === "COD"
                       ? "Thanh toán khi nhận hàng"
                       : order?.paymentMethod === "VietQR"
-                      ? "Chuyển khoản"
-                      : order?.paymentMethod}
+                        ? "Chuyển khoản"
+                        : order?.paymentMethod}
                   </td>
                   <td style={{ textAlign: "center" }}>
                     <span
-                      className={`badge ${
-                        order.status === "return_requested"
+                      className={`badge ${order.status === "return_requested"
                           ? "bg-warning text-dark"
                           : order.status === "received"
-                          ? "bg-info text-dark"
-                          : order.status === "shipped"
-                          ? "bg-primary"
-                          : order.status === "delivered"
-                          ? "bg-success"
-                          : order.status === "return" || order.status === "cancelled"
-                          ? "bg-danger"
-                          : "bg-secondary"
-                      }`}
+                            ? "bg-info text-dark"
+                            : order.status === "shipped"
+                              ? "bg-primary"
+                              : order.status === "delivered"
+                                ? "bg-success"
+                                : order.status === "return" || order.status === "cancelled"
+                                  ? "bg-danger"
+                                  : "bg-secondary"
+                        }`}
                     >
                       {order.status === "return_requested"
                         ? "Yêu cầu trả hàng"
                         : order.status === "received"
-                        ? "Đã nhận hàng"
-                        : order.status === "shipped"
-                        ? "Đang giao"
-                        : order.status === "delivered"
-                        ? "Hoàn thành"
-                        : order.status === "return"
-                        ? "Trả hàng"
-                        : order.status === "cancelled"
-                        ? "Yêu cầu hủy"
-                        : ""}
+                          ? "Đã nhận hàng"
+                          : order.status === "shipped"
+                            ? "Đang giao"
+                            : order.status === "delivered"
+                              ? "Hoàn thành"
+                              : order.status === "return"
+                                ? "Trả hàng"
+                                : order.status === "cancelled"
+                                  ? "Yêu cầu hủy"
+                                  : ""}
                     </span>
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    {["received", "return_requested"].includes(order.status) && (
+                    {["received", "return_requested", "shipped"].includes(order.status) && (
                       <>
                         {order.status !== "return_requested" && (
                           <button
@@ -224,7 +223,7 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
                             Xác nhận
                           </button>
                         )}
-                        {order.status !== "received" && (
+                        {order.status !== "received" && order.status !== "shipped" && (
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() => onReturn(order._id)}
