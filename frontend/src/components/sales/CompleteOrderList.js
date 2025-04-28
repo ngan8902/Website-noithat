@@ -41,7 +41,7 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
       // order.status !== "cancelled" && 
       order.status !== "cancelled_confirmed" &&
       order.status !== "pending" && order.status !== "processing" &&
-      (filterByStatus ? order.status === filterByStatus : true)
+      (filterByStatus ? order.status === filterByStatus || (filterByStatus === "received" && order.status === "shipped") : true)
     )
     .filter(order => {
       const receiverName = removeVietnameseTones(order.receiver?.fullname || "");
@@ -77,7 +77,9 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
   });
 
   const returnRequestedCount = filteredOrders.filter(order => order.status === "return_requested").length;
-  const shippingCount = filteredOrders.filter(order => order.status === "received").length;
+  const shippingCount = filteredOrders.filter(order =>
+    order.status === "received" || order.status === "shipped"
+  ).length;
   const cancelledCount = filteredOrders.filter(order => order.status === "cancelled").length;
 
   return (
@@ -93,8 +95,16 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
             🔄 Yêu cầu trả hàng: <strong>{returnRequestedCount}</strong>
           </span>
           <span
-            className={`m-3 order-status-hover ${filterByStatus === "received" ? "text-primary fw-bold" : "text-muted"} cursor-pointer`}
-            onClick={() => setFilterByStatus(prev => prev === "received" ? null : "received")}
+            className={`m-3 order-status-hover ${(filterByStatus === "received" || filterByStatus === "shipped") ? "text-primary fw-bold" : "text-muted"
+              } cursor-pointer`}
+            onClick={() => {
+              setFilterByStatus(prev => {
+                if (prev === "received" || prev === "shipped") {
+                  return null;
+                }
+                return "received"; // Default to 'received'
+              });
+            }}
             style={{ cursor: "pointer" }}
           >
             🚚 Đơn đã giao: <strong>{shippingCount}</strong>
@@ -185,14 +195,16 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
                   <td style={{ textAlign: "center" }}>
                     <span
                       className={`badge ${order.status === "return_requested"
-                          ? "bg-warning text-dark"
-                          : order.status === "received"
-                            ? "bg-info text-dark"
-                            : order.status === "shipped"
-                              ? "bg-primary"
-                              : order.status === "delivered"
-                                ? "bg-success"
-                                : order.status === "return" || order.status === "cancelled"
+                        ? "bg-warning text-dark"
+                        : order.status === "received"
+                          ? "bg-info text-dark"
+                          : order.status === "shipped"
+                            ? "bg-primary"
+                            : order.status === "delivered"
+                              ? "bg-success"
+                              : order.status === "return"
+                                ? "bg-danger"
+                                : order.status === "cancelled"
                                   ? "bg-danger"
                                   : "bg-secondary"
                         }`}
