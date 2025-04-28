@@ -51,6 +51,15 @@ const loginUser = async (req, res) => {
         }
 
         const response = await UserService.loginUser(req.body)
+
+        if (response.status === 'OK' && response.access_token) {
+            res.cookie('token', response.access_token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'None',
+            });
+        }
+
         return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
@@ -76,7 +85,7 @@ const updateUser = async (req, res) => {
             if (!allowedTypes.includes(req.file.mimetype)) {
                 return res.status(400).json({ message: 'Loại file không được hỗ trợ.' });
             }
-            data.avatar = `/upload/${req.file.filename}`; 
+            data.avatar = `/upload/${req.file.filename}`;
         }
 
         const response = await UserService.updateUser(userId, data);
@@ -172,6 +181,15 @@ const refreshToken = async (req, res) => {
             })
         }
         const response = await JwtService.refreshTokenJwtService(token)
+
+        if (response.status === 'OK' && response.access_token) {
+            res.cookie('token', response.access_token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'None',
+            });
+        }
+
         return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
