@@ -214,6 +214,27 @@ const getMe = async (req, res) => {
     }
 }
 
+const logoutUser = (req, res) => {
+    try {
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'None', 
+        });
+
+        return res.status(200).json({
+            status: 'SUCCESS',
+            message: 'Đăng xuất thành công',
+        });
+    } catch (e) {
+        return res.status(500).json({
+            status: 'ERR',
+            message: 'Đã xảy ra lỗi khi đăng xuất',
+        });
+    }
+};
+
+
 module.exports = {
     createUser,
     loginUser,
@@ -223,5 +244,6 @@ module.exports = {
     getAllUser,
     getDetailsUser,
     refreshToken,
-    getMe
+    getMe,
+    logoutUser
 }

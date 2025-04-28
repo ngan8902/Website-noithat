@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controller/UserController') 
-const {authMiddleware, authUserMiddleware, authenticateUser} = require('../middleware/authMiddleware')
+const {authMiddleware, authenticateUser} = require('../middleware/authMiddleware')
 const { upload } = require('../service/ImagesService')
 
 /**Authentication */
@@ -11,6 +11,7 @@ router.post('/refresh-token' , userController.refreshToken)
 /**SignIn Sign Up API */
 router.post('/sign-up' , userController.createUser)
 router.post('/sign-in' , userController.loginUser)
+router.post('/logout', userController.logoutUser);
 
 /**API */
 router.put('/update-user/:id' , upload.single("avatar"), userController.updateUser)
