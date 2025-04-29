@@ -107,7 +107,7 @@ const EmployeeList = () => {
                 <td>{staff.staffcode}</td>
                 <td>
                   <img
-                    src={getImageUrl(staff.avatar, '/images/guest.png')}
+                    src={getImageUrl(staff?.avatar, '/images/guest.png')}
                     alt={staff.name}
                     style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }}
                   />

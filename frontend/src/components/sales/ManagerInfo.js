@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { UPLOAD_URL } from '../../constants/url.constant'
 
 const ManagerInfo = ({ staff }) => {
   const [showModal, setShowModal] = useState(false);
@@ -49,6 +50,18 @@ const ManagerInfo = ({ staff }) => {
     return `${staff?.name} ${serviceText}. ${closingSentence}`;
   };
 
+  const getImageUrl = (avatar, avatarDefault) => {
+      let src;
+      if (avatar && avatar.startsWith('http://')) {
+        src = avatar;
+      } else if (avatar) {
+        src = `${UPLOAD_URL}${avatar}`;
+      } else {
+        src = avatarDefault;
+      }
+      return src;
+    };
+
   return (
     <section className="py-5">
       <div className="container">
@@ -57,7 +70,7 @@ const ManagerInfo = ({ staff }) => {
             <div className="card text-center shadow-sm border-0 p-3">
               <div className="card-body">
                 <img
-                  src={staff?.avatar || "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"}
+                  src={getImageUrl(staff?.avatar, '/images/guest.png')}
                   alt={staff?.name || "Employee"}
                   className="rounded-circle mb-3 border border-3 border-primary avatar"
                   width="150"
@@ -116,7 +129,7 @@ const ManagerInfo = ({ staff }) => {
                 <i className="bi bi-x-circle-fill"></i>
               </span>
               <img
-                src={staff?.avatar || "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg"}
+                src={getImageUrl(staff?.avatar, '/images/guest.png')}
                 alt="Avatar"
               />
             </div>
