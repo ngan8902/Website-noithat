@@ -28,6 +28,8 @@ const AppRoutes = ({ products }) => {
   const location = useLocation();
 
   const isPublicRoute = !location.pathname.startsWith("/admin") && !location.pathname.startsWith("/forgot-password");
+  const isGuestOrderPage = location.pathname === "/guest-order";
+
 
   useEffect(() => {
     const isPublicRoute = !location.pathname.startsWith("/admin") && !location.pathname.startsWith("/forgot-password");
@@ -61,7 +63,7 @@ const AppRoutes = ({ products }) => {
 
       {isPublicRoute && <Chatbox />}
       {isPublicRoute && <Zalo />}
-      {isPublicRoute && <GuestOrderButton />}
+      {isPublicRoute && !isGuestOrderPage && <GuestOrderButton />}
     </div>
   );
 };
