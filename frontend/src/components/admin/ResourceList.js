@@ -123,14 +123,14 @@ const ResourceList = () => {
                 </td>
                 <td className="fw-bold fs-5">
                   <span
-                    className={`badge ${record.status === "Đúng giờ"
+                    className={`badge ${record.status === "present"
                       ? "text-success"
                       : record.status === "Muộn"
                         ? "text-danger"
                         : "text-danger"
                       }`}
                   >
-                    {record.status === "Đúng giờ" ? "Đúng giờ" : "Muộn"}
+                    {record.status === "present" ? "Đúng giờ" : "Muộn"}
                   </span>
                 </td>
               </tr>
