@@ -12,7 +12,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const { initializeChatSocket } = require("./chat/chat.socket");
 
-dotenv.config();
+dotenv.config(); 
 
 // Tắt các chính sách bảo mật ngăn chặn tải tài nguyên chéo
 app.use((req, res, next) => {
