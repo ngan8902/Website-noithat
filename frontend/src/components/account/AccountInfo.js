@@ -363,7 +363,7 @@ const AccountInfo = () => {
           alt="Avatar"
           className="avatar mb-3 rounded-circle border"
           height="150"
-          src={getImageUrl(avatar, '/images/guest.png')}
+          src={getImageUrl(user?.avatar, '/images/guest.png')}
           width="150"
           onClick={() => setShowModal(true)}
           style={{ cursor: "pointer" }}
@@ -582,7 +582,7 @@ const AccountInfo = () => {
               <i className="bi bi-x-circle-fill"></i>
             </span>
             <img
-              src={getImageUrl(avatar, avatarDefautl)}
+              src={getImageUrl(user?.avatar, avatarDefautl)}
               alt="Avatar"
             />
           </div>
