@@ -15,11 +15,11 @@ const { initializeChatSocket } = require("./chat/chat.socket");
 dotenv.config();
 
 // Tắt các chính sách bảo mật ngăn chặn tải tài nguyên chéo
-// app.use((req, res, next) => {
-//   res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
-//   res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-//   next();
-// });
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
+  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+  next();
+});
 
 // Cấu hình cookie-parser trước CORS
 app.use(cookieParser());
