@@ -54,7 +54,7 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
         {
           headers: {
             'staff-token': getCookie(STAFF_TOKEN_KEY),
-            'Content-Type': 'multipart/form-data' 
+            'Content-Type': 'multipart/form-data'
           }
         }
       );
@@ -93,12 +93,15 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
               Ảnh đại diện
               <input type="file" className="form-control mb-3" onChange={handleFileChange} />
             </label>
-            {form.avatar && (
+            {(form.avatar) && (
               <img
-                src={form.avatar}
-                alt="Employee"
-                style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%", marginBottom: "10px" }}
-                className="m-3"
+                src={
+                  form.avatar instanceof File
+                    ? URL.createObjectURL(form.avatar) 
+                    : `${process.env.REACT_APP_URL_BACKEND}${form.avatar}` 
+                }
+                alt="Avatar Preview"
+                style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "50%" }}
               />
             )}
 
