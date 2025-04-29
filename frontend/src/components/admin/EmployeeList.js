@@ -38,6 +38,19 @@ const EmployeeList = () => {
     setSelectedEmployee(null);
   };
 
+   const getImageUrl = (avatar, avatarDefault) => {
+      let src;
+    
+      if (avatar && avatar.startsWith('http://')) {
+        src = avatar;
+      } else if (avatar) {
+        src = `${UPLOAD_URL}${avatar}`;
+      } else {
+        src = avatarDefault;
+      }
+    
+      return src;
+    };
 
   return (
     <div id="employees" className="mt-4">
@@ -83,7 +96,7 @@ const EmployeeList = () => {
                 <td>{staff.staffcode}</td>
                 <td>
                   <img
-                    src={`${UPLOAD_URL}${staff.avatar}` || avatarDefautl}
+                    src={getImageUrl(staff.avatar, '/images/guest.png')}
                     alt={staff.name}
                     style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }}
                   />
