@@ -343,7 +343,7 @@ const AccountInfo = () => {
   const getImageUrl = (avatar, avatarDefault) => {
     let src;
   
-    if (avatar && avatar.startsWith('http://')) {
+    if (avatar && avatar.startsWith('https://')) {
       src = avatar;
     } else if (avatar) {
       src = `${UPLOAD_URL}${avatar}`;
@@ -582,7 +582,7 @@ const AccountInfo = () => {
               <i className="bi bi-x-circle-fill"></i>
             </span>
             <img
-              src={getImageUrl(user?.avatar, avatarDefautl)}
+              src={getImageUrl(user?.avatar, '/images/guest.png')}
               alt="Avatar"
             />
           </div>
