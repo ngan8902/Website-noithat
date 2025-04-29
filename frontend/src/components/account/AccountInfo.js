@@ -5,7 +5,7 @@ import { getCookie } from "../../utils/cookie.util";
 import { TOKEN_KEY } from "../../constants/authen.constant";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`
+const avatarDefautl = '/images/guest.png'
 
 const getProvinces = async () => {
   try {

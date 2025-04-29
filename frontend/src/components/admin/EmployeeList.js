@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from "react";
 import AddEmployeeModal from "./AddEmployeeModal";
 import EditEmployeeModal from "./EditEmployeeModal";
-import useStaffStore from "../../store/staffStore"
+import useStaffStore from "../../store/staffStore";
+import { UPLOAD_URL } from '../../constants/url.constant';
+
+const avatarDefautl = '/images/guest.png'
+
 
 const EmployeeList = () => {
   const [search, setSearch] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [modalType, setModalType] = useState(null);
-  const {staffList, getAllStaff, removeStaff} = useStaffStore((state) => state);
-  const [,setEmployees] = useState(null)
- 
-  useEffect (() => {
+  const { staffList, getAllStaff, removeStaff } = useStaffStore((state) => state);
+  const [, setEmployees] = useState(null)
+
+  useEffect(() => {
     getAllStaff()
-  },[getAllStaff]) 
-  
+  }, [getAllStaff])
+
   const handleDelete = (_id) => {
     removeStaff(_id).then(() => {
       getAllStaff();
@@ -53,7 +57,7 @@ const EmployeeList = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-      </div>  
+      </div>
 
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
@@ -71,15 +75,15 @@ const EmployeeList = () => {
         </thead>
         <tbody>
           {staffList && staffList.length > 0 ? (
-            staffList.filter(staff => 
-              staff.name.toLowerCase().includes(search.toLowerCase()) || 
+            staffList.filter(staff =>
+              staff.name.toLowerCase().includes(search.toLowerCase()) ||
               staff.staffcode.toLowerCase().includes(search.toLowerCase())
             ).map((staff) => (
               <tr key={staff._id}>
                 <td>{staff.staffcode}</td>
                 <td>
                   <img
-                    src={staff.avatar || "https://via.placeholder.com/100"}
+                    src={`${UPLOAD_URL}${staff.avatar}` || avatarDefautl}
                     alt={staff.name}
                     style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }}
                   />
