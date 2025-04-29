@@ -104,7 +104,7 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
                 style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "50%" }}
               />
             )}
-
+            <br/>
             <label className="form-label fw-bold">Họ và tên</label>
             <input
               type="text"
