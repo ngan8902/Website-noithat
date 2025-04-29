@@ -6,7 +6,6 @@ const { v4: uuidv4 } = require('uuid');
 const User = require("../model/UserModel");
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
 
-
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const uploadDir = path.join(__dirname, '../upload');

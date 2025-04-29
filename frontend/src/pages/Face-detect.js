@@ -210,31 +210,46 @@ function FaceDetect() {
           position: "relative",
         }}
       >
-        <div style={{ position: "relative", width: 640, height: 480, margin: "0 auto" }}>
+        <div style={{ position: "relative", width: "100%", paddingTop: "75%", margin: "0 auto" }}>
           <Webcam
             ref={webcamRef}
             style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
               width: "100%",
-              height: "100%",
+              height: "80%",
               borderRadius: "12px",
               objectFit: "cover",
               zIndex: 2,
             }}
           />
+
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              zIndex: 3,
+              pointerEvents: "none",
+            }}
+          />
         </div>
 
-        <canvas
-          ref={canvasRef}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 3,
-            pointerEvents: "none",
-          }}
-        />
+        {notification && (
+          <div
+            className={`notification-message ${
+              notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không") || notification.includes("đã check-in")
+                ? "error"
+                : ""
+            }`}
+          >
+            {notification}
+          </div>
+        )}
 
         <div className="checkin-button">
           <button
@@ -270,28 +285,6 @@ function FaceDetect() {
             {checkOutLoading ? <><span className="spinner" /> Đang xử lý...</> : "Đi ra (check-out)"}
           </button>
         </div>
-
-        {notification && (
-          <div
-            style={{
-              marginTop: "20px",
-              backgroundColor:
-                notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không") || notification.includes("đã check-in")
-                  ? "#dc3545"
-                  : "#28a745",
-              color: "#fff",
-              padding: "10px 15px",
-              borderRadius: "8px",
-              fontSize: "14px",
-              maxWidth: "90%",
-              marginLeft: "auto",
-              marginRight: "auto",
-              wordBreak: "break-word",
-            }}
-          >
-            {notification}
-          </div>
-        )}
       </header>
     </div>
   );

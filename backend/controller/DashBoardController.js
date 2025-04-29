@@ -130,7 +130,7 @@ exports.getDailyRevenue = async (req, res) => {
     if (start && end) {
       const startDate = new Date(new Date(start).setHours(0, 0, 0, 0));
       const endDate = new Date(new Date(end).setHours(23, 59, 59, 999));
-      match.createdAt = { $gte: startDate, $lte: endDate };
+      match.updatedAt = { $gte: startDate, $lte: endDate };
     }
 
     const dailyRevenue = await Order.aggregate([
@@ -139,7 +139,7 @@ exports.getDailyRevenue = async (req, res) => {
       {
         $addFields: {
           day: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+            $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" }
           },
           totalPriceNumber: { $toDouble: "$totalPrice" }
         }
