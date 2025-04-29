@@ -4,24 +4,30 @@ import EditEmployeeModal from "./EditEmployeeModal";
 import useStaffStore from "../../store/staffStore";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = '/images/guest.png'
-
-
 const EmployeeList = () => {
   const [search, setSearch] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [modalType, setModalType] = useState(null);
   const { staffList, getAllStaff, removeStaff } = useStaffStore((state) => state);
-  const [, setEmployees] = useState(null)
+  const [, setEmployees] = useState(null);
 
   useEffect(() => {
-    getAllStaff()
-  }, [getAllStaff])
+    getAllStaff();
+  }, [getAllStaff]);
+
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+  };
 
   const handleDelete = (_id) => {
     removeStaff(_id).then(() => {
       getAllStaff();
-    })
+    });
   };
 
   const openAddModal = () => {
@@ -38,19 +44,27 @@ const EmployeeList = () => {
     setSelectedEmployee(null);
   };
 
-   const getImageUrl = (avatar, avatarDefault) => {
-      let src;
-    
-      if (avatar && avatar.startsWith('http://')) {
-        src = avatar;
-      } else if (avatar) {
-        src = `${UPLOAD_URL}${avatar}`;
-      } else {
-        src = avatarDefault;
-      }
-    
-      return src;
-    };
+  const getImageUrl = (avatar, avatarDefault) => {
+    let src;
+    if (avatar && avatar.startsWith('http://')) {
+      src = avatar;
+    } else if (avatar) {
+      src = `${UPLOAD_URL}${avatar}`;
+    } else {
+      src = avatarDefault;
+    }
+    return src;
+  };
+
+  const filteredStaffList = staffList?.filter((staff) => {
+    const name = removeVietnameseTones(staff.name || "");
+    const staffCode = removeVietnameseTones(staff.staffcode || "");
+    const searchChars = removeVietnameseTones(search).split('');
+
+    return searchChars.every((char) =>
+      name.includes(char) || staffCode.includes(char)
+    );
+  }) || [];
 
   return (
     <div id="employees" className="mt-4">
@@ -87,11 +101,8 @@ const EmployeeList = () => {
           </tr>
         </thead>
         <tbody>
-          {staffList && staffList.length > 0 ? (
-            staffList.filter(staff =>
-              staff.name.toLowerCase().includes(search.toLowerCase()) ||
-              staff.staffcode.toLowerCase().includes(search.toLowerCase())
-            ).map((staff) => (
+          {filteredStaffList.length > 0 ? (
+            filteredStaffList.map((staff) => (
               <tr key={staff._id}>
                 <td>{staff.staffcode}</td>
                 <td>
