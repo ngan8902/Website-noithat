@@ -31,7 +31,7 @@ const ChatList = ({ onSelectCustomer }) => {
 
         let allCustomers = await Promise.all(
           users.map(async (user) => {
-            const conversationId = `${user._id}`; // Use only userId as conversationId
+            const conversationId = `${user._id}`; 
             let allMessages = [];
 
             try {
@@ -57,7 +57,7 @@ const ChatList = ({ onSelectCustomer }) => {
               lastMessage: lastMessage,
               toRole,
               isRead,
-              conversationId: conversationId, // Store userId as conversationId
+              conversationId: conversationId, 
             };
           })
         );
@@ -75,7 +75,7 @@ const ChatList = ({ onSelectCustomer }) => {
     socketIO.current.on(STAFF_EVENTS.recieveMsg, (messageObj) => {
       setCustomersList((prevCustomers) => {
         return prevCustomers.map((c) => {
-          if (c.id === messageObj.from) { // Check if the message is for this user
+          if (c.id === messageObj.from) { 
             return { ...c, lastMessage: messageObj.message, isRead: false };
           }
           return c;
@@ -145,7 +145,7 @@ const ChatList = ({ onSelectCustomer }) => {
                 <img
                   className="rounded-circle border border-secondary shadow-sm"
                   height="50"
-                  src={getImageUrl(customer.avatar, avatarDefautl)}
+                  src={getImageUrl(customer?.avatar, '/images/guest.png')}
                   width="50"
                   alt={customer.name}
                 />

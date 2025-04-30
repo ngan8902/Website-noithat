@@ -84,10 +84,10 @@ async function uploadGoogleAvatar(googleAvatarUrl) {
 
         fs.writeFileSync(filePath, Buffer.from(response.data, 'binary'));
 
-        const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
+        const baseUrl = process.env.BASE_URL || 'https://furniture-bghx.onrender.com';
 
 
-        return `${baseUrl}/upload/${filename}`;
+        return `/upload/${filename}`;
     } catch (error) {
         // console.error('Lỗi tải và lưu ảnh:', error);
         throw new Error('Lỗi tải và lưu ảnh.');

@@ -4,14 +4,15 @@ import { getCookie } from "../../utils/cookie.util";
 import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
 import axios from "axios";
 
+
 const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
   const [form, setForm] = useState({
     name: '',
-    avatar: '',
     phone: '',
     email: '',
     dob: '',
-    address: ''
+    address: '',
+    avatar: null
   });
   const { setStaff } = useStaffStore((state) => state)
   const [, setErrorMessage] = useState("");
@@ -36,24 +37,29 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
     }
 
     try {
-      const updatedData = {
-        name: form.name,
-        avatar: form.avatar,
-        phone: form.phone,
-        email: form.email,
-        dob: form.dob,
-        address: form.address
-      };
+      const formData = new FormData();
+      formData.append('name', form.name);
+      formData.append('phone', form.phone);
+      formData.append('email', form.email);
+      formData.append('dob', form.dob);
+      formData.append('address', form.address);
+
+      if (form.avatar instanceof File) {
+        formData.append('avatar', form.avatar);
+      }
 
       const response = await axios.put(
         `${process.env.REACT_APP_URL_BACKEND}/staff/update-staff/${employee._id}`,
-        updatedData, {
-        headers: {
-          'staff-token': getCookie(STAFF_TOKEN_KEY)
+        formData,
+        {
+          headers: {
+            'staff-token': getCookie(STAFF_TOKEN_KEY),
+            'Content-Type': 'multipart/form-data'
+          }
         }
-      }
       );
-      window.location.reload()
+
+      window.location.reload();
       console.log("Cập nhật thành công:", response.data);
       setStaff((prevStaff) =>
         prevStaff.map((p) =>
@@ -64,19 +70,15 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
       console.error("Lỗi cập nhật thông tin:", error);
       setErrorMessage("Có lỗi xảy ra khi cập nhật. Vui lòng thử lại!");
     }
-
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setForm({ ...form, avatar: reader.result });
-      };
-      reader.readAsDataURL(file);
+      setForm({ ...form, avatar: file });
     }
   };
+
 
   return (
     <div className="modal fade show d-block" id="editEmployeeModal">
@@ -91,15 +93,18 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
               Ảnh đại diện
               <input type="file" className="form-control mb-3" onChange={handleFileChange} />
             </label>
-            {form.avatar && (
+            {(form.avatar) && (
               <img
-                src={form.avatar}
-                alt="Employee"
-                style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%", marginBottom: "10px" }}
-                className="m-3"
+                src={
+                  form.avatar instanceof File
+                    ? URL.createObjectURL(form.avatar) 
+                    : `${process.env.REACT_APP_URL_BACKEND}${form.avatar}` 
+                }
+                alt="Avatar Preview"
+                style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "50%" }}
               />
             )}
-
+            <br/>
             <label className="form-label fw-bold">Họ và tên</label>
             <input
               type="text"

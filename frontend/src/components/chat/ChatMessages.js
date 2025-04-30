@@ -6,7 +6,6 @@ import axios from "axios";
 import moment from "moment";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`;
 
 const ChatMessages = ({ customer }) => {
   const [messages, setMessages] = useState([]);
@@ -146,7 +145,7 @@ const ChatMessages = ({ customer }) => {
   return (
     <div className="chat-messages d-flex flex-column p-3">
       <div className="chat-header d-flex align-items-center pb-3 border-bottom">
-        <img src={getImageUrl(customer.avatar, avatarDefautl)} alt={customer.name} className="rounded-circle me-3" width="45" height="45" />
+        <img src={getImageUrl(customer.avatar, "/images/guest.png")} alt={customer.name} className="rounded-circle me-3" width="45" height="45" />
         {customer.name}
       </div>
       <div className="messages flex-grow-1 overflow-auto p-2">

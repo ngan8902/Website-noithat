@@ -136,11 +136,14 @@ function FaceDetect() {
             if (type === "check-in") {
               if (matchedStaff && matchedStaff.checkInTime) {
                 setNotification(`⚠️ Nhân viên ${staff.staffcode} đã check-in hôm nay.`);
-                setTimeout(() => setNotification(""), 4000);
+                setTimeout(() => {
+                  setNotification("")
+                  context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+                }, 4000);
                 return;
               }
 
-              const isLate = now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() > 0);
+              const isLate = now.getHours() > 10 || (now.getHours() === 10 && now.getMinutes() > 0);
               const status = isLate ? "late" : "present";
 
               const checkInData = {
@@ -156,18 +159,24 @@ function FaceDetect() {
                 checkInData
               );
 
-              await fetchCheckedInStaff(); // Refresh lại danh sách
+              await fetchCheckedInStaff();
 
               const statusText = status === "present" ? "Đúng giờ" : "Trễ";
               setNotification(`✅ Nhân viên ${staff.staffcode} check-in thành công (${statusText})`);
-              setTimeout(() => setNotification(""), 5000);
+              setTimeout(() => {
+                setNotification("")
+                context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+              }, 5000);
               break;
             }
 
             if (type === "check-out") {
               if (!matchedStaff || matchedStaff.checkOutTime) {
                 setNotification(`⚠️ Nhân viên ${staff.staffcode} chưa check-in hoặc đã check-out.`);
-                setTimeout(() => setNotification(""), 4000);
+                setTimeout(() => {
+                  setNotification("")
+                  context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+                }, 4000);
                 return;
               }
 
@@ -176,10 +185,13 @@ function FaceDetect() {
                 checkOutTime: now.toISOString(),
               });
 
-              await fetchCheckedInStaff(); // Refresh lại danh sách
+              await fetchCheckedInStaff();
 
               setNotification(`✅ Nhân viên ${staff.staffcode} đã check-out thành công.`);
-              setTimeout(() => setNotification(""), 4000);
+              setTimeout(() => {
+                setNotification("")
+                context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+              }, 5000);
               break;
             }
           }
@@ -241,11 +253,10 @@ function FaceDetect() {
 
         {notification && (
           <div
-            className={`notification-message ${
-              notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không") || notification.includes("đã check-in")
-                ? "error"
-                : ""
-            }`}
+            className={`notification-message ${notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không") || notification.includes("đã check-in")
+              ? "error"
+              : ""
+              }`}
           >
             {notification}
           </div>

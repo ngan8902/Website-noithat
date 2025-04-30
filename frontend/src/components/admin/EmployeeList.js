@@ -1,23 +1,33 @@
 import React, { useState, useEffect } from "react";
 import AddEmployeeModal from "./AddEmployeeModal";
 import EditEmployeeModal from "./EditEmployeeModal";
-import useStaffStore from "../../store/staffStore"
+import useStaffStore from "../../store/staffStore";
+import { UPLOAD_URL } from '../../constants/url.constant';
 
 const EmployeeList = () => {
   const [search, setSearch] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [modalType, setModalType] = useState(null);
-  const {staffList, getAllStaff, removeStaff} = useStaffStore((state) => state);
-  const [,setEmployees] = useState(null)
- 
-  useEffect (() => {
-    getAllStaff()
-  },[getAllStaff]) 
-  
+  const { staffList, getAllStaff, removeStaff } = useStaffStore((state) => state);
+  const [, setEmployees] = useState(null);
+
+  useEffect(() => {
+    getAllStaff();
+  }, [getAllStaff]);
+
+  const removeVietnameseTones = (str) => {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase();
+  };
+
   const handleDelete = (_id) => {
     removeStaff(_id).then(() => {
       getAllStaff();
-    })
+    });
   };
 
   const openAddModal = () => {
@@ -34,6 +44,27 @@ const EmployeeList = () => {
     setSelectedEmployee(null);
   };
 
+  const getImageUrl = (avatar, avatarDefault) => {
+    let src;
+    if (avatar && avatar.startsWith('http://')) {
+      src = avatar;
+    } else if (avatar) {
+      src = `${UPLOAD_URL}${avatar}`;
+    } else {
+      src = avatarDefault;
+    }
+    return src;
+  };
+
+  const filteredStaffList = staffList?.filter((staff) => {
+    const name = removeVietnameseTones(staff.name || "");
+    const staffCode = removeVietnameseTones(staff.staffcode || "");
+    const searchChars = removeVietnameseTones(search).split('');
+
+    return searchChars.every((char) =>
+      name.includes(char) || staffCode.includes(char)
+    );
+  }) || [];
 
   return (
     <div id="employees" className="mt-4">
@@ -53,7 +84,7 @@ const EmployeeList = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-      </div>  
+      </div>
 
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
@@ -70,16 +101,13 @@ const EmployeeList = () => {
           </tr>
         </thead>
         <tbody>
-          {staffList && staffList.length > 0 ? (
-            staffList.filter(staff => 
-              staff.name.toLowerCase().includes(search.toLowerCase()) || 
-              staff.staffcode.toLowerCase().includes(search.toLowerCase())
-            ).map((staff) => (
+          {filteredStaffList.length > 0 ? (
+            filteredStaffList.map((staff) => (
               <tr key={staff._id}>
                 <td>{staff.staffcode}</td>
                 <td>
                   <img
-                    src={staff.avatar || "https://via.placeholder.com/100"}
+                    src={getImageUrl(staff?.avatar, '/images/guest.png')}
                     alt={staff.name}
                     style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }}
                   />

@@ -7,7 +7,7 @@ const createStaff = async (req, res) => {
     try{
         const { username, password, phone,  address, name, dob, gender, avatar, email, role_id, staffcode } = req.body
         const isCheckUsername = username
-        if (!username || !password || !phone || !address || !name || !dob || !gender || !avatar || !email){
+        if (!username || !password || !phone || !address || !name || !dob || !gender || !email){
             return res.status(200).json({
                 status: SIGN_UP_STATUS.ERROR,
                 message: SIGN_UP.VALID_FIELDS_ERR
@@ -18,6 +18,7 @@ const createStaff = async (req, res) => {
                 message: 'Vui lòng nhập username'
             })
         }
+
         const response = await StaffService.createStaff(req.body)
         return res.status(200).json(response) 
     }catch(e){
@@ -63,6 +64,14 @@ const updateStaff = async (req, res) => {
                 status: 'ERR',
                 message: 'The staffId is required'
             })
+        }
+        
+        if (req.file) {
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(req.file.mimetype)) {
+                return res.status(400).json({ message: 'Loại file không được hỗ trợ.' });
+            }
+            data.avatar = `/upload/${req.file.filename}`;
         }
         const response = await StaffService.updateStaff(staffId, data)
         return res.status(200).json(response) 

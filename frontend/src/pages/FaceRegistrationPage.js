@@ -14,6 +14,8 @@ const FaceRegistrationPage = () => {
   const [staffcode, setStaffcode] = useState("");
   const [notification, setNotification] = useState("");
   const [capturing, setCapturing] = useState(false);
+  const [saving, setSaving] = useState(false);
+
 
   useEffect(() => {
     const loadModels = async () => {
@@ -50,7 +52,11 @@ const FaceRegistrationPage = () => {
           if (detection) {
             setFaceDescriptor(detection.descriptor);
             drawFace(detection);
-            setNotification("✅ Khuôn mặt đã được ghi nhận.");
+            setTimeout(() => {
+              setNotification("✅ Khuôn mặt đã được ghi nhận.");
+              const context = canvasRef.current.getContext("2d");
+              context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+            }, 3000);
           } else {
             setNotification("⚠️ Không phát hiện khuôn mặt.");
           }
@@ -96,6 +102,8 @@ const FaceRegistrationPage = () => {
       setNotification("⚠️ Mã nhân viên không hợp lệ. Định dạng hợp lệ: NV1, NV2...");
       return;
     }
+
+    setSaving(true);
     try {
       const formData = new FormData();
       formData.append("staffcode", staffcode);
@@ -110,6 +118,8 @@ const FaceRegistrationPage = () => {
     } catch (err) {
       console.error("Save face failed:", err);
       setNotification("Lỗi khi lưu khuôn mặt");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -172,7 +182,7 @@ const FaceRegistrationPage = () => {
             />
           </div>
 
-          <div 
+          <div
             style={{
               position: "relative",
               width: "100%",
@@ -238,8 +248,15 @@ const FaceRegistrationPage = () => {
                   borderRadius: 8,
                   fontSize: 16,
                 }}
+                disabled={saving}
               >
-                💾 Lưu khuôn mặt
+                {saving ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm" role="status" /> Đang lưu...
+                  </>
+                ) : (
+                  "💾 Lưu khuôn mặt"
+                )}
               </button>
             )}
           </div>

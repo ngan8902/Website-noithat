@@ -13,8 +13,8 @@ const Employee = () => {
         <div className="sidebar-overlay" onClick={() => setCollapsed(false)}></div>
       )}
       <Sidebar />
-      <div className="main-content">
-        <h2 className="text-center fw-bold mb-4">Quản Lý Nhân Sự</h2>
+      <div className="content p-4 main-content">
+        <h2 className="text-center fw-bold mb-4">Quản Lý Nhân Viên</h2>
         <EmployeeList employees={employees} setEmployees={setEmployees} />
       </div>
     </div>

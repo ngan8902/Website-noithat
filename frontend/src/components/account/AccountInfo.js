@@ -5,7 +5,7 @@ import { getCookie } from "../../utils/cookie.util";
 import { TOKEN_KEY } from "../../constants/authen.constant";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`
+const avatarDefautl = '/images/guest.png'
 
 const getProvinces = async () => {
   try {
@@ -343,7 +343,7 @@ const AccountInfo = () => {
   const getImageUrl = (avatar, avatarDefault) => {
     let src;
   
-    if (avatar && avatar.startsWith('http://')) {
+    if (avatar && avatar.startsWith('https://')) {
       src = avatar;
     } else if (avatar) {
       src = `${UPLOAD_URL}${avatar}`;
@@ -353,6 +353,7 @@ const AccountInfo = () => {
   
     return src;
   };
+  console.log(user)
 
   return (
     <div className="col-md-4 mb-4">
@@ -363,7 +364,7 @@ const AccountInfo = () => {
           alt="Avatar"
           className="avatar mb-3 rounded-circle border"
           height="150"
-          src={getImageUrl(avatar, '/images/guest.png')}
+          src={getImageUrl(user?.avatar, '/images/guest.png')}
           width="150"
           onClick={() => setShowModal(true)}
           style={{ cursor: "pointer" }}
@@ -582,7 +583,7 @@ const AccountInfo = () => {
               <i className="bi bi-x-circle-fill"></i>
             </span>
             <img
-              src={getImageUrl(avatar, avatarDefautl)}
+              src={getImageUrl(user?.avatar, '/images/guest.png')}
               alt="Avatar"
             />
           </div>
