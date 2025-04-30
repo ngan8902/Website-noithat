@@ -62,7 +62,10 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
 
   return (
     <div className="modal d-block" tabIndex="-1">
-      <div className="modal-dialog">
+      <div
+        className="modal-dialog modal-dialog-centered w-100 mx-auto"
+        style={{ maxWidth: "400px" }}
+      >
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title text-dark">Đăng Nhập</h5>
@@ -70,66 +73,74 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
           </div>
           <div className="modal-body">
             <form>
-              <div>
-                {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
+              {errorMessage && <div className="alert alert-danger mt-2">{errorMessage}</div>}
 
-                <div className="mb-3">
-                  <label htmlFor="loginEmail" className="form-label text-dark">Email</label>
+              <div className="mb-3">
+                <label htmlFor="loginEmail" className="form-label text-dark">Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="loginEmail"
+                  autoFocus
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label htmlFor="loginPassword" className="form-label text-dark">Mật Khẩu</label>
+                <div className="position-relative">
                   <input
-                    type="email"
-                    className="form-control"
-                    id="loginEmail"
-                    autoFocus
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type={showPassword ? "text" : "password"}
+                    className="form-control pe-5"
+                    id="loginPassword"
+                    value={pass}
+                    onChange={(e) => setPass(e.target.value)}
                   />
+                  <span
+                    className="position-absolute top-50 end-0 translate-middle-y me-3"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
+                  </span>
                 </div>
-                <div className="mb-3">
-                  <label htmlFor="loginPassword" className="form-label text-dark">Mật Khẩu</label>
-                  <div className="password-container">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      className="form-control"
-                      id="loginPassword"
-                      value={pass}
-                      onChange={(e) => setPass(e.target.value)}
-                    />
-                    <span
-                      className="toggle-password"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
-                    </span>
-                  </div>
-                </div>
+              </div>
 
-                <button className="btn btn-dark w-100" type="submit" onClick={handelLogin} onKeyDown={(e) => e.key === "Enter" && handelLogin()}>Đăng Nhập</button>
+              <button className="btn btn-dark w-100" type="submit" onClick={handelLogin}>
+                Đăng Nhập
+              </button>
 
-                <div className="text-center mt-2">
+              <div className="text-center mt-2">
+                <button
+                  type="button"
+                  className="btn btn-link text-primary text-decoration-none"
+                  onClick={() => navigate("/forgot-password")}
+                >
+                  Quên mật khẩu?
+                </button>
+              </div>
+
+              <p className="text-center text-dark mt-3">Hoặc đăng nhập bằng</p>
+
+              <div className="d-flex justify-content-center">
+                <GoogleLoginComponent onSuccess={handleLoginSuccess} />
+              </div>
+
+              <div className="text-center mt-3">
+                <p className="text-dark">
+                  Chưa có tài khoản?
                   <button
                     type="button"
                     className="btn btn-link text-primary text-decoration-none"
-                    onClick={() => navigate("/forgot-password")}
+                    onClick={() => {
+                      setShow(false);
+                      setShowRegister(true);
+                    }}
                   >
-                    Quên mật khẩu?
+                    Tạo tài khoản
                   </button>
-                </div>
-
-                <p className="text-center text-dark mt-3">
-                  Hoặc đăng nhập bằng
                 </p>
-                <button className="btn" style={{ marginLeft: "25%" }}>
-                  <GoogleLoginComponent onSuccess={handleLoginSuccess} />
-                </button>
-
-                <div className="text-center mt-3">
-                  <p className="text-dark">
-                    Chưa có tài khoản?
-                    <button type="button" className="btn btn-link text-primary text-decoration-none" onClick={() => { setShow(false); setShowRegister(true); }}>
-                      Tạo tài khoản
-                    </button>
-                  </p>
-                </div>
               </div>
             </form>
           </div>

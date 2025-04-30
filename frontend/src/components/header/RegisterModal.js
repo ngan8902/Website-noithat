@@ -96,7 +96,7 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
 
   return (
     <div className="modal d-block" tabIndex="-1">
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-dialog-centered w-100 mx-auto" style={{ maxWidth: "500px" }}>
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title text-dark">Đăng Ký</h5>
@@ -112,12 +112,7 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                   title="Hãy nhập họ & tên" 
                   id="registerName" 
                   value={user.name} 
-                  onChange={(e) => setUser(
-                    {
-                      ...user,
-                      name: e.target.value
-                    }
-                  )} 
+                  onChange={(e) => setUser({ ...user, name: e.target.value })} 
                 />
               </div>
 
@@ -130,12 +125,7 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                   pattern="^(03|05|08|09)\d{8}$"
                   title="Số điện thoại phải có 10 số và đúng định dạng"
                   value={user.phone} 
-                  onChange={(e) => setUser(
-                    {
-                      ...user,
-                      phone: e.target.value
-                    }
-                  )}
+                  onChange={(e) => setUser({ ...user, phone: e.target.value })}
                 />
               </div>
 
@@ -148,46 +138,38 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                   pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
                   title="Email phải có định dạng @gmail.com"
                   value={user.email} 
-                  onChange={(e) => setUser(
-                    {
-                      ...user,
-                      email: e.target.value
-                    }
-                  )}
+                  onChange={(e) => setUser({ ...user, email: e.target.value })}
                 />
               </div>
 
               <div className="mb-3">
                 <label htmlFor="registerPassword" className="form-label text-dark">Mật Khẩu</label>
-                <div className="password-container">
+                <div className="position-relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    className="form-control"
+                    className="form-control pe-5"
                     id="registerPassword"
                     pattern="(?=.*[A-Z]).{8,}"
                     title="Mật khẩu phải có ít nhất 8 ký tự và bắt đầu bằng chữ cái viết hoa"
                     value={user.password} 
-                    onChange={(e) => setUser(
-                      {
-                        ...user,
-                        password: e.target.value
-                      }
-                    )}
+                    onChange={(e) => setUser({ ...user, password: e.target.value })}
                   />
                   <span
-                    className="toggle-password"
+                    className="position-absolute top-50 end-0 translate-middle-y me-3"
+                    style={{ cursor: "pointer" }}
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
                   </span>
                 </div>
               </div>
+
               <div className="mb-3">
                 <label htmlFor="confirmPassword" className="form-label text-dark">Xác Nhận Mật Khẩu</label>
-                <div className="password-container">
+                <div className="position-relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
-                    className="form-control"
+                    className="form-control pe-5"
                     id="confirmPassword"
                     pattern="(?=.*[A-Z]).{8,}"
                     title="Nhập lại mật khẩu"
@@ -195,7 +177,8 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                     onChange={(e) => setUser({ ...user, confirmPassword: e.target.value })}
                   />
                   <span
-                    className="toggle-password"
+                    className="position-absolute top-50 end-0 translate-middle-y me-3"
+                    style={{ cursor: "pointer" }}
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye"></i>}
@@ -204,19 +187,26 @@ const RegisterModal = ({ show, setShow, setShowLogin }) => {
                 {passwordError && <p className="text-danger mt-1">{passwordError}</p>}
               </div>
 
-              <button type="submit" className="btn btn-dark w-100 mb-3" onClick={handleSignup}> Đăng Ký </button>
-
-              <p className="text-center text-dark">
-                Hoặc đăng ký bằng Google
-              </p>
-              <button className="btn" style={{marginLeft: "25%"}}>
-                <GoogleLoginComponent onSuccess={handleLoginSuccess} />
+              <button type="submit" className="btn btn-dark w-100 mb-3" onClick={handleSignup}>
+                Đăng Ký
               </button>
 
-              <div className="text-center mt-3">
+              <p className="text-center text-dark">Hoặc đăng ký bằng Google</p>
+              <div className="d-flex justify-content-center mb-3">
+                <GoogleLoginComponent onSuccess={handleLoginSuccess} />
+              </div>
+
+              <div className="text-center">
                 <p className="text-dark">
                   Đã có tài khoản?
-                  <button type="button" className="btn btn-link text-primary text-decoration-none" onClick={() => { setShow(false); setShowLogin(true); }}>
+                  <button
+                    type="button"
+                    className="btn btn-link text-primary text-decoration-none"
+                    onClick={() => {
+                      setShow(false);
+                      setShowLogin(true);
+                    }}
+                  >
                     Đăng nhập
                   </button>
                 </p>

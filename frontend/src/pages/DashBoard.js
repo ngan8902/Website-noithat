@@ -51,8 +51,11 @@ export default function Dashboard() {
     const fetchDailyRevenue = async () => {
       try {
         let query = "";
+
         if (startDate && endDate) {
           query = `?start=${startDate}&end=${endDate}`;
+        } else {
+          query = "?limit=7";
         }
 
         const res = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/dashboard/daily-revenue${query}`);
@@ -64,7 +67,6 @@ export default function Dashboard() {
           };
         });
         setDailyRevenue(formattedData);
-
       } catch (err) {
         console.error("Lỗi khi tải doanh thu hàng ngày:", err);
       }

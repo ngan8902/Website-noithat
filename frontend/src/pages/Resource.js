@@ -3,20 +3,17 @@ import Sidebar from "../components/sales/Sidebar";
 import ResourceList from "../components/admin/ResourceList";
 
 const Resource = () => {
-  const [attendanceRecords, setAttendanceRecords] = useState([
-    { id: 1, employeeId: "NV001", name: "Nguyễn Văn A", date: "2024-02-01", checkIn: "08:00", checkOut: "17:00", status: "Đúng giờ", totalHours: "9h" },
-    { id: 2, employeeId: "NV002", name: "Trần Thị B", date: "2024-02-01", checkIn: "08:15", checkOut: "17:30", status:"Muộn", totalHours: "9h 15m" },
-  ]);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="d-flex app-container">
-      <Sidebar />
-        <div className="content p-4 main-content">
+    <div className={`d-flex app-container ${collapsed && window.innerWidth < 768 ? "sidebar-open" : ""}`}>
+        {collapsed && window.innerWidth < 768 && (
+          <div className="sidebar-overlay" onClick={() => setCollapsed(false)}></div>
+        )}
+        <Sidebar />
+        <div className="main-content">
             <h2 className="text-center fw-bold mb-4">Quản lý Chấm Công</h2>
-            <ResourceList 
-                attendanceRecords={attendanceRecords} 
-                setAttendanceRecords={setAttendanceRecords} 
-            />
+            <ResourceList />
         </div>
     </div>
   );

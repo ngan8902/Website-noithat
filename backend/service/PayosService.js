@@ -10,8 +10,8 @@ const createPayment = async (amount, description, orderCode, buyerName, buyerPho
             buyerPhone,
             buyerAddress,
             items,
-            returnUrl: 'http://localhost:3000/account',
-            cancelUrl: 'http://localhost:3000/home'
+            returnUrl: 'https://website-noithat-amber.vercel.app/account',
+            cancelUrl: 'https://website-noithat-amber.vercel.app/home'
         };
 
         const paymentLink = await payos.createPaymentLink(paymentData);
