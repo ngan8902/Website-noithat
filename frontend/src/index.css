@@ -8,7 +8,6 @@
   overflow-y: auto;
   list-style: none;
   padding: 0;
-  margin-top: 40px;
   z-index: 1000;
   color: black;
 }
@@ -100,6 +99,209 @@ button:hover,
 
 .input-group .btn:hover {
   background-color: #0056b3 !important;
+}
+
+/* Header */
+.header {
+  background-color: #222;
+  color: white;
+  padding: 10px 20px;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+/* Logo */
+.logo img {
+  height: 80px;
+  width: 80px;
+}
+
+/* Navigation */
+.nav-list {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+}
+
+.nav-list a,
+.dropdown-toggle {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Dropdown */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background: white;
+  color: black;
+  padding: 10px 0;
+  top: 100%;
+  left: 0;
+  z-index: 999;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  min-width: 160px;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu li {
+  padding: 5px 15px;
+}
+
+.dropdown-menu li a,
+.dropdown-menu li button {
+  color: black;
+  text-decoration: none;
+  background: none;
+  border: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown-menu li a:hover {
+  background-color: #f1f1f1;
+}
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  position: relative;
+}
+
+.search-bar input {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  width: 250px;
+  color: black;
+}
+
+.search-bar button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  background: white;
+  color: black;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+
+.suggestions-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestions-list li:hover {
+  background-color: #eee;
+}
+
+/* Cart */
+.cart-link {
+  position: relative;
+  margin-left: 20px;
+  color: white;
+  text-decoration: none;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+/* User dropdown */
+.user-dropdown {
+  position: relative;
+}
+
+.user-toggle {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.user-toggle span {
+  color: #ffc107;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.user-dropdown .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+/* Auth buttons */
+.auth-button {
+  background: none;
+  border: none;
+  color: white;
+  margin-left: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-list {
+    flex-direction: column;
+    display: none;
+  }
+
+  .nav-list.open {
+    display: flex;
+  }
+
+  .search-bar input {
+    width: 100%;
+  }
+
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 }
 
 /* Hiệu ứng khi hover avatar */
@@ -202,9 +404,10 @@ section {
   padding: 20px;
   overflow-y: auto;
   width: 20%;
-  transition: width 0.3s ease-in-out;
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
   scrollbar-width: thin;
   scrollbar-color: #6c757d #343a40;
+  z-index: 1000;
 }
 
 .sidebar.collapsed {
@@ -217,6 +420,40 @@ section {
   background: #f8f9fa;
   min-height: 100vh;
   overflow: auto;
+  transition: filter 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    transform: translateX(-100%);
+    background-color: #343a40;
+    z-index: 1050;
+  }
+
+  .sidebar.collapsed {
+    transform: translateX(0);
+    width: 250px;
+  }
+
+  .app-container.sidebar-open .main-content {
+    filter: blur(2px);
+    pointer-events: none;
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
 }
 
 /* Hover màu cho các phần tử */
@@ -491,6 +728,51 @@ section {
   background: #0056b3;
 }
 
+@media screen and (max-width: 768px) {
+  .chatbox-container {
+    width: 95vw;
+    height: 75vh;
+    bottom: 80px;
+    right: 2.5vw;
+    border-radius: 10px;
+  }
+
+  .chatbox-wrapper {
+    bottom: 15px;
+    right: 15px;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .chatbox-label {
+    font-size: 12px;
+    padding: 6px 10px;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .chatbox-button {
+    padding: 10px 16px;
+    font-size: 22px;
+  }
+
+  .chatbox-footer input {
+    font-size: 14px;
+  }
+
+  .chatbox-footer button {
+    font-size: 14px;
+  }
+
+  .chatbox-header h4 {
+    font-size: 16px;
+  }
+
+  .message {
+    font-size: 14px;
+  }
+}
+
 /* Chat with Customers */
 .chat-container {
   display: flex;
@@ -631,6 +913,66 @@ section {
   border: 2px solid #2a2828;
 }
 
+/* Zalo */
+.zalo-button {
+  position: fixed;
+  bottom: 20px;
+  right: 5px;
+  margin-bottom: 8.5%;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  z-index: 999;
+}
+
+.zalo-tooltip {
+  background: white;
+  color: #007bff;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid #007bff;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  position: absolute;
+  right: 85px;
+}
+
+.zalo-icon {
+  width: 90px;
+  height: 70px;
+  border-radius: 50%;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+@media screen and (max-width: 768px) {
+  .zalo-button {
+    bottom: 15px;
+    right: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .zalo-tooltip {
+    font-size: 12px;
+    padding: 6px 10px;
+    right: 0;
+    top: -40px;
+    position: absolute;
+  }
+
+  .zalo-icon {
+    width: 70px;
+    height: 60px;
+  }
+}
+
+/* Camera */
 .App-link {
   color: #61dafb;
 }

@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/sales/Sidebar";
 import AttendanceHistory from "../components/sales/AttendanceHistory";
 
 const StaffAttendanceHistory = () => {
-  const records = [
-    { id: 1, employee: "A B C", date: "01/02/2025", checkIn: "08:00", checkOut: "17:00", totalHours: "9h", status: "Đúng giờ" },
-    { id: 1, employee: "A B C", date: "02/02/2025", checkIn: "08:10", checkOut: "17:10", totalHours: "9h", status: "Muộn" },
-  ];
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="d-flex app-container">
+    <div className={`d-flex app-container ${collapsed && window.innerWidth < 768 ? "sidebar-open" : ""}`}>
+      {collapsed && window.innerWidth < 768 && (
+        <div className="sidebar-overlay" onClick={() => setCollapsed(false)}></div>
+      )}
       <Sidebar />
-      <div className="content p-4 main-content">
+      <div className="main-content">
         <h2 className="text-center fw-bold mb-4">Lịch Sử Chấm Công</h2>
-        <AttendanceHistory records={records} />
+        <AttendanceHistory />
       </div>
     </div>
   );

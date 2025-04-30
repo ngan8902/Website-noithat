@@ -45,102 +45,98 @@ const FeaturedProducts = () => {
             <div className="container">
                 <h2 className="text-center fw-bold mb-5">Sản Phẩm Nổi Bật</h2>
                 <div className="position-relative overflow-hidden">
-
-                    {totalProducts > itemsPerPage && (
-                        <button
-                            className="btn btn-dark d-flex align-items-center justify-content-center shadow"
-                            onClick={prevSlide}
-                            style={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "10px",
-                                transform: "translateY(-50%)",
-                                zIndex: 10,
-                                width: "45px",
-                                height: "45px",
-                                borderRadius: "50%",
-                                backgroundColor: "rgba(0, 0, 0, 0.6)",
-                                border: "none",
-                                color: "white",
-                                transition: "background-color 0.3s ease",
-                            }}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.8)"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.6)"}
-                        >
-                            <i className="bi bi-chevron-compact-left" style={{ fontSize: "24px" }}></i>
-                        </button>
-                    )}
-
-                    <div
-                        className="d-flex justify-content-center"
-                        style={{
-                            transition: "transform 0.5s ease-in-out",
-                            transform: `translateX(0%)`
-                        }}
+                {totalProducts > itemsPerPage && (
+                    <button
+                    className="btn btn-dark d-none d-md-flex align-items-center justify-content-center shadow"
+                    onClick={prevSlide}
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "10px",
+                        transform: "translateY(-50%)",
+                        zIndex: 10,
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                        border: "none",
+                        color: "white",
+                    }}
                     >
-                        {visibleProducts.map((product, index) =>
-                            product && `${UPLOAD_URL}${product.image}` ? (
-                                <div
-                                    className="col-md-4 flex-shrink-0"
-                                    key={index}
-                                    style={{
-                                        minWidth: `calc(100% / ${itemsPerPage})`,
-                                        padding: "0 10px",
-                                        cursor: "pointer"
-                                    }}
-                                    onClick={() => navigate(`/product/${product._id}`)} 
-                                >
-                                    <div className="card h-100 shadow-sm">
-                                        <img
-                                            src={`${UPLOAD_URL}${product.image}`}
-                                            className="card-img-top"
-                                            alt={product.name || "Sản phẩm"}
-                                            style={{
-                                                height: "400px",
-                                                objectFit: "cover",
-                                                width: "100%"
-                                            }}
-                                        />
-                                        <div className="card-body d-flex flex-column">
-                                            <h5 className="card-title">{product.name || "Sản phẩm chưa có tên"}</h5>
-                                            <p className="card-text">{product.description || "Mô tả chưa có"}</p>
-                                            <button
-                                                className="btn btn-link text-decoration-none mt-auto"
-                                                onClick={() => navigate(`/product/${product._id}`)}
-                                            >
-                                                Xem Chi Tiết
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : null
-                        )}
+                    <i className="bi bi-chevron-compact-left" style={{ fontSize: "20px" }}></i>
+                    </button>
+                )}
 
-                        {totalProducts > itemsPerPage && (
+                <div
+                    className="d-flex flex-nowrap justify-content-start"
+                    style={{
+                    transition: "transform 0.5s ease-in-out",
+                    transform: `translateX(0%)`,
+                    overflowX: "auto",
+                    scrollSnapType: "x mandatory"
+                    }}
+                >
+                    {visibleProducts.map((product, index) =>
+                    product && `${UPLOAD_URL}${product.image}` ? (
+                        <div
+                        className="col-10 col-sm-6 col-md-4 flex-shrink-0"
+                        key={index}
+                        style={{
+                            minWidth: `calc(100% / ${itemsPerPage})`,
+                            maxWidth: "100%",
+                            padding: "0 10px",
+                            scrollSnapAlign: "start",
+                        }}
+                        onClick={() => navigate(`/product/${product._id}`)}
+                        >
+                        <div className="card h-100 shadow-sm">
+                            <img
+                            src={`${UPLOAD_URL}${product.image}`}
+                            className="card-img-top"
+                            alt={product.name || "Sản phẩm"}
+                            style={{
+                                height: "300px",
+                                objectFit: "cover",
+                                width: "100%"
+                            }}
+                            />
+                            <div className="card-body d-flex flex-column">
+                            <h5 className="card-title">{product.name || "Sản phẩm chưa có tên"}</h5>
+                            <p className="card-text">{product.description || "Mô tả chưa có"}</p>
                             <button
-                                className="btn btn-dark d-flex align-items-center justify-content-center shadow"
-                                onClick={nextSlide}
-                                style={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    right: "10px",
-                                    transform: "translateY(-50%)",
-                                    zIndex: 10,
-                                    width: "45px",
-                                    height: "45px",
-                                    borderRadius: "50%",
-                                    backgroundColor: "rgba(0, 0, 0, 0.6)",
-                                    border: "none",
-                                    color: "white",
-                                    transition: "background-color 0.3s ease",
-                                }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.8)"}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.6)"}
+                                className="btn btn-link text-decoration-none mt-auto"
+                                onClick={() => navigate(`/product/${product._id}`)}
                             >
-                                <i className="bi bi-chevron-compact-right" style={{ fontSize: "24px" }}></i>
+                                Xem Chi Tiết
                             </button>
-                        )}
-                    </div>
+                            </div>
+                        </div>
+                        </div>
+                    ) : null
+                    )}
+                </div>
+
+                {totalProducts > itemsPerPage && (
+                    <button
+                    className="btn btn-dark d-none d-md-flex align-items-center justify-content-center shadow"
+                    onClick={nextSlide}
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        right: "10px",
+                        transform: "translateY(-50%)",
+                        zIndex: 10,
+                        width: "40px",
+                        height: "40px",
+                        borderRadius: "50%",
+                        backgroundColor: "rgba(0, 0, 0, 0.6)",
+                        border: "none",
+                        color: "white",
+                    }}
+                    >
+                    <i className="bi bi-chevron-compact-right" style={{ fontSize: "20px" }}></i>
+                    </button>
+                )}
                 </div>
             </div>
         </section>

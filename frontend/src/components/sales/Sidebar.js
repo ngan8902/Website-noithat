@@ -26,7 +26,10 @@ const Sidebar = () => {
 
   return (
     <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
-      <button className="btn btn-light btn-sm mb-3" onClick={() => setCollapsed(!collapsed)}>
+      <button
+        className="btn btn-light btn-sm mb-3"
+        onClick={() => setCollapsed(!collapsed)}
+      >
         {collapsed ? <i className="bi bi-justify-left"></i> : <i className="bi bi-x-lg"></i>}
       </button>
 

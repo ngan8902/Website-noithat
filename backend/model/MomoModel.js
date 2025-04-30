@@ -5,15 +5,15 @@ const axios = require('axios');
 const MOMO_ACCESS_KEY = 'F8BBA842ECF85';
 const MOMO_SECRET_KEY = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
 const MOMO_PARTNER_CODE = 'MOMO';
-const MOMO_REDIRECT_URL = 'http://localhost:3000/account';
-const MOMO_IPN_URL = 'https://a4f9-2001-ee0-4f03-6390-9463-bf01-4b5b-53c0.ngrok-free.app/api/momo/webhook';
+const MOMO_REDIRECT_URL = 'https://website-noithat-amber.vercel.app/account';
+const MOMO_IPN_URL = 'https://website-noithat-amber.vercel.app/api/momo/webhook';
 
 const createMomoPayment = async (amount, orderInfo, items, deliveryInfo, userInfo) => {
     return new Promise((resolve, reject) => {
         const orderId = parseInt(Date.now().toString().slice(-3) + Math.floor(1000 + Math.random() * 9000));
         const requestId = orderId;
         const extraData = "";
-        const requestType = "captureWallet"; //payWithMethodi
+        const requestType = "captureWallet"; //payWithMethod
         const autoCapture = true;
         const lang = "vi";
 

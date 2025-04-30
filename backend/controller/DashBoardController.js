@@ -123,8 +123,7 @@ const moment = require("moment");
 
 exports.getDailyRevenue = async (req, res) => {
   try {
-    const { start, end } = req.query;
-
+    const { start, end, limit } = req.query;
     const match = { status: "delivered" };
 
     if (start && end) {
@@ -133,9 +132,8 @@ exports.getDailyRevenue = async (req, res) => {
       match.updatedAt = { $gte: startDate, $lte: endDate };
     }
 
-    const dailyRevenue = await Order.aggregate([
+    const aggregation = [
       { $match: match },
-
       {
         $addFields: {
           day: {
@@ -144,7 +142,6 @@ exports.getDailyRevenue = async (req, res) => {
           totalPriceNumber: { $toDouble: "$totalPrice" }
         }
       },
-
       {
         $group: {
           _id: "$day",
@@ -152,7 +149,6 @@ exports.getDailyRevenue = async (req, res) => {
           orders: { $sum: 1 }
         }
       },
-
       {
         $addFields: {
           weekday: {
@@ -170,9 +166,16 @@ exports.getDailyRevenue = async (req, res) => {
           }
         }
       },
+      { $sort: { _id: -1 } }
+    ];
 
-      { $sort: { _id: 1 } }
-    ]);
+    if (!start && !end && limit) {
+      aggregation.push({ $limit: parseInt(limit) });
+    }
+
+    aggregation.push({ $sort: { _id: 1 } });
+
+    const dailyRevenue = await Order.aggregate(aggregation);
 
     res.status(200).json(dailyRevenue);
   } catch (err) {

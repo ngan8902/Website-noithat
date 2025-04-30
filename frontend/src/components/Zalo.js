@@ -33,49 +33,17 @@ const ZaloChatButton = () => {
       href="https://zalo.me/0585675418"
       target="_blank"
       rel="noopener noreferrer"
-      style={{
-        position: "fixed",
-        bottom: "20px",
-        right: "5px",
-        marginBottom: "8.5%",
-        display: "flex",
-        alignItems: "center",
-        textDecoration: "none",
-      }}
+      className="zalo-button"
       id="zalo-chat-button"
     >
-      <span
-        id="zalo-tooltip"
-        style={{
-          background: "white",
-          color: "#007bff",
-          padding: "8px 12px",
-          borderRadius: "20px",
-          fontSize: "14px",
-          fontWeight: "bold",
-          border: "2px solid #007bff",
-          boxShadow: "2px 2px 8px rgba(0, 0, 0, 0.2)",
-          whiteSpace: "nowrap",
-          opacity: 1,
-          transform: "translateX(0)",
-          transition: "opacity 0.3s ease, transform 0.3s ease",
-          pointerEvents: "none",
-          position: "absolute",
-          right: "85px",
-        }}
-      >
+      <span className="zalo-tooltip" id="zalo-tooltip">
         Liên hệ Zalo!
       </span>
 
       <img
         src="/images/zalo.png"
         alt="Zalo Chat"
-        style={{
-          width: "90px",
-          height: "70px",
-          borderRadius: "50%",
-          transition: "transform 0.3s ease, filter 0.3s ease",
-        }}
+        className="zalo-icon"
         id="zalo-icon"
       />
     </a>
