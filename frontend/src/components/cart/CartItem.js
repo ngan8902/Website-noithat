@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
 const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSelectedItems }) => {
@@ -7,16 +7,9 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
 
   const isSelected = selectedItems.includes(itemId);
 
-  console.log(item)
-
-  // useEffect(() => {
-  //   localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
-  // }, [selectedItems]);
-
   const handleDecrease = () => {
     if (item.quantity > 1 && itemId) {
       updateQuantity(item.productId || itemId, item.quantity - 1);
-      // window.location.reload();
     }
   };
 
@@ -24,7 +17,6 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
     const maxStock = product?.countInStock || item?.countInStock || 1;
     if (item?.quantity < maxStock && itemId) {
       updateQuantity(item.productId || itemId, item?.quantity + 1);
-      // window.location.reload();
     }
   };
 

@@ -5,6 +5,11 @@ import { TOKEN_KEY } from "../constants/authen.constant"
 
 const useCartStore = create((set, get) => ({
     cartItems: [],
+    cartItemsLocal: [],
+
+    setCartItemsLocal: (cartItems = []) => {
+        set({ cartItemsLocal: cartItems });
+    },
 
     // Lấy giỏ hàng từ server
     fetchCart: async (userId) => {
@@ -88,19 +93,19 @@ const useCartStore = create((set, get) => ({
                 );
                 set({ cartItems: response.data.items || [] });
 
-            } 
-            // else {
-            //     set((state) => {
-            //         const updatedCart = state.cartItems.map(item => {
-            //             if (item._id) {
-            //                 return { ...item, quantity };
-            //             }
-            //             return item;
-            //         });
-            //         localStorage.setItem("cart", JSON.stringify(updatedCart));
-            //         return { cartItems: updatedCart };
-            //     });
-            // }
+            }
+            else {
+                set((state) => {
+                    const updatedCart = state.cartItemsLocal.map(item => {
+                        if (item._id === productId) {
+                            return { ...item, quantity };
+                        }
+                        return item;
+                    });
+                    localStorage.setItem("cart", JSON.stringify(updatedCart));
+                    return { cartItems: updatedCart };
+                });
+            }
         } catch (error) {
             console.error("Lỗi cập nhật giỏ hàng:", error);
         }
@@ -109,23 +114,15 @@ const useCartStore = create((set, get) => ({
 
     removeFromCart: async (itemId) => {
         if (!itemId) return;
-
         const isLastItem = get().cartItems.length === 1;
 
         const token = getCookie(TOKEN_KEY);
-
-        set((state) => {
-            const updatedCart = state.cartItems.filter((item) => item._id !== itemId);
-            localStorage.setItem("cart", JSON.stringify(updatedCart));
-            return { cartItems: updatedCart };
-        });
 
         if (token) {
             try {
                 await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${itemId}`, {
                     headers: { token },
                 });
-
 
                 if (isLastItem) {
                     window.location.reload();
@@ -139,15 +136,14 @@ const useCartStore = create((set, get) => ({
                     cartItems: [...state.cartItems, { _id: itemId }],
                 }));
             }
-        } 
-        // else {
-        //     set((state) => {
-        //         const updatedCart = state.cartItems.filter((item) => item._id !== itemId);
-        //         localStorage.setItem("cart", JSON.stringify(updatedCart));
-        //         return { cartItems: updatedCart };
-        //     });
-        //     window.location.reload()
-        // }
+        }
+        else {
+            set((state) => {
+                const updatedCart = state.cartItemsLocal.filter((item) => item._id !== itemId);
+                localStorage.setItem("cart", JSON.stringify(updatedCart));
+                return { cartItems: updatedCart };
+            });
+        }
     },
 
     clearPurchasedItems: async (purchasedItems) => {
@@ -163,7 +159,6 @@ const useCartStore = create((set, get) => ({
                         { headers: { "token": token } }
                     );
 
-                    console.log("Đã xóa sản phẩm từ giỏ hàng của khách hàng đã đăng nhập:", response);
                     set((state) => {
                         const updatedCart = state.cartItems.filter(
                             (item) => !purchasedItems.includes(item._id || item.productId)
@@ -176,16 +171,9 @@ const useCartStore = create((set, get) => ({
                     console.error("Lỗi khi xóa sản phẩm từ giỏ hàng của khách hàng đã đăng nhập:", error);
                 }
             } else {
-                console.log('2')
-
-                console.log("Khách vãng lai: Xóa sản phẩm đã thanh toán khỏi localStorage.");
-
                 const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
                 const updatedCart = cart.filter(item => !purchasedItems.includes(item._id));
-
                 localStorage.setItem("cart", JSON.stringify(updatedCart));
-
                 set(() => ({
                     cartItems: updatedCart
                 }));
