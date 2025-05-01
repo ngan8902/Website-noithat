@@ -69,7 +69,7 @@ exports.getTopSpendingCustomers = async (req, res) => {
         }
       },
 
-      // Join để lấy thông tin receiver
+      // Join để lấy thông tin người nhận
       {
         $lookup: {
           from: "receiverinfos",
@@ -80,35 +80,76 @@ exports.getTopSpendingCustomers = async (req, res) => {
       },
       { $unwind: "$receiverInfo" },
 
-      // Gom nhóm theo phone (tránh trùng người)
+      // Bước 1: Gom nhóm theo phone + fullname để đếm số đơn mỗi tên
       {
         $group: {
           _id: {
-            phone: "$receiverInfo.phone"
+            phone: "$receiverInfo.phone",
+            fullname: "$receiverInfo.fullname"
           },
-          fullname: { $first: "$receiverInfo.fullname" },
           address: { $first: "$receiverInfo.address" },
           totalSpent: { $sum: "$totalPriceNumber" },
           orders: { $sum: 1 }
         }
       },
 
-      // Định dạng lại kết quả
+      // Bước 2: Gom lại theo phone, đẩy mảng tên + số lần xuất hiện
+      {
+        $group: {
+          _id: "$_id.phone",
+          fullnames: {
+            $push: {
+              name: "$_id.fullname",
+              count: "$orders"
+            }
+          },
+          address: { $first: "$address" },
+          totalSpent: { $sum: "$totalSpent" },
+          orders: { $sum: "$orders" }
+        }
+      },
+
+      // Bước 3: Sắp xếp tên theo số đơn giảm dần, chọn tên phổ biến nhất
+      {
+        $addFields: {
+          fullname: {
+            $arrayElemAt: [
+              {
+                $map: {
+                  input: {
+                    $slice: [
+                      {
+                        $sortArray: {
+                          input: "$fullnames",
+                          sortBy: { count: -1 }
+                        }
+                      },
+                      1
+                    ]
+                  },
+                  as: "item",
+                  in: "$$item.name"
+                }
+              },
+              0
+            ]
+          }
+        }
+      },
+
       {
         $project: {
           _id: 0,
-          fullname: "$_id.fullname",
-          phone: "$_id.phone",
-          address: "$_id.address",
+          phone: "$_id",
+          fullname: 1,
+          address: 1,
           totalSpent: 1,
           orders: 1
         }
       },
 
-      // Sắp xếp theo tổng chi tiêu
       { $sort: { totalSpent: -1 } },
 
-      // Giới hạn top 5
       { $limit: 5 }
     ]);
 
