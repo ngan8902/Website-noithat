@@ -14,10 +14,9 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
         ? selectedProducts
         : (product ? [{ ...product, quantity }] : cartData);
 
-    console.log(product)
 
     const getImageUrl = (item, product) => {
-        if (item?.image && item.image.startsWith('http')) {
+        if (item?.image && item?.image.startsWith('http')) {
             return item.image;
         }
         if (item?.productId?.data?.image) {
@@ -28,6 +27,9 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
         }
         if (product?.image) {
             return `${UPLOAD_URL}${product.image}`;;
+        }
+        if (item?.image) {
+            return `${UPLOAD_URL}${item.image}`;;
         }
         return "https://via.placeholder.com/100";
     };

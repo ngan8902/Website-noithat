@@ -6,22 +6,16 @@ import useCartStore from "../store/cartStore";
 import axios from "axios";
 
 const Cart = () => {
-  const { cartItems = [], fetchCart, updateQuantity, removeFromCart } = useCartStore();
-  const [cartWithProducts, setCartWithProducts] = useState([]);
+  const { cartItems = [], cartItemsLocal, fetchCart, updateQuantity, removeFromCart, setCartItemsLocal } = useCartStore();
   const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
 
-  const [isGuest, setIsGuest] = useState(false);
-
-  // useEffect(() => {
-  //   const storedSelectedItems = JSON.parse(localStorage.getItem('selectedItems')) || [];
-  //   setSelectedItems(storedSelectedItems);
-  // }, []);
+  const [sGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];
     if (localCart.length > 0) {
-      setCartWithProducts(localCart);
+      setCartItemsLocal(localCart);
       setIsGuest(true);
     } else {
       fetchCart();
@@ -53,7 +47,7 @@ const Cart = () => {
         })
       );
 
-      setCartWithProducts(updatedCart);
+      setCartItemsLocal(updatedCart);
     };
 
     fetchProductDetails();
@@ -61,9 +55,7 @@ const Cart = () => {
 
 
   const handleCheckout = () => {
-    const selectedProducts = cartWithProducts.filter(item => selectedItems.includes(item._id));
-    console.log(selectedProducts)
-
+    const selectedProducts = cartItemsLocal.filter(item => selectedItems.includes(item._id));
     if (selectedProducts.length === 0) {
       alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
       return;
@@ -73,6 +65,11 @@ const Cart = () => {
     localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
   };
 
+  const handleItemRemove = async (itemId) => {
+    await removeFromCart(itemId);
+    if(cartItemsLocal.length === 1) window.location.reload()
+  }
+
   return (
     <section className="py-5">
       <div className="container">
@@ -80,9 +77,9 @@ const Cart = () => {
         <div className="row">
           <div className="col-md-8 mb-4">
             <CartList
-              cart={cartWithProducts}
+              cart={cartItemsLocal}
               updateQuantity={updateQuantity}
-              removeFromCart={removeFromCart}
+              removeFromCart={handleItemRemove}
               selectedItems={selectedItems}
               setSelectedItems={setSelectedItems}
             />
@@ -90,7 +87,7 @@ const Cart = () => {
 
           <div className="col-md-4 mb-4">
             <CartSummary
-              cart={cartWithProducts}
+              cart={cartItemsLocal}
               selectedItems={selectedItems}
               handleCheckout={handleCheckout}
             />
