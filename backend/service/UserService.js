@@ -6,6 +6,15 @@ const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
         const { name, email, password, phone } = newUser
         try {
+            const checkPhone = await User.findOne({
+                phone: phone
+            })
+            if (checkPhone !== null) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'Số điện thoại đã tồn tại!'
+                })
+            }
             const checkUser = await User.findOne({
                 email: email
             })
@@ -15,6 +24,7 @@ const createUser = (newUser) => {
                     message: 'Email đã tồn tại!'
                 })
             }
+            
             const hash = bcrypt.hashSync(password, 10)
             const createdUser = await User.create({
                 name,
@@ -97,12 +107,35 @@ const updateUser = (id, data) => {
                 });
             }
 
+            const { email, phone } = newUser
+
+            const checkUserPhone = await User.findOne({
+                phone: phone,
+            });
+
+            if (checkUserPhone !== null) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'Số điện thoại đã tồn tại!'
+                })
+            }
+
+            const checkUserEmail = await User.findOne({
+                email: email,
+            });
+
+            if (checkUserEmail !== null) {
+                resolve({
+                    status: 'ERROR',
+                    message: 'Email đã tồn tại!'
+                })
+            }
             const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
 
             if (!updatedUser) {
                 return resolve({
                     status: 'ERR',
-                    message: 'Failed to update user',
+                    message: 'Cập nhật thông tin thất bại, vui lòng thử lại!',
                 });
             }
 

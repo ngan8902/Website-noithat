@@ -80,14 +80,14 @@ exports.getTopSpendingCustomers = async (req, res) => {
       },
       { $unwind: "$receiverInfo" },
 
-      // Gom nhóm theo fullname + phone (tránh trùng người)
+      // Gom nhóm theo phone (tránh trùng người)
       {
         $group: {
           _id: {
-            fullname: "$receiverInfo.fullname",
-            phone: "$receiverInfo.phone",
-            address: "$receiverInfo.address"
+            phone: "$receiverInfo.phone"
           },
+          fullname: { $first: "$receiverInfo.fullname" },
+          address: { $first: "$receiverInfo.address" },
           totalSpent: { $sum: "$totalPriceNumber" },
           orders: { $sum: 1 }
         }
