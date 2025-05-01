@@ -100,11 +100,17 @@ export default function Dashboard() {
     fetchMonthlyRevenue();
   }, [selectedYear]);
 
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
     <>
-    <div className="d-flex app-container">
-      <Sidebar />
-      <div className="content p-4 main-content">
+     <div className={`d-flex app-container ${collapsed && window.innerWidth < 576 ? "sidebar-open" : ""}`}>
+        {collapsed && window.innerWidth < 576 && (
+          <div className="sidebar-overlay" onClick={() => setCollapsed(false)}></div>
+        )}
+        <Sidebar />
+        <div className="content p-4 main-content">
+          
         <div className="p-4 grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
 
             <div className="bg-white p-6 rounded-2xl shadow col-span-1 md:col-span-2 xl:col-span-3">

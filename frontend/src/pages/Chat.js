@@ -8,8 +8,8 @@ const Chat = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className={`d-flex app-container ${collapsed && window.innerWidth < 768 ? "sidebar-open" : ""}`}>
-      {collapsed && window.innerWidth < 768 && (
+    <div className={`d-flex app-container ${collapsed && window.innerWidth < 576 ? "sidebar-open" : ""}`}>
+      {collapsed && window.innerWidth < 576 && (
         <div className="sidebar-overlay" onClick={() => setCollapsed(false)}></div>
       )}
       <Sidebar />

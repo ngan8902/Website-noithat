@@ -1,7 +1,14 @@
 const payos = require('../model/PayosModel');
 
-const createPayment = async (amount, description, orderCode, buyerName, buyerPhone, buyerAddress, items) => {
+const createPayment = async (amount, description, orderCode, buyerName, buyerPhone, buyerAddress, items, user) => {
     try {
+        let returnUrl;
+        if (user) {
+            returnUrl = 'https://website-noithat-amber.vercel.app/account';
+        } else {
+            returnUrl = 'https://website-noithat-amber.vercel.app/guest-order';
+        }
+
         const paymentData = {
             amount,
             description,
@@ -10,8 +17,8 @@ const createPayment = async (amount, description, orderCode, buyerName, buyerPho
             buyerPhone,
             buyerAddress,
             items,
-            returnUrl: 'https://website-noithat-amber.vercel.app/account',
-            cancelUrl: 'https://website-noithat-amber.vercel.app/home'
+            returnUrl,
+            cancelUrl: 'https://website-noithat-amber.vercel.app'
         };
 
         const paymentLink = await payos.createPaymentLink(paymentData);

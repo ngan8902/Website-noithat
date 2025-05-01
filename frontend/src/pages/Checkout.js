@@ -274,7 +274,8 @@ const Checkout = () => {
                         quantity: orderData.orderItems[0].amount,
                         price: (orderData.orderItems[0].price - (orderData.orderItems[0].price * discount) / 100) * orderData.orderItems[0].amount,
                     }],
-                    tempOrderData: orderData
+                    tempOrderData: orderData,
+                    user: orderData.userId
                 });
                 if (response.data?.paymentLinkId) {
                     localStorage.setItem('paymentLinkId', response.data.paymentLinkId);

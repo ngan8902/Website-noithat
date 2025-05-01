@@ -1,6 +1,5 @@
 import React from "react";
 import Home from "../pages/Home";
-import Homed from "../pages/Homed";
 import AboutDetail from "../pages/AboutDetail";
 import Contact from "../pages/Contact";
 import ProductDetail from "../pages/ProductDetail";
@@ -26,7 +25,7 @@ import GuestOrderStatus from "../pages/GuestOrderStatus";
 
 export const publicRoute = [
   { path: "/", element: <Home />, isShow: true },
-  { path: "/home", element: <Homed />, isShow: true },
+  { path: "/home", element: <Home />, isShow: true },
   { path: "/about", element: <AboutDetail />, isShow: true },
   { path: "/contact", element: <Contact />, isShow: true },
   { path: "/:name/:id", element: <ProductDetail />, isShow: true },

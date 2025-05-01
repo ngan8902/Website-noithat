@@ -21,7 +21,7 @@
 
 .suggestions-list li:hover {
   background: #007bff;
-  color: white;
+  color: black;
 }
 
 .suggestions-list li:last-child {
@@ -423,7 +423,7 @@ section {
   transition: filter 0.3s ease;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 576px) {
   .sidebar {
     position: fixed;
     left: 0;
@@ -753,7 +753,8 @@ section {
 
   .chatbox-button {
     padding: 10px 16px;
-    font-size: 22px;
+    font-size: 18px;
+    bottom: 15px;
   }
 
   .chatbox-footer input {
@@ -922,7 +923,7 @@ section {
   display: flex;
   align-items: center;
   text-decoration: none;
-  z-index: 999;
+  z-index: 100;
 }
 
 .zalo-tooltip {
@@ -952,7 +953,7 @@ section {
 
 @media screen and (max-width: 768px) {
   .zalo-button {
-    bottom: 15px;
+    bottom: 25px;
     right: 10px;
     flex-direction: column;
     align-items: flex-end;

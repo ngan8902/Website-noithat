@@ -5,8 +5,6 @@ import { getCookie } from "../../utils/cookie.util";
 import { TOKEN_KEY } from "../../constants/authen.constant";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = '/images/guest.png'
-
 const getProvinces = async () => {
   try {
     const response = await axios.get("https://provinces.open-api.vn/api/?depth=1");
