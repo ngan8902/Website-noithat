@@ -735,7 +735,7 @@ section {
     bottom: 80px;
     right: 2.5vw;
     border-radius: 10px;
-    z-index: 999;
+    z-index: 1000;
   }
 
   .chatbox-wrapper {
@@ -743,13 +743,14 @@ section {
     right: 15px;
     flex-direction: column;
     align-items: flex-end;
+    z-index: 1000;
   }
 
   .chatbox-label {
     font-size: 12px;
     padding: 6px 10px;
-    margin-right: 20px;
-    margin-bottom: 10px;
+    margin-right: 50px;
+    margin-bottom: 20px;
   }
 
   .chatbox-button {
