@@ -26,14 +26,17 @@ const GuestOrderStatus = () => {
             console.log("Dữ liệu đơn hàng PayOS:", data.orderData);
 
             const orderData = data.orderData;
-            await createOrder(orderData);
 
-            // Cập nhật guestOrderCodes
-            const codes = JSON.parse(localStorage.getItem("guestOrderCodes")) || [];
-            const updatedCodes = [...codes, orderData.orderCode];
-            localStorage.setItem("guestOrderCodes", JSON.stringify(updatedCodes));
+            const response = await createOrder(orderData);
+            const createdOrder = response?.data?.data;
 
-            localStorage.removeItem("paymentLinkId");
+            if (createdOrder?.orderCode) {
+              const codes = JSON.parse(localStorage.getItem("guestOrderCodes")) || [];
+              const updatedCodes = [...codes, createdOrder.orderCode];
+              localStorage.setItem("guestOrderCodes", JSON.stringify(updatedCodes));
+            }
+
+          localStorage.removeItem("paymentLinkId");
           }
         }
 

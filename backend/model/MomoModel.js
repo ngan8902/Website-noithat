@@ -5,7 +5,7 @@ const axios = require('axios');
 const MOMO_ACCESS_KEY = 'F8BBA842ECF85';
 const MOMO_SECRET_KEY = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
 const MOMO_PARTNER_CODE = 'MOMO';
-const MOMO_REDIRECT_URL = 'https://website-noithat-amber.vercel.app/account';
+const MOMO_REDIRECT_URL = 'https://website-noithat-amber.vercel.app';
 const MOMO_IPN_URL = 'https://website-noithat-amber.vercel.app/api/momo/webhook';
 
 const createMomoPayment = async (amount, orderInfo, items, deliveryInfo, userInfo) => {

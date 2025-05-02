@@ -95,19 +95,19 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
             🔄 Yêu cầu trả hàng: <strong>{returnRequestedCount}</strong>
           </span>
           <span
-            className={`m-3 order-status-hover ${(filterByStatus === "received" || filterByStatus === "shipped") ? "text-primary fw-bold" : "text-muted"
+            className={`order-status-hover ${(filterByStatus === "received" || filterByStatus === "shipped") ? "text-primary fw-bold" : "text-muted"
               } cursor-pointer`}
             onClick={() => {
               setFilterByStatus(prev => {
                 if (prev === "received" || prev === "shipped") {
                   return null;
                 }
-                return "received"; // Default to 'received'
+                return "received";
               });
             }}
             style={{ cursor: "pointer" }}
           >
-            🚚 Đơn đã giao: <strong>{shippingCount}</strong>
+            🚚 Đơn đang giao: <strong>{shippingCount}</strong>
           </span>
           <span
             className={`order-status-hover ${filterByStatus === "cancelled" ? "text-primary fw-bold" : "text-muted"} cursor-pointer`}

@@ -5,8 +5,6 @@ import { getCookie } from "../../utils/cookie.util";
 import { TOKEN_KEY } from "../../constants/authen.constant";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
-const avatarDefautl = '/images/guest.png'
-
 const getProvinces = async () => {
   try {
     const response = await axios.get("https://provinces.open-api.vn/api/?depth=1");
@@ -252,6 +250,11 @@ const AccountInfo = () => {
         }
       );
 
+      if (response.data.status === "ERR") {
+        setErrorMessage(response.data.message);
+        return;
+      }
+      
       setUser(response.data.data);
       setIsEditing(false);
       setErrorMessage("Cập nhật thông tin thành công!");
@@ -553,25 +556,34 @@ const AccountInfo = () => {
               )}
 
               <button
-                type="button"
-                className="btn btn-outline-secondary w-100 mb-3"
-                onClick={() => setIsChangingPassword(false)}
-              >
-                Hủy
-              </button>
-
-              <button
                 className="btn btn-success w-100 m-1"
                 type="button"
                 onClick={user?.password ? handleUpdatePassword : handleUpdateNewPassword}
               >
                 {user?.password ? "Cập Nhật Mật Khẩu" : "Tạo Mật Khẩu"}
               </button>
+
+              <button
+                type="button"
+                className="btn btn-outline-secondary w-100 m-1"
+                onClick={() => setIsChangingPassword(false)}
+              >
+                Hủy
+              </button>
             </>
           )}
-          <button className="btn btn-success w-100 m-1" type="button" onClick={handleSave}>
-            Lưu Thay Đổi
-          </button>
+
+          {!isChangingPassword && (
+          <>
+            <button className="btn btn-success w-100 m-1" type="button" onClick={handleSave}>
+              Lưu Thay Đổi
+            </button>
+
+            <button className="btn btn-outline-secondary w-100 m-1" onClick={() => setIsEditing(false)}>
+              Hủy
+            </button>
+          </>
+          )}
         </form>
       )}
 

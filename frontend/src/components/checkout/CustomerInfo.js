@@ -114,7 +114,7 @@ const CustomerInfo = ({
                                     />
                                     <label className="form-check-label w-100 d-flex justify-content-between" htmlFor={`info-${index}`} style={{ color: "#000" }}>
                                         <span><strong>{info.fullname}, </strong></span>
-                                        <span>{info.phone}, </span>
+                                        <span>{info.phone}; </span>
                                         <span>{info.address}. </span>
                                     </label>
                                 </div>
