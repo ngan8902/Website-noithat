@@ -138,7 +138,7 @@ function FaceDetect() {
 
             if (type === "check-in") {
               if (matchedStaff && matchedStaff.checkInTime) {
-                setNotification(`⚠️ Nhân viên ${staff.staffcode} đã check-in hôm nay.`);
+                setNotification(`⚠️ Nhân viên ${staff.staffcode}-${staff.name} đã check-in hôm nay.`);
                 setTimeout(() => {
                   setNotification("")
                   context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -165,7 +165,7 @@ function FaceDetect() {
               await fetchCheckedInStaff();
 
               const statusText = status === "present" ? "Đúng giờ" : "Trễ";
-              setNotification(`✅ Nhân viên ${staff.staffcode} check-in thành công (${statusText})`);
+              setNotification(`✅ Nhân viên ${staff.staffcode}-${staff.name} check-in thành công (${statusText})`);
               setTimeout(() => {
                 setNotification("")
                 context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -175,7 +175,7 @@ function FaceDetect() {
 
             if (type === "check-out") {
               if (!matchedStaff || matchedStaff.checkOutTime) {
-                setNotification(`⚠️ Nhân viên ${staff.staffcode} chưa check-in hoặc đã check-out.`);
+                setNotification(`⚠️ Nhân viên ${staff.staffcode}-${staff.name} chưa check-in hoặc đã check-out.`);
                 setTimeout(() => {
                   setNotification("")
                   context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -190,7 +190,7 @@ function FaceDetect() {
 
               await fetchCheckedInStaff();
 
-              setNotification(`✅ Nhân viên ${staff.staffcode} đã check-out thành công.`);
+              setNotification(`✅ Nhân viên ${staff.staffcode}-${staff.name} đã check-out thành công.`);
               setTimeout(() => {
                 setNotification("")
                 context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -199,7 +199,7 @@ function FaceDetect() {
             }
           }
         }
-        
+
         if (!matched) {
           setNotification("⚠️ Gương mặt của bạn chưa được lưu trong hệ thống.");
           setTimeout(() => {
