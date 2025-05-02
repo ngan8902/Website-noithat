@@ -170,7 +170,7 @@ function FaceDetect() {
                 setNotification("")
                 context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
               }, 5000);
-              break;
+              return;
             }
 
             if (type === "check-out") {
@@ -195,19 +195,18 @@ function FaceDetect() {
                 setNotification("")
                 context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
               }, 5000);
-              break;
+              return;
             }
           }
-
-          if (!matched) {
-            setNotification("⚠️ Gương mặt của bạn chưa được lưu trong hệ thống.");
-            setTimeout(() => {
-              setNotification("");
-              context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-            }, 4000);
-          }
         }
-
+        
+        if (!matched) {
+          setNotification("⚠️ Gương mặt của bạn chưa được lưu trong hệ thống.");
+          setTimeout(() => {
+            setNotification("");
+            context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+          }, 4000);
+        }
       } catch (error) {
         console.error("Lỗi khi nhận diện:", error);
         setNotification("Lỗi khi nhận diện khuôn mặt.");
@@ -264,11 +263,11 @@ function FaceDetect() {
 
         {notification && (
           <div
-            className={`notification-message ${notification.includes("Không") 
-              || notification.includes("Lỗi") 
-              || notification.includes("không") 
-              || notification.includes("đã check-in") 
-              || notification.includes("chưa check-in hoặc đã check-out") 
+            className={`notification-message ${notification.includes("Không")
+              || notification.includes("Lỗi")
+              || notification.includes("không")
+              || notification.includes("đã check-in")
+              || notification.includes("chưa check-in hoặc đã check-out")
               || notification.includes("chưa được lưu")
               ? "error"
               : ""
