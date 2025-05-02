@@ -125,12 +125,15 @@ function FaceDetect() {
         const faceVector = faceDetected.descriptor;
         const now = new Date();
 
+        let matched = false;
+
         for (const staff of staffFaces.current) {
           if (!staff?.faceEmbedding?.length) continue;
 
           const distance = euclideanDistance(faceVector, staff.faceEmbedding);
 
           if (distance < THRESHOLD) {
+            matched = true;
             const matchedStaff = checkedInStaff.find((item) => item.staffId === staff._id);
 
             if (type === "check-in") {
@@ -195,6 +198,14 @@ function FaceDetect() {
               break;
             }
           }
+
+          if (!matched) {
+            setNotification("⚠️ Gương mặt của bạn chưa được lưu trong hệ thống.");
+            setTimeout(() => {
+              setNotification("");
+              context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+            }, 4000);
+          }
         }
 
       } catch (error) {
@@ -253,7 +264,12 @@ function FaceDetect() {
 
         {notification && (
           <div
-            className={`notification-message ${notification.includes("Không") || notification.includes("Lỗi") || notification.includes("không") || notification.includes("đã check-in")
+            className={`notification-message ${notification.includes("Không") 
+              || notification.includes("Lỗi") 
+              || notification.includes("không") 
+              || notification.includes("đã check-in") 
+              || notification.includes("chưa check-in hoặc đã check-out") 
+              || notification.includes("chưa được lưu")
               ? "error"
               : ""
               }`}
