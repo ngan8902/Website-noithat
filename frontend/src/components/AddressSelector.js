@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const AddressSelector = ({ setNewAddress, savedAddress }) => { 
+    const removeDiacritics = (str) => {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    };
+
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
@@ -33,9 +37,11 @@ const AddressSelector = ({ setNewAddress, savedAddress }) => {
     const handleProvinceChange = (e) => {
         const value = e.target.value;
         setProvinceInput(value);
-        const found = provinces.find(p => p.name.toLowerCase() === value.toLowerCase());
+        const normalizedValue = removeDiacritics(value);
+
+        const found = provinces.find(p => removeDiacritics(p.name).includes(normalizedValue));
         setSelectedProvince(found ? found.code : value);
-        setProvinceSuggestions(provinces.filter(p => p.name.toLowerCase().includes(value.toLowerCase())));
+        setProvinceSuggestions(provinces.filter(p => removeDiacritics(p.name).includes(normalizedValue)));
     };
 
     const handleSelectProvince = (province) => {
@@ -60,9 +66,10 @@ const AddressSelector = ({ setNewAddress, savedAddress }) => {
     const handleDistrictChange = (e) => {
         const value = e.target.value;
         setDistrictInput(value);
-        const found = districts.find(d => d.name.toLowerCase() === value.toLowerCase());
+        const normalizedValue = removeDiacritics(value);
+        const found = districts.find(d => removeDiacritics(d.name).includes(normalizedValue));
         setSelectedDistrict(found ? found.code : value);
-        setDistrictSuggestions(districts.filter(d => d.name.toLowerCase().includes(value.toLowerCase())));
+        setDistrictSuggestions(districts.filter(d => removeDiacritics(d.name).includes(normalizedValue)));
     };
 
     const handleSelectDistrict = (district) => {
@@ -86,9 +93,10 @@ const AddressSelector = ({ setNewAddress, savedAddress }) => {
     const handleWardChange = (e) => {
         const value = e.target.value;
         setWardInput(value);
-        const found = wards.find(w => w.name.toLowerCase() === value.toLowerCase());
+        const normalizedValue = removeDiacritics(value);
+        const found = wards.find(w => removeDiacritics(w.name).includes(normalizedValue));
         setSelectedWard(found ? found.code : value);
-        setWardSuggestions(wards.filter(w => w.name.toLowerCase().includes(value.toLowerCase())));
+        setWardSuggestions(wards.filter(w => removeDiacritics(w.name).includes(normalizedValue)));
     };
 
     const handleSelectWard = (ward) => {
