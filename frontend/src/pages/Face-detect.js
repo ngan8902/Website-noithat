@@ -246,7 +246,6 @@ function FaceDetect() {
               zIndex: 2,
             }}
           />
-
           <canvas
             ref={canvasRef}
             style={{
@@ -259,6 +258,9 @@ function FaceDetect() {
               pointerEvents: "none",
             }}
           />
+           {(checkInLoading || checkOutLoading) && (
+            <div className="face-loading-animation" />
+          )}
         </div>
 
         {notification && (

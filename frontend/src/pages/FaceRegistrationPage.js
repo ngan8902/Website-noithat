@@ -220,6 +220,7 @@ const FaceRegistrationPage = () => {
                 pointerEvents: "none",
               }}
             />
+            {(capturing || saving) && <div className="face-loading-animation" />}
           </div>
 
           <div className="d-flex justify-content-center gap-3 mt-4" style={{ marginTop: 30 }}>

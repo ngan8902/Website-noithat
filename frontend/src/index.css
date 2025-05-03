@@ -153,7 +153,7 @@ button:hover,
   left: 0;
   z-index: 999;
   border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   min-width: 160px;
 }
 
@@ -211,7 +211,7 @@ button:hover,
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   z-index: 1000;
 }
 
@@ -1165,7 +1165,7 @@ section {
   margin: 0 auto;
   width: 100%;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   text-align: center;
   padding: 20px;
 }
@@ -1289,5 +1289,32 @@ section {
 
   100% {
     transform: rotate(360deg);
+  }
+}
+
+.face-loading-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80%;
+  background: linear-gradient(#03A9F4, #03A9F4),
+    linear-gradient(90deg, #ffffff33 1px, transparent 0, transparent 19px),
+    linear-gradient(#ffffff33 1px, transparent 0, transparent 19px),
+    linear-gradient(transparent, #2196f387);
+  background-size: 100% 1.5%, 10% 100%, 100% 10%, 100% 100%;
+  background-repeat: no-repeat, repeat, repeat, no-repeat;
+  background-position: 0 0, 0 0, 0 0, 0 0;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 1.5%, 0% 1.5%);
+  animation: move 2s infinite linear;
+  margin: 0 auto;
+  border-radius: 8px;
+  z-index: 4;
+}
+
+@keyframes move {
+  to {
+    background-position: 0 100%, 0 0, 0 0, 0 0;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
   }
 }
