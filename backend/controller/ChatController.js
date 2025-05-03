@@ -1,5 +1,11 @@
 const ChatService = require('../service/ChatService');
 
+/**
+ * API để lấy trạng thái 'isRead' của tất cả tin nhắn trong một cuộc trò chuyện
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ */
+
 
 // Lấy tin nhắn theo người nhận
 const getMessagesByReceiver = async (req, res) => {
@@ -54,9 +60,26 @@ const markAsRead = async (req, res) => {
     }
 };
 
+const getIsReadStatus = async (req, res) => {
+    const { conversationId, to } = req.params;
+
+    if (!conversationId || !to) {
+        return res.status(400).json({ message: "Thiếu thông tin yêu cầu" });
+    }
+
+    try {
+        const isReadStatus = await chatService.getIsReadStatus(conversationId, to);
+        return res.status(200).json({ isReadStatus });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getMessagesByReceiver,
     createMessage,
     markAsRead,
-    getMessagesByConversationId
+    getMessagesByConversationId,
+    getIsReadStatus
 }
