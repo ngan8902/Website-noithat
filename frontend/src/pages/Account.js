@@ -30,13 +30,13 @@ const Account = () => {
 
   useEffect(() => {
     getOrderByUser();
-  
-      const interval = setInterval(() => {
-        getOrderByUser();
-      }, 5000); 
-  
-      return () => clearInterval(interval);
-    }, [getOrderByUser]);
+
+    const interval = setInterval(() => {
+      getOrderByUser();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [getOrderByUser]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -81,29 +81,7 @@ const Account = () => {
           console.error("Lỗi khi kiểm tra trạng thái thanh toán PayOS:", err);
         }
       }
-
-      // if (orderCode) {
-      //   try {
-      //     const res = await axios.post(
-      //       `${process.env.REACT_APP_URL_BACKEND}/momo/payment-status/${orderCode}`
-      //     );
-
-      //     const data = res.data;
-      //     console.log("Trạng thái thanh toán MoMo:", data);
-      //     if (data.message.includes("Transaction success")) {
-      //       console.log("Dữ liệu đơn hàng MoMo:", data.orderData);
-      //       const orderData = data.orderData;
-      //       const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
-      //       await createOrder(orderData, { headers });
-      //     }
-
-      //     localStorage.removeItem("orderCode");
-      //     fetchOrders();
-      //   } catch (err) {
-      //     console.error("Lỗi khi kiểm tra trạng thái thanh toán MoMo:", err);
-      //   }
-      // }
-     };
+    };
 
     checkStatuses();
   }, []);

@@ -1,12 +1,5 @@
 const Chat = require("../model/ChatModel");
 
-/**
- * Lấy trạng thái 'isRead' của các tin nhắn trong cuộc trò chuyện
- * @param {String} conversationId - ID của cuộc trò chuyện
- * @param {String} to - ID của người nhận tin nhắn
- * @returns {Object} Trạng thái isRead của tin nhắn
- */
-
 
 const getMessagesByReceiver = async (receiverId, receiverRole) => {
     try {
@@ -24,7 +17,7 @@ const getMessagesByReceiver = async (receiverId, receiverRole) => {
 // Tạo tin nhắn mới
 const createMessage = async (messageData) => {
     try {
-        const { from, to, message, timestamp, conversationId, fromRole, toRole } = messageData;
+        const { from, to, message, timestamp, conversationId, fromRole, toRole, isRead } = messageData;
         let chatMessage = null;
 
         chatMessage = new Chat({
@@ -35,6 +28,7 @@ const createMessage = async (messageData) => {
             message: message,
             timestamp: timestamp,
             conversationId: conversationId,
+            isRead: isRead
         });
 
 
@@ -65,33 +59,19 @@ const markAsRead = async (conversationId, to) => {
     }
 };
 
-const getIsReadStatus = async (conversationId, to) => {
-    try {
-        const messages = await Chat.find(
-            { conversationId, to }
-        ).sort({ timestamp: 1 }); // Sắp xếp tin nhắn theo thứ tự thời gian tăng dần
-
-        if (messages.length === 0) {
-            return { message: "Không tìm thấy tin nhắn trong cuộc trò chuyện" };
-        }
-
-        // Lấy trạng thái isRead của các tin nhắn
-        const isReadStatus = messages.map((msg) => ({
-            messageId: msg._id,
-            isRead: msg.isRead,
-        }));
-
-        return isReadStatus;
-    } catch (error) {
-        throw new Error("Lỗi khi lấy trạng thái tin nhắn");
-    }
-};
-
+const hasUnreadMessages = async (id) => {
+    const unreadMessages = await Chat.find({
+      to: id,
+      toRole: "Staff",
+      isRead: false,
+    })
+    return unreadMessages.length > 0;
+  };
 
 module.exports = {
     getMessagesByReceiver,
     createMessage,
     markAsRead,
     getMessagesByConversationId,
-    getIsReadStatus
+    hasUnreadMessages
 }

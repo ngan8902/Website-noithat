@@ -1,11 +1,5 @@
 const ChatService = require('../service/ChatService');
 
-/**
- * API để lấy trạng thái 'isRead' của tất cả tin nhắn trong một cuộc trò chuyện
- * @param {Object} req - Request object
- * @param {Object} res - Response object
- */
-
 
 // Lấy tin nhắn theo người nhận
 const getMessagesByReceiver = async (req, res) => {
@@ -23,7 +17,7 @@ const getMessagesByReceiver = async (req, res) => {
 // Tạo tin nhắn
 const createMessage = async (req, res) => {
     try {
-        const messageData = req.body; 
+        const messageData = req.body;
 
         const savedMessage = await ChatService.createMessage(messageData);
 
@@ -60,26 +54,23 @@ const markAsRead = async (req, res) => {
     }
 };
 
-const getIsReadStatus = async (req, res) => {
-    const { conversationId, to } = req.params;
-
-    if (!conversationId || !to) {
-        return res.status(400).json({ message: "Thiếu thông tin yêu cầu" });
-    }
-
+const getUnreadStatus = async (req, res) => {
     try {
-        const isReadStatus = await chatService.getIsReadStatus(conversationId, to);
-        return res.status(200).json({ isReadStatus });
+        const { id } = req['payload'];
+        console.log(id)
+        const hasUnread = await ChatService.hasUnreadMessages(id);
+        res.json({ hasUnread });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: error.message });
+        console.error("Lỗi khi kiểm tra tin nhắn chưa đọc:", error);
+        res.status(500).json({ message: "Lỗi server", error: error.message });
     }
 };
+
 
 module.exports = {
     getMessagesByReceiver,
     createMessage,
     markAsRead,
     getMessagesByConversationId,
-    getIsReadStatus
+    getUnreadStatus
 }

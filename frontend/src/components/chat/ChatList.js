@@ -3,9 +3,9 @@ import useChatStore from "../../store/chatStore";
 import axios from "axios";
 import useAuthAdminStore from "../../store/authAdminStore";
 import { SOCKET_URI, STAFF_EVENTS } from "../../constants/chat.constant";
-import { UPLOAD_URL } from '../../constants/url.constant';
+import { UPLOAD_URL } from "../../constants/url.constant";
 
-const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`;
+const avatarDefault = `${UPLOAD_URL}/upload/guest.png`;
 
 const ChatList = ({ onSelectCustomer }) => {
   const { setCustomers } = useChatStore();
@@ -14,77 +14,78 @@ const ChatList = ({ onSelectCustomer }) => {
   const lastMessageRef = useRef({});
   const socketIO = useRef(null);
 
-  const [hasNewMessage, setHasNewMessage] = useState(() => {
-    const storedHasNewMessage = localStorage.getItem("hasNewMessage");
-    return storedHasNewMessage ? JSON.parse(storedHasNewMessage) : {};
-  });
-
-  useEffect(() => {
-    localStorage.setItem("hasNewMessage", JSON.stringify(hasNewMessage));
-  }, [hasNewMessage]);
-
   useEffect(() => {
     const fetchCustomersData = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/user/get-all`);
         const users = response.data.data;
 
-        let allCustomers = await Promise.all(
+        const allCustomers = await Promise.all(
           users.map(async (user) => {
-            const conversationId = `${user._id}`; 
+            const conversationId = `${user._id}`;
             let allMessages = [];
 
             try {
               const messagesResponse = await axios.get(
                 `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId}`
               );
-              allMessages = [...messagesResponse.data];
+              allMessages = messagesResponse.data;
             } catch (error) {
-              console.error(`Lỗi khi lấy tin nhắn cho ${user.name} với ${conversationId}:`, error);
+              console.error(`Lỗi khi lấy tin nhắn cho ${user.name}:`, error);
             }
 
-            const sortedMessages = allMessages.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            const lastMessage = sortedMessages?.[0]?.message || "";
-            const toRole = sortedMessages?.[0]?.toRole || null;
+            const sortedMessages = allMessages.sort(
+              (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+            );
+
+            const lastMessageObj = sortedMessages?.[0];
+            const lastMessage = lastMessageObj?.message || "";
+            const toRole = lastMessageObj?.toRole || null;
+
             const isRead =
-              sortedMessages?.[0]?.fromRole === "Staff" ||
-              sortedMessages?.[0]?.isRead;
+              !lastMessageObj ||
+              lastMessageObj.fromRole === "Staff" ||
+              lastMessageObj.isRead === true;
 
             return {
               id: user._id,
               name: user.name,
               avatar: user.avatar,
-              lastMessage: lastMessage,
+              lastMessage,
               toRole,
               isRead,
-              conversationId: conversationId, 
+              conversationId,
             };
           })
         );
 
         setCustomersList(allCustomers);
-        setCustomers(allCustomers);
+        setCustomers(allCustomers);  // Cập nhật store
       } catch (error) {
         console.error("Lỗi khi lấy danh sách khách hàng:", error);
       }
     };
+
     fetchCustomersData();
 
     socketIO.current = window?.io(SOCKET_URI);
 
     socketIO.current.on(STAFF_EVENTS.recieveMsg, (messageObj) => {
-      setCustomersList((prevCustomers) => {
-        return prevCustomers.map((c) => {
-          if (c.id === messageObj.from) { 
-            return { ...c, lastMessage: messageObj.message, isRead: false };
-          }
-          return c;
-        });
-      });
-      setHasNewMessage((prevStatus) => ({
-        ...prevStatus,
-        [messageObj.from]: true,
-      }));
+      setCustomersList((prevCustomers) =>
+        prevCustomers.map((c) =>
+          c.id === messageObj.from
+            ? { ...c, lastMessage: messageObj.message, isRead: false }
+            : c
+        )
+      );
+      // Cập nhật lại store
+      setCustomers((prevCustomers) =>
+        prevCustomers.map((c) =>
+          c.id === messageObj.from
+            ? { ...c, lastMessage: messageObj.message, isRead: false }
+            : c
+        )
+      );
     });
 
     return () => {
@@ -93,21 +94,23 @@ const ChatList = ({ onSelectCustomer }) => {
   }, [setCustomers, staff]);
 
   const handleSelectCustomer = async (customer) => {
-    setHasNewMessage((prevStatus) => ({
-      ...prevStatus,
-      [customer.id]: false,
-    }));
     lastMessageRef.current[customer.id] = "";
     onSelectCustomer(customer);
 
     try {
-      if (!customer.id.startsWith("guest_")) {
-        await axios.post(`${process.env.REACT_APP_URL_BACKEND}/chat/mark-as-read`, {
-          conversationId: customer.conversationId,
-          to: staff?._id,
-        });
-      }
+      await axios.post(`${process.env.REACT_APP_URL_BACKEND}/chat/mark-as-read`, {
+        conversationId: customer.conversationId,
+        to: staff?._id,
+      });
+
+      // Cập nhật trạng thái 'isRead' trong component và store
       setCustomersList((prevCustomers) =>
+        prevCustomers.map((c) =>
+          c.id === customer.id ? { ...c, isRead: true } : c
+        )
+      );
+
+      setCustomers((prevCustomers) =>
         prevCustomers.map((c) =>
           c.id === customer.id ? { ...c, isRead: true } : c
         )
@@ -117,18 +120,10 @@ const ChatList = ({ onSelectCustomer }) => {
     }
   };
 
-  const getImageUrl = (avatar, avatarDefautl) => {
-    let src;
-
-    if (avatar && avatar.startsWith("http://")) {
-      src = avatar;
-    } else if (avatar) {
-      src = `${UPLOAD_URL}${avatar}`;
-    } else {
-      src = avatarDefautl;
-    }
-
-    return src;
+  const getImageUrl = (avatar) => {
+    if (avatar?.startsWith("http://")) return avatar;
+    if (avatar) return `${UPLOAD_URL}${avatar}`;
+    return avatarDefault;
   };
 
   return (
@@ -145,7 +140,7 @@ const ChatList = ({ onSelectCustomer }) => {
                 <img
                   className="rounded-circle border border-secondary shadow-sm"
                   height="50"
-                  src={getImageUrl(customer?.avatar, '/images/guest.png')}
+                  src={getImageUrl(customer.avatar)}
                   width="50"
                   alt={customer.name}
                 />
