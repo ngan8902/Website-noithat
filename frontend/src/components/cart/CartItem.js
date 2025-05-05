@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
 const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSelectedItems }) => {
-  const product = item.product || item.productId?.data;
+  const product = item.product || item.productId?.data || item;
   const itemId = item._id || item.productId;
 
   const isSelected = selectedItems.includes(itemId);
