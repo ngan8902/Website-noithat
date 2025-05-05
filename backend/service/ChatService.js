@@ -17,7 +17,7 @@ const getMessagesByReceiver = async (receiverId, receiverRole) => {
 // Tạo tin nhắn mới
 const createMessage = async (messageData) => {
     try {
-        const { from, to, message, timestamp, conversationId, fromRole, toRole } = messageData;
+        const { from, to, message, timestamp, conversationId, fromRole, toRole, isRead } = messageData;
         let chatMessage = null;
 
         chatMessage = new Chat({
@@ -28,6 +28,7 @@ const createMessage = async (messageData) => {
             message: message,
             timestamp: timestamp,
             conversationId: conversationId,
+            isRead: isRead
         });
 
 
@@ -58,10 +59,19 @@ const markAsRead = async (conversationId, to) => {
     }
 };
 
+const hasUnreadMessages = async (id) => {
+    const unreadMessages = await Chat.find({
+      to: id,
+      toRole: "Staff",
+      isRead: false,
+    })
+    return unreadMessages.length > 0;
+  };
 
 module.exports = {
     getMessagesByReceiver,
     createMessage,
     markAsRead,
-    getMessagesByConversationId
+    getMessagesByConversationId,
+    hasUnreadMessages
 }

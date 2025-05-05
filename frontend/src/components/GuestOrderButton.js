@@ -25,7 +25,7 @@ const GuestOrderButton = () => {
         position: "fixed",
         top: "80px",
         right: "20px",
-        zIndex: 1000,
+        // zIndex: 1000,
         backgroundColor: "#007bff",
         color: "#fff",
         border: "none",
@@ -34,7 +34,7 @@ const GuestOrderButton = () => {
         boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
         cursor: "pointer",
         transition: "all 0.3s",
-        marginTop: "10px"
+        marginTop: "10px",
       }}
     >
       📦 Đơn hàng của bạn

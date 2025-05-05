@@ -17,7 +17,7 @@ const getMessagesByReceiver = async (req, res) => {
 // Tạo tin nhắn
 const createMessage = async (req, res) => {
     try {
-        const messageData = req.body; 
+        const messageData = req.body;
 
         const savedMessage = await ChatService.createMessage(messageData);
 
@@ -54,9 +54,23 @@ const markAsRead = async (req, res) => {
     }
 };
 
+const getUnreadStatus = async (req, res) => {
+    try {
+        const { id } = req['payload'];
+        console.log(id)
+        const hasUnread = await ChatService.hasUnreadMessages(id);
+        res.json({ hasUnread });
+    } catch (error) {
+        console.error("Lỗi khi kiểm tra tin nhắn chưa đọc:", error);
+        res.status(500).json({ message: "Lỗi server", error: error.message });
+    }
+};
+
+
 module.exports = {
     getMessagesByReceiver,
     createMessage,
     markAsRead,
-    getMessagesByConversationId
+    getMessagesByConversationId,
+    getUnreadStatus
 }

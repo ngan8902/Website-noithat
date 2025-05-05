@@ -24,6 +24,7 @@ function initializeChatSocket(server) {
                     message: message,
                     timestamp: timestamp,
                     conversationId: conversationId,
+                    isRead: false,
                 });
 
                 socket.broadcast.emit(STAFF_EVENTS.recieveMsg, messageObj);
@@ -53,6 +54,7 @@ function initializeChatSocket(server) {
                     message: message,
                     timestamp: timestamp,
                     conversationId: conversationId,
+                    isRead: false,
                 });
 
                 socket.broadcast.emit(USER_EVENTS.recieveMsg, messageObj);

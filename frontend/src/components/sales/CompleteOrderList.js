@@ -107,7 +107,7 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
             }}
             style={{ cursor: "pointer" }}
           >
-            🚚 Đơn đang giao: <strong>{shippingCount}</strong>
+            🚚 Đơn đang giao và đã giao: <strong>{shippingCount}</strong>
           </span>
           <span
             className={`order-status-hover ${filterByStatus === "cancelled" ? "text-primary fw-bold" : "text-muted"} cursor-pointer`}

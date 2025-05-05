@@ -2,21 +2,22 @@ import React, { useEffect, useState } from "react";
 import { UPLOAD_URL } from '../../constants/url.constant';
 
 const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSelectedItems }) => {
-  const product = item.product || item.productId?.data;
+  const product = item.product || item.productId?.data || item;
   const itemId = item._id || item.productId;
 
   const isSelected = selectedItems.includes(itemId);
 
+
   const handleDecrease = () => {
     if (item.quantity > 1 && itemId) {
-      updateQuantity(item.productId || itemId, item.quantity - 1);
+      updateQuantity(item.productId || item._id, item.quantity - 1);
     }
   };
 
   const handleIncrease = () => {
     const maxStock = product?.countInStock || item?.countInStock || 1;
     if (item?.quantity < maxStock && itemId) {
-      updateQuantity(item.productId || itemId, item?.quantity + 1);
+      updateQuantity(item.productId || item._id, item?.quantity + 1);
     }
   };
 

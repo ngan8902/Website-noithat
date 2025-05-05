@@ -2,26 +2,23 @@ import React, { useState, useMemo } from "react";
 import { STAFF_TOKEN_KEY } from "../../constants/authen.constant";
 import { setCookie } from "../../utils/cookie.util";
 import useAuthAdminStore from "../../store/authAdminStore";
-import useChatStore from "../../store/chatStore";
+import useChatStore, { selectUnreadCount } from "../../store/chatStore";
 import { ROLE } from "../../constants/staff.constant";
+import { Link } from "react-router-dom";
+
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isOrderDropdownOpen, setIsOrderDropdownOpen] = useState(false);
   const { permissions } = useAuthAdminStore((state) => state);
-  const customers = useChatStore((state) => state.customers);
+  // const customers = useChatStore((state) => state.customers);
+  const unreadMessageCount = useChatStore(selectUnreadCount);
+
 
   const handleLogout = () => {
     setCookie(STAFF_TOKEN_KEY, '');
     window.location.replace("/admin/login");
   };
-
-  const unreadMessageCount = useMemo(() => {
-    if (!customers || !Array.isArray(customers)) {
-      return 0;
-    }
-    return customers.filter((customer) => customer.isRead === false).length;
-  }, [customers]);
 
 
   return (
@@ -35,18 +32,18 @@ const Sidebar = () => {
 
       {!collapsed && (
         <div className="text-white p-3">
-          <a href="/admin/view" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+          <Link to="/admin/view" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-layers me-2"></i>Thống Kê
-          </a>
-          <a href="/admin/staff-info" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+          </Link>
+          <Link to="/admin/staff-info" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-person-circle me-2"></i>Thông Tin Nhân Viên
-          </a>
-          <a href="/admin/dashboard#products" className="d-block  text-white py-2 text-decoration-none fw-bold transition-hover">
+          </Link>
+          <Link to="/admin/dashboard#products" className="d-block  text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-box-seam me-2"></i>Danh Sách Sản Phẩm
-          </a>
+          </Link>
           <div className="dropdown">
-            <a
-              href="#null"
+            <Link
+              to="#null"
               className="d-block text-white py-2 text-decoration-none fw-bold transition-hover"
               onClick={(e) => {
                 e.preventDefault();
@@ -54,7 +51,7 @@ const Sidebar = () => {
               }}
             >
               <i className="bi bi-clipboard-check me-2"></i>Danh Sách Đơn Hàng <i className={`bi ${isOrderDropdownOpen ? "bi-chevron-up" : "bi-chevron-down"}`}></i>
-            </a>
+            </Link>
             {isOrderDropdownOpen && (
               <div className="dropdown-menu show bg-dark text-white border-0">
                 <a href="/admin/dashboard#pending-orders" className="d-block text-white py-2 ps-4 text-decoration-none me-2 transition-hover">Đơn hàng chờ xác nhận</a>
@@ -63,32 +60,32 @@ const Sidebar = () => {
               </div>
             )}
           </div>
+          <Link
+            to="/admin/chat"
+            className="position-relative d-block text-white py-2 text-decoration-none fw-bold transition-hover"
+          >
+            <i className="bi bi-chat-fill me-2"></i>
+            Tin nhắn Khách Hàng
+            {unreadMessageCount > 0 && (
+              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {unreadMessageCount}
+              </span>
+            )}
+          </Link>
 
-          {!collapsed && (
-            <a href="/admin/chat" className="position-relative d-block text-white py-2 text-decoration-none fw-bold transition-hover">
-              <i className="bi bi-chat-fill me-2"></i>
-              Tin nhắn Khách Hàng
-              {unreadMessageCount > 0 && (
-                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {unreadMessageCount}
-                </span>
-              )}
-            </a>
-          )}
-
-          <a href="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+          <Link to="/admin/staff-attendance-history" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-calendar-check me-2"></i>Lịch Sử Chấm Công
-          </a>
+          </Link>
 
-          {permissions([ROLE.ADMIN]) && <a href="/admin/employee" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+          {permissions([ROLE.ADMIN]) && <Link to="/admin/employee" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-people me-2"></i>Quản Lý Nhân Viên
-          </a>}
-          {permissions([ROLE.ADMIN]) && <a href="/admin/resource" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+          </Link>}
+          {permissions([ROLE.ADMIN]) && <Link to="/admin/resource" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
             <i className="bi bi-file-earmark-person me-2"></i>Quản Lý Chấm Công
-          </a>}
-          {permissions([ROLE.ADMIN]) && <a href="/admin/faceregistration" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
-            <i className="bi bi-webcam me-2"></i>Đăng ký khuôn mặt 
-          </a>}
+          </Link>}
+          {permissions([ROLE.ADMIN]) && <Link to="/admin/faceregistration" className="d-block text-white py-2 text-decoration-none fw-bold transition-hover">
+            <i className="bi bi-webcam me-2"></i>Đăng ký khuôn mặt
+          </Link>}
         </div>
       )}
 

@@ -4,8 +4,7 @@ import useAuthStore from "../../store/authStore";
 import useAuthAdminStore from "../../store/authAdminStore";
 import axios from "axios";
 import moment from "moment";
-import { UPLOAD_URL } from '../../constants/url.constant';
-
+import { UPLOAD_URL } from "../../constants/url.constant";
 
 const ChatMessages = ({ customer }) => {
   const [messages, setMessages] = useState([]);
@@ -24,6 +23,7 @@ const ChatMessages = ({ customer }) => {
     if (isAuthenticated && user?._id) {
       storedUserId = user._id;
     } else if (storedUserId && expirationTime && Date.now() < parseInt(expirationTime)) {
+      // Dùng lại ID cũ nếu chưa hết hạn
     } else {
       storedUserId = `guest_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
       localStorage.setItem("chatUserId", storedUserId);
@@ -33,32 +33,30 @@ const ChatMessages = ({ customer }) => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    console.log("Customer in ChatMessages:", customer);
-
     const fetchMessages = async () => {
-      if (customer?.id && staff?._id) {
-        let conversationId;
-        if (customer.id.startsWith("guest_")) {
-          conversationId = `${customer.id}-${staff._id}`;
-        } else {
-          conversationId = `${customer.id}`; // Use only customer.id for non-guest users
-        }
+      if (!customer?.id || !staff?._id) {
+        setMessages([]);
+        return;
+      }
 
-        try {
-          const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId}`);
-          const sortedMessages = response.data.sort((a, b) => a.timestamp - b.timestamp);
-          setMessages(sortedMessages);
-          if (!customer.id.startsWith("guest_")) {
-            await axios.post(`${process.env.REACT_APP_URL_BACKEND}/chat/mark-as-read`, {
-              conversationId: conversationId,
-              to: staff?._id,
-            });
-          }
-        } catch (error) {
-          console.error(`Lỗi khi lấy tin nhắn cho ${conversationId}:`, error);
-          setMessages([]);
-        }
-      } else {
+      let conversationId = customer.id.startsWith("guest_")
+        ? `${customer.id}-${staff._id}`
+        : customer.id;
+
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_URL_BACKEND}/chat/${conversationId}`
+        );
+        const sortedMessages = response.data.sort((a, b) => a.timestamp - b.timestamp);
+        setMessages(sortedMessages);
+
+        // ✅ Mark as read sau khi load
+        await axios.post(`${process.env.REACT_APP_URL_BACKEND}/chat/mark-as-read`, {
+          conversationId,
+          to: staff._id,
+        });
+      } catch (error) {
+        console.error("Lỗi khi lấy hoặc cập nhật trạng thái tin nhắn:", error);
         setMessages([]);
       }
     };
@@ -68,21 +66,18 @@ const ChatMessages = ({ customer }) => {
     socketIO.current = window?.io(SOCKET_URI);
 
     socketIO.current.on(STAFF_EVENTS.recieveMsg, (messageObj) => {
+      // ✅ Gộp và sắp xếp lại khi có tin nhắn đến
       setMessages((prev) => {
-        const updatedMessages = [...prev, { ...messageObj, timestamp: messageObj.timestamp || new Date().getTime() }];
-        updatedMessages.sort((a, b) => a.timestamp - b.timestamp);
-        return updatedMessages;
+        const updatedMessages = [...prev, {
+          ...messageObj,
+          timestamp: messageObj.timestamp || Date.now()
+        }];
+        return updatedMessages.sort((a, b) => a.timestamp - b.timestamp);
       });
     });
 
-    socketIO.current.on("connect_error", (err) => {
-      console.error("Lỗi kết nối Socket.IO:", err);
-    });
-
     return () => {
-      if (socketIO.current) {
-        socketIO.current.disconnect();
-      }
+      socketIO.current?.disconnect();
     };
   }, [customer, staff]);
 
@@ -93,27 +88,35 @@ const ChatMessages = ({ customer }) => {
   const sendMessage = useCallback(() => {
     if (!newMessage.trim() || !userId || !staff?._id || !socketIO.current || !customer?.id) return;
 
-    let conversationId = customer.id.startsWith('guest_') ? `${customer?.id}-${staff?._id}` : customer?.id;
+    const conversationId = customer.id.startsWith("guest_")
+      ? `${customer.id}-${staff._id}`
+      : customer.id;
+
     const guestId = localStorage.getItem("chatUserId");
+
     const messageObj = {
       from: staff._id,
       fromRole: "Staff",
       to: customer.id,
       toRole: customer.toRole,
       message: newMessage,
-      timestamp: new Date().getTime(),
-      conversationId: conversationId,
-      guestId: guestId,
+      timestamp: Date.now(),
+      conversationId,
+      guestId,
     };
 
     socketIO.current.emit(STAFF_EVENTS.sendMsg, messageObj);
+
     setMessages((prev) => {
-      const updatedMessages = [...prev, { sender: "employee", message: newMessage, timestamp: messageObj.timestamp, fromRole: "Staff" }];
-      updatedMessages.sort((a, b) => a.timestamp - b.timestamp);
-      return updatedMessages;
+      const updatedMessages = [...prev, {
+        ...messageObj,
+        sender: "employee",
+      }];
+      return updatedMessages.sort((a, b) => a.timestamp - b.timestamp);
     });
+
     setNewMessage("");
-  }, [messages, newMessage, userId, staff, customer]);
+  }, [newMessage, userId, staff, customer]);
 
   if (!customer) {
     return (
@@ -124,22 +127,12 @@ const ChatMessages = ({ customer }) => {
     );
   }
 
-  const formatTimestamp = (timestamp) => {
-    return moment(timestamp).format("HH:mm DD/MM/YYYY");
-  };
+  const formatTimestamp = (timestamp) => moment(timestamp).format("HH:mm DD/MM/YYYY");
 
-  const getImageUrl = (avatar, avatarDefautl) => {
-    let src;
-
-    if (avatar && avatar.startsWith("http://")) {
-      src = avatar;
-    } else if (avatar) {
-      src = `${UPLOAD_URL}${avatar}`;
-    } else {
-      src = avatarDefautl;
-    }
-
-    return src;
+  const getImageUrl = (avatar, avatarDefault) => {
+    if (avatar?.startsWith("http://")) return avatar;
+    if (avatar) return `${UPLOAD_URL}${avatar}`;
+    return avatarDefault;
   };
 
   return (
@@ -161,7 +154,14 @@ const ChatMessages = ({ customer }) => {
         <div ref={messagesEndRef} />
       </div>
       <div className="message-input d-flex align-items-center p-2 border-top">
-        <input type="text" className="form-control flex-grow-1 me-2 rounded-pill" placeholder="Nhập tin nhắn..." value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendMessage()} />
+        <input
+          type="text"
+          className="form-control flex-grow-1 me-2 rounded-pill"
+          placeholder="Nhập tin nhắn..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+        />
         <button className="btn btn-primary rounded-circle" onClick={sendMessage}>
           <i className="bi bi-send"></i>
         </button>

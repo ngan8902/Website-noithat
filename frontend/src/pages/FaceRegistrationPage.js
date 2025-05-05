@@ -15,7 +15,7 @@ const FaceRegistrationPage = () => {
   const [notification, setNotification] = useState("");
   const [capturing, setCapturing] = useState(false);
   const [saving, setSaving] = useState(false);
-
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     const loadModels = async () => {
@@ -30,6 +30,10 @@ const FaceRegistrationPage = () => {
     };
     loadModels();
   }, []);
+
+  const getDetailedFeatureVector = (landmarks) => {
+    return landmarks.positions.flatMap(p => [p.x, p.y, p.z || 0]);
+  };
 
   const captureFace = async () => {
     if (
@@ -50,8 +54,13 @@ const FaceRegistrationPage = () => {
             .withFaceDescriptor();
 
           if (detection) {
-            setFaceDescriptor(detection.descriptor);
+            const descriptorVector = Array.from(detection.descriptor); // 128d
+            const landmarkVector = getDetailedFeatureVector(detection.landmarks); // 68 points * 3
+            const combinedVector = descriptorVector.concat(landmarkVector); // merge
+
+            setFaceDescriptor(combinedVector);
             drawFace(detection);
+
             setTimeout(() => {
               setNotification("✅ Khuôn mặt đã được ghi nhận.");
               const context = canvasRef.current.getContext("2d");
@@ -107,7 +116,7 @@ const FaceRegistrationPage = () => {
     try {
       const formData = new FormData();
       formData.append("staffcode", staffcode);
-      formData.append("faceEmbedding", JSON.stringify(Array.from(faceDescriptor)));
+      formData.append("faceEmbedding", JSON.stringify(faceDescriptor));
 
       const res = await axios.post(
         `${process.env.REACT_APP_URL_BACKEND}/attendance/save-face`,
@@ -123,7 +132,6 @@ const FaceRegistrationPage = () => {
     }
   };
 
-  const [collapsed, setCollapsed] = useState(false);
   return (
     <div className={`d-flex app-container ${collapsed && window.innerWidth < 576 ? "sidebar-open" : ""}`}>
       {collapsed && window.innerWidth < 576 && (
@@ -131,7 +139,7 @@ const FaceRegistrationPage = () => {
       )}
       <Sidebar />
       <div className="main-content d-flex justify-content-center">
-        <div 
+        <div
           style={{
             backgroundColor: "#fff",
             padding: 30,
@@ -212,6 +220,7 @@ const FaceRegistrationPage = () => {
                 pointerEvents: "none",
               }}
             />
+            {(capturing || saving) && <div className="face-loading-animation" />}
           </div>
 
           <div className="d-flex justify-content-center gap-3 mt-4" style={{ marginTop: 30 }}>
