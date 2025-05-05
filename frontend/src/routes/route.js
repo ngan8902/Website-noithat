@@ -49,7 +49,7 @@ export const privateRoute = [
   { path: "/admin/employee", element: <Employee />, isShow: false },
   { path: "/admin/resource", element: <Resource />, isShow: false },
   { path: "/admin/chat", element: <Chat />, isShow: false},
-  { path: "/admin/face-detect", element: <FaceDetect />, isShow: false},
+  { path: "/admin/face-detect", element: <FaceDetect />, isShow: false, layout: React.Fragment},
   { path: "/admin/faceregistration", element: <FaceRegistrationPage />, isShow: false},
 ]
 
