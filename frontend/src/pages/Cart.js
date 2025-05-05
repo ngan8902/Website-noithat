@@ -49,7 +49,7 @@ const Cart = () => {
     await removeFromCart(itemId);
   };
 
-  const cart = isGuest ? cartItemsLocal : cartItems;
+  const currentCart = cartItemsLocal.length > 0 ? cartItemsLocal : cartItems;
 
   return (
     <section className="py-5">
@@ -58,7 +58,7 @@ const Cart = () => {
         <div className="row">
           <div className="col-md-8 mb-4">
             <CartList
-              cart={cart}
+              cart={currentCart}
               updateQuantity={updateQuantity}
               removeFromCart={handleItemRemove}
               selectedItems={selectedItems}
@@ -67,7 +67,7 @@ const Cart = () => {
           </div>
           <div className="col-md-4 mb-4">
             <CartSummary
-              cart={cart}
+              cart={currentCart}
               selectedItems={selectedItems}
               handleCheckout={handleCheckout}
             />
