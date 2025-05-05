@@ -54,10 +54,6 @@ const ProductDetail = () => {
         }
     }, [id, fetchProductComments]);
 
-    if (!product) {
-        return <h2 className="text-center text-danger mt-5">Sản phẩm không tồn tại!</h2>;
-    }
-
     const discountedPrice = product?.discount ? product.price * (1 - product.discount / 100) : product?.price;
 
     const increaseQuantity = () => setQuantity((prev) => Math.min(prev + 1, product.countInStock));
