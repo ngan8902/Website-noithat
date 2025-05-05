@@ -10,7 +10,7 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
 
-  const [sGuest, setIsGuest] = useState(false);
+  const [, setIsGuest] = useState(false);
 
   useEffect(() => {
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];

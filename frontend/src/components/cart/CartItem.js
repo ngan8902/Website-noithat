@@ -7,16 +7,17 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
 
   const isSelected = selectedItems.includes(itemId);
 
+
   const handleDecrease = () => {
     if (item.quantity > 1 && itemId) {
-      updateQuantity(item.productId || itemId, item.quantity - 1);
+      updateQuantity(item.productId || item._id, item.quantity - 1);
     }
   };
 
   const handleIncrease = () => {
     const maxStock = product?.countInStock || item?.countInStock || 1;
     if (item?.quantity < maxStock && itemId) {
-      updateQuantity(item.productId || itemId, item?.quantity + 1);
+      updateQuantity(item.productId || item._id, item?.quantity + 1);
     }
   };
 

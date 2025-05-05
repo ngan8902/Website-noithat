@@ -136,7 +136,7 @@ const useCartStore = create((set, get) => ({
                     cartItems: [...state.cartItems, { _id: itemId }],
                 }));
             }
-        }
+        } 
         else {
             set((state) => {
                 const updatedCart = state.cartItemsLocal.filter((item) => item._id !== itemId);
