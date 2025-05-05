@@ -27,29 +27,38 @@ const Cart = () => {
 
     if (token) {
       setIsGuest(false);
-      fetchCart();
+      fetchCart(); 
     } else {
-      setCartItemsLocal(localCart);
       setIsGuest(true);
+      setCartItemsLocal(localCart); 
     }
-  }, []);
+  }, []); 
 
   const handleCheckout = () => {
     const cart = isGuest ? cartItemsLocal : cartItems;
+
     const selectedProducts = cart.filter((item) => selectedItems.includes(item._id));
+
     if (selectedProducts.length === 0) {
       alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
       return;
     }
+
     localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
     navigate("/checkout", { state: { selectedProducts } });
   };
 
   const handleItemRemove = async (itemId) => {
-    await removeFromCart(itemId);
+    await removeFromCart(itemId); 
   };
 
-  const currentCart = cartItemsLocal.length > 0 ? cartItemsLocal : cartItems;
+  const currentCart = isGuest ? cartItemsLocal : cartItems;
+
+  useEffect(() => {
+    console.log("isGuest:", isGuest);
+    console.log("cartItemsLocal:", cartItemsLocal);
+    console.log("cartItems (server):", cartItems);
+  }, [isGuest, cartItemsLocal, cartItems]);
 
   return (
     <section className="py-5">
@@ -58,7 +67,7 @@ const Cart = () => {
         <div className="row">
           <div className="col-md-8 mb-4">
             <CartList
-              cart={currentCart}
+              cart={currentCart} 
               updateQuantity={updateQuantity}
               removeFromCart={handleItemRemove}
               selectedItems={selectedItems}
@@ -67,7 +76,7 @@ const Cart = () => {
           </div>
           <div className="col-md-4 mb-4">
             <CartSummary
-              cart={currentCart}
+              cart={currentCart} 
               selectedItems={selectedItems}
               handleCheckout={handleCheckout}
             />
