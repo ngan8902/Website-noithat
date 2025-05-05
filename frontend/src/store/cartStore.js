@@ -1,188 +1,134 @@
 import { create } from "zustand";
 import axios from "axios";
 import { getCookie } from "../utils/cookie.util";
-import { TOKEN_KEY } from "../constants/authen.constant"
+import { TOKEN_KEY } from "../constants/authen.constant";
 
 const useCartStore = create((set, get) => ({
-    cartItems: [],
-    cartItemsLocal: [],
+  cartItems: [],
+  cartItemsLocal: [],
+  isGuest: true,
 
-    setCartItemsLocal: (cartItems = []) => {
-        set({ cartItemsLocal: cartItems });
-    },
+  setCartItemsLocal: (cartItems = []) => {
+    set({ cartItemsLocal: cartItems });
+  },
 
-    // Lấy giỏ hàng từ server
-    fetchCart: async (userId) => {
-        try {
-            const token = getCookie(TOKEN_KEY);
-            if (!token) return;
+  setIsGuest: (value) => {
+    set({ isGuest: value });
+  },
 
-            const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/cart/get-cart`, {
-                headers: { 'token': token },
-                params: { userId }
-            });
+  fetchCart: async () => {
+    try {
+      const token = getCookie(TOKEN_KEY);
+      if (!token) return;
 
+      const response = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/cart/get-cart`, {
+        headers: { token },
+      });
 
-            if (response.data && response.data.data) {
-                const items = response.data.data.items || [];
-                if (items.length > 0) {
-                    const fullItems = await Promise.all(items.map(async (item) => {
-                        if (typeof item.productId === "string") {
-                            const productRes = await axios.get(`${process.env.REACT_APP_URL_BACKEND}/product/details-product/${item.productId}`);
-                            return { ...item, productId: productRes.data };
-                        }
-                        return item;
-                    }));
-                    set({ cartItems: fullItems });
-                }
-
-            } else {
-                console.warn("API không trả về dữ liệu giỏ hàng hợp lệ.");
-            }
-        } catch (error) {
-            console.error("Lỗi lấy giỏ hàng:", error);
-        }
-    },
-
-    loadLocalCart: () => {
-        const localCart = JSON.parse(localStorage.getItem("cart")) || [];
-        set({ cartItems: localCart });
-    },
-
-    // Cập nhật giỏ hàng khi thêm sản phẩm
-    addToCart: async (product, quantity = 1) => {
-        const token = getCookie(TOKEN_KEY);
-        if (token) {
+      if (response.data?.data?.items?.length > 0) {
+        const items = response.data.data.items;
+        const fullItems = await Promise.all(
+          items.map(async (item) => {
             try {
-                const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/cart/add-cart`, { productId: product._id, quantity },
-                    { headers: { "token": token } }
-                );
-                set({ cartItems: response.data.cart.items || [] });
-                return response;
-            } catch (error) {
-                console.error("Lỗi khi thêm vào giỏ hàng API:", error);
+              const res = await axios.get(
+                `${process.env.REACT_APP_URL_BACKEND}/product/details-product/${item.productId}`
+              );
+              return { ...item, product: res.data.data };
+            } catch {
+              return item;
             }
-        }
-    },
+          })
+        );
+        set({ cartItems: fullItems });
+      } else {
+        set({ cartItems: [] });
+      }
+    } catch (error) {
+      console.error("Lỗi fetchCart:", error);
+    }
+  },
 
-    updateQuantity: async (productId, quantity) => {
-        if (!productId) {
-            console.error("ID sản phẩm không hợp lệ");
-            return;
-        }
+  addToCart: async (product, quantity = 1) => {
+    const token = getCookie(TOKEN_KEY);
+    if (token) {
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_URL_BACKEND}/cart/add-cart`,
+          { productId: product._id, quantity },
+          { headers: { token } }
+        );
+        set({ cartItems: response.data.cart.items || [] });
+        return response;
+      } catch (error) {
+        console.error("Lỗi khi thêm vào giỏ hàng:", error);
+      }
+    }
+  },
 
-        if (quantity < 1) {
-            get().removeFromCart(productId.data._id);
-            return;
-        }
+  updateQuantity: async (productId, quantity) => {
+    const token = getCookie(TOKEN_KEY);
+    const { isGuest, cartItemsLocal, cartItems } = get();
 
-        const token = getCookie(TOKEN_KEY);
-        try {
-            if (token) {
-                // Logged in user
-                set((state) => {
-                    const updatedCart = state.cartItems.map(item =>
-                        item.productId === productId ? { ...item, quantity } : item
-                    );
-                    return { cartItems: updatedCart };
-                });
+    if (isGuest) {
+      const updatedCart = cartItemsLocal.map((item) =>
+        item._id === productId ? { ...item, quantity } : item
+      );
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      set({ cartItemsLocal: updatedCart });
+    } else {
+      try {
+        await axios.put(
+          `${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId}`,
+          { quantity },
+          { headers: { token } }
+        );
+        await get().fetchCart();
+      } catch (error) {
+        console.error("Lỗi updateQuantity:", error);
+      }
+    }
+  },
 
-                const response = await axios.put(`${process.env.REACT_APP_URL_BACKEND}/cart/update-cart/${productId.data._id}`,
-                    { quantity },
-                    { headers: { "token": token } }
-                );
-                set({ cartItems: response.data.items || [] });
+  removeFromCart: async (itemId) => {
+    const token = getCookie(TOKEN_KEY);
+    const { isGuest, cartItemsLocal } = get();
 
-            }
-            else {
-                set((state) => {
-                    const updatedCart = state.cartItemsLocal.map(item => {
-                        if (item._id === productId) {
-                            return { ...item, quantity };
-                        }
-                        return item;
-                    });
-                    localStorage.setItem("cart", JSON.stringify(updatedCart));
-                    return { cartItems: updatedCart };
-                });
-            }
-        } catch (error) {
-            console.error("Lỗi cập nhật giỏ hàng:", error);
-        }
-    },
+    if (isGuest) {
+      const updatedCart = cartItemsLocal.filter((item) => item._id !== itemId);
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      set({ cartItemsLocal: updatedCart });
+    } else {
+      try {
+        await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${itemId}`, {
+          headers: { token },
+        });
+        await get().fetchCart();
+      } catch (error) {
+        console.error("Lỗi xóa sản phẩm server:", error);
+      }
+    }
+  },
 
-
-    removeFromCart: async (itemId) => {
-        if (!itemId) return;
-        const isLastItem = get().cartItems.length === 1;
-
-        const token = getCookie(TOKEN_KEY);
-
-        if (token) {
-            try {
-                await axios.delete(`${process.env.REACT_APP_URL_BACKEND}/cart/remove-item/${itemId}`, {
-                    headers: { token },
-                });
-
-                if (isLastItem) {
-                    window.location.reload();
-                } else {
-                    await get().fetchCart();
-                }
-            } catch (error) {
-                console.error("Lỗi xóa sản phẩm:", error);
-
-                set((state) => ({
-                    cartItems: [...state.cartItems, { _id: itemId }],
-                }));
-            }
-        } 
-        else {
-            set((state) => {
-                const updatedCart = state.cartItemsLocal.filter((item) => item._id !== itemId);
-                localStorage.setItem("cart", JSON.stringify(updatedCart));
-                return { cartItems: updatedCart };
-            });
-        }
-    },
-
-    clearPurchasedItems: async (purchasedItems) => {
-        try {
-            const token = getCookie(TOKEN_KEY);
-
-            if (token) {
-                console.log('1')
-                try {
-                    const response = await axios.post(
-                        `${process.env.REACT_APP_URL_BACKEND}/cart/clear-purchased`,
-                        { purchasedItems },
-                        { headers: { "token": token } }
-                    );
-
-                    set((state) => {
-                        const updatedCart = state.cartItems.filter(
-                            (item) => !purchasedItems.includes(item._id || item.productId)
-                        );
-                        return { cartItems: updatedCart };
-                    });
-
-                    await get().fetchCart();
-                } catch (error) {
-                    console.error("Lỗi khi xóa sản phẩm từ giỏ hàng của khách hàng đã đăng nhập:", error);
-                }
-            } else {
-                const cart = JSON.parse(localStorage.getItem("cart")) || [];
-                const updatedCart = cart.filter(item => !purchasedItems.includes(item._id));
-                localStorage.setItem("cart", JSON.stringify(updatedCart));
-                set(() => ({
-                    cartItems: updatedCart
-                }));
-            }
-        } catch (error) {
-            console.error("Lỗi khi xóa sản phẩm sau thanh toán:", error);
-        }
-    },
-
+  clearPurchasedItems: async (purchasedItems) => {
+    const token = getCookie(TOKEN_KEY);
+    if (token) {
+      try {
+        await axios.post(
+          `${process.env.REACT_APP_URL_BACKEND}/cart/clear-purchased`,
+          { purchasedItems },
+          { headers: { token } }
+        );
+        await get().fetchCart();
+      } catch (error) {
+        console.error("Lỗi clearPurchasedItems:", error);
+      }
+    } else {
+      const currentCart = JSON.parse(localStorage.getItem("cart")) || [];
+      const updatedCart = currentCart.filter((item) => !purchasedItems.includes(item._id));
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      set({ cartItemsLocal: updatedCart });
+    }
+  },
 }));
 
 export default useCartStore;

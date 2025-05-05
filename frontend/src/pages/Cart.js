@@ -3,72 +3,53 @@ import { useNavigate } from "react-router-dom";
 import CartList from "../components/cart/CartList";
 import CartSummary from "../components/cart/CartSummary";
 import useCartStore from "../store/cartStore";
-import axios from "axios";
+import { getCookie } from "../utils/cookie.util";
+import { TOKEN_KEY } from "../constants/authen.constant";
 
 const Cart = () => {
-  const { cartItems = [], cartItemsLocal, fetchCart, updateQuantity, removeFromCart, setCartItemsLocal } = useCartStore();
+  const {
+    cartItems,
+    cartItemsLocal,
+    fetchCart,
+    updateQuantity,
+    removeFromCart,
+    setCartItemsLocal,
+    setIsGuest,
+    isGuest,
+  } = useCartStore();
+
   const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
 
-  const [, setIsGuest] = useState(false);
-
   useEffect(() => {
+    const token = getCookie(TOKEN_KEY);
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];
-    if (localCart.length > 0) {
+
+    if (token) {
+      setIsGuest(false);
+      fetchCart();
+    } else {
       setCartItemsLocal(localCart);
       setIsGuest(true);
-    } else {
-      fetchCart();
     }
-  }, [fetchCart]);
-
-  useEffect(() => {
-    if (!Array.isArray(cartItems)) {
-      console.warn("cartItems không phải là mảng:", cartItems);
-      return;
-    }
-    const fetchProductDetails = async () => {
-      if (cartItems.length === 0) return;
-
-      const updatedCart = await Promise.all(
-        cartItems.map(async (item) => {
-          if (typeof item.productId === "string") {
-            try {
-              const response = await axios.get(
-                `${process.env.REACT_APP_URL_BACKEND}/product/details-product/${item.productId}`
-              );
-              return { ...item, product: response.data.data };
-            } catch (error) {
-              console.error("Lỗi lấy sản phẩm:", error);
-              return item;
-            }
-          }
-          return item;
-        })
-      );
-
-      setCartItemsLocal(updatedCart);
-    };
-
-    fetchProductDetails();
-  }, [cartItems]);
-
+  }, []);
 
   const handleCheckout = () => {
-    const selectedProducts = cartItemsLocal.filter(item => selectedItems.includes(item._id));
+    const cart = isGuest ? cartItemsLocal : cartItems;
+    const selectedProducts = cart.filter((item) => selectedItems.includes(item._id));
     if (selectedProducts.length === 0) {
       alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán!");
       return;
     }
-
-    navigate("/checkout", { state: { selectedProducts } });
     localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
+    navigate("/checkout", { state: { selectedProducts } });
   };
 
   const handleItemRemove = async (itemId) => {
     await removeFromCart(itemId);
-    if(cartItemsLocal.length === 1) window.location.reload()
-  }
+  };
+
+  const cart = isGuest ? cartItemsLocal : cartItems;
 
   return (
     <section className="py-5">
@@ -77,17 +58,16 @@ const Cart = () => {
         <div className="row">
           <div className="col-md-8 mb-4">
             <CartList
-              cart={cartItemsLocal}
+              cart={cart}
               updateQuantity={updateQuantity}
               removeFromCart={handleItemRemove}
               selectedItems={selectedItems}
               setSelectedItems={setSelectedItems}
             />
           </div>
-
           <div className="col-md-4 mb-4">
             <CartSummary
-              cart={cartItemsLocal}
+              cart={cart}
               selectedItems={selectedItems}
               handleCheckout={handleCheckout}
             />
