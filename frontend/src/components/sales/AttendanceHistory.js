@@ -148,6 +148,7 @@ const AttendanceHistory = ({ staffId }) => {
       {loading && <p>Đang tải dữ liệu...</p>}
       {error && <p className="text-danger">{error}</p>}
 
+      <div style={{ border: "1px solid #ddd", maxHeight: "850px", overflow: "auto", overflowX: "auto" }}>
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
           <tr>
@@ -194,6 +195,7 @@ const AttendanceHistory = ({ staffId }) => {
           )}
         </tbody>
       </table>
+      </div>
 
       {filteredRecords.length > 0 && (
         <div className="mt-3 fw-bold text-end">

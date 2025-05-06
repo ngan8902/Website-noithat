@@ -188,6 +188,7 @@ const ResourceList = () => {
           </div>
         {/* </div> */}
       </div>
+      <div style={{ border: "1px solid #ddd", maxHeight: "850px", overflow: "auto", overflowX: "auto" }}>
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
           <tr>
@@ -234,6 +235,7 @@ const ResourceList = () => {
           )}
         </tbody>
       </table>
+      </div>
 
       <div className="mt-3 text-end fw-bold">
         Tổng số giờ công (dựa trên kết quả lọc): <span className="text-primary"> {totalWorkingHours} giờ </span>
