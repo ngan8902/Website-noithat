@@ -161,6 +161,10 @@ const ProductDetail = () => {
         return src;
     };
 
+    if (!product) {
+        return <h3 className="container py-5 text-center fw-bold">Sản phẩm đang tải...</h3>;
+    }
+
     const renderComments = () => {
         if (loadingComments) return <p>Đang tải bình luận...</p>;
         if (errorComments) return <p className="text-danger">{errorComments}</p>;

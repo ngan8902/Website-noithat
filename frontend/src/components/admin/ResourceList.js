@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EditResourceModal from "./EditResourceModal";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 function removeVietnameseTones(str) {
   return str.normalize("NFD")
@@ -12,7 +14,10 @@ function removeVietnameseTones(str) {
 
 const ResourceList = () => {
   const [attendanceRecords, setAttendance] = useState([]);
-  const [search, setSearch] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchDate, setSearchDate] = useState("");
+  const [searchMonth, setSearchMonth] = useState("");
+  const [searchYear, setSearchYear] = useState("");
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -31,13 +36,10 @@ const ResourceList = () => {
     fetchAttendanceRecords();
   }, []);
 
-
-
   const closeModal = () => {
     setSelectedRecord(null);
     setModalOpen(false);
   };
-
 
   const formatTime = (time) => {
     if (!time) return 'Chưa ra';
@@ -55,7 +57,6 @@ const ResourceList = () => {
     return `${day}/${month}/${year}`;
   };
 
-
   const calculateWorkingHours = (checkInTime, checkOutTime) => {
     if (checkInTime && checkOutTime) {
       const checkIn = new Date(checkInTime);
@@ -68,34 +69,125 @@ const ResourceList = () => {
     return 0;
   };
 
+  const resetFilters = () => {
+    setSearchKeyword("");
+    setSearchDate("");
+    setSearchMonth("");
+    setSearchYear("");
+  };
+
   const filteredRecords = attendanceRecords?.filter((record) => {
-    const searchNormalized = removeVietnameseTones(search || "");
+    const keywordNormalized = removeVietnameseTones(searchKeyword || "");
     const staffcode = removeVietnameseTones(record.staffcode?.toString() || "");
     const staffName = removeVietnameseTones(record.staffId?.name || "");
-    const staffDate = formatDate(record.checkInTime || "");
 
-    return staffcode.includes(searchNormalized) || staffName.includes(searchNormalized) || staffDate.includes(searchNormalized);
+    const matchesKeyword =
+      staffcode.includes(keywordNormalized) ||
+      staffName.includes(keywordNormalized);
+
+    const recordDate = new Date(record.checkInTime);
+    const recordDay = recordDate.toISOString().split("T")[0];
+    const recordMonth = recordDate.getMonth() + 1;
+    const recordYear = recordDate.getFullYear();
+
+    const matchesDate = searchDate ? recordDay === searchDate : true;
+    const matchesMonth = searchMonth
+      ? recordMonth === Number(searchMonth)
+      : true;
+    const matchesYear = searchYear ? recordYear === Number(searchYear) : true;
+
+    return matchesKeyword && matchesDate && matchesMonth && matchesYear;
   });
+
+  const totalWorkingHours = filteredRecords.reduce((sum, record) => {
+    return sum + calculateWorkingHours(record.checkInTime, record.checkOutTime);
+  }, 0);
+
+  const exportToExcel = () => {
+    const dataToExport = filteredRecords.map((record) => ({
+      "ID": record.staffcode,
+      "Tên nhân viên": record.staffId.name,
+      "Ngày chấm công": formatDate(record.checkInTime),
+      "Giờ vào": formatTime(record.checkInTime),
+      "Giờ ra": formatTime(record.checkOutTime),
+      "Tổng giờ làm": calculateWorkingHours(record.checkInTime, record.checkOutTime),
+      "Trạng thái": record.status === "present" ? "Đúng giờ" : "Muộn",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "DanhSachChamCong");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "ChamCong.xlsx");
+  };
 
   return (
     <div id="attendance" className="mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="fw-bold">Danh Sách Chấm Công</h5>
+        <button className="btn btn-success" onClick={exportToExcel}> <i className="bi bi-box-arrow-down"></i> Xuất Excel </button>
       </div>
 
-      <div className="input-group mt-2">
-        <span className="input-group-text">
-          <i className="bi bi-search"></i>
-        </span>
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Tìm kiếm theo ID, tên nhân viên, ngày chấm công..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+      <div className="d-flex gap-2 align-items-end mb-3">
+        {/* <div className="row g-2"> */}
+          <div className="col-md-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Tìm theo ID hoặc tên"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+            />
+          </div>
 
+          <div className="col-md-3">
+            <input
+              type="date"
+              className="form-control"
+              value={searchDate}
+              onChange={(e) => setSearchDate(e.target.value)}
+            />
+          </div>
+
+          <div className="col-md-2">
+            <select
+              className="form-select"
+              value={searchMonth}
+              onChange={(e) => setSearchMonth(e.target.value)}
+            >
+              <option value="">-- Tháng --</option>
+              {[...Array(12)].map((_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  Tháng {i + 1}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="col-md-2">
+            <select
+              className="form-select"
+              value={searchYear}
+              onChange={(e) => setSearchYear(e.target.value)}
+            >
+              <option value="">-- Năm --</option>
+              {[2024, 2025].map((year) => (
+                <option key={year} value={year}>
+                  Năm {year}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="col-md-2">
+            <button className="btn btn-secondary w-100" onClick={resetFilters}>
+              Xóa bộ lọc
+            </button>
+          </div>
+        {/* </div> */}
+      </div>
       <table className="table table-bordered mt-3">
         <thead className="table-dark">
           <tr>
@@ -142,6 +234,10 @@ const ResourceList = () => {
           )}
         </tbody>
       </table>
+
+      <div className="mt-3 text-end fw-bold">
+        Tổng số giờ công (dựa trên kết quả lọc): <span className="text-primary"> {totalWorkingHours} giờ </span>
+      </div>
 
       {modalOpen && selectedRecord && (
         <EditResourceModal

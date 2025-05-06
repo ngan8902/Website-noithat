@@ -27,15 +27,12 @@ function LoginAdmin() {
 
         getLogin(username, pass)
             .then((response) => {
-                let data = response.data;
-                if (data && !data.error) {
-                    if (data.access_token) {
-                        setCookie(STAFF_TOKEN_KEY, data.access_token, 2);
-                        window.location.replace("/admin/dashboard");
-                    }
-                }
-                else {
-                    setErrorMessage("Tên đăng nhập hoặc mật khẩu không chính xác")
+                const data = response.data;
+                if (data?.access_token) {
+                    setCookie(STAFF_TOKEN_KEY, data.access_token, 2);
+                    window.location.replace("/admin/dashboard");
+                } else {
+                    setErrorMessage("Tên đăng nhập hoặc mật khẩu không chính xác");
                 }
             })
             .catch((error) => {

@@ -7,6 +7,10 @@ const AttendanceHistory = ({ staffId }) => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filteredRecords, setFilteredRecords] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
 
   const token = getCookie(STAFF_TOKEN_KEY);
 
@@ -24,6 +28,7 @@ const AttendanceHistory = ({ staffId }) => {
         );
 
         setRecords(response.data.data);
+        setFilteredRecords(response.data.data);
       } catch (error) {
         console.error(error);
         setError("Không thể lấy dữ liệu lịch sử điểm danh.");
@@ -69,8 +74,77 @@ const AttendanceHistory = ({ staffId }) => {
     return 0;
   };
 
+  const generateRange = (start, end) => {
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
+
+  const months = generateRange(1, 12);
+  const currentYear = new Date().getFullYear();
+  const years = generateRange(2024, currentYear);
+
+  useEffect(() => {
+    const filtered = records.filter(record => {
+      const checkInDate = new Date(record.checkInTime);
+
+      const matchDate = selectedDate
+        ? new Date(selectedDate).toDateString() === checkInDate.toDateString()
+        : true;
+
+      const matchMonth = selectedMonth
+        ? checkInDate.getMonth() + 1 === parseInt(selectedMonth)
+        : true;
+
+      const matchYear = selectedYear
+        ? checkInDate.getFullYear() === parseInt(selectedYear)
+        : true;
+
+      return matchDate && matchMonth && matchYear;
+    });
+
+    setFilteredRecords(filtered);
+  }, [selectedDate, selectedMonth, selectedYear, records]);
+
+  const handleClearFilter = () => {
+    setSelectedDate("");
+    setSelectedMonth("");
+    setSelectedYear("");
+    setFilteredRecords(records);
+  };
+
+  const totalWorkingHours = filteredRecords.reduce((total, record) => {
+    return total + calculateWorkingHours(record.checkInTime, record.checkOutTime);
+  }, 0);
+
   return (
     <div id="users" className="mt-4">
+      <div className="d-flex gap-2 align-items-end mb-3">
+        <div className="col-md-3">
+          <label className="form-label">Chọn ngày</label>
+          <input
+            type="date"
+            className="form-control"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+        </div>
+
+        <select className="form-select" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
+          <option value="">Tháng</option>
+          {months.map(month => (
+            <option key={month} value={month}>{month}</option>
+          ))}
+        </select>
+
+        <select className="form-select" value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+          <option value="">Năm</option>
+          {years.map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))}
+        </select>
+
+        <button className="btn btn-secondary" onClick={handleClearFilter}>Xóa lọc</button>
+      </div>
+
       {loading && <p>Đang tải dữ liệu...</p>}
       {error && <p className="text-danger">{error}</p>}
 
@@ -86,8 +160,8 @@ const AttendanceHistory = ({ staffId }) => {
           </tr>
         </thead>
         <tbody>
-          {records.length > 0 ? (
-            records.map((record, index) => (
+          {filteredRecords.length > 0 ? (
+            filteredRecords.map((record, index) => (
               <tr key={index}>
                 <td>{record.staffId.name}</td>
                 <td>{formatDate(record.checkInTime)}</td>
@@ -120,6 +194,13 @@ const AttendanceHistory = ({ staffId }) => {
           )}
         </tbody>
       </table>
+
+      {filteredRecords.length > 0 && (
+        <div className="mt-3 fw-bold text-end">
+          Tổng giờ công: <span className="text-primary">{totalWorkingHours} giờ</span>
+        </div>
+      )}
+
     </div>
   );
 };

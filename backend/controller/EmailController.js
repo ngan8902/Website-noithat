@@ -102,6 +102,7 @@ exports.shipOrder = async (req, res) => {
             <h2>Thông báo giao hàng</h2>
             <p>Kính gửi <strong>${order.user?.name}</strong>,</p>
             <p>Đơn hàng của bạn (Mã đơn hàng: <strong>${order.orderCode}</strong>) đang được giao tới bạn.</p>
+            <a href="https://website-noithat-amber.vercel.app/account" style="background:rgb(7, 115, 173); color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px;">Xem đơn hàng</a>
             <p><strong>Ngày giao dự kiến:</strong> ${estimatedDeliveryDate.toLocaleDateString("vi-VN")}</p>
             <p>Trân trọng!</p>
             <footer>
