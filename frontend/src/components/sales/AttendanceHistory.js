@@ -167,21 +167,24 @@ const AttendanceHistory = ({ staffId }) => {
                 <td>{record.staffId.name}</td>
                 <td>{formatDate(record.checkInTime)}</td>
                 <td>{formatTime(record.checkInTime)}</td>
-                <td>{formatTime(record.checkOutTime)}</td>
+                <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>
+                  {formatTime(record.checkOutTime)}
+                </td>
                 <td>
                   {calculateWorkingHours(record.checkInTime, record.checkOutTime)}{" "}
                   giờ
                 </td>
                 <td>
                   <span
-                    className={`badge ${record.status === "Đúng giờ"
-                      ? "text-success"
-                      : record.status === "Muộn"
-                        ? "text-danger"
-                        : "text-danger"
-                      }`}
+                    className={`badge ${
+                      record.status === "present"
+                        ? "text-success fw-bold"
+                        : record.status === "late"
+                        ? "text-danger fw-bold"
+                        : "text-secondary"
+                    }`}
                   >
-                    {record.status === "Đúng giờ" ? "Đúng giờ" : "Muộn"}
+                    {record.status === "present" ? "Đúng giờ" : record.status === "late" ? "Muộn" : "Không rõ"}
                   </span>
                 </td>
               </tr>

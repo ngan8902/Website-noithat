@@ -269,11 +269,11 @@ const Checkout = () => {
                     buyerName: orderData.receiver?.fullname,
                     buyerPhone: orderData.receiver?.phone,
                     buyerAddress: orderData.receiver?.address,
-                    items: [{
-                        name: orderData.orderItems[0].name,
-                        quantity: orderData.orderItems[0].amount,
-                        price: (orderData.orderItems[0].price - (orderData.orderItems[0].price * discount) / 100) * orderData.orderItems[0].amount,
-                    }],
+                    items: orderData.orderItems.map(item => ({
+                        name: item.name,
+                        quantity: item.amount,
+                        price: (item.price - (item.price * discount) / 100) * item.amount,
+                    })),
                     tempOrderData: orderData,
                     user: orderData.userId
                 });

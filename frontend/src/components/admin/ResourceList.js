@@ -209,7 +209,9 @@ const ResourceList = () => {
                 <td>{record.staffId.name}</td>
                 <td>{formatDate(record.checkInTime)}</td>
                 <td>{formatTime(record.checkInTime)}</td>
-                <td>{formatTime(record.checkOutTime)}</td>
+                <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>
+                  {formatTime(record.checkOutTime)}
+                </td>
                 <td>
                   {calculateWorkingHours(record.checkInTime, record.checkOutTime)}{" "}
                   giờ
