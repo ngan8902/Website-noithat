@@ -1,7 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const ZaloChatButton = () => {
+  const [showZalo, setShowZalo] = useState(false);
+
   useEffect(() => {
+    const timer = setTimeout(() => setShowZalo(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!showZalo) return;
+
     const tooltip = document.getElementById("zalo-tooltip");
     const icon = document.getElementById("zalo-icon");
 
@@ -11,7 +20,7 @@ const ZaloChatButton = () => {
         tooltip.style.opacity = "0";
         tooltip.style.transform = "translateX(10px)";
       }
-    }, 3000);
+    }, 2000);
 
     // Thêm hiệu ứng hover
     if (icon) {
@@ -26,9 +35,10 @@ const ZaloChatButton = () => {
     }
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [showZalo]);
 
   return (
+    showZalo && (
     <a
       href="https://zalo.me/0585675418"
       target="_blank"
@@ -47,6 +57,7 @@ const ZaloChatButton = () => {
         id="zalo-icon"
       />
     </a>
+    )
   );
 };
 
