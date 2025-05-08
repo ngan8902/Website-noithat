@@ -32,6 +32,9 @@ const Checkout = () => {
     const [cartData, setCartData] = useState(selectedProducts || storedProducts);
     const [product, setProduct] = useState(initialProduct || (cartData.length === 1 ? cartData[0] : null));
 
+    console.log(cartData)
+    console.log(product)
+    
     useEffect(() => {
         if (!product && selectedProducts?.length === 1) {
             setProduct(selectedProducts[0]);
@@ -229,12 +232,12 @@ const Checkout = () => {
                 const orderData = {
                     userId: user ? user._id : null,
                     productId: product
-                        ? product.productId?.data?._id || product._id
+                        ? product.productId || product._id
                         : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
                     amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
                     orderItems: product
                         ? [{
-                            product: product.productId?.data?._id || product._id,
+                            product: product.productId || product._id,
                             name: product.productId?.data?.name || product.name,
                             image: `${UPLOAD_URL}${product.image}` || product.image,
                             amount: product.quantity || quantity,
@@ -318,12 +321,12 @@ const Checkout = () => {
         const orderData = {
             userId: user ? user._id : null,
             productId: product
-                ? product.productId?.data?._id || product._id
+                ? product.productId || product._id
                 : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
             amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
             orderItems: product
                 ? [{
-                    product: product.productId?.data?._id || product._id,
+                    product: product.productId || product._id,
                     name: product.productId?.data?.name || product.name,
                     image: `${UPLOAD_URL}${product.image}` || product.image,
                     amount: product.quantity || quantity,
