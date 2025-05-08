@@ -1,6 +1,6 @@
 const payos = require('../model/PayosModel');
 
-const createPayment = async (amount, description, orderCode, buyerName, buyerPhone, buyerAddress, items, user) => {
+const createPayment = async (amount, description, orderCode, buyerName, buyerPhone, buyerAddress, user) => {
     try {
         let returnUrl;
         if (user) {
@@ -16,7 +16,6 @@ const createPayment = async (amount, description, orderCode, buyerName, buyerPho
             buyerName,
             buyerPhone,
             buyerAddress,
-            items,
             returnUrl,
             cancelUrl: 'https://website-noithat-amber.vercel.app'
         };

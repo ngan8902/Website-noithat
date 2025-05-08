@@ -34,7 +34,7 @@ const Checkout = () => {
 
     console.log(cartData)
     console.log(product)
-    
+
     useEffect(() => {
         if (!product && selectedProducts?.length === 1) {
             setProduct(selectedProducts[0]);
@@ -227,7 +227,7 @@ const Checkout = () => {
 
         if (paymentMethod === "Chuyển Khoản Ngân Hàng") {
             try {
-                const discount = displayProducts[0].productId?.data?.discount || displayProducts[0].discount || 0;
+                // const discount = displayProducts[0].productId?.data?.discount || displayProducts[0].discount || 0;
 
                 const orderData = {
                     userId: user ? user._id : null,
@@ -238,11 +238,11 @@ const Checkout = () => {
                     orderItems: product
                         ? [{
                             product: product.productId || product._id,
-                            name: product.productId?.data?.name || product.name,
+                            name: product.name || product.name,
                             image: `${UPLOAD_URL}${product.image}` || product.image,
                             amount: product.quantity || quantity,
-                            price: product.productId?.data?.price || product.price,
-                            discount: product.productId?.data?.discount || product.discount
+                            price: product.price || product.price,
+                            discount: product.discount || product.discount
                         }]
                         : cartData.map(item => ({
                             product: item.productId?.data?._id || item._id,
@@ -272,11 +272,11 @@ const Checkout = () => {
                     buyerName: orderData.receiver?.fullname,
                     buyerPhone: orderData.receiver?.phone,
                     buyerAddress: orderData.receiver?.address,
-                    items: [{
-                        name: orderData.orderItems[0].name,
-                        quantity: orderData.orderItems[0].amount,
-                        price: (orderData.orderItems[0].price - (orderData.orderItems[0].price * discount) / 100) * orderData.orderItems[0].amount,
-                    }],
+                    // items: [{
+                    //     name: orderData.orderItems[0].name,
+                    //     quantity: orderData.orderItems[0].amount,
+                    //     price: (orderData.orderItems[0].price - (orderData.orderItems[0].price * discount) / 100) * orderData.orderItems[0].amount,
+                    // }],
                     tempOrderData: orderData,
                     user: orderData.userId
                 });

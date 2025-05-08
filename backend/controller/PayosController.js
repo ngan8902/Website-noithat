@@ -4,13 +4,13 @@ const TemporaryOrder = require('../model/TemporaryModel');
 
 const initiatePayment = async (req, res) => {
     try {
-        const { amount, description, orderCode, buyerName, buyerPhone, buyerAddress, items, tempOrderData, user } = req.body;
+        const { amount, description, orderCode, buyerName, buyerPhone, buyerAddress, tempOrderData, user } = req.body;
 
         if (!amount || !description || !orderCode || !tempOrderData) {
             return res.status(400).json({ message: "Thiếu thông tin thanh toán!" });
         }
 
-        const paymentLink = await payosService.createPayment(amount, description, orderCode, buyerName, buyerPhone, buyerAddress, items, user);
+        const paymentLink = await payosService.createPayment(amount, description, orderCode, buyerName, buyerPhone, buyerAddress, user);
         console.log("Link thanh toán PayOS:", paymentLink);
 
         await TemporaryOrder.create({
