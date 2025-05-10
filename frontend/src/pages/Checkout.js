@@ -227,8 +227,6 @@ const Checkout = () => {
 
         if (paymentMethod === "Chuyển Khoản Ngân Hàng") {
             try {
-                // const discount = displayProducts[0].productId?.data?.discount || displayProducts[0].discount || 0;
-
                 const orderData = {
                     userId: user ? user._id : null,
                     productId: product
@@ -241,8 +239,8 @@ const Checkout = () => {
                             name: product.name || product.name,
                             image: `${UPLOAD_URL}${product.image}` || product.image,
                             amount: product.quantity || quantity,
-                            price: product.price || product.price,
-                            discount: product.discount || product.discount
+                            price: product.productId?.data?.price || product.price,
+                            discount: product.productId?.data?.discount || product.discount
                         }]
                         : cartData.map(item => ({
                             product: item.productId?.data?._id || item._id,
@@ -275,7 +273,7 @@ const Checkout = () => {
                     // items: [{
                     //     name: orderData.orderItems[0].name,
                     //     quantity: orderData.orderItems[0].amount,
-                    //     price: (orderData.orderItems[0].price - (orderData.orderItems[0].price * discount) / 100) * orderData.orderItems[0].amount,
+                    //     price: (orderData.orderItems[0].price - (orderData.orderItems[0].price * orderData.orderItems[0].discount) / 100) * orderData.orderItems[0].amount,
                     // }],
                     tempOrderData: orderData,
                     user: orderData.userId
