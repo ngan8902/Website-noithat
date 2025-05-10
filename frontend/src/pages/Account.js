@@ -56,9 +56,6 @@ const Account = () => {
   useEffect(() => {
     const checkStatuses = async () => {
       const paymentLinkId = localStorage.getItem("paymentLinkId");
-      console.log("paymentLinkId", paymentLinkId);
-      const orderCode = localStorage.getItem("orderCode");
-      console.log("orderCode", orderCode);
 
       if (paymentLinkId) {
         try {
@@ -68,11 +65,26 @@ const Account = () => {
 
           const data = res.data;
           console.log("Trạng thái thanh toán PayOS:", data);
+
           if (data.message.includes("Thanh toán thành công")) {
-            console.log("Dữ liệu đơn hàng PayOS:", data.orderData);
             const orderData = data.orderData;
-            // const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
-            // await createOrder(orderData, { headers });
+
+            if (Array.isArray(orderData.productId)) {
+              orderData.orderItems = orderData.productId.map((id, index) => ({
+                productId: id,
+                quantity: orderData.amount[index],
+              }));
+            } else {
+              orderData.orderItems = [
+                {
+                  productId: orderData.productId,
+                  quantity: orderData.amount,
+                },
+              ];
+            }
+
+            console.log("Order chuẩn hóa:", orderData);
+
             await createOrder(orderData);
           }
 
