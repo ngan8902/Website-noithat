@@ -71,8 +71,9 @@ const Account = () => {
           if (data.message.includes("Thanh toán thành công")) {
             console.log("Dữ liệu đơn hàng PayOS:", data.orderData);
             const orderData = data.orderData;
-            const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
-            await createOrder(orderData, { headers });
+            // const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
+            // await createOrder(orderData, { headers });
+            await createOrder(orderData);
           }
 
           localStorage.removeItem("paymentLinkId");
