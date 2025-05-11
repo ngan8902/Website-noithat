@@ -108,6 +108,7 @@ const GuestOrderStatus = () => {
     processing: "Đang xử lý",
     shipped: "Đang giao hàng",
     delivered: "Đã nhận hàng",
+    received: "Đã nhận hàng",
     return_requested: "Đang yêu cầu trả hàng",
     return: "Đã trả hàng",
     cancelled: "Đang chờ hủy",
@@ -177,7 +178,16 @@ const GuestOrderStatus = () => {
                               <button className="btn btn-outline-danger btn-sm" onClick={() => handleUpdateOrder(order._id, "cancelled")}>
                                 Hủy Đơn
                               </button>
-                            ) : order.status === "cancelled" ? (
+                            ) : order?.status === "shipped" ? (
+                                <>
+                                  <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order?._id, "received")}>
+                                    Đã Nhận Hàng
+                                  </button>
+                                  <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order?._id, "return_requested")}>
+                                    Trả Hàng
+                                  </button>
+                                </>
+                              ) : order.status === "cancelled" ? (
                               <button className="btn btn-secondary btn-sm" onClick={() => handleUpdateOrder(order._id, "pending")}>
                                 Thu Hồi
                               </button>
@@ -189,7 +199,7 @@ const GuestOrderStatus = () => {
                             </button>
                           )}
 
-                          {order.status === "delivered" && (
+                          {(order.status === "delivered" || order.status === "received") && (
                             <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteOrder(order.orderCode)}>
                               Xóa Đơn
                             </button>
