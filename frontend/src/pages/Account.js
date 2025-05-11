@@ -7,7 +7,7 @@ import OrderStatus from "../components/account/OrderStatus";
 import useOrderStore from "../store/orderStore";
 import OrderCancelled from "../components/account/OrderCancelled";
 import axios from "axios";
-import { TOKEN_KEY } from "../constants/authen.constant";
+// import { TOKEN_KEY } from "../constants/authen.constant";
 
 const Account = () => {
   const { createOrder, getOrderByUser, orders, setOrders } = useOrderStore();
@@ -56,6 +56,7 @@ const Account = () => {
   useEffect(() => {
     const checkStatuses = async () => {
       const paymentLinkId = localStorage.getItem("paymentLinkId");
+      console.log("paymentLinkId", paymentLinkId);
 
       if (paymentLinkId) {
         try {
@@ -65,26 +66,11 @@ const Account = () => {
 
           const data = res.data;
           console.log("Trạng thái thanh toán PayOS:", data);
-
           if (data.message.includes("Thanh toán thành công")) {
+            console.log("Dữ liệu đơn hàng PayOS:", data.orderData);
             const orderData = data.orderData;
-
-            if (Array.isArray(orderData.productId)) {
-              orderData.orderItems = orderData.productId.map((id, index) => ({
-                productId: id,
-                quantity: orderData.amount[index],
-              }));
-            } else {
-              orderData.orderItems = [
-                {
-                  productId: orderData.productId,
-                  quantity: orderData.amount,
-                },
-              ];
-            }
-
-            console.log("Order chuẩn hóa:", orderData);
-
+            // const headers = user?.token ? { Authorization: TOKEN_KEY } : {};
+            // await createOrder(orderData, { headers });
             await createOrder(orderData);
           }
 

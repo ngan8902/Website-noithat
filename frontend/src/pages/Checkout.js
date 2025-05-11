@@ -231,7 +231,7 @@ const Checkout = () => {
                     userId: user ? user._id : null,
                     productId: product
                         ? product.productId || product._id
-                        : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
+                        : cartData.map((item) => item.productId || item[0].productId || item.product?._id),
                     amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
                     orderItems: product
                         ? [{
@@ -243,12 +243,12 @@ const Checkout = () => {
                             discount: product.productId?.data?.discount || product.discount
                         }]
                         : cartData.map(item => ({
-                            product: item.productId?.data?._id || item._id,
-                            name: item.productId?.data?.name || item.name,
+                            product: item.productId || item.product?._id,
+                            name: item.productId?.data?.name || item.product?.name,
                             image: `${UPLOAD_URL}${item.image}` || item.image,
                             amount: item.quantity,
-                            price: item.productId?.data?.price || item.price,
-                            discount: item.productId?.data?.discount || item.discount
+                            price: item.productId?.data?.price || item.product?.price,
+                            discount: item.productId?.data?.discount || item.product?.discount
                         })),
                     receiver: {
                         fullname: receiver?.fullname,
@@ -320,7 +320,7 @@ const Checkout = () => {
             userId: user ? user._id : null,
             productId: product
                 ? product.productId || product._id
-                : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
+                : cartData.map((item) => item.productId || item[0].productId || item.product?._id),
             amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
             orderItems: product
                 ? [{
@@ -332,12 +332,12 @@ const Checkout = () => {
                     discount: product.productId?.data?.discount || product.discount
                 }]
                 : cartData.map(item => ({
-                    product: item.productId?.data?._id || item._id,
-                    name: item.productId?.data?.name || item.name,
+                    product: item.productId || item.product?._id,
+                    name: item.productId?.data?.name || item.product?.name,
                     image: `${UPLOAD_URL}${item.image}` || item.image,
                     amount: item.quantity,
-                    price: item.productId?.data?.price || item.price,
-                    discount: item.productId?.data?.discount || item.discount
+                    price: item.productId?.data?.price || item.product?.price,
+                    discount: item.productId?.data?.discount || item.product?.discount
                 })),
             receiver: {
                 fullname: receiver?.fullname,
