@@ -1,4 +1,5 @@
 const ProductService = require('../service/ProductService')
+const UploadFileHelper = require('../helper/uploadFile.helper')
 const { toSlug } = require('../common/utils/slug')
 const { paginateArray } = require('../common/utils/pagination')
 const path = require('path')
@@ -9,22 +10,41 @@ const createProduct = async (req, res) => {
         const { name, type, price, countInStock, description, descriptionDetail, discount, productCode, isBestSeller, origin, material, size, warranty } = req.body
 
         if (!name || !type || !price || !countInStock) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'ERR',
                 message: 'The input is required'
             })
         }
+        console.log('req.file:', req.file);
 
         if (!req.file) {
             return res.status(400).json({ message: "Không có file nào được tải lên" });
         }
+
+
 
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(req.file.mimetype)) {
             return res.status(400).json({ message: "Loại file không được hỗ trợ." });
         }
 
-        const imageUrl = `/upload/${req.file.filename}` || null;
+        const imagePath = path.resolve(req.file.path);
+        console.log('Image path:', imagePath);
+
+
+        try {
+            const driveRes = await UploadFileHelper.uploadFile(imagePath, {
+                imgName: req.file.originalname,
+                shared: true
+            });
+            console.log('Uploaded to Google Drive:', driveRes);
+        } catch (error) {
+            console.error('Error uploading to Google Drive:', error);
+        }
+
+        const imageUrl = driveRes.webViewLink || null;
+
+        fs.unlinkSync(imagePath);
 
         const newProduct = {
             name,
@@ -69,8 +89,18 @@ const updateProduct = async (req, res) => {
             if (!allowedTypes.includes(req.file.mimetype)) {
                 return res.status(400).json({ message: "Loại file không được hỗ trợ. Chỉ hỗ trợ JPEG, PNG và GIF." });
             }
-            data.image = `/upload/${req.file.filename}`;
-        }
+            const imagePath = path.resolve(req.file.path);
+            const driveRes = await UploadFileHelper.uploadFile(imagePath, {
+                imgName: req.file.originalname,
+                shared: true
+            });
+            console.log("Upload Drive response:", driveRes);
+
+
+            data.image = driveRes.webContentLink || null;
+
+            // Xóa file local sau upload
+            fs.unlinkSync(imagePath);        }
 
         const response = await ProductService.updateProduct(productId, data)
         return res.status(200).json(response)
