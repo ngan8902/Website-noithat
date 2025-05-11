@@ -97,7 +97,7 @@ const updateProduct = async (req, res) => {
             console.log("Upload Drive response:", driveRes);
 
 
-            data.image = driveRes.webContentLink || null;
+            data.image = driveRes.webViewLink || null;
 
             // Xóa file local sau upload
             fs.unlinkSync(imagePath);        }
