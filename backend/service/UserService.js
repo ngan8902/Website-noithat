@@ -107,29 +107,6 @@ const updateUser = (id, data) => {
                 });
             }
 
-            // const { email, phone } = newUser
-
-            // const checkUserPhone = await User.findOne({
-            //     phone: phone,
-            // });
-
-            // if (checkUserPhone !== null) {
-            //     resolve({
-            //         status: 'ERROR',
-            //         message: 'Số điện thoại đã tồn tại!'
-            //     })
-            // }
-
-            // const checkUserEmail = await User.findOne({
-            //     email: email,
-            // });
-
-            // if (checkUserEmail !== null) {
-            //     resolve({
-            //         status: 'ERROR',
-            //         message: 'Email đã tồn tại!'
-            //     })
-            // }
             const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
 
             if (!updatedUser) {
