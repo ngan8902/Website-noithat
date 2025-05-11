@@ -141,12 +141,17 @@ const updateOrderStatus = async (req, res) => {
             });
 
             await Promise.all(updateStockPromises);
+
+            if (status === "cancelled_confirmed") {
+                await OrderService.deleteOrderId(orderId);
+                return res.status(200).json({ message: "Đơn hàng đã được xác nhận hủy và xóa thành công." });
+            }
         }
 
-        if (status === "cancelled_confirmed") {
-            await OrderService.deleteOrderId(orderId);
-            return res.status(200).json({ message: "Đơn hàng đã được xác nhận hủy và xóa thành công." });
-        }
+        // if (status === "cancelled_confirmed") {
+        //     await OrderService.deleteOrderId(orderId);
+        //     return res.status(200).json({ message: "Đơn hàng đã được xác nhận hủy và xóa thành công." });
+        // }
 
         return res.status(200).json(updatedOrder);
     } catch (e) {
