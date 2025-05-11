@@ -6,6 +6,8 @@ import useProductStore from '../../store/productStore';
 import useCartStore from '../../store/cartStore';
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { removeCookie } from "../../utils/cookie.util";
+import { TOKEN_KEY } from "../../constants/authen.constant";
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -38,6 +40,7 @@ const Header = () => {
       await axios.post(`${process.env.REACT_APP_URL_BACKEND}/user/logout`, {}, {
         withCredentials: true,
       });
+      removeCookie(TOKEN_KEY)
       localStorage.removeItem('user');
       window.location.href = '/';
     } catch (error) {
