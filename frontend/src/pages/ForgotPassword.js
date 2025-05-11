@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,15 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    if (!sessionStorage.getItem("forgot-password-loaded")) {
+      sessionStorage.setItem("forgot-password-loaded", "true");
+      window.location.reload();
+    } else {
+      sessionStorage.removeItem("forgot-password-loaded");
+    }
+  }, []);
 
   const isValidPassword = (newPassword) => {
     const regex = /^(?=.*[A-Z]).{8,}$/;
