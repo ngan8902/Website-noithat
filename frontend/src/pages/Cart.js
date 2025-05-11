@@ -19,7 +19,9 @@ const Cart = () => {
   } = useCartStore();
 
   const [selectedItems, setSelectedItems] = useState([]);
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  console.log(cartItems)
 
   useEffect(() => {
     const token = getCookie(TOKEN_KEY);

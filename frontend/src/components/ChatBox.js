@@ -12,6 +12,12 @@ const Chatbox = () => {
   const messagesEndRef = useRef(null);
   const socketIO = useRef(null);
   const [showLabel, setShowLabel] = useState(true);
+  const [showChatButton, setShowChatButton] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowChatButton(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const labelTimer = setTimeout(() => setShowLabel(false), 3000);
@@ -125,10 +131,14 @@ const Chatbox = () => {
 
   return (
     <div className="chatbox-wrapper">
-      {showLabel && <span className="chatbox-label">Chat với nhân viên!</span>}
-      <button className="chatbox-button" onClick={toggleChatbox}>
-        <i className="bi bi-chat"></i>
-      </button>
+      {showChatButton && (
+        <>
+          {showLabel && <span className="chatbox-label">Chat với nhân viên!</span>}
+          <button className="chatbox-button" onClick={toggleChatbox}>
+            <i className="bi bi-chat"></i>
+          </button>
+        </>
+      )}
 
       {isOpen && (
         <div className="chatbox-container">

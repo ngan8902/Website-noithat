@@ -130,7 +130,6 @@ const CompleteOrderList = ({ onComplete, onReturn, onConfirmCancel }) => {
         )}
       </h5>
 
-      <div className="d-flex justify-content-between align-items-center mb-3"></div>
       <div style={{ border: "1px solid #ddd", maxHeight: "450px", overflow: "auto", overflowX: "auto" }}>
         <table className="table table-bordered mt-3">
           <thead

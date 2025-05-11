@@ -20,7 +20,7 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
       setLoading(false);
 
       const unreviewedDeliveredOrders = orders.filter(
-        (order) => order.status === "delivered" && (!order.rating || order.rating === 0)
+        (order) => order && order.status === "delivered" && (!order.rating || order.rating === 0)
       );
 
       unreviewedDeliveredOrders.forEach((order) => {

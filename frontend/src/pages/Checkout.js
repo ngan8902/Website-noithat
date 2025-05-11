@@ -32,6 +32,9 @@ const Checkout = () => {
     const [cartData, setCartData] = useState(selectedProducts || storedProducts);
     const [product, setProduct] = useState(initialProduct || (cartData.length === 1 ? cartData[0] : null));
 
+    console.log(cartData)
+    console.log(product)
+
     useEffect(() => {
         if (!product && selectedProducts?.length === 1) {
             setProduct(selectedProducts[0]);
@@ -224,30 +227,28 @@ const Checkout = () => {
 
         if (paymentMethod === "Chuyển Khoản Ngân Hàng") {
             try {
-                const discount = displayProducts[0].productId?.data?.discount || displayProducts[0].discount || 0;
-
                 const orderData = {
                     userId: user ? user._id : null,
                     productId: product
-                        ? product.productId?.data?._id || product._id
-                        : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
+                        ? product.productId || product._id
+                        : cartData.map((item) => item.productId || item[0].productId || item.product?._id),
                     amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
                     orderItems: product
                         ? [{
-                            product: product.productId?.data?._id || product._id,
-                            name: product.productId?.data?.name || product.name,
+                            product: product.productId || product._id,
+                            name: product.name || product.name,
                             image: `${UPLOAD_URL}${product.image}` || product.image,
                             amount: product.quantity || quantity,
                             price: product.productId?.data?.price || product.price,
                             discount: product.productId?.data?.discount || product.discount
                         }]
                         : cartData.map(item => ({
-                            product: item.productId?.data?._id || item._id,
-                            name: item.productId?.data?.name || item.name,
+                            product: item.productId || item.product?._id,
+                            name: item.productId?.data?.name || item.product?.name,
                             image: `${UPLOAD_URL}${item.image}` || item.image,
                             amount: item.quantity,
-                            price: item.productId?.data?.price || item.price,
-                            discount: item.productId?.data?.discount || item.discount
+                            price: item.productId?.data?.price || item.product?.price,
+                            discount: item.productId?.data?.discount || item.product?.discount
                         })),
                     receiver: {
                         fullname: receiver?.fullname,
@@ -269,11 +270,11 @@ const Checkout = () => {
                     buyerName: orderData.receiver?.fullname,
                     buyerPhone: orderData.receiver?.phone,
                     buyerAddress: orderData.receiver?.address,
-                    items: [{
-                        name: orderData.orderItems[0].name,
-                        quantity: orderData.orderItems[0].amount,
-                        price: (orderData.orderItems[0].price - (orderData.orderItems[0].price * discount) / 100) * orderData.orderItems[0].amount,
-                    }],
+                    // items: [{
+                    //     name: orderData.orderItems[0].name,
+                    //     quantity: orderData.orderItems[0].amount,
+                    //     price: (orderData.orderItems[0].price - (orderData.orderItems[0].price * orderData.orderItems[0].discount) / 100) * orderData.orderItems[0].amount,
+                    // }],
                     tempOrderData: orderData,
                     user: orderData.userId
                 });
@@ -318,12 +319,12 @@ const Checkout = () => {
         const orderData = {
             userId: user ? user._id : null,
             productId: product
-                ? product.productId?.data?._id || product._id
-                : cartData.map((item) => item?.productId?.data?._id || item[0]?.productId?.data?._id || item._id),
+                ? product.productId || product._id
+                : cartData.map((item) => item.productId || item[0].productId || item.product?._id),
             amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
             orderItems: product
                 ? [{
-                    product: product.productId?.data?._id || product._id,
+                    product: product.productId || product._id,
                     name: product.productId?.data?.name || product.name,
                     image: `${UPLOAD_URL}${product.image}` || product.image,
                     amount: product.quantity || quantity,
@@ -331,12 +332,12 @@ const Checkout = () => {
                     discount: product.productId?.data?.discount || product.discount
                 }]
                 : cartData.map(item => ({
-                    product: item.productId?.data?._id || item._id,
-                    name: item.productId?.data?.name || item.name,
+                    product: item.productId || item.product?._id,
+                    name: item.productId?.data?.name || item.product?.name,
                     image: `${UPLOAD_URL}${item.image}` || item.image,
                     amount: item.quantity,
-                    price: item.productId?.data?.price || item.price,
-                    discount: item.productId?.data?.discount || item.discount
+                    price: item.productId?.data?.price || item.product?.price,
+                    discount: item.productId?.data?.discount || item.product?.discount
                 })),
             receiver: {
                 fullname: receiver?.fullname,

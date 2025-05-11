@@ -99,7 +99,7 @@ const Header = () => {
       <div className="container py-2">
         <div className="d-flex">
           <div className="justify-content-between align-items-center">
-            <Link to="/" className="d-flex align-items-center">
+            <Link to="/home" className="d-flex align-items-center">
               <img src="/images/logo.png" alt="Logo Nội Thất" height="80" width="80" />
             </Link>
 
@@ -119,7 +119,7 @@ const Header = () => {
           <div className="collapse navbar-collapse d-lg-flex justify-content-between align-items-center mt-3 mt-lg-0" id="mainNavbar">
             <nav className="mb-3 mb-lg-0">
               <ul className="nav flex-column flex-lg-row align-items-start align-items-lg-center m-3">
-                <li className="nav-item"><a href="/" className="nav-link text-white fs-6">Trang Chủ</a></li>
+                <li className="nav-item"><a href="/home" className="nav-link text-white fs-6">Trang Chủ</a></li>
                 <li className="nav-item dropdown">
                   <button className="nav-link text-white dropdown-toggle fs-6" id="navbarDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     Sản Phẩm

@@ -12,6 +12,8 @@ const GuestOrderStatus = () => {
   const { createOrder, updateOrderStatus } = useOrderStore();
 
   useEffect(() => {
+    let interval;
+
     const fetchOrders = async () => {
       try {
         const paymentLinkId = localStorage.getItem("paymentLinkId");
@@ -37,6 +39,8 @@ const GuestOrderStatus = () => {
             }
 
           localStorage.removeItem("paymentLinkId");
+
+          clearInterval(interval);
           }
         }
 
@@ -50,10 +54,7 @@ const GuestOrderStatus = () => {
           codes.map(code =>
             axios.get(`${process.env.REACT_APP_URL_BACKEND}/order/guest/${code}`)
               .then(res => res.data.data)
-              .catch(err => {
-                console.error(`Không tìm thấy đơn hàng với mã ${code}:`, err);
-                return null;
-              })
+              .catch(() => null)
           )
         );
 
@@ -68,7 +69,7 @@ const GuestOrderStatus = () => {
 
     fetchOrders();
 
-    const interval = setInterval(() => {
+    interval = setInterval(() => {
       fetchOrders();
     }, 5000);
 
