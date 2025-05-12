@@ -56,6 +56,34 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
     }
   };
 
+  const getImageUrl = (image) => {
+    if (!image) return "";
+
+    if (image.includes("lh3.googleusercontent.com")) {
+      return image;
+    }
+
+    if (image.includes("drive.google.com")) {
+      const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = image.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+      } else {
+        console.error("Không thể lấy ID từ Google Drive link:", image);
+      }
+    }
+
+    // Nếu là link https bình thường
+    if (image.startsWith("https://")) {
+      return image;
+    }
+
+    // Nếu là file local trên server
+    return `${UPLOAD_URL}${image}`;
+  };
+
   return (
     <>
       <h5 className="fw-bold mb-3 text-center">Đơn Hàng Của Bạn</h5>
@@ -100,7 +128,7 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                     {order?.orderItems?.map((item, index) => (
                       <div key={index} className="mb-2">
                         <img
-                          src={`${UPLOAD_URL}${item.image}` || "/default-image.jpg"}
+                          src={getImageUrl(item?.image)}
                           alt={item.name}
                           style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
                         />
@@ -126,9 +154,9 @@ const OrderStatus = ({ orders = [], setOrders, orderHistory, setOrderHistory }) 
                   </td>
                   <td className="text-success fw-bold">{Number(order?.totalPrice || 0).toLocaleString()} VND</td>
                   <td>
-                    { order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" :
+                    {order?.paymentMethod === "COD" ? "Thanh toán khi nhận hàng" :
                       order?.paymentMethod === "VietQR" ? "Đã thanh toán qua ngân hàng" :
-                      order?.paymentMethod === "MoMo" ? "Đã thanh toán qua ví MoMo" : order?.paymentMethod }
+                        order?.paymentMethod === "MoMo" ? "Đã thanh toán qua ví MoMo" : order?.paymentMethod}
                   </td>
                   <td>
                     <span className={`badge ${order?.status === "pending" ? "bg-primary" :

@@ -38,9 +38,9 @@ const GuestOrderStatus = () => {
               localStorage.setItem("guestOrderCodes", JSON.stringify(updatedCodes));
             }
 
-          localStorage.removeItem("paymentLinkId");
+            localStorage.removeItem("paymentLinkId");
 
-          clearInterval(interval);
+            clearInterval(interval);
           }
         }
 
@@ -115,6 +115,34 @@ const GuestOrderStatus = () => {
     cancelled_confirmed: "Đã hủy"
   };
 
+  const getImageUrl = (image) => {
+    if (!image) return "";
+
+    if (image.includes("lh3.googleusercontent.com")) {
+      return image;
+    }
+
+    if (image.includes("drive.google.com")) {
+      const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = image.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+      } else {
+        console.error("Không thể lấy ID từ Google Drive link:", image);
+      }
+    }
+
+    // Nếu là link https bình thường
+    if (image.startsWith("https://")) {
+      return image;
+    }
+
+    // Nếu là file local trên server
+    return `${UPLOAD_URL}${image}`;
+  };
+
   return (
     <div>
       <h3 className="fw-bold mb-3 text-center">Đơn Hàng Của Bạn</h3>
@@ -142,7 +170,7 @@ const GuestOrderStatus = () => {
                     )}
                     <td>
                       <img
-                        src={`${UPLOAD_URL}${item.image}` || "/default-image.jpg"}
+                        src={getImageUrl(item?.image)}
                         alt={item.name}
                         style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
                       />
@@ -179,41 +207,41 @@ const GuestOrderStatus = () => {
                                 Hủy Đơn
                               </button>
                             ) : order?.status === "shipped" ? (
-                                <>
-                                  <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order?._id, "received")}>
-                                    Đã Nhận Hàng
-                                  </button>
-                                  <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order?._id, "return_requested")}>
-                                    Trả Hàng
-                                  </button>
-                                </>
-                              ) : order.status === "cancelled" ? (
+                              <>
+                                <button className="btn btn-success btn-sm" onClick={() => handleUpdateOrder(order?._id, "received")}>
+                                  Đã Nhận Hàng
+                                </button>
+                                <button className="btn btn-danger btn-sm" onClick={() => handleUpdateOrder(order?._id, "return_requested")}>
+                                  Trả Hàng
+                                </button>
+                              </>
+                            ) : order.status === "cancelled" ? (
                               <button className="btn btn-secondary btn-sm" onClick={() => handleUpdateOrder(order._id, "pending")}>
                                 Thu Hồi
                               </button>
                             ) : null}
 
-                          {order.status === "return" && (
-                            <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteOrder(order.orderCode)}>
-                              Xóa Đơn
-                            </button>
-                          )}
+                            {order.status === "return" && (
+                              <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteOrder(order.orderCode)}>
+                                Xóa Đơn
+                              </button>
+                            )}
 
-                          {(order.status === "delivered" || order.status === "received") && (
-                            <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteOrder(order.orderCode)}>
-                              Xóa Đơn
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+                            {(order.status === "delivered" || order.status === "received") && (
+                              <button className="btn btn-outline-danger btn-sm" onClick={() => handleDeleteOrder(order.orderCode)}>
+                                Xóa Đơn
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {selectedOrder && (

@@ -16,24 +16,55 @@ const ProductInfo = ({ product, quantity, cart, shippingFee, totalPrice, selecte
 
 
     const getImageUrl = (item, product) => {
-        if (item?.image && item?.image.startsWith('http')) {
-            return item.image;
-        }
-        if (item?.productId?.data?.image) {
-            return `${UPLOAD_URL}${item.productId.data.image}`;
-        }
-        if (item?.product?.image) {
-            return `${UPLOAD_URL}${item.product.image}`;;
-        }
-        if (product?.image) {
-            return `${UPLOAD_URL}${product.image}`;;
-        }
+        const resolveImageUrl = (image) => {
+            if (!image) return "";
+
+            if (image.includes("lh3.googleusercontent.com")) {
+                return image;
+            }
+
+            if (image.includes("drive.google.com")) {
+                const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+                const idFromViewLink = image.match(/\/d\/(.*?)\//);
+                const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+                if (id) {
+                    return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+                } else {
+                    console.error("Không thể lấy ID từ Google Drive link:", image);
+                    return "";
+                }
+            }
+
+            if (image.startsWith("http")) {
+                return image;
+            }
+
+            return `${UPLOAD_URL}${image}`;
+        };
+
         if (item?.image) {
-            return `${UPLOAD_URL}${item.image}`;;
+            const url = resolveImageUrl(item.image);
+            if (url) return url;
         }
+
+        if (item?.productId?.data?.image) {
+            const url = resolveImageUrl(item.productId.data.image);
+            if (url) return url;
+        }
+
+        if (item?.product?.image) {
+            const url = resolveImageUrl(item.product.image);
+            if (url) return url;
+        }
+
+        if (product?.image) {
+            const url = resolveImageUrl(product.image);
+            if (url) return url;
+        }
+
         return "https://via.placeholder.com/100";
     };
-
 
     return (
         <div className="col-md-6">

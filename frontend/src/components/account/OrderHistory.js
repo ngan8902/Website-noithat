@@ -85,6 +85,34 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
     console.log("Comment submitted successfully!");
   };
 
+  const getImageUrl = (image) => {
+    if (!image) return "";
+
+    if (image.includes("lh3.googleusercontent.com")) {
+      return image;
+    }
+
+    if (image.includes("drive.google.com")) {
+      const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = image.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+      } else {
+        console.error("Không thể lấy ID từ Google Drive link:", image);
+      }
+    }
+
+    // Nếu là link https bình thường
+    if (image.startsWith("https://")) {
+      return image;
+    }
+
+    // Nếu là file local trên server
+    return `${UPLOAD_URL}${image}`;
+  };
+
   return (
     <>
       <h5 className="fw-bold mb-3">Lịch Sử Mua Hàng</h5>
@@ -119,18 +147,16 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
                 <tr key={order._id}>
                   <td className="fw-bold">#{order.orderCode}</td>
                   <td>
-                    <div className="d-flex align-items-center gap-2">
-                      <img
-                        src={`${UPLOAD_URL}${order.orderItems[0]?.image}` || "/default-image.jpg"}
-                        alt={order.orderItems[0]?.name || "Sản phẩm"}
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          objectFit: "cover",
-                          borderRadius: "5px",
-                        }}
-                      />
-                    </div>
+                    {order?.orderItems?.map((item, index) => (
+                      <div key={index} className="mb-2">
+                        <img
+                          src={getImageUrl(item?.image)}
+                          alt={item.name}
+                          style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
+                        />
+                        {index < order.orderItems.length - 1 && <hr style={{ margin: "5px 0", borderTop: "1px solid #aaa" }} />}
+                      </div>
+                    ))}
                   </td>
                   <td>
                     {order.orderItems?.map((item, index) => (
@@ -205,8 +231,8 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
               </div>
             ))}
             <div className="d-flex justify-content-end mt-3">
-              <button 
-                className="btn btn-secondary" 
+              <button
+                className="btn btn-secondary"
                 onClick={() => setIsModalOpen(false)}
               >
                 Đóng
