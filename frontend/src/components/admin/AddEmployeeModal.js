@@ -4,7 +4,7 @@ import useStaffStore from "../../store/staffStore";
 
 const AddEmployeeModal = ({ closeModal }) => {
   const { getAllStaff } = useStaffStore();
-  
+
   const [staff, setStaff] = useState({
     name: "",
     username: "",
@@ -20,20 +20,45 @@ const AddEmployeeModal = ({ closeModal }) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSave = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
-    if (!staff.name || !staff.username || !staff.password || !staff.email || !staff.phone || !staff.dob || !staff.gender || !staff.address) {
+    const { name, username, password, role_id, email, phone, dob, gender, address, avatar } = staff;
+
+    if (!name || !username || !password || !email || !phone || !dob || !gender || !address) {
       setErrorMessage("Vui lòng điền đầy đủ thông tin!");
       return;
     }
 
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("username", username);
+    formData.append("password", password);
+    formData.append("role_id", role_id);
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("dob", dob);
+    formData.append("gender", gender);
+    formData.append("address", address);
+
+    // Nếu avatar là file thì append file, nếu chỉ là base64 thì convert lại
+    if (avatar instanceof File) {
+      formData.append("avatar", avatar);
+    }
+
     try {
-      const response = await axios.post(`${process.env.REACT_APP_URL_BACKEND}/staff/sign-up`, {
-        ...staff,
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_URL_BACKEND}/staff/sign-up`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.data.status === "SUCCESS") {
         await getAllStaff();
@@ -47,16 +72,14 @@ const AddEmployeeModal = ({ closeModal }) => {
     }
   };
 
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setStaff({ ...staff, avatar: reader.result });
-      };
-      reader.readAsDataURL(file);
+      setStaff({ ...staff, avatar: file });
     }
   };
+
 
   return (
     <div className="modal fade show d-block" id="addEmployeeModal">
@@ -73,10 +96,9 @@ const AddEmployeeModal = ({ closeModal }) => {
             </label>
             {staff.avatar && (
               <img
-                src={staff.avatar}
-                alt="Employee"
-                style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%", marginBottom: "10px" }}
-                className="m-3"
+                src={URL.createObjectURL(staff.avatar)}
+                alt="Product"
+                style={{ width: "100px", height: "100px", objectFit: "cover", marginBottom: "10px" }}
               />
             )}
             <input type="text" className="form-control mb-3" placeholder="Họ và tên" value={staff.name} onChange={(e) => setStaff({ ...staff, name: e.target.value })} />
@@ -108,14 +130,16 @@ const AddEmployeeModal = ({ closeModal }) => {
             </div>
 
             <input type="text" className="form-control mb-3" placeholder="Địa chỉ" value={staff.address} onChange={(e) => setStaff({ ...staff, address: e.target.value })} />
-            
+
             {errorMessage && (
               <div className="text-danger">
                 {errorMessage}
               </div>
             )}
-            
-            <button className="btn btn-primary w-100" onClick={handleSave}>Thêm Nhân Viên</button>
+
+            <button className="btn btn-primary w-100" onClick={handleSave} disabled={loading}>
+              {loading ? "Đang xử lý..." : "Thêm Nhân Viên"}
+            </button>
           </div>
         </div>
       </div>

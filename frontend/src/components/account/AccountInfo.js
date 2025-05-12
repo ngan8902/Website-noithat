@@ -35,6 +35,9 @@ const getWards = async (district) => {
   }
 };
 
+const avatarDefault = '/images/guest.png';
+
+
 const AccountInfo = () => {
   const { user, auth, setUser } = useAuthStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
@@ -257,7 +260,7 @@ const AccountInfo = () => {
         setErrorMessage(response.data.message);
         return;
       }
-      
+
       setUser(response.data.data);
       setIsEditing(false);
       setErrorMessage("Cập nhật thông tin thành công!");
@@ -346,20 +349,31 @@ const AccountInfo = () => {
     }
   };
 
-  const getImageUrl = (avatar, avatarDefault) => {
-    let src;
-  
-    if (avatar && avatar.startsWith('https://')) {
-      src = avatar;
-    } else if (avatar) {
-      src = `${UPLOAD_URL}${avatar}`;
-    } else {
-      src = avatarDefault;
+  const getImageUrl = (avatar) => {
+    if (!avatar) return avatarDefault;
+
+    if (avatar.includes("lh3.googleusercontent.com")) {
+      return avatar;
     }
-  
-    return src;
+
+    if (avatar.includes("drive.google.com")) {
+      const match = avatar.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = avatar.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+      } else {
+        console.error("Không thể lấy ID từ Google Drive link:", avatar);
+      }
+    }
+
+    if (avatar.startsWith("https://")) {
+      return avatar;
+    }
+
+    return `${UPLOAD_URL}${avatar}` || avatarDefault;
   };
-  console.log(user)
 
   return (
     <div className="col-md-4 mb-4">
@@ -385,9 +399,8 @@ const AccountInfo = () => {
 
       {errorMessage && (
         <div
-          className={`alert ${
-            errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
-          }`}
+          className={`alert ${errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
+            }`}
         >
           {errorMessage}
         </div>
@@ -464,9 +477,8 @@ const AccountInfo = () => {
 
           {errorMessage && (
             <div
-              className={`alert ${
-                errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
-              }`}
+              className={`alert ${errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
+                }`}
             >
               {errorMessage}
             </div>
@@ -550,9 +562,8 @@ const AccountInfo = () => {
 
               {errorMessage && (
                 <div
-                  className={`alert ${
-                    errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
-                  }`}
+                  className={`alert ${errorMessage.toLowerCase().includes("thành công") ? "alert-success" : "alert-danger"
+                    }`}
                 >
                   {errorMessage}
                 </div>
@@ -577,15 +588,15 @@ const AccountInfo = () => {
           )}
 
           {!isChangingPassword && (
-          <>
-            <button className="btn btn-success w-100 m-1" type="button" onClick={handleSave}>
-              Lưu Thay Đổi
-            </button>
+            <>
+              <button className="btn btn-success w-100 m-1" type="button" onClick={handleSave}>
+                Lưu Thay Đổi
+              </button>
 
-            <button className="btn btn-outline-secondary w-100 m-1" onClick={() => setIsEditing(false)}>
-              Hủy
-            </button>
-          </>
+              <button className="btn btn-outline-secondary w-100 m-1" onClick={() => setIsEditing(false)}>
+                Hủy
+              </button>
+            </>
           )}
         </form>
       )}

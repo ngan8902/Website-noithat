@@ -5,6 +5,8 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const User = require("../model/UserModel");
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService");
+const UploadFileHelper = require("../helper/uploadFile.helper");
+
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -16,6 +18,34 @@ async function verifyGoogleToken(token) {
         audience: process.env.GOOGLE_CLIENT_ID,
     });
     return ticket.getPayload();
+}
+
+async function uploadGoogleAvatarToDrive(googleAvatarUrl) {
+    try {
+        const response = await axios.get(googleAvatarUrl, { responseType: 'arraybuffer' });
+        const fileExtension = response.headers['content-type'].split('/')[1];
+        const filename = `${uuidv4()}.${fileExtension}`;
+        const filePath = path.join(uploadDir, filename);
+
+        fs.writeFileSync(filePath, Buffer.from(response.data, 'binary'));
+
+        const driveRes = await UploadFileHelper.uploadFile(filePath, {
+            imgName: filename,
+            shared: true,
+        });
+
+        fs.unlinkSync(filePath);
+
+        if (driveRes && driveRes.webContentLink) {
+            return driveRes.webContentLink;
+        } else {
+            throw new Error("Không lấy được link public từ Google Drive.");
+        }
+
+    } catch (error) {
+        console.error('Lỗi upload avatar lên Google Drive:', error.message);
+        throw new Error('Lỗi upload avatar lên Google Drive.');
+    }
 }
 
 async function googleLogin(req) {
@@ -42,14 +72,14 @@ async function googleLogin(req) {
                 address: "",
             });
         }
-        
-        if (user.avatar) {
+
+        if (!user.avatar || user.avatar.includes("googleusercontent.com")) {
             try {
-                const imageUrl = await uploadGoogleAvatar(user.avatar);
-                user.avatar = imageUrl; 
-                await user.save(); 
+                const driveImageUrl = await uploadGoogleAvatarToDrive(payload.picture);
+                user.avatar = driveImageUrl;
+                await user.save();
             } catch (avatarError) {
-                console.error("Lỗi tải và lưu avatar:", avatarError.message);
+                console.error("Lỗi tải và lưu avatar lên Drive:", avatarError.message);
             }
         }
 
@@ -84,7 +114,7 @@ async function uploadGoogleAvatar(googleAvatarUrl) {
 
         fs.writeFileSync(filePath, Buffer.from(response.data, 'binary'));
 
-        const baseUrl = process.env.BASE_URL || 'https://furniture-bghx.onrender.com';
+        // const baseUrl = process.env.BASE_URL || 'https://furniture-bghx.onrender.com';
 
 
         return `/upload/${filename}`;
@@ -97,5 +127,6 @@ async function uploadGoogleAvatar(googleAvatarUrl) {
 
 module.exports = {
     googleLogin,
-    uploadGoogleAvatar
+    uploadGoogleAvatar,
+    uploadGoogleAvatarToDrive
 };

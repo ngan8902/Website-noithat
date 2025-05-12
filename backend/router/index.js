@@ -8,14 +8,15 @@ const ChatRouter = require('./ChatRouter')
 const ReciverInfoRouter = require('./ReciverInfoRouter')
 const CartRoute = require('./CartRoute')
 const GoogleRoute = require('./GoogleRoute')
-const ForgotRoute = require('./ForgotRoute') 
-const ImagesRoute = require('./ImagesRoute') 
+const ForgotRoute = require('./ForgotRoute')
+const ImagesRoute = require('./ImagesRoute')
 const MomoRoute = require('./MomoRoute')
 const PayosRoute = require('./PayosRoute')
 const CommentsRoute = require('./CommentsRoute')
 const DashboardRoute = require('./DashBoardRoute')
 const AttendanceRoute = require('./AttendanceRoute')
 const Send = require('./EmailRoute')
+const ImageRoute = require('./ImageRoute')
 const HealthCheck = require('./HealthCheckRoute')
 
 const routers = (app) => {
@@ -37,6 +38,7 @@ const routers = (app) => {
     app.use("/api/dashboard", DashboardRoute);
     app.use("/api/attendance", AttendanceRoute)
     app.use('/api/send', Send)
+    app.use('/api/image', ImageRoute)
     app.use('/api/health-check', HealthCheck)
 }
 

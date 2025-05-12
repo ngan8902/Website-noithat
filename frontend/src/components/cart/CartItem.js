@@ -44,14 +44,47 @@ const CartItem = ({ item, updateQuantity, removeFromCart, selectedItems, setSele
   const productPrice = getDiscountedPrice(product?.price, product?.discount);
 
   const getImageUrl = (item, product) => {
+    const resolveImageUrl = (image) => {
+      if (!image) return "";
+
+      if (image.includes("lh3.googleusercontent.com")) {
+        return image;
+      }
+
+      if (image.includes("drive.google.com")) {
+        const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+        const idFromViewLink = image.match(/\/d\/(.*?)\//);
+        const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+        if (id) {
+          return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+        } else {
+          console.error("Không thể lấy ID từ Google Drive link:", image);
+          return "";
+        }
+      }
+
+      if (image.startsWith("https://")) {
+        return image;
+      }
+
+      return `${UPLOAD_URL}${image}`;
+    };
+
     if (item?.image) {
-      return `${UPLOAD_URL}${item.image}`;
+      const url = resolveImageUrl(item.image);
+      if (url) return url;
     }
+
     if (product?.image) {
-      return `${UPLOAD_URL}/upload/${product.image.split("/").pop()}`;
+      const url = resolveImageUrl(product.image);
+      if (url) return url;
     }
+
     return "https://via.placeholder.com/80";
   };
+
+
 
   return (
     <div key={itemId} className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">

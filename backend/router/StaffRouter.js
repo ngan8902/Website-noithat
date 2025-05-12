@@ -8,7 +8,7 @@ const { upload } = require('../service/ImagesService')
 router.get('/getme', authenticateStaff, staffController.getMe)
 
 /**API */
-router.post('/sign-up', staffController.createStaff)
+router.post('/sign-up', upload.single("avatar"), staffController.createStaff)
 router.post('/sign-in', staffController.loginStaff)
 router.get('/all-staff', staffController.getAllStaff)
 router.put('/update-staff/:id', upload.single("avatar"), staffController.updateStaff)

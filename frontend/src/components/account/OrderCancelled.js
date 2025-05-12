@@ -14,11 +14,11 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
 
   const cancelledOrders = Array.isArray(orders)
     ? orders.filter(
-        (order) =>
-          order?.status === "cancelled" ||
-          // order?.status === "return" ||
-          order?.status === "cancelled_confirmed"
-      )
+      (order) =>
+        order?.status === "cancelled" ||
+        // order?.status === "return" ||
+        order?.status === "cancelled_confirmed"
+    )
     : [];
 
   const handleDeleteOrder = async (orderId) => {
@@ -49,6 +49,35 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
   };
 
   if (cancelledOrders.length === 0) return null;
+
+  const getImageUrl = (image) => {
+    if (!image) return "";
+
+    if (image.includes("lh3.googleusercontent.com")) {
+      return image;
+    }
+
+    if (image.includes("drive.google.com")) {
+      const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = image.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+      } else {
+        console.error("Không thể lấy ID từ Google Drive link:", image);
+      }
+    }
+
+    // Nếu là link https bình thường
+    if (image.startsWith("https://")) {
+      return image;
+    }
+
+    // Nếu là file local trên server
+    return `${UPLOAD_URL}${image}`;
+  };
+
 
   return (
     <>
@@ -94,7 +123,7 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
                     {order.orderItems?.map((item, index) => (
                       <div key={index} className="mb-2">
                         <img
-                          src={`${UPLOAD_URL}${item.image}` || "/default-image.jpg"}
+                          src={getImageUrl(item?.image)}
                           alt={item.name}
                           style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "5px" }}
                         />
@@ -131,7 +160,7 @@ const OrderCancelled = ({ orders = [], setOrders }) => {
                     <span className={`badge ${order.status === "pending" ? "bg-primary" :
                       order.status === "return_requested" ? "bg-danger" :
                         "bg-light text-dark"}`}>
-                        {statusLabels[order.status] || "Không xác định"}
+                      {statusLabels[order.status] || "Không xác định"}
                     </span>
                   </td>
                   <td className="d-flex flex-column gap-2">
