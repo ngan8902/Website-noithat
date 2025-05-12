@@ -10,7 +10,6 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalType, setModalType] = useState(null);
 
-  console.log(products)
   const removeVietnameseTones = (str) => {
     return str
       .normalize("NFD")
@@ -56,14 +55,17 @@ const ProductList = () => {
   const getImageUrl = (image) => {
     if (!image) return "";
 
-    // Nếu là link Google Drive, sử dụng định dạng 'export=view'
+    if (image.includes("lh3.googleusercontent.com")) {
+      return image;
+    }
+
     if (image.includes("drive.google.com")) {
       const match = image.match(/id=([a-zA-Z0-9_-]+)/);
       const idFromViewLink = image.match(/\/d\/(.*?)\//);
       const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
 
       if (id) {
-        return `https://drive.google.com/file/d/${id}/edit?usp=sharing`;
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
       } else {
         console.error("Không thể lấy ID từ Google Drive link:", image);
       }
@@ -122,7 +124,6 @@ const ProductList = () => {
             </thead>
             <tbody>
               {filteredProducts.map((product) => {
-                console.log(product.image, getImageUrl(product.image))
                 return (
                   <tr key={product._id}>
                     <td>{product.productCode || ""}</td>

@@ -7,21 +7,17 @@ const fs = require('fs')
 
 const createProduct = async (req, res) => {
     try {
-        const { name, type, price, countInStock, description, descriptionDetail, discount, productCode, isBestSeller, origin, material, size, warranty } = req.body
+        const { name, type, price, countInStock, description, descriptionDetail, discount, productCode, isBestSeller, origin, material, size, warranty } = req.body;
 
         if (!name || !type || !price || !countInStock) {
             return res.status(400).json({
                 status: 'ERR',
                 message: 'The input is required'
-            })
+            });
         }
-        console.log('req.file:', req.file);
-
         if (!req.file) {
             return res.status(400).json({ message: "Không có file nào được tải lên" });
         }
-
-
 
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedTypes.includes(req.file.mimetype)) {
@@ -29,22 +25,24 @@ const createProduct = async (req, res) => {
         }
 
         const imagePath = path.resolve(req.file.path);
-        console.log('Image path:', imagePath);
 
-
+        let driveRes = null;
         try {
-            const driveRes = await UploadFileHelper.uploadFile(imagePath, {
+            driveRes = await UploadFileHelper.uploadFile(imagePath, {
                 imgName: req.file.originalname,
                 shared: true
             });
-            console.log('Uploaded to Google Drive:', driveRes);
         } catch (error) {
             console.error('Error uploading to Google Drive:', error);
+            return res.status(500).json({ message: 'Không thể tải ảnh lên Google Drive' });
         }
 
-        const imageUrl = driveRes.webContentLink || null;
+        const imageUrl = driveRes ? driveRes.webContentLink : null;
+        if (!imageUrl) {
+            return res.status(500).json({ message: 'Lỗi lấy link ảnh từ Google Drive' });
+        }
 
-        fs.unlinkSync(imagePath);
+        fs.unlinkSync(imagePath); 
 
         const newProduct = {
             name,
@@ -63,15 +61,16 @@ const createProduct = async (req, res) => {
             warranty
         };
 
-        const response = await ProductService.createProduct(newProduct)
-        return res.status(200).json(response)
+        const response = await ProductService.createProduct(newProduct);
+        return res.status(200).json(response);
     } catch (e) {
-        console.log(e)
+        console.log(e);
         return res.status(500).json({
-            message: e
-        })
+            message: e.message || 'Đã có lỗi xảy ra khi tạo sản phẩm'
+        });
     }
-}
+};
+
 
 const updateProduct = async (req, res) => {
     try {
@@ -94,13 +93,12 @@ const updateProduct = async (req, res) => {
                 imgName: req.file.originalname,
                 shared: true
             });
-            console.log("Upload Drive response:", driveRes);
 
 
             data.image = driveRes.webContentLink || null;
 
-            // Xóa file local sau upload
-            fs.unlinkSync(imagePath);        }
+            fs.unlinkSync(imagePath);
+        }
 
         const response = await ProductService.updateProduct(productId, data)
         return res.status(200).json(response)
