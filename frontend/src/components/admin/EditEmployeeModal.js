@@ -16,6 +16,7 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
   });
   const { setStaff } = useStaffStore((state) => state)
   const [, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (employee) {
@@ -97,14 +98,14 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
               <img
                 src={
                   form.avatar instanceof File
-                    ? URL.createObjectURL(form.avatar) 
-                    : `${process.env.REACT_APP_URL_BACKEND}${form.avatar}` 
+                    ? URL.createObjectURL(form.avatar)
+                    : `${process.env.REACT_APP_URL_BACKEND}${form.avatar}`
                 }
                 alt="Avatar Preview"
                 style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "50%" }}
               />
             )}
-            <br/>
+            <br />
             <label className="form-label fw-bold">Họ và tên</label>
             <input
               type="text"
@@ -150,7 +151,7 @@ const EditEmployeeModal = ({ employee, setEmployees, closeModal }) => {
             />
 
             <button className="btn btn-primary w-100" onClick={handleSave}>
-              Lưu
+              {loading ? "Đang xử lý..." : "Lưu"}
             </button>
           </div>
         </div>

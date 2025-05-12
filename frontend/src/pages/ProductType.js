@@ -77,6 +77,34 @@ const ProductType = () => {
         });
     };
 
+    const getImageUrl = (image) => {
+        if (!image) return "";
+
+        if (image.includes("lh3.googleusercontent.com")) {
+            return image;
+        }
+
+        if (image.includes("drive.google.com")) {
+            const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+            const idFromViewLink = image.match(/\/d\/(.*?)\//);
+            const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+            if (id) {
+                return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+            } else {
+                console.error("Không thể lấy ID từ Google Drive link:", image);
+            }
+        }
+
+        // Nếu là link https bình thường
+        if (image.startsWith("https://")) {
+            return image;
+        }
+
+        // Nếu là file local trên server
+        return `${UPLOAD_URL}${image}`;
+    };
+
     return (
         <div>
             <HeroSection title={products.length > 0 ? products[0].type : <span className="dots"></span>} background="/images/banner3.png" />
@@ -97,13 +125,13 @@ const ProductType = () => {
                                                 : product.price;
 
                                             return (
-                                                <div 
+                                                <div
                                                     className="col-md-4" key={product._id || product.id}
                                                     onClick={() => window.location.href = `/${encodeURIComponent(product.name)}/${product._id}`}
                                                     style={{ cursor: "pointer" }}
                                                 >
                                                     <div className="card h-100 text-center">
-                                                        <img src={`${UPLOAD_URL}/upload/${product.image.split("/").pop()}` || defaultImage} className="card-img-top" alt={product.name} />
+                                                        <img src={getImageUrl(product.image)} className="card-img-top" alt={product.name} />
                                                         <div className="card-body d-flex flex-column">
                                                             <h5 className="card-title">{product.name}</h5>
                                                             <p className="card-text">{product.description}</p>

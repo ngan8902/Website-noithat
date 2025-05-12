@@ -12,7 +12,7 @@ import CustomerReviews from "../components/productdetail/CustomerReviews";
 import Comments from "../components/Comments";
 import { UPLOAD_URL } from '../constants/url.constant';
 
-const avatarDefautl = `${UPLOAD_URL}/upload/guest.png`
+const avatarDefautl = `/images/guest.png`
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -98,14 +98,6 @@ const ProductDetail = () => {
     };
 
     const addToCart = () => (user ? handleAddToCartForCustomer() : handleAddToCartForGuest());
-    // const addToCart = () => {
-    //     if (!user) {
-    //         toast.warning("Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng.");
-    //         return;
-    //     }
-
-    //     handleAddToCartForCustomer();
-    // };
 
     const formatDate = (dateString) =>
         new Date(dateString).toLocaleDateString("vi-VN", {
@@ -147,18 +139,32 @@ const ProductDetail = () => {
         </div>
     );
 
-    const getImageUrl = (avatar, avatarDefault) => {
-        let src;
+    const getAvatarUrl = (avatar) => {
+        if (!avatar) return "";
 
-        if (avatar && avatar.startsWith('http://')) {
-            src = avatar;
-        } else if (avatar) {
-            src = `${UPLOAD_URL}${avatar}`;
-        } else {
-            src = avatarDefault;
+        if (avatar.includes("lh3.googleusercontent.com")) {
+            return avatar;
         }
 
-        return src;
+        if (avatar.includes("drive.google.com")) {
+            const match = avatar.match(/id=([a-zA-Z0-9_-]+)/);
+            const idFromViewLink = avatar.match(/\/d\/(.*?)\//);
+            const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+            if (id) {
+                return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+            } else {
+                console.error("Không thể lấy ID từ Google Drive link:", avatar);
+            }
+        }
+
+        // Nếu là link https bình thường
+        if (avatar.startsWith("https://")) {
+            return avatar;
+        }
+
+        // Nếu là file local trên server
+        return `${UPLOAD_URL}${avatar}`;
     };
 
     if (!product) {
@@ -175,7 +181,7 @@ const ProductDetail = () => {
                 {[...comments].reverse().map((comment) => (
                     <div key={comment._id} className="mb-3 border p-3 d-flex align-items-start">
                         <img
-                            src={getImageUrl(comment.userId?.avatar, avatarDefautl)}
+                            src={getAvatarUrl(comment.userId?.avatar, avatarDefautl)}
                             alt={comment.userId?.name || 'Khách'}
                             className="rounded-circle me-3"
                             style={{ width: '40px', height: '40px', objectFit: 'cover' }}
@@ -194,11 +200,40 @@ const ProductDetail = () => {
         );
     };
 
+    const getImageUrl = (image) => {
+        if (!image) return "";
+
+        if (image.includes("lh3.googleusercontent.com")) {
+            return image;
+        }
+
+        if (image.includes("drive.google.com")) {
+            const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+            const idFromViewLink = image.match(/\/d\/(.*?)\//);
+            const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+            if (id) {
+                return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+            } else {
+                console.error("Không thể lấy ID từ Google Drive link:", image);
+            }
+        }
+
+        // Nếu là link https bình thường
+        if (image.startsWith("https://")) {
+            return image;
+        }
+
+        // Nếu là file local trên server
+        return `${UPLOAD_URL}${image}`;
+    };
+
+
     return (
         <section className="py-5">
             <div className="container">
                 <div className="row">
-                    <ProductImage image={`${UPLOAD_URL}/upload/${product.image.split("/").pop()}`} name={product?.name} />
+                    <ProductImage image={getImageUrl(product?.image)} name={product?.name} />
                     <div className="col-md-6">
                         <h3 className="fw-bold mb-3">{product?.name}</h3>
                         <p className="text-muted mb-4">{product?.descriptionDetail}</p>

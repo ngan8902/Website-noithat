@@ -11,6 +11,8 @@ const EmployeeList = () => {
   const { staffList, getAllStaff, removeStaff } = useStaffStore((state) => state);
   const [, setEmployees] = useState(null);
 
+  const avatarDefault = '/images/guest.png';
+
   useEffect(() => {
     getAllStaff();
   }, [getAllStaff]);
@@ -44,16 +46,30 @@ const EmployeeList = () => {
     setSelectedEmployee(null);
   };
 
-  const getImageUrl = (avatar, avatarDefault) => {
-    let src;
-    if (avatar && avatar.startsWith('http://')) {
-      src = avatar;
-    } else if (avatar) {
-      src = `${UPLOAD_URL}${avatar}`;
-    } else {
-      src = avatarDefault;
+  const getImageUrl = (avatar) => {
+    if (!avatar) return avatarDefault;
+
+    if (avatar.includes("lh3.googleusercontent.com")) {
+      return avatar;
     }
-    return src;
+
+    if (avatar.includes("drive.google.com")) {
+      const match = avatar.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = avatar.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+      } else {
+        console.error("Không thể lấy ID từ Google Drive link:", avatar);
+      }
+    }
+
+    if (avatar.startsWith("https://")) {
+      return avatar;
+    }
+
+    return `${UPLOAD_URL}${avatar}` || avatarDefault;
   };
 
   const filteredStaffList = staffList?.filter((staff) => {
@@ -107,7 +123,7 @@ const EmployeeList = () => {
                 <td>{staff.staffcode}</td>
                 <td>
                   <img
-                    src={getImageUrl(staff?.avatar, '/images/guest.png')}
+                    src={getImageUrl(staff?.avatar)}
                     alt={staff.name}
                     style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "50%" }}
                   />

@@ -370,7 +370,6 @@ const AccountInfo = () => {
     // Nếu là file local trên server
     return `${UPLOAD_URL}${avatar}`;
   };
-  console.log(user)
 
   return (
     <div className="col-md-4 mb-4">
