@@ -10,6 +10,7 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalType, setModalType] = useState(null);
 
+  console.log(products)
   const removeVietnameseTones = (str) => {
     return str
       .normalize("NFD")
@@ -24,7 +25,7 @@ const ProductList = () => {
 
     const interval = setInterval(() => {
       getProducts();
-    }, 2000); 
+    }, 2000);
 
     return () => clearInterval(interval);
   }, [getProducts]);
@@ -51,6 +52,31 @@ const ProductList = () => {
     const productCode = removeVietnameseTones(product?.productCode || "");
     return productName.includes(searchText) || productCode.includes(searchText);
   });
+
+  const getImageUrl = (image) => {
+    if (!image) return "";
+
+    // Nếu là link Google Drive
+    if (image.includes("drive.google.com")) {
+      const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = image.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `https://drive.google.com/uc?id=${id}`;
+      }
+    }
+
+    // Nếu là link https bình thường
+    if (image.startsWith("https://")) {
+      return image;
+    }
+
+    // Nếu là file local trên server
+    return `${UPLOAD_URL}${image}`;
+  };
+
+
 
   return (
     <div id="products" className="mt-4">
@@ -95,26 +121,29 @@ const ProductList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product) => (
-                <tr key={product._id}>
-                  <td>{product.productCode || ""}</td>
-                  <td>
-                    <img
-                      src={`${UPLOAD_URL}${product.image}` || "https://via.placeholder.com/100"}
-                      alt={product.name}
-                      style={{ width: "100px", height: "100px", objectFit: "cover" }}
-                    />
-                  </td>
-                  <td>{product.name}</td>
-                  <td>{product.price} VND</td>
-                  <td>{product.countInStock}</td>
-                  <td>{product.discount} %</td>
-                  <td style={{ textAlign: "center", verticalAlign: "middle" }}>
-                    <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
-                    <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
-                  </td>
-                </tr>
-              ))}
+              {filteredProducts.map((product) => {
+                return (
+                  <tr key={product._id}>
+                    <td>{product.productCode || ""}</td>
+                    <td>
+                      <img
+                        src={getImageUrl(product?.image)}
+                        alt={product.name}
+                        style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                      />
+                    </td>
+                    <td>{product.name}</td>
+                    <td>{product.price} VND</td>
+                    <td>{product.countInStock}</td>
+                    <td>{product.discount} %</td>
+                    <td style={{ textAlign: "center", verticalAlign: "middle" }}>
+                      <button className="btn btn-warning btn-sm" onClick={() => openEditModal(product)}>Sửa</button>
+                      <button className="btn btn-danger btn-sm ms-2" onClick={() => handleDelete(product._id)}>Xóa</button>
+                    </td>
+                  </tr>
+                );
+              })}
+
             </tbody>
           </table>
         </div>
