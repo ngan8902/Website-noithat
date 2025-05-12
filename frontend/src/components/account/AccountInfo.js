@@ -231,7 +231,10 @@ const AccountInfo = () => {
       setErrorMessage("Email phải có định dạng @gmail.com!");
       return;
     }
-
+    if (!formData.houseNumber || !formData.street || !formData.ward || !formData.district || !formData.province) {
+      setErrorMessage("Vui lòng nhập đầy đủ thông tin địa chỉ!");
+      return;
+    }
     try {
       const updatedData = {
         name: formData.name,
