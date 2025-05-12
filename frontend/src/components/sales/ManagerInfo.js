@@ -3,6 +3,8 @@ import { UPLOAD_URL } from '../../constants/url.constant'
 
 const ManagerInfo = ({ staff }) => {
   const [showModal, setShowModal] = useState(false);
+  const avatarDefault = '/images/guest.png';
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "Chưa cập nhật";
@@ -50,17 +52,31 @@ const ManagerInfo = ({ staff }) => {
     return `${staff?.name} ${serviceText}. ${closingSentence}`;
   };
 
-  const getImageUrl = (avatar, avatarDefault) => {
-      let src;
-      if (avatar && avatar.startsWith('http://')) {
-        src = avatar;
-      } else if (avatar) {
-        src = `${UPLOAD_URL}${avatar}`;
+  const getImageUrl = (avatar) => {
+    if (!avatar) return avatarDefault;
+
+    if (avatar.includes("lh3.googleusercontent.com")) {
+      return avatar;
+    }
+
+    if (avatar.includes("drive.google.com")) {
+      const match = avatar.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = avatar.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
       } else {
-        src = avatarDefault;
+        console.error("Không thể lấy ID từ Google Drive link:", avatar);
       }
-      return src;
-    };
+    }
+
+    if (avatar.startsWith("https://")) {
+      return avatar;
+    }
+
+    return `${UPLOAD_URL}${avatar}` || avatarDefault;
+  };
 
   return (
     <section className="py-5">
