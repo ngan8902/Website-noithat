@@ -56,14 +56,16 @@ const ProductList = () => {
   const getImageUrl = (image) => {
     if (!image) return "";
 
-    // Nếu là link Google Drive
+    // Nếu là link Google Drive, sử dụng định dạng 'export=view'
     if (image.includes("drive.google.com")) {
       const match = image.match(/id=([a-zA-Z0-9_-]+)/);
       const idFromViewLink = image.match(/\/d\/(.*?)\//);
       const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
 
       if (id) {
-        return `https://drive.google.com/uc?id=${id}`;
+        return `https://drive.google.com/file/d/${id}/edit?usp=sharing`;
+      } else {
+        console.error("Không thể lấy ID từ Google Drive link:", image);
       }
     }
 
@@ -75,8 +77,6 @@ const ProductList = () => {
     // Nếu là file local trên server
     return `${UPLOAD_URL}${image}`;
   };
-
-
 
   return (
     <div id="products" className="mt-4">
@@ -122,6 +122,7 @@ const ProductList = () => {
             </thead>
             <tbody>
               {filteredProducts.map((product) => {
+                console.log(product.image, getImageUrl(product.image))
                 return (
                   <tr key={product._id}>
                     <td>{product.productCode || ""}</td>
