@@ -129,10 +129,32 @@ const ChatMessages = ({ customer }) => {
 
   const formatTimestamp = (timestamp) => moment(timestamp).format("HH:mm DD/MM/YYYY");
 
-  const getImageUrl = (avatar, avatarDefault) => {
-    if (avatar?.startsWith("http://")) return avatar;
-    if (avatar) return `${UPLOAD_URL}${avatar}`;
-    return avatarDefault;
+  const getImageUrl = (avatar) => {
+    if (!avatar) return "";
+
+    if (avatar.includes("lh3.googleusercontent.com")) {
+      return avatar;
+    }
+
+    if (avatar.includes("drive.google.com")) {
+      const match = avatar.match(/id=([a-zA-Z0-9_-]+)/);
+      const idFromViewLink = avatar.match(/\/d\/(.*?)\//);
+      const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+      if (id) {
+        return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+      } else {
+        console.error("Không thể lấy ID từ Google Drive link:", avatar);
+      }
+    }
+
+    // Nếu là link https bình thường
+    if (avatar.startsWith("https://")) {
+      return avatar;
+    }
+
+    // Nếu là file local trên server
+    return `${UPLOAD_URL}${avatar}`;
   };
 
   return (

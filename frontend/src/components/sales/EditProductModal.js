@@ -26,6 +26,7 @@ const EditProductModal = ({ product, closeModal }) => {
   const [, setErrorMessage] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [newCategory, setNewCategory] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -244,7 +245,9 @@ const EditProductModal = ({ product, closeModal }) => {
               <label className="form-check-label fw-bold" htmlFor="isBestSeller">Sản phẩm bán chạy</label>
             </div>
 
-            <button className="btn btn-primary w-100" onClick={handleSave}>Lưu</button>
+            <button className="btn btn-primary w-100" onClick={handleSave} disabled={loading}>
+              {loading ? "Đang xử lý..." : "Lưu"}
+            </button>
           </div>
         </div>
       </div>
