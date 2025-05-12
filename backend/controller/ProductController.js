@@ -42,7 +42,7 @@ const createProduct = async (req, res) => {
             console.error('Error uploading to Google Drive:', error);
         }
 
-        const imageUrl = driveRes.webViewLink || null;
+        const imageUrl = driveRes.webContentLink || null;
 
         fs.unlinkSync(imagePath);
 
@@ -97,7 +97,7 @@ const updateProduct = async (req, res) => {
             console.log("Upload Drive response:", driveRes);
 
 
-            data.image = driveRes.webViewLink || null;
+            data.image = driveRes.webContentLink || null;
 
             // Xóa file local sau upload
             fs.unlinkSync(imagePath);        }
