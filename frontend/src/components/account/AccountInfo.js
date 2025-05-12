@@ -35,6 +35,9 @@ const getWards = async (district) => {
   }
 };
 
+const avatarDefault = '/images/guest.png';
+
+
 const AccountInfo = () => {
   const { user, auth, setUser } = useAuthStore((state) => state);
   const [isEditing, setIsEditing] = useState(false);
@@ -344,7 +347,7 @@ const AccountInfo = () => {
   };
 
   const getImageUrl = (avatar) => {
-    if (!avatar) return "";
+    if (!avatar) return avatarDefault;
 
     if (avatar.includes("lh3.googleusercontent.com")) {
       return avatar;
@@ -362,13 +365,11 @@ const AccountInfo = () => {
       }
     }
 
-    // Nếu là link https bình thường
     if (avatar.startsWith("https://")) {
       return avatar;
     }
 
-    // Nếu là file local trên server
-    return `${UPLOAD_URL}${avatar}`;
+    return `${UPLOAD_URL}${avatar}` || avatarDefault;
   };
 
   return (
