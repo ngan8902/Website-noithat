@@ -18,8 +18,7 @@ const ResourceList = () => {
   const [searchDate, setSearchDate] = useState("");
   const [searchMonth, setSearchMonth] = useState("");
   const [searchYear, setSearchYear] = useState("");
-  const [selectedRecord, setSelectedRecord] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [searchStatus, setSearchStatus] = useState("");
 
 
   const fetchAttendanceRecords = async () => {
@@ -36,10 +35,6 @@ const ResourceList = () => {
     fetchAttendanceRecords();
   }, []);
 
-  const closeModal = () => {
-    setSelectedRecord(null);
-    setModalOpen(false);
-  };
 
   const formatTime = (time) => {
     if (!time) return 'Chưa ra';
@@ -74,6 +69,7 @@ const ResourceList = () => {
     setSearchDate("");
     setSearchMonth("");
     setSearchYear("");
+    setSearchStatus("");
   };
 
   const filteredRecords = attendanceRecords?.filter((record) => {
@@ -95,8 +91,9 @@ const ResourceList = () => {
       ? recordMonth === Number(searchMonth)
       : true;
     const matchesYear = searchYear ? recordYear === Number(searchYear) : true;
+    const matchesStatus = searchStatus ? record.status === searchStatus : true;
 
-    return matchesKeyword && matchesDate && matchesMonth && matchesYear;
+    return matchesKeyword && matchesDate && matchesMonth && matchesYear && matchesStatus;
   });
 
   const totalWorkingHours = filteredRecords.reduce((sum, record) => {
@@ -132,7 +129,7 @@ const ResourceList = () => {
 
       <div className="d-flex gap-2 align-items-end mb-3">
         {/* <div className="row g-2"> */}
-        <div className="col-md-3">
+        <div className="col-md-2">
           <input
             type="text"
             className="form-control"
@@ -142,7 +139,7 @@ const ResourceList = () => {
           />
         </div>
 
-        <div className="col-md-3">
+        <div className="col-md-2">
           <input
             type="date"
             className="form-control"
@@ -181,6 +178,19 @@ const ResourceList = () => {
           </select>
         </div>
 
+        <div className="col-md-1.5">
+          <select
+            className="form-select"
+            value={searchStatus}
+            onChange={(e) => setSearchStatus(e.target.value)}
+          >
+            <option value="">-- Trạng Thái --</option>
+            <option value="present">Đúng giờ</option>
+            <option value="late">Muộn</option>
+            <option value="off">Nghỉ</option>
+          </select>
+        </div>
+
         <div className="col-md-2">
           <button className="btn btn-secondary w-100" onClick={resetFilters}>
             Xóa bộ lọc
@@ -188,7 +198,21 @@ const ResourceList = () => {
         </div>
         {/* </div> */}
       </div>
-      <div style={{ border: "1px solid #ddd", maxHeight: "850px", overflow: "auto", overflowX: "auto" }}>
+      <div style={{
+        border: "1px solid #ddd",
+        maxHeight: "850px",
+        overflow: "auto",
+        overflowX: "auto",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}>
+        <style>
+          {`
+      div::-webkit-scrollbar {
+        display: none;             
+      }
+    `}
+        </style>
         <table className="table table-bordered mt-3">
           <thead className="table-dark">
             <tr>
@@ -242,14 +266,6 @@ const ResourceList = () => {
       <div className="mt-3 text-end fw-bold">
         Tổng số giờ công (dựa trên kết quả lọc): <span className="text-primary"> {totalWorkingHours} giờ </span>
       </div>
-
-      {modalOpen && selectedRecord && (
-        <EditResourceModal
-          record={selectedRecord}
-          setAttendanceRecords={setAttendance}
-          closeModal={closeModal}
-        />
-      )}
     </div>
   );
 };
