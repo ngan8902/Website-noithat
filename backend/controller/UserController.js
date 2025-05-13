@@ -2,6 +2,8 @@ const UserService = require('../service/UserService')
 const JwtService = require('../service/JwtService')
 const { SIGN_UP } = require('../common/messages/user.message')
 const { SIGN_UP_STATUS } = require('../common/constant/status.constant')
+const UploadFileHelper = require("../helper/uploadFile.helper");
+
 
 const createUser = async (req, res) => {
     try {
@@ -85,7 +87,22 @@ const updateUser = async (req, res) => {
             if (!allowedTypes.includes(req.file.mimetype)) {
                 return res.status(400).json({ message: 'Loại file không được hỗ trợ.' });
             }
-            data.avatar = `/upload/${req.file.filename}`;
+
+            try {
+                const driveRes = await UploadFileHelper.uploadFile(req.file.path, {
+                    imgName: req.file.originalname,
+                    mimeType: req.file.mimetype,
+                    shared: true,
+                });
+
+                data.avatar = driveRes.webContentLink;
+
+                const fs = require('fs');
+                fs.unlinkSync(req.file.path);
+            } catch (error) {
+                console.error('Lỗi upload avatar lên Google Drive:', error.message);
+                return res.status(500).json({ message: 'Lỗi upload avatar lên Google Drive.' });
+            }
         }
 
         const response = await UserService.updateUser(userId, data);
@@ -218,8 +235,8 @@ const logoutUser = (req, res) => {
     try {
         res.clearCookie('token', {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', 
-            sameSite: 'None', 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'None',
         });
 
         return res.status(200).json({
