@@ -230,7 +230,7 @@ const ResourceList = () => {
               filteredRecords.map((record) => (
                 <tr key={record._id}>
                   <td>{record.staffcode}</td>
-                  <td>{record.staffId.name}</td>
+                  <td>{record.staffId?.name}</td>
                   <td>{formatDate(record.checkInTime)}</td>
                   <td>{formatTime(record.checkInTime)}</td>
                   <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>

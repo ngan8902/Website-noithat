@@ -69,15 +69,18 @@ const loginStaff = (staffLogin) => {
             if (checkStaff === null) {
                 resolve({
                     status: 'OK',
-                    message: 'The staff is not defined'
+                    message: 'Tài khoản không tồn tại'
                 })
             }
-            if (!password) {
-                resolve({
-                    status: 'OK',
-                    message: 'The password or user is incorrect'
-                })
+
+            const isPasswordCorrect = await bcrypt.compare(password, checkStaff.password);
+            if (!isPasswordCorrect) {
+                return resolve({
+                    status: 'ERR',
+                    message: 'Sai mật khẩu!'
+                });
             }
+
             const access_token = await genneralAccessToken({
                 id: checkStaff.id,
             })
