@@ -40,6 +40,34 @@ const FeaturedProducts = () => {
         ]
         : bestSellerProducts;
 
+    const getImageUrl = (image) => {
+        if (!image) return "";
+    
+        if (image.includes("lh3.googleusercontent.com")) {
+          return image;
+        }
+    
+        if (image.includes("drive.google.com")) {
+          const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+          const idFromViewLink = image.match(/\/d\/(.*?)\//);
+          const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+    
+          if (id) {
+            return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+          } else {
+            console.error("Không thể lấy ID từ Google Drive link:", image);
+          }
+        }
+    
+        // Nếu là link https bình thường
+        if (image.startsWith("https://")) {
+          return image;
+        }
+    
+        // Nếu là file local trên server
+        return `${UPLOAD_URL}${image}`;
+      };
+
     return (
         <section className="py-5">
             <div className="container">
@@ -77,7 +105,7 @@ const FeaturedProducts = () => {
                     }}
                 >
                     {visibleProducts.map((product, index) =>
-                    product && `${UPLOAD_URL}${product.image}` ? (
+                    product && getImageUrl(product.image) ? (
                         <div
                         className="col-10 col-sm-6 col-md-4 flex-shrink-0"
                         key={index}
@@ -91,7 +119,7 @@ const FeaturedProducts = () => {
                         >
                         <div className="card h-100 shadow-sm">
                             <img
-                            src={`${UPLOAD_URL}${product.image}`}
+                            src={getImageUrl(product.image)}
                             className="card-img-top"
                             alt={product.name || "Sản phẩm"}
                             style={{
