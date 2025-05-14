@@ -76,6 +76,34 @@ const SearchResults = () => {
         currentPage * PAGE
     );
 
+    const getImageUrl = (image) => {
+        if (!image) return "";
+
+        if (image.includes("lh3.googleusercontent.com")) {
+            return image;
+        }
+
+        if (image.includes("drive.google.com")) {
+            const match = image.match(/id=([a-zA-Z0-9_-]+)/);
+            const idFromViewLink = image.match(/\/d\/(.*?)\//);
+            const id = match ? match[1] : idFromViewLink ? idFromViewLink[1] : null;
+
+            if (id) {
+                return `${process.env.REACT_APP_URL_BACKEND}/image/drive-image/${id}`;
+            } else {
+                console.error("Không thể lấy ID từ Google Drive link:", image);
+            }
+        }
+
+        // Nếu là link https bình thường
+        if (image.startsWith("https://")) {
+            return image;
+        }
+
+        // Nếu là file local trên server
+        return `${UPLOAD_URL}${image}`;
+    };
+
     return (
         <div>
             <section className="py-5">
@@ -96,49 +124,49 @@ const SearchResults = () => {
 
                                             return (
                                                 <div className="col-md-4" key={product._id || product.id}>
-                                                <Link
-                                                    to={`/${encodeURIComponent(product.name)}/${product._id}`}
-                                                    style={{
-                                                        textDecoration: 'none',
-                                                        color: 'inherit',
-                                                        display: 'block',
-                                                    }}
-                                                >
-                                                    <div className="card h-100 text-center">
-                                                        <img
-                                                            src={`${UPLOAD_URL}${product.image}` || defaultImage}
-                                                            className="card-img-top"
-                                                            alt={product.name}
-                                                        />
-                                                        <div className="card-body d-flex flex-column">
-                                                            <h5 className="card-title">{product.name}</h5>
-                                                            <p className="card-text">{product.description}</p>
+                                                    <Link
+                                                        to={`/${encodeURIComponent(product.name)}/${product._id}`}
+                                                        style={{
+                                                            textDecoration: 'none',
+                                                            color: 'inherit',
+                                                            display: 'block',
+                                                        }}
+                                                    >
+                                                        <div className="card h-100 text-center">
+                                                            <img
+                                                                src={getImageUrl(product.image) || defaultImage}
+                                                                className="card-img-top"
+                                                                alt={product.name}
+                                                            />
+                                                            <div className="card-body d-flex flex-column">
+                                                                <h5 className="card-title">{product.name}</h5>
+                                                                <p className="card-text">{product.description}</p>
 
-                                                            {product.discount > 0 ? (
-                                                                <div>
-                                                                    <p className="text-decoration-line-through text-muted">
-                                                                        Giá gốc: {product.price.toLocaleString()} VND
-                                                                    </p>
-                                                                    <p className="text-danger fw-bold">
-                                                                        Giá khuyến mãi: {finalPrice.toLocaleString()} VND ({product.discount}% OFF)
-                                                                    </p>
+                                                                {product.discount > 0 ? (
+                                                                    <div>
+                                                                        <p className="text-decoration-line-through text-muted">
+                                                                            Giá gốc: {product.price.toLocaleString()} VND
+                                                                        </p>
+                                                                        <p className="text-danger fw-bold">
+                                                                            Giá khuyến mãi: {finalPrice.toLocaleString()} VND ({product.discount}% OFF)
+                                                                        </p>
+                                                                    </div>
+                                                                ) : (
+                                                                    <p className="fw-bold">Giá: {product.price.toLocaleString()} VND</p>
+                                                                )}
+
+                                                                <div className="rating">
+                                                                    {[...Array(5)].map((_, index) => (
+                                                                        <i
+                                                                            key={index}
+                                                                            className={`bi ${index < product.rating ? "bi-star-fill text-warning" : "bi-star text-secondary"}`}
+                                                                        ></i>
+                                                                    ))}
                                                                 </div>
-                                                            ) : (
-                                                                <p className="fw-bold">Giá: {product.price.toLocaleString()} VND</p>
-                                                            )}
-
-                                                            <div className="rating">
-                                                                {[...Array(5)].map((_, index) => (
-                                                                    <i
-                                                                        key={index}
-                                                                        className={`bi ${index < product.rating ? "bi-star-fill text-warning" : "bi-star text-secondary"}`}
-                                                                    ></i>
-                                                                ))}
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </Link>
-                                            </div>
+                                                    </Link>
+                                                </div>
                                             );
                                         })
                                     ) : (

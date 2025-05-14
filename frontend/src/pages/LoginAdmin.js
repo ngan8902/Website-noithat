@@ -31,6 +31,10 @@ function LoginAdmin() {
                 if (data?.access_token) {
                     setCookie(STAFF_TOKEN_KEY, data.access_token, 2);
                     window.location.replace("/admin/dashboard");
+                } else if (data.message === "Tài khoản không tồn tại") {
+                    setErrorMessage("Tài khoản không đúng!");
+                } else if (data.message === "Sai mật khẩu!") {
+                    setErrorMessage("Mật khẩu không đúng!");
                 } else {
                     setErrorMessage("Tên đăng nhập hoặc mật khẩu không chính xác");
                 }

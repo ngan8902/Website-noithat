@@ -11,6 +11,8 @@ const AttendanceHistory = ({ staffId }) => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
+  const [searchStatus, setSearchStatus] = useState("");
+
 
   const token = getCookie(STAFF_TOKEN_KEY);
 
@@ -57,7 +59,7 @@ const AttendanceHistory = ({ staffId }) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = String(date.getFullYear()).slice(-2); 
+    const year = String(date.getFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
   };
 
@@ -98,16 +100,20 @@ const AttendanceHistory = ({ staffId }) => {
         ? checkInDate.getFullYear() === parseInt(selectedYear)
         : true;
 
-      return matchDate && matchMonth && matchYear;
+      const matchesStatus = searchStatus ? record.status === searchStatus : true;
+
+
+      return matchDate && matchMonth && matchYear && matchesStatus;
     });
 
     setFilteredRecords(filtered);
-  }, [selectedDate, selectedMonth, selectedYear, records]);
+  }, [selectedDate, selectedMonth, selectedYear, searchStatus, records]);
 
   const handleClearFilter = () => {
     setSelectedDate("");
     setSelectedMonth("");
     setSelectedYear("");
+    setSearchStatus("");
     setFilteredRecords(records);
   };
 
@@ -127,86 +133,101 @@ const AttendanceHistory = ({ staffId }) => {
             onChange={(e) => setSelectedDate(e.target.value)}
           />
         </div>
+        <div className="col-md-2">
+          <select className="form-select" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
+            <option value="">Tháng</option>
+            {months.map(month => (
+              <option key={month} value={month}>{month}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-2">
+          <select className="form-select" value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+            <option value="">Năm</option>
+            {years.map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+        <div className="col-md-2">
+          <select
+            className="form-select"
+            value={searchStatus}
+            onChange={(e) => setSearchStatus(e.target.value)}
+          >
+            <option value="">-- Trạng Thái --</option>
+            <option value="present">Đúng giờ</option>
+            <option value="late">Muộn</option>
+            <option value="off">Nghỉ</option>
+          </select>
+        </div>
 
-        <select className="form-select" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
-          <option value="">Tháng</option>
-          {months.map(month => (
-            <option key={month} value={month}>{month}</option>
-          ))}
-        </select>
-
-        <select className="form-select" value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
-          <option value="">Năm</option>
-          {years.map(year => (
-            <option key={year} value={year}>{year}</option>
-          ))}
-        </select>
-
-        <button className="btn btn-secondary" onClick={handleClearFilter}>Xóa lọc</button>
+        <button className="btn btn-secondary col-md-2" onClick={handleClearFilter}>Xóa lọc</button>
       </div>
 
       {loading && <p>Đang tải dữ liệu...</p>}
       {error && <p className="text-danger">{error}</p>}
 
       <div style={{ border: "1px solid #ddd", maxHeight: "850px", overflow: "auto", overflowX: "auto" }}>
-      <table className="table table-bordered mt-3">
-        <thead className="table-dark">
-          <tr>
-            <th>Nhân viên</th>
-            <th>Ngày</th>
-            <th>Giờ vào</th>
-            <th>Giờ ra</th>
-            <th>Tổng giờ làm</th>
-            <th>Trạng thái</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRecords.length > 0 ? (
-            filteredRecords.map((record, index) => (
-              <tr key={index}>
-                <td>{record.staffId.name}</td>
-                <td>{formatDate(record.checkInTime)}</td>
-                <td>{formatTime(record.checkInTime)}</td>
-                <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>
-                  {formatTime(record.checkOutTime)}
-                </td>
-                <td>
-                  {calculateWorkingHours(record.checkInTime, record.checkOutTime)}{" "}
-                  giờ
-                </td>
-                <td>
-                  <span
-                    className={`badge ${
-                      record.status === "present"
+        <table className="table table-bordered mt-3">
+          <thead className="table-dark">
+            <tr>
+              <th>Nhân viên</th>
+              <th>Ngày</th>
+              <th>Giờ vào</th>
+              <th>Giờ ra</th>
+              <th>Tổng giờ làm</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRecords.length > 0 ? (
+              filteredRecords.map((record, index) => (
+                <tr key={index}>
+                  <td>{record.staffId.name}</td>
+                  <td>{formatDate(record.checkInTime)}</td>
+                  <td>{formatTime(record.checkInTime)}</td>
+                  <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>
+                    {formatTime(record.checkOutTime)}
+                  </td>
+                  <td>
+                    {calculateWorkingHours(record.checkInTime, record.checkOutTime)}{" "}
+                    giờ
+                  </td>
+                  <td>
+                    <span
+                      className={`badge ${record.status === "present"
                         ? "text-success fw-bold"
                         : record.status === "late"
-                        ? "text-danger fw-bold"
-                        : "text-secondary"
-                    }`}
-                  >
-                    {record.status === "present" ? "Đúng giờ" : record.status === "late" ? "Muộn" : "Không rõ"}
-                  </span>
+                          ? "text-danger fw-bold"
+                          : "text-danger fw-bold"
+                        }`}
+                    >
+                      {record.status === "present" ? "Đúng giờ" : record.status === "late" ? "Muộn" : "Nghỉ"}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center text-muted">
+                  Không có dữ liệu chấm công!
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="text-center text-muted">
-                Không có dữ liệu chấm công!
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {filteredRecords.length > 0 && (
-        <div className="mt-3 fw-bold text-end">
-          Tổng giờ công: <span className="text-primary">{totalWorkingHours} giờ</span>
-        </div>
-      )}
+      {
+        filteredRecords.length > 0 && (
+          <div className="mt-3 fw-bold text-end">
+            Tổng giờ công: <span className="text-primary">{totalWorkingHours} giờ</span>
+          </div>
+        )
+      }
 
-    </div>
+    </div >
   );
 };
 

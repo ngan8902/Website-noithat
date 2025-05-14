@@ -19,6 +19,7 @@ function FaceDetect() {
   const [checkedInStaff, setCheckedInStaff] = useState([]);
   const [checkInLoading, setCheckInLoading] = useState(false);
   const [checkOutLoading, setCheckOutLoading] = useState(false);
+  const [offStatusUpdated, setOffStatusUpdated] = useState(false);
 
   useEffect(() => {
     staffFaces.current = faceList;
@@ -218,6 +219,7 @@ function FaceDetect() {
     }, 0);
   };
 
+
   return (
     <div className="App" style={{ backgroundColor: "#f7f7f7", minHeight: "100vh", paddingTop: "40px" }}>
       <header
@@ -258,7 +260,7 @@ function FaceDetect() {
               pointerEvents: "none",
             }}
           />
-           {(checkInLoading || checkOutLoading) && (
+          {(checkInLoading || checkOutLoading) && (
             <div className="face-loading-animation" />
           )}
         </div>

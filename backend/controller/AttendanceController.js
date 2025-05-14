@@ -91,6 +91,28 @@ const getAttendanceDetails = async (req, res) => {
     }
 };
 
+const setOffStatus = async (req, res) => {
+    try {
+        const { staffId, staffcode, date, notes } = req.body;
+
+        if (!staffId || !staffcode || !date) {
+            return res.status(400).json({ message: "Missing staffId, staffcode or date" });
+        }
+
+        const result = await attendanceService.setOffStatus({ staffId, staffcode, date, notes });
+
+        if (result.alreadyCheckedIn) {
+            return res.status(200).json({ message: "Staff has already checked-in today", data: result.data });
+        }
+
+        return res.status(201).json({ message: "Off status saved", data: result.data });
+
+    } catch (error) {
+        console.error("Error setting off status:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 
 
 module.exports = {
@@ -100,5 +122,6 @@ module.exports = {
     getAttendanceHistoryByStaff,
     getAllAttendanceHistory,
     getAttendanceDetails,
-    getTodayCheckins
+    getTodayCheckins,
+    setOffStatus
 };

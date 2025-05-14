@@ -12,6 +12,8 @@ router.patch('/check-out', attendanceController.checkOut);
 
 router.get('/all-attendance', attendanceController.getAllAttendanceHistory);
 router.get('/today-checkins', attendanceController.getTodayCheckins);
+router.post("/off", attendanceController.setOffStatus);
+
 
 router.get('/:staffId',authenticateStaff, attendanceController.getAttendanceHistoryByStaff);
 

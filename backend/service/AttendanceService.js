@@ -118,6 +118,41 @@ const getAttendanceById = async (attendanceId) => {
   }
 };
 
+const checkExistingAttendance = async (staffId, date) => {
+  return await Attendance.findOne({
+    staffId,
+    checkInTime: {
+      $gte: new Date(`${date}T00:00:00.000Z`),
+      $lte: new Date(`${date}T23:59:59.999Z`)
+    }
+  });
+};
+
+const setOffStatus = async ({ staffId, staffcode, date, notes }) => {
+  const existingAttendance = await checkExistingAttendance(staffId, date);
+
+  if (existingAttendance) {
+    return { alreadyCheckedIn: true, data: existingAttendance };
+  }
+
+  const [year, month, day] = date.split("-");
+  const targetDateUTC = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
+
+  const newOffRecord = await Attendance.create({
+    staffId,
+    staffcode,
+    checkInTime: targetDateUTC,
+    checkOutTime: targetDateUTC,
+    status: "off",
+    notes: notes || "Tự động set off sau 18h",
+    location: {
+      type: "Point",
+      coordinates: [0, 0],
+    },
+  });
+
+  return { alreadyCheckedIn: false, data: newOffRecord };
+};
 
 module.exports = {
   saveFaceEmbedding,
@@ -126,5 +161,6 @@ module.exports = {
   getAttendanceByStaffId,
   getAllAttendance,
   getAttendanceById,
-  getCheckinsByDate
+  getCheckinsByDate,
+  setOffStatus
 };

@@ -18,8 +18,7 @@ const ResourceList = () => {
   const [searchDate, setSearchDate] = useState("");
   const [searchMonth, setSearchMonth] = useState("");
   const [searchYear, setSearchYear] = useState("");
-  const [selectedRecord, setSelectedRecord] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [searchStatus, setSearchStatus] = useState("");
 
 
   const fetchAttendanceRecords = async () => {
@@ -36,10 +35,6 @@ const ResourceList = () => {
     fetchAttendanceRecords();
   }, []);
 
-  const closeModal = () => {
-    setSelectedRecord(null);
-    setModalOpen(false);
-  };
 
   const formatTime = (time) => {
     if (!time) return 'Chưa ra';
@@ -74,6 +69,7 @@ const ResourceList = () => {
     setSearchDate("");
     setSearchMonth("");
     setSearchYear("");
+    setSearchStatus("");
   };
 
   const filteredRecords = attendanceRecords?.filter((record) => {
@@ -95,8 +91,9 @@ const ResourceList = () => {
       ? recordMonth === Number(searchMonth)
       : true;
     const matchesYear = searchYear ? recordYear === Number(searchYear) : true;
+    const matchesStatus = searchStatus ? record.status === searchStatus : true;
 
-    return matchesKeyword && matchesDate && matchesMonth && matchesYear;
+    return matchesKeyword && matchesDate && matchesMonth && matchesYear && matchesStatus;
   });
 
   const totalWorkingHours = filteredRecords.reduce((sum, record) => {
@@ -111,7 +108,7 @@ const ResourceList = () => {
       "Giờ vào": formatTime(record.checkInTime),
       "Giờ ra": formatTime(record.checkOutTime),
       "Tổng giờ làm": calculateWorkingHours(record.checkInTime, record.checkOutTime),
-      "Trạng thái": record.status === "present" ? "Đúng giờ" : "Muộn",
+      "Trạng thái": record.status === "present" ? "Đúng giờ" : record.status === "late" ? "Muộn" : "Nghỉ",
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -132,124 +129,143 @@ const ResourceList = () => {
 
       <div className="d-flex gap-2 align-items-end mb-3">
         {/* <div className="row g-2"> */}
-          <div className="col-md-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Tìm theo ID hoặc tên"
-              value={searchKeyword}
-              onChange={(e) => setSearchKeyword(e.target.value)}
-            />
-          </div>
+        <div className="col-md-2">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Tìm theo ID hoặc tên"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+        </div>
 
-          <div className="col-md-3">
-            <input
-              type="date"
-              className="form-control"
-              value={searchDate}
-              onChange={(e) => setSearchDate(e.target.value)}
-            />
-          </div>
+        <div className="col-md-2">
+          <input
+            type="date"
+            className="form-control"
+            value={searchDate}
+            onChange={(e) => setSearchDate(e.target.value)}
+          />
+        </div>
 
-          <div className="col-md-2">
-            <select
-              className="form-select"
-              value={searchMonth}
-              onChange={(e) => setSearchMonth(e.target.value)}
-            >
-              <option value="">-- Tháng --</option>
-              {[...Array(12)].map((_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  Tháng {i + 1}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="col-md-2">
+          <select
+            className="form-select"
+            value={searchMonth}
+            onChange={(e) => setSearchMonth(e.target.value)}
+          >
+            <option value="">-- Tháng --</option>
+            {[...Array(12)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                Tháng {i + 1}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="col-md-2">
-            <select
-              className="form-select"
-              value={searchYear}
-              onChange={(e) => setSearchYear(e.target.value)}
-            >
-              <option value="">-- Năm --</option>
-              {[2024, 2025].map((year) => (
-                <option key={year} value={year}>
-                  Năm {year}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="col-md-2">
+          <select
+            className="form-select"
+            value={searchYear}
+            onChange={(e) => setSearchYear(e.target.value)}
+          >
+            <option value="">-- Năm --</option>
+            {[2024, 2025].map((year) => (
+              <option key={year} value={year}>
+                Năm {year}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <div className="col-md-2">
-            <button className="btn btn-secondary w-100" onClick={resetFilters}>
-              Xóa bộ lọc
-            </button>
-          </div>
+        <div className="col-md-1.5">
+          <select
+            className="form-select"
+            value={searchStatus}
+            onChange={(e) => setSearchStatus(e.target.value)}
+          >
+            <option value="">-- Trạng Thái --</option>
+            <option value="present">Đúng giờ</option>
+            <option value="late">Muộn</option>
+            <option value="off">Nghỉ</option>
+          </select>
+        </div>
+
+        <div className="col-md-2">
+          <button className="btn btn-secondary w-100" onClick={resetFilters}>
+            Xóa bộ lọc
+          </button>
+        </div>
         {/* </div> */}
       </div>
-      <div style={{ border: "1px solid #ddd", maxHeight: "850px", overflow: "auto", overflowX: "auto" }}>
-      <table className="table table-bordered mt-3">
-        <thead className="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Tên Nhân Viên</th>
-            <th>Ngày Chấm Công</th>
-            <th>Giờ Vào</th>
-            <th>Giờ Ra</th>
-            <th>Tổng Giờ Làm</th>
-            <th>Trạng Thái</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRecords.length > 0 ? (
-            filteredRecords.map((record) => (
-              <tr key={record._id}>
-                <td>{record.staffcode}</td>
-                <td>{record.staffId.name}</td>
-                <td>{formatDate(record.checkInTime)}</td>
-                <td>{formatTime(record.checkInTime)}</td>
-                <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>
-                  {formatTime(record.checkOutTime)}
-                </td>
-                <td>
-                  {calculateWorkingHours(record.checkInTime, record.checkOutTime)}{" "}
-                  giờ
-                </td>
-                <td className="fw-bold fs-5">
-                  <span
-                    className={`badge ${record.status === "present"
-                      ? "text-success"
-                      : record.status === "Muộn"
-                        ? "text-danger"
-                        : "text-danger"
-                      }`}
-                  >
-                    {record.status === "present" ? "Đúng giờ" : "Muộn"}
-                  </span>
-                </td>
-              </tr>
-            ))
-          ) : (
+      <div style={{
+        border: "1px solid #ddd",
+        maxHeight: "850px",
+        overflow: "auto",
+        overflowX: "auto",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+      }}>
+        <style>
+          {`
+      div::-webkit-scrollbar {
+        display: none;             
+      }
+    `}
+        </style>
+        <table className="table table-bordered mt-3">
+          <thead className="table-dark">
             <tr>
-              <td colSpan="8" className="text-center text-muted">Không tìm thấy dữ liệu!</td>
+              <th>ID</th>
+              <th>Tên Nhân Viên</th>
+              <th>Ngày Chấm Công</th>
+              <th>Giờ Vào</th>
+              <th>Giờ Ra</th>
+              <th>Tổng Giờ Làm</th>
+              <th>Trạng Thái</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredRecords.length > 0 ? (
+              filteredRecords.map((record) => (
+                <tr key={record._id}>
+                  <td>{record.staffcode}</td>
+                  <td>{record.staffId?.name}</td>
+                  <td>{formatDate(record.checkInTime)}</td>
+                  <td>{formatTime(record.checkInTime)}</td>
+                  <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>
+                    {formatTime(record.checkOutTime)}
+                  </td>
+                  <td>
+                    {calculateWorkingHours(record.checkInTime, record.checkOutTime)}{" "}
+                    giờ
+                  </td>
+                  <td className="fw-bold fs-5">
+                    <span
+                      className={`badge ${record.status === "present"
+                        ? "text-success"
+                        : record.status === "late"
+                          ? "text-danger"
+                          : "text-danger"
+                        }`}
+                    >
+                      {record.status === "present" ? "Đúng giờ" : record.status === "late" ? "Muộn" : "Nghỉ"}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center text-muted">Không tìm thấy dữ liệu!</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       <div className="mt-3 text-end fw-bold">
         Tổng số giờ công (dựa trên kết quả lọc): <span className="text-primary"> {totalWorkingHours} giờ </span>
       </div>
-
-      {modalOpen && selectedRecord && (
-        <EditResourceModal
-          record={selectedRecord}
-          setAttendanceRecords={setAttendance}
-          closeModal={closeModal}
-        />
-      )}
     </div>
   );
 };
