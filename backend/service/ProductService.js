@@ -209,7 +209,7 @@ const getSuggestions = async (query) => {
             removeAccents(product.name).match(regex)
         );
 
-        return filteredProducts.slice(0, 5);
+        return filteredProducts.slice(0, 10);
     } catch (error) {
         throw new Error(error.message);
     }
