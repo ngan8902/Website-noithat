@@ -5,7 +5,7 @@ const axios = require('axios');
 
 const fetchAllStaff = async () => {
     try {
-        const response = await axios.get(`${process.env.BASE_URL}/attendance/off`);
+        const response = await axios.get(`${process.env.BASE_URL}/staff/all-staff`);
         return response.data.data || [];
     } catch (error) {
         console.error('Lỗi khi lấy danh sách nhân viên:', error.response ? error.response.data : error.message);
@@ -16,7 +16,7 @@ const fetchAllStaff = async () => {
 const setOffForStaff = async (staff) => {
     const today = new Date().toISOString().split('T')[0];
     try {
-        const res = await axios.post(`${process.env.BASE_URL}/staff/all-staff`, {
+        const res = await axios.post(`${process.env.BASE_URL}/attendance/off`, {
             staffId: staff._id,
             staffcode: staff.staffcode,
             date: today,
@@ -29,7 +29,7 @@ const setOffForStaff = async (staff) => {
     }
 };
 
-cron.schedule('0 13 * * *', async () => {
+cron.schedule('30 13 * * *', async () => {
     console.log('🔔 Tự động cập nhật nhân viên nghỉ lúc 18:00...');
 
     const staffList = await fetchAllStaff();
