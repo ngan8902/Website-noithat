@@ -203,13 +203,13 @@ const getSuggestions = async (query) => {
 
         const regex = new RegExp(`${formattedQuery}`, "i");
 
-        const products = await Product.find().limit(50).lean();
+        const products = await Product.find().limit(100).lean();
 
         const filteredProducts = products.filter(product =>
             removeAccents(product.name).match(regex)
         );
 
-        return filteredProducts.slice(0, 5);
+        return filteredProducts.slice(0, 10);
     } catch (error) {
         throw new Error(error.message);
     }

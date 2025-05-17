@@ -58,7 +58,7 @@ const SearchResults = () => {
             }
 
             // Lọc theo đánh giá
-            if (filters.rating && product.rating < parseInt(filters.rating)) {
+            if (filters.rating && product.rating !== parseInt(filters.rating)) {
                 return false;
             }
 

@@ -15,10 +15,10 @@ const AboutSection = () => {
           </div>
           <div className="col-md-6">
             <p className="text-muted mb-4">
-              <strong>KLTN 2024 - 2025</strong> Sự phát triển mạnh mẽ của khoa học và công nghệ, đặc biệt trong thời đại công nghiệp 4.0, đã tạo ra nhiều cơ hội mới cho doanh nghiệp trong việc nâng cao hiệu quả quản lý. Trong đó, quản lý nhân sự là một lĩnh vực quan trọng, tuy nhiên các phương pháp truyền thống còn nhiều hạn chế như gian lận, mất thẻ hay chi phí cao. Việc ứng dụng công nghệ nhận diện khuôn mặt được xem là giải pháp tối ưu, giúp đảm bảo tính chính xác, minh bạch và hiệu quả.
+              <strong>KLTN 2024 - 2025</strong> Sự bùng nổ của công nghệ trong thời đại công nghiệp 4.0 đã mở ra nhiều hướng đi mới cho doanh nghiệp, đặc biệt là trong lĩnh vực thương mại điện tử và quản lý nội bộ. Với nhu cầu ngày càng cao trong việc tối ưu hóa quy trình bán hàng và nâng cao hiệu quả quản lý nhân sự, việc tích hợp các công nghệ hiện đại vào hệ thống quản lý doanh nghiệp là xu hướng tất yếu.
             </p>
             <p className="text-muted mb-4">
-              Từ nhận thức đó, em chọn đề tài <strong>"Tích hợp công nghệ nhận diện khuôn mặt trong quản lý nhân sự cho công ty nội thất"</strong>" nhằm xây dựng một hệ thống quản lý nhân sự tự động kết hợp với nền tảng bán hàng trực tuyến. Mục tiêu là hỗ trợ quá trình hiện đại hóa, chuyển đổi số doanh nghiệp, tiết kiệm chi phí, cải thiện môi trường làm việc và góp phần phát triển bền vững.
+              Từ nhận thức đó, em chọn đề tài <strong>"Xây dựng website thương mại điện tử tích hợp chấm công bằng nhận diện khuôn mặt cho doanh nghiệp kinh doanh nội thất"</strong> Đề tài không chỉ hướng đến việc xây dựng một nền tảng bán hàng trực tuyến chuyên nghiệp, hỗ trợ doanh nghiệp tiếp cận khách hàng hiệu quả hơn, mà còn kết hợp giải pháp chấm công hiện đại bằng công nghệ nhận diện khuôn mặt.
             </p>
           </div>
         </div>
