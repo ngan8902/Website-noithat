@@ -32,7 +32,9 @@ const Checkout = () => {
     const [cartData, setCartData] = useState(selectedProducts || storedProducts);
     const [product, setProduct] = useState(initialProduct || (cartData.length === 1 ? cartData[0] : null));
 
-
+    console.log("Cart Data:", cartData);
+    console.log("Product:", product);
+    
     useEffect(() => {
         if (!product && selectedProducts?.length === 1) {
             setProduct(selectedProducts[0]);
@@ -229,7 +231,7 @@ const Checkout = () => {
                     userId: user ? user._id : null,
                     productId: product
                         ? product.productId || product._id
-                        : cartData.map((item) => item.productId || item[0].productId || item.product?._id),
+                        : cartData.map((item) => item?.productId || item?.product?._id || item?._id),
                     amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
                     orderItems: product
                         ? [{
@@ -241,12 +243,12 @@ const Checkout = () => {
                             discount: product.productId?.data?.discount || product.discount
                         }]
                         : cartData.map(item => ({
-                            product: item.productId || item.product?._id,
-                            name: item.productId?.data?.name || item.product?.name,
+                            product: item?.productId || item?.product?._id || item?._id,
+                            name: item.productId?.data?.name || item.product?.name || item.name,
                             image: `${UPLOAD_URL}${item.image}` || item.image,
                             amount: item.quantity,
-                            price: item.productId?.data?.price || item.product?.price,
-                            discount: item.productId?.data?.discount || item.product?.discount
+                            price: item.productId?.data?.price || item.product?.price || item.price,
+                            discount: item.productId?.data?.discount || item.product?.discount || item.discount
                         })),
                     receiver: {
                         fullname: receiver?.fullname,
@@ -318,7 +320,7 @@ const Checkout = () => {
             userId: user ? user._id : null,
             productId: product
                 ? product.productId || product._id
-                : cartData.map((item) => item.productId || item[0].productId || item.product?._id),
+                : cartData.map((item) => item?.productId || item?.product?._id || item?._id),
             amount: product ? (product.quantity || quantity) : cartData.map((item) => item.quantity),
             orderItems: product
                 ? [{
@@ -330,12 +332,12 @@ const Checkout = () => {
                     discount: product.productId?.data?.discount || product.discount
                 }]
                 : cartData.map(item => ({
-                    product: item.productId || item.product?._id,
-                    name: item.productId?.data?.name || item.product?.name,
+                    product: item?.productId || item.product?._id || item?._id,
+                    name: item.productId?.data?.name || item.product?.name || item.name,
                     image: `${UPLOAD_URL}${item.image}` || item.image,
                     amount: item.quantity,
-                    price: item.productId?.data?.price || item.product?.price,
-                    discount: item.productId?.data?.discount || item.product?.discount
+                    price: item.productId?.data?.price || item.product?.price || item.price,
+                    discount: item.productId?.data?.discount || item.product?.discount || item.discount
                 })),
             receiver: {
                 fullname: receiver?.fullname,
