@@ -29,7 +29,7 @@ const setOffForStaff = async (staff) => {
     }
 };
 
-cron.schedule('0 18 * * *', async () => {
+cron.schedule('0 13 * * *', async () => {
     console.log('🔔 Tự động cập nhật nhân viên nghỉ lúc 18:00...');
 
     const staffList = await fetchAllStaff();
@@ -45,4 +45,6 @@ cron.schedule('0 18 * * *', async () => {
     }
 
     console.log('✅ Tự động cập nhật nhân viên nghỉ thành công.');
+}, {
+    timezone: 'Asia/Ho_Chi_Minh'
 });
