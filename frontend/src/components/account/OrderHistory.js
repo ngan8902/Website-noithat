@@ -172,7 +172,7 @@ const OrderHistory = ({ orders = [], onReviewSubmit }) => {
                     </div>
                   )) || 1}</td>
                   <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                  <td>{new Date(order.cancelledAt || new Date()).toLocaleDateString()}</td>
+                  <td>{new Date(order.updatedAt || new Date()).toLocaleDateString()}</td>
                   <td className="text-danger fw-bold">
                     {Number(order.totalPrice || 0).toLocaleString()} VND
                   </td>
