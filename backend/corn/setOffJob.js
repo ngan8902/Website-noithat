@@ -29,7 +29,7 @@ const setOffForStaff = async (staff) => {
     }
 };
 
-cron.schedule('30 13 * * *', async () => {
+cron.schedule('00 17 * * *', async () => {
     console.log('🔔 Tự động cập nhật nhân viên nghỉ lúc 18:00...');
 
     const staffList = await fetchAllStaff();
