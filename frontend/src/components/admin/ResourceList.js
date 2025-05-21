@@ -227,33 +227,35 @@ const ResourceList = () => {
           </thead>
           <tbody>
             {filteredRecords.length > 0 ? (
-              filteredRecords.map((record) => (
-                <tr key={record._id}>
-                  <td>{record.staffcode}</td>
-                  <td>{record.staffId?.name}</td>
-                  <td>{formatDate(record.checkInTime)}</td>
-                  <td>{formatTime(record.checkInTime)}</td>
-                  <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>
-                    {formatTime(record.checkOutTime)}
-                  </td>
-                  <td>
-                    {calculateWorkingHours(record.checkInTime, record.checkOutTime)}{" "}
-                    giờ
-                  </td>
-                  <td className="fw-bold fs-5">
-                    <span
-                      className={`badge ${record.status === "present"
-                        ? "text-success"
-                        : record.status === "late"
-                          ? "text-danger"
-                          : "text-danger"
-                        }`}
-                    >
-                      {record.status === "present" ? "Đúng giờ" : record.status === "late" ? "Muộn" : "Nghỉ"}
-                    </span>
-                  </td>
-                </tr>
-              ))
+              [...filteredRecords]
+                .sort((a, b) => new Date(b.checkInTime) - new Date(a.checkInTime))
+                .map((record) => (
+                  <tr key={record._id}>
+                    <td>{record.staffcode}</td>
+                    <td>{record.staffId?.name}</td>
+                    <td>{formatDate(record.checkInTime)}</td>
+                    <td>{formatTime(record.checkInTime)}</td>
+                    <td className={formatTime(record.checkOutTime).includes("Chưa ra") ? "text-danger fw-bold" : ""}>
+                      {formatTime(record.checkOutTime)}
+                    </td>
+                    <td>
+                      {calculateWorkingHours(record.checkInTime, record.checkOutTime)}{" "}
+                      giờ
+                    </td>
+                    <td className="fw-bold fs-5">
+                      <span
+                        className={`badge ${record.status === "present"
+                          ? "text-success"
+                          : record.status === "late"
+                            ? "text-danger"
+                            : "text-danger"
+                          }`}
+                      >
+                        {record.status === "present" ? "Đúng giờ" : record.status === "late" ? "Muộn" : "Nghỉ"}
+                      </span>
+                    </td>
+                  </tr>
+                ))
             ) : (
               <tr>
                 <td colSpan="8" className="text-center text-muted">Không tìm thấy dữ liệu!</td>
