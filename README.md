@@ -70,3 +70,11 @@ Quản lý mã nguồn:
 ### Sơ đồ tổng quan
 -------------
 ![Screenshot 2025-05-22 104934](https://github.com/user-attachments/assets/3c54783d-f2ba-4a1e-be70-018c71ce552d)
+
+### Bảng Test Case - các chức năng của hệ thống
+-------------
+![image](https://github.com/user-attachments/assets/34df0e46-2121-4de4-8700-7616222ed51e)
+![image](https://github.com/user-attachments/assets/533d5fc6-665c-43ba-b772-95eaed3be7e3)
+![image](https://github.com/user-attachments/assets/1c06ff91-6631-4012-a274-af40a02b3fab)
+
+
