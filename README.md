@@ -1,4 +1,4 @@
-### ĐỒ ÁN TỐT NGHIỆP - WEBSITE NỘI THẤT
+### ĐỒ ÁN TỐT NGHIỆP - WEBSITE THƯƠNG MẠI ĐIỆN TỬ KẾT HỢP CHẤM CÔNG BẰNG NHẬN DIỆN GƯƠNG MẶT
 --------
 ### THỰC HIỆN BỞI: BÍCH NGÂN & KHÁNH THÀNH
 --------
