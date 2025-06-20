@@ -65,7 +65,12 @@ Database:
 Quản lý mã nguồn:
 <br>
 <a href="https://git-scm.com/" target="_blank" rel="noreferrer"> <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/> 
-</a> 
+</a>
+
+Công cụ hỗ trợ test chắc năng:
+<br>
+<img src="https://raw.githubusercontent.com/cypress-io/cypress/develop/assets/logo/cypress-logo.png" alt="Cypress Logo" width="100"/>
+</a>
 
 ### Sơ đồ tổng quan
 -------------
