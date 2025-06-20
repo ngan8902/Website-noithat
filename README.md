@@ -21,15 +21,15 @@ Trước khi thực hiện các bước run dự án bạn cần phải cài đ�
 # Sau khi cài đặt môi trường > Mở source code bằng Visual Studio Code và chạy các lệnh bên dưới
   
    1. Cài đặt dependencies cho server
-     ```hash
-     npm install
-     ```
-   2. Run server
+       ```hash
+        npm install
+       ```
+   3. Run server
        ```hash
        cd backend
        npm start
        ```
-   3. Run client
+   4. Run client
        ```hash
        cd fontend
        npm start
