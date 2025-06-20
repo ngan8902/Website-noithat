@@ -66,6 +66,7 @@ function LoginAdmin() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         onKeyDown={handleKeyDown}
+                        name="username"
                     />
                 </div>
 
@@ -76,6 +77,7 @@ function LoginAdmin() {
                         value={pass}
                         onChange={(e) => setPass(e.target.value)}
                         onKeyDown={handleKeyDown}
+                        name="password"
                     />
                     <span
                         className="toggle-password"

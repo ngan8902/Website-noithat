@@ -79,6 +79,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
                 <label htmlFor="loginEmail" className="form-label text-dark">Email</label>
                 <input
                   type="email"
+                  name="email"
                   className="form-control"
                   id="loginEmail"
                   autoFocus
@@ -95,6 +96,7 @@ const LoginModal = ({ show, setShow, setShowRegister }) => {
                     className="form-control pe-5"
                     id="loginPassword"
                     value={pass}
+                    name="password"
                     onChange={(e) => setPass(e.target.value)}
                   />
                   <span

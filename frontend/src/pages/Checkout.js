@@ -581,7 +581,7 @@ const Checkout = () => {
                     <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>
                         Hủy
                     </Button>
-                    <Button variant="primary" onClick={handleCheckout}>
+                    <Button data-testid="confirm-checkout" variant="primary" onClick={handleCheckout}>
                         Xác Nhận
                     </Button>
                 </Modal.Footer>
