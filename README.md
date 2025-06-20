@@ -69,7 +69,9 @@ Quản lý mã nguồn:
 
 Công cụ hỗ trợ test chắc năng:
 <br>
-<img src="https://raw.githubusercontent.com/cypress-io/cypress/develop/assets/logo/cypress-logo.svg" alt="Cypress Logo" width="100"/>
+<img src="https://raw.githubusercontent.com/cypress-io/cypress/develop/assets/logo/cypress-logo.svg" alt="Cypress Logo" width="120"/>
+
+This project uses [Cypress](https://www.cypress.io/) for end-to-end testing.
 
 
 ### Sơ đồ tổng quan
