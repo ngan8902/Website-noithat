@@ -69,7 +69,7 @@ Quản lý mã nguồn:
 
 Công cụ hỗ trợ test chắc năng:
 <br>
-![Cypress Logo](./assets/cypress-logo.png)
+<img src="https://raw.githubusercontent.com/cypress-io/cypress/develop/assets/logo/cypress-logo.svg" alt="Cypress Logo" width="100"/>
 
 
 ### Sơ đồ tổng quan
