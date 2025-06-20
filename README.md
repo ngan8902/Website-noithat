@@ -69,9 +69,9 @@ Quản lý mã nguồn:
 
 Công cụ hỗ trợ test chắc năng:
 <br>
-<img src="https://raw.githubusercontent.com/cypress-io/cypress/develop/assets/logo/cypress-logo.svg" alt="Cypress Logo" width="120"/>
+![cypress-inverse](https://github.com/user-attachments/assets/a0a93150-a138-4d8e-97d3-2197dc041d84)
+<img src="https://cdn.worldvectorlogo.com/logos/postman.svg" alt="Postman Logo" width="100"/>
 
-This project uses [Cypress](https://www.cypress.io/) for end-to-end testing.
 
 
 ### Sơ đồ tổng quan
