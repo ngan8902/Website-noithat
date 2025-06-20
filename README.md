@@ -70,7 +70,7 @@ Quản lý mã nguồn:
 Công cụ hỗ trợ test chắc năng:
 <br>
 <img src="https://github.com/user-attachments/assets/a0a93150-a138-4d8e-97d3-2197dc041d84" alt="Cypress Logo" width="80"/>
-<img src="https://cdn.worldvectorlogo.com/logos/postman.svg" alt="Postman Logo" width="100"/>
+<img src="https://cdn.worldvectorlogo.com/logos/postman.svg" alt="Postman Logo" width="80"/>
 
 
 
