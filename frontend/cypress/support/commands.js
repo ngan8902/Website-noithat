@@ -1,5 +1,8 @@
+import 'cypress-file-upload';
+
 const TOKEN_KEY = 'token';
-const STAFF_TOKEN_KEY = 'staff-token'
+const STAFF_TOKEN_KEY = 'staff-token';
+
 
 Cypress.Commands.add("loginByApi", () => {
     cy.request("POST", "http://localhost:8000/api/user/sign-in", {
@@ -20,4 +23,12 @@ Cypress.Commands.add("loginByApiForStaff", () => {
         cy.setCookie(STAFF_TOKEN_KEY, token);
     });
 });
+
+Cypress.Commands.add("choseproduct", () => {
+    cy.visit('/product-type/ghe-an');
+    cy.contains('Ghế Ăn Gỗ Cao Su Tự Nhiên MOHO VLINE 601').click();
+    cy.contains('Mua Ngay').click();
+
+    cy.url().should('include', '/checkout');
+})
 

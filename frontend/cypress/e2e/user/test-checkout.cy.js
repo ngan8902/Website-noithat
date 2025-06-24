@@ -33,6 +33,8 @@ describe('Luồng mua hàng thành công', () => {
 
     // Kiểm tra thành công nếu có thông báo hoặc redirect
     cy.contains('Đặt hàng thành công').should('exist').wait(2000)
+    cy.url().should('include', '/account').wait(4000)
+
   });
 
   it('Chọn sản phẩm và mua ngay với phương thức thanh toán qua ngân hàng', () => {
@@ -61,9 +63,87 @@ describe('Luồng mua hàng thành công', () => {
 
     // Chờ modal xuất hiện
     cy.wait(1000);
+    cy.get('.modal-footer button').eq(1).click({ force: true }).wait(4000)
+  });
+});
+
+describe('Test các trường hợp thiếu thông tin', () => {
+  beforeEach(() => {
+    cy.loginByApi();
+    cy.choseproduct();
+  });
+
+  it('Nhập thiếu tên người nhận hàng', () => {
+
+    // cy.get('input[name="fullname"]').type(' ');
+    cy.get('input[name="phone"]').type('0905569875');
+
+    cy.get('input').eq(4).type('Hồ Chí Minh');
+    cy.contains('li', 'Hồ Chí Minh').click();
+
+    cy.get('input').eq(5).type('Quận 12');
+    cy.contains('li', 'Quận 12').click();
+
+    cy.get('input').eq(6).type('Đông Hưng Thuận');
+    cy.contains('li', 'Đông Hưng Thuận').click();
+
+    cy.get('input').eq(7).type('Nguyễn Văn Quá');
+    cy.get('input').eq(8).type('11');
+    
+    cy.contains('Thanh Toán Khi Nhận Hàng').click();
+    cy.contains('Xác Nhận Mua Hàng').click();
+
+    // Chờ modal xuất hiện
+    cy.wait(1000);
     cy.get('.modal-footer button').eq(1).click({ force: true });
 
+    // Kiểm tra thành công nếu có thông báo hoặc redirect
+    cy.contains('Thiếu thông tin người nhận hàng').should('exist').wait(2000)
   });
+
+  it('Không nhập địa chỉ người nhận hàng', () => {
+
+    cy.get('input[name="fullname"]').type('Bích Ngân');
+    cy.get('input[name="phone"]').type('0905569875');
+    
+    cy.contains('Thanh Toán Khi Nhận Hàng').click();
+    cy.contains('Xác Nhận Mua Hàng').click();
+
+    // Chờ modal xuất hiện
+    cy.wait(1000);
+    cy.get('.modal-footer button').eq(1).click({ force: true });
+
+    // Kiểm tra thành công nếu có thông báo hoặc redirect
+    cy.contains('Thiếu thông tin người nhận hàng').should('exist').wait(2000)
+  });
+
+   it('Không chọn phương thức thanh toán ', () => {
+
+    cy.get('input[name="fullname"]').type('Bích Ngân');
+    cy.get('input[name="phone"]').type('0905569875');
+
+     cy.get('input').eq(4).type('Hồ Chí Minh');
+    cy.contains('li', 'Hồ Chí Minh').click();
+
+    cy.get('input').eq(5).type('Quận 12');
+    cy.contains('li', 'Quận 12').click();
+
+    cy.get('input').eq(6).type('Đông Hưng Thuận');
+    cy.contains('li', 'Đông Hưng Thuận').click();
+
+    cy.get('input').eq(7).type('Nguyễn Văn Quá');
+    cy.get('input').eq(8).type('11');
+    
+    cy.contains('Xác Nhận Mua Hàng').click();
+
+    // Chờ modal xuất hiện
+    cy.wait(1000);
+    cy.get('.modal-footer button').eq(1).click({ force: true });
+
+    // Kiểm tra thành công nếu có thông báo hoặc redirect
+    cy.contains('Vui lòng chọn phương thức thanh toán').should('exist').wait(2000)
+  });
+
 });
 
 
