@@ -80,9 +80,9 @@ Công cụ hỗ trợ test các chức năng:
 
 ### Bảng Test Case - các chức năng của hệ thống
 -------------
-![image](https://github.com/user-attachments/assets/14970eb5-e76b-4954-9e98-13f89ecc653c)
-![image](https://github.com/user-attachments/assets/14970eb5-e76b-4954-9e98-13f89ecc653c)
-![image](https://github.com/user-attachments/assets/14970eb5-e76b-4954-9e98-13f89ecc653c)
-![image](https://github.com/user-attachments/assets/14970eb5-e76b-4954-9e98-13f89ecc653c)
+![image](https://github.com/user-attachments/assets/d8c3a544-5511-4f17-b93a-0f9fed8e2eda)
+![image](https://github.com/user-attachments/assets/5b29596b-efe9-432c-b98d-7d4a2337e52b)
+![image](https://github.com/user-attachments/assets/8e8365d1-332b-4207-a733-6c976db67141)
+![image](https://github.com/user-attachments/assets/007204fb-bcda-47ec-a277-9a67a5042bef)
 
 
